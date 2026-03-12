@@ -1,26 +1,40 @@
 # Function for importing Solidworks coordinates
 
-def read_iges(filename):
-    param_lines = []
+import os
+import pandas as pd
 
-    with open(filename, "r") as f:
-        for raw_line in f:
-            data = raw_line[:72].strip()
+def read_iges(SW_filename):
 
-            section = raw_line[72:73]
+    lines110 = []
+    data = []
 
-            if section == "P" and data.startswith("110"):
-                param_lines.append(data)
+    with open(SW_filename) as f:
+        raw = f.readlines()
+
+        for line in raw:
+            filter_line = line.strip()
+
+            if filter_line.startswith("110") and "P" in filter_line:
+                lines110.append(filter_line)
+        return lines110
     
-    return param_lines
+def create_data(lines110):
+    coordinates = []
 
-def Get_coor(params):
-    j
+    for line in lines110:
+        line = line.replace(";", ",")
+        parts = line.split(",")
+        coor_only = parts[1:7]
+
+        nums = [float(x.strip()) for x in coor_only]
+
+        coordinates.append(nums)
+
+    return coordinates
+    
 
 
-
-Filename = "SimpleFrameBrace.IGS"
-params = read_iges(Filename)
-
-for p in params:
-    print(p)
+def import_SW(SW_filename):
+    lines110 = read_iges(SW_filename)
+    coords = create_data(lines110)
+    return coords

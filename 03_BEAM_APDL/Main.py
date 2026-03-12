@@ -9,12 +9,19 @@
 
 
 # Import tools
+import SW_Import as SW
 
 
+# Import SW coordinates as list
+SW_filename = "SimpleFrameBrace.IGS"
+SWcoor = SW.import_SW(SW_filename)
 
+# Specify tube dimensions
+R0 = 76.1/2 # Corner Tube inner diameter [mm]
+R1 = 70.1/2 # Corner Tube outer diameter [mm]
+R2 = 22.3/2 # Brace Tube inner diameter  [mm]
+R3 = 26.9/2 # Brace Tube outer diameter  [mm]
 
-# ------------
+var = [R0, R1, R2, R3]
 
-
-
-# Read SolidWorks Data
+# Pass Geometry variable into GeoCreate
