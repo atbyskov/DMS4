@@ -1,0 +1,10 @@
+! ===== APDL OUTPUT FILE ===== ! 
+ 
+SET,LAST 
+ 
+ALLSEL,ALL 
+ESEL,S, ENAME,, 189 
+*GET,E_COUNT,ELEM,0,COUNT 
+ 
+Number of Columns: 2 
+Number of Braces : 1 

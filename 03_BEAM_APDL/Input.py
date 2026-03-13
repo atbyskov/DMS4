@@ -2,7 +2,7 @@
 # -> INPUT:
 #       - SW_coor (Coordinates from Soldiworks)
 # -> OUTPUT:
-#       - .txt file with node and line information to APDL
+#       - .txt Input file for APDL
 
 # Pseudo Code
     # Input is coordinate list with format [(x1,y1,z1),(x2,y2,z3)]
@@ -23,8 +23,7 @@
 
 
 
-
-def GeoCreateFun(SWcoor, var, esize):
+def InputFun(SWcoor, var, esize):
 
     # Import Radii
     R0, R1, R2, R3 = var 
@@ -40,37 +39,41 @@ def GeoCreateFun(SWcoor, var, esize):
         else:
             return "brace"
     
-    outname = "APDL_input.txt"
+    input_file = "APDL_input.txt"
 
-    with open(outname, "w") as f:
+    with open(input_file, "w") as f:
         # SETUP
-        f.write("!===== APDL INPUT FILE ====== \n \n")
+        f.write("! ===== APDL INPUT FILE ====== ! \n \n")
         f.write("/UNITS,MPa \n")
-        f.write("/PREP7 \n")
-        f.write("!Geometry created by GeoCreate.py \n")
-        f.write("ET,1,BEAM189 ! Use BEAM189 \n ")
+        f.write("/PREP7 \n \n")
+        f.write("ET,1,BEAM189 ! Use BEAM189 \n \n")
         # CROSS SECTION
-        f.write("! Corner Section Type (SECTYPE = 1) \n")
+        f.write("! CROSS SECTION !\n")
+        f.write("! Corner Type (SECTYPE = 1) \n")
         f.write("SECTYPE,1,BEAM,CTUBE \n")
         f.write(f"SECDATA,{R0},{R1},8 \n")
-        f.write("! Corner Section Type (SECTYPE = 2) \n")
+        f.write("! Brace Section Type (SECTYPE = 2) \n")
         f.write("SECTYPE,2,BEAM,CTUBE \n")
-        f.write(f"SECDATA,{R2},{R3},8 \n")
+        f.write(f"SECDATA,{R2},{R3},8 \n \n")
         # MATERIAL
-        f.write("! Material Data \n")
+        f.write("! MATERIAL DATA\n")
         f.write("MP,EX,1,200000 ! [MPa]\n")
         f.write("MP,PRXY,1,0.3 \n")
-        f.write("MP,DENS,1,7850E-6 ! [kg/mm^2] \n")
+        f.write("MP,DENS,1.7850E-6 ! [kg/mm^3] \n \n")
 
         # NODES
-        f.write("! NODE DEFINITION \n")
+        f.write("! KEYPOINT AND LINES ! \n")
         
         key_id = 1
         line_id = 1
         corner_lines = []
         brace_lines = []
+        corner_id = 1
+        brace_id = 1
 
         kp_dict = {}
+        CM_Brace_dict = 0
+        CM_Column_dict = 0
 
         for x1, y1, z1, x2, y2, z2 in SWcoor:
             
@@ -100,22 +103,33 @@ def GeoCreateFun(SWcoor, var, esize):
             group = beam_class(p1,p2)
 
             f.write(f"L,{kp1},{kp2} \n")
-
+            f.write(f"LSEL,S,LINE,,{line_id}\n")
 
             if group == "corner":
                 corner_lines.append(line_id)
+                f.write(f"CM,COLUMN_{corner_id},LINE \n")
+                corner_id += 1
+                CM_Column_dict += 1
             else:
                 brace_lines.append(line_id)
+                f.write(f"CM,BRACE_{brace_id},LINE \n")
+                brace_id += 1
+                CM_Brace_dict += 1
+            
+            
+            
+            f.write("LSEL,ALL \n")   # Reset
 
             line_id += 1
         f.write("\n")
 
         # ELEMENT DEFINITION
+        f.write("! ELEMENT SIZE ! \n")
         f.write(f"ESIZE,{esize} \n\n")
         
         def group_mesh(block_name, secnum, line_ids):
             
-            f.write(f"!! {block_name} \n")
+            f.write(f"! {block_name} ! \n")
             f.write(f"SECNUM,{secnum} \n")
             f.write("LSEL,ALL\n")
             f.write("LSEL,NONE\n")
@@ -136,43 +150,71 @@ def GeoCreateFun(SWcoor, var, esize):
 
         group_mesh("Meshing BRACE beam (SECNUM=2)",2, brace_lines)
 
-        f.write("/ESHAPE,1 \n")
+        f.write("/ESHAPE,1 ! Display Cross Section\n")
 
         # BOUNDARY CONDITIONS
         # FORCE
-        f.write("\n \n! -- BOUNDARY CONDITIONS -- ! \n! Applying Force \n")
+        f.write("\n! -- BOUNDARY CONDITIONS -- ! \n \n! Force \n")
         f.write("ALLSEL,ALL \n")
+        f.write("SELTOL,1.0E-6 \n")
+        #f.write("*GET, NodeYMax, NODE, 0, MXLOC, Y \n")
+        #f.write("NSEL,S,LOC,Y,NodeYMax \n")
+        #f.write("F,ALL,FX,300000 !N \n")
+        #f.write("ALLSEL,ALL\n\n")
+        
+        # ONLY FOR SIMPLEFRAME
+        f.write("*GET, NodeXMax, NODE, 0, MXLOC, X \n")
+        f.write("*GET, NodeXMin, NODE, 0, MNLOC, X \n")
         f.write("*GET, NodeYMax, NODE, 0, MXLOC, Y \n")
-        f.write("NSEL,S,LOC,Y,NodeYMax \n")
-        f.write("F,ALL,FX,10000 !N \n")
-        f.write("ALLSEL,ALL\n")
+        f.write("NSEL,S,LOC,X,NodeXMin \n")
+        f.write("NSEL,R,LOC,Y,NodeYMax \n")
+        f.write("F,ALL,FY,-300000 \n")
+        f.write("ALLSEL,ALL \n")
+        f.write("NSEL,S,LOC,X,NodeXMax \n")
+        f.write("NSEL,R,LOC,Y,NodeYMax \n")
+        f.write("F,ALL,FY,-300000 \n")
+        f.write("ALLSEL,ALL \n")
+
+        f.write("NSEL,S,LOC,X,NodeXMin \n")
+        f.write("NSEL,R,LOC,Y,NodeYMax \n")
+        f.write("F,ALL,FX,260 \n")
+        f.write("ALLSEL,ALL \n")
 
         # FIXED DISPLACEMENT
-        f.write("! Applying Fixed Displacement ! \n")
+        f.write("! Displacement ! \n")
         f.write("ALLSEL,ALL \n")
         f.write("*GET, NodeYMin, NODE, 0, MNLOC, Y \n")
         f.write("NSEL,S,LOC,Y,NodeYMin \n")
         f.write("D,ALL,ALL,0 \n")
-        f.write("ALLSEL,ALL\n")
-
+        f.write("ALLSEL,ALL\n\n")
 
         # RUN STATIC ANALYSIS
+        f.write("! SOLUTION ! \n")
         f.write("/SOLU \n")
         f.write("ANTYPE, STATIC \n")
         f.write("NLGEOM,ON \n")
         f.write("ARCLEN,ON \n")
-        f.write("ARCTRM,L \n")
+        f.write("ARCTRM,L \n ")
 
         # SETTINGS
+        f.write("! Solver Settings !\n")
         f.write("AUTOTS,OFF \n")
         f.write("TIME,1 \n")
-        f.write("NSUBST,20,100,10 \n")
-        f.write("NEQIT,50 \n")
-        f.write("SOLVE \n")
-        f.write("FINISH \n")
+        f.write("NSUBST,80,100,40 \n")
+        f.write("SOLVE \n \n")
+        
+        # FINISH
+        f.write("FINISH \n \n")
+
+        CM_dict = [CM_Column_dict, CM_Brace_dict]
+        
+        
+        print(f"Input written to:  {input_file}")
+        
+        return CM_dict, input_file
 
 
 
-    print(f"APDL input written to {outname}")
+    
 
 

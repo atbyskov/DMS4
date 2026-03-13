@@ -8,13 +8,14 @@
     # 5. Post process Results
 
 
-# Import tools
-from GeoCreate import GeoCreateFun
+# Import Functions
+from Input import InputFun
+from Output import OutputFun
 import SW_Import as SW
 
 
 # Import SW coordinates as list
-SW_filename = "NotSoSimpleFrameBrace.IGS"
+SW_filename = "SimpleFrame.IGS"
 SWcoor = SW.import_SW(SW_filename)
 
 # Specify tube dimensions
@@ -25,6 +26,36 @@ R3 = 26.9/2 # Brace Tube outer diameter  [mm]
 
 var = [R0, R1, R2, R3] # Assembly variables
 
-esize = 100
-# Call GeoCreateFun
-GeoCreateFun(SWcoor,var,esize)
+esize = 10
+
+# Call Input function and get CM_dict = [nColumns, nBraces]
+CM_dict, input_file = InputFun(SWcoor,var,esize)
+
+# Call Output function
+output_file = OutputFun(CM_dict)
+
+RunFile = "Runfile.txt"
+
+with open(RunFile,"w") as f:
+
+    with open(input_file, "r") as f1:
+        f.write(f1.read())
+
+    with open(output_file, "r") as f2:
+        f.write(f2.read())
+
+
+FileName = "APDLRunFile.bat"
+
+with open(FileName, 'w') as FileID:
+    FileID.write('@echo off\n')
+    FileID.write('rem This batch file is placed in your working directory\n')
+    FileID.write('SET ANSWAIT=1\n')
+    FileID.write('set ANSYS_LOCK=OFF\n')
+    FileID.write('rem set ANS_CONSEC=YES\n')
+    FileID.write('"C:\\Program files\\ANSYS Inc\\v251\\ANSYS\\bin\\winx64\\ansys251" -b -p ansys -smp -np 8 -i "RunFile.txt" -o "AnsysOutputWindow.txt"\n')
+
+
+
+
+# Post Processing 
