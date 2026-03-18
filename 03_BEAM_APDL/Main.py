@@ -12,6 +12,7 @@
 from Input import InputFun
 from Output import OutputFun
 import SW_Import as SW
+import os
 
 
 # Import SW coordinates as list
@@ -55,7 +56,7 @@ with open(FileName, 'w') as FileID:
     FileID.write('rem set ANS_CONSEC=YES\n')
     FileID.write('"C:\\Program files\\ANSYS Inc\\v251\\ANSYS\\bin\\winx64\\ansys251" -b -p ansys -smp -np 8 -i "RunFile.txt" -o "AnsysOutputWindow.txt"\n')
 
-
+os.system(FileName)
 
 
 # Post Processing 

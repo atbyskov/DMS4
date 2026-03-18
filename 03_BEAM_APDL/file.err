@@ -1,0 +1,26 @@
+/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       08:14:13
+
+ *** WARNING ***                         CP =       0.922   TIME= 08:14:19
+ A reference moment value times the tolerance is used by the             
+ Newton-Raphson method for checking convergence.  The calculated         
+ reference MOMENT CONVERGENCE VALUE = 2126.50652 is less than a          
+ threshold.  This threshold is internally calculated.  You can           
+ overwrite it by specifying MINREF on the CNVTOL command.  Check         
+ results carefully.                                                      
+
+ *** WARNING ***                         CP =       5.797   TIME= 08:14:19
+ File APDL_out.txt does not exist.                                       
+  The /INPUT command is ignored.                                         
+
+ *** WARNING ***                         CP =       5.797   TIME= 08:14:19
+ Unknown label for *GET command= 0                                       
+  The *GET command is ignored.                                           
+
+ *** WARNING ***                         CP =       5.797   TIME= 08:14:19
+ *DO loop FVAL value is undefined: (NELEM).  Using default (0).          
+
+ *** WARNING ***                         CP =       5.797   TIME= 08:14:19
+ No *DO trips needed, enter *ENDDO .                                     
+
+ *** ERROR ***                           CP =       5.797   TIME= 08:14:19
+ *DO loop index same as outer index II.                                  
