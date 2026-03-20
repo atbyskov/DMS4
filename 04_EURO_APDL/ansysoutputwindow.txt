@@ -1,0 +1,865 @@
+
+ Ansys Mechanical Enterprise Academic Research     
+
+
+ *------------------------------------------------------------------*
+ |                                                                  |
+ |   W E L C O M E   T O   T H E   A N S Y S (R)  P R O G R A M     |
+ |                                                                  |
+ *------------------------------------------------------------------*
+
+
+
+
+ ***************************************************************
+ *         ANSYS MAPDL 2025 R1          LEGAL NOTICES          *
+ ***************************************************************
+ *                                                             *
+ * Copyright 1971-2025 Ansys, Inc.  All rights reserved.       *
+ * Unauthorized use, distribution or duplication is            *
+ * prohibited.                                                 *
+ *                                                             *
+ * Ansys is a registered trademark of Ansys, Inc. or its       *
+ * subsidiaries in the United States or other countries.       *
+ * See the Ansys, Inc. online documentation or the Ansys, Inc. *
+ * documentation CD or online help for the complete Legal      *
+ * Notice.                                                     *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION       *
+ * INCLUDE TRADE SECRETS AND CONFIDENTIAL AND PROPRIETARY      *
+ * PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR LICENSORS.    *
+ * The software products and documentation are furnished by    *
+ * Ansys, Inc. or its subsidiaries under a software license    *
+ * agreement that contains provisions concerning               *
+ * non-disclosure, copying, length and nature of use,          *
+ * compliance with exporting laws, warranties, disclaimers,    *
+ * limitations of liability, and remedies, and other           *
+ * provisions.  The software products and documentation may be *
+ * used, disclosed, transferred, or copied only in accordance  *
+ * with the terms and conditions of that software license      *
+ * agreement.                                                  *
+ *                                                             *
+ * Ansys, Inc. is a UL registered                              *
+ * ISO 9001:2015 company.                                      *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * This product is subject to U.S. laws governing export and   *
+ * re-export.                                                  *
+ *                                                             *
+ * For U.S. Government users, except as specifically granted   *
+ * by the Ansys, Inc. software license agreement, the use,     *
+ * duplication, or disclosure by the United States Government  *
+ * is subject to restrictions stated in the Ansys, Inc.        *
+ * software license agreement and FAR 12.212 (for non-DOD      *
+ * licenses).                                                  *
+ *                                                             *
+ ***************************************************************
+
+ 2025 R1 
+     
+ Point Releases and Patches installed:   
+     
+ Ansys, Inc. License Manager 2025 R1 
+ Discovery (reduced install) 2025 R1 
+ Core WB Files 2025 R1   
+ CFD-Post only 2025 R1   
+ Fluent (includes CFD-Post) 2025 R1  
+ Polyflow (includes CFD-Post) 2025 R1
+ Remote Solve Manager Standalone Services 2025 R1
+ Additive 2025 R1
+ Autodyn 2025 R1 
+ Customization Files for User Programmable Features 2025 R1  
+ LS-DYNA 2025 R1 
+ Material Designer 2025 R1   
+ Mechanical Products 2025 R1 
+ ACIS Geometry Interface 2025 R1 
+ AutoCAD Geometry Interface 2025 R1  
+ Catia, Version 4 Geometry Interface 2025 R1 
+ Catia, Version 5 Geometry Interface 2025 R1 
+ Catia, Version 6 Geometry Interface 2025 R1 
+ Creo Elements/Direct Modeling Geometry Interface 2025 R1
+ Creo Parametric Geometry Interface 2025 R1  
+ Inventor Geometry Interface 2025 R1 
+ JTOpen Geometry Interface 2025 R1   
+ NX Geometry Interface 2025 R1   
+ Parasolid Geometry Interface  2025 R1   
+ Solid Edge Geometry Interface 2025 R1   
+ SOLIDWORKS Geometry Interface 2025 R1   
+
+
+          *****  MAPDL COMMAND LINE ARGUMENTS  *****
+  BATCH MODE REQUESTED (-b)    = LIST
+  INPUT FILE COPY MODE (-c)    = COPY
+  SHARED MEMORY PARALLEL REQUESTED
+    SINGLE PROCESS WITH   8 THREADS REQUESTED
+    TOTAL OF     8 CORES REQUESTED
+  INPUT FILE NAME              = C:\Users\atbys\Desktop\DMS4 Local\DMS4\04_EURO_APDL\RunFile.txt
+  OUTPUT FILE NAME             = C:\Users\atbys\Desktop\DMS4 Local\DMS4\04_EURO_APDL\Ansout\AnsysOutputWindow.txt
+  INITIAL DIRECTORY = C:\Users\atbys\Desktop\DMS4 Local\DMS4\04_EURO_APDL\Ansout
+
+ RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
+ CURRENT JOBNAME=file  09:38:47  MAR 20, 2026 CP=      0.062
+
+     1  ! ===== APDL INPUT FILE ====== !
+     2      
+     3  /UNITS,MPa  
+     4      
+     5  ! EigenBuckling Analysis !  
+     6  /PREP7  
+     7      
+     8  ET,1,BEAM189 ! Use BEAM189  
+     9      
+    10  ! CROSS SECTION !   
+    11  ! Corner Type (SECTYPE = 1) 
+    12  SECTYPE,1,BEAM,CTUBE
+    13  SECDATA,35.05,38.05,8   
+    14  ! Brace Section Type (SECTYPE = 2)  
+    15  SECTYPE,2,BEAM,CTUBE
+    16  SECDATA,11.15,13.45,8   
+    17      
+    18  ! MATERIAL DATA 
+    19  MP,EX,1,200000.0 ! [MPa]
+    20  MP,PRXY,1,0.3   
+    21  MP,DENS,1.7850E-6 ! [kg/mm^3]   
+    22      
+    23  ! KEYPOINT AND LINES !  
+    24  K,1, 0.000, 0.000, 0.000
+    25  K,2, 0.000, 1000.000, 0.000 
+    26  L,1,2   
+    27  LSEL,S,LINE,,1  
+    28  CM,COLUMN_1,LINE
+    29  LSEL,ALL
+    30  K,3, 1000.000, 1000.000, 0.000  
+    31  L,2,3   
+    32  LSEL,S,LINE,,2  
+    33  CM,BRACE_1,LINE 
+    34  LSEL,ALL
+    35  K,4, 1000.000, 0.000, 0.000 
+    36  L,3,4   
+    37  LSEL,S,LINE,,3  
+    38  CM,COLUMN_2,LINE
+    39  LSEL,ALL
+    40      
+    41  ! ELEMENT SIZE !
+    42  ESIZE,10
+    43      
+    44  ! Meshing CORNER Beams (SECNUM=1) ! 
+    45  SECNUM,1
+    46  LSEL,ALL
+    47  LSEL,NONE   
+    48  LSEL,S,LINE,,1  
+    49  LSEL,A,LINE,,3  
+    50  LMESH,ALL   
+    51      
+    52  ! Meshing BRACE beam (SECNUM=2) !   
+    53  SECNUM,2
+    54  LSEL,ALL
+    55  LSEL,NONE   
+    56  LSEL,S,LINE,,2  
+    57  LMESH,ALL   
+    58      
+    59  /ESHAPE,1 ! Display Cross Section   
+    60  ! SOLUTION !
+    61  /SOLU   
+    62  ANTYPE, STATIC  
+    63  EQSLV,SPARSE
+    64  PSTRES,ON   
+    65  ! -- BOUNDARY CONDITIONS -- !   
+    66      
+    67  ! Force 
+    68  ALLSEL,ALL  
+    69  SELTOL,1.0E-6   
+    70  *GET, NodeXMax, NODE, 0, MXLOC, X   
+    71  *GET, NodeXMin, NODE, 0, MNLOC, X   
+    72  *GET, NodeYMax, NODE, 0, MXLOC, Y   
+    73  NSEL,S,LOC,X,NodeXMin   
+    74  NSEL,R,LOC,Y,NodeYMax   
+    75  F,ALL,FY,-100   
+    76  ALLSEL,ALL  
+    77  NSEL,S,LOC,X,NodeXMax   
+    78  NSEL,R,LOC,Y,NodeYMax   
+    79  F,ALL,FY,-100   
+    80  ALLSEL,ALL  
+    81  NSEL,S,LOC,X,NodeXMin   
+    82  NSEL,R,LOC,Y,NodeYMax   
+    83  F,ALL,FX,260
+    84  ALLSEL,ALL  
+    85  ! Displacement !
+    86  ALLSEL,ALL  
+    87  *GET, NodeYMin, NODE, 0, MNLOC, Y   
+    88  NSEL,S,LOC,Y,NodeYMin   
+    89  D,ALL,ALL,0 
+    90  ALLSEL,ALL  
+    91      
+    92  SOLVE   
+    93      
+    94  FINISH  
+    95  ! Eigenbuckling Solution!   
+    96  /SOLU   
+    97  ANTYPE,BUCKLE   
+    98  BUCOPT,LANB,4   
+    99  MXPAND,ALL  
+   100  OUTRES,ALL,ALL  
+   101  SAVE,BUCKLE 
+   102  SOLVE   
+   103  FINISH  
+   104  /POST1  
+   105  *GET,MS1,MODE,1,FREQ
+   106  *CFOPEN,Eigenvalue1,txt 
+   107  *VWRITE,MS1 
+   108  (F10.5) 
+   109  *CFCLOS 
+
+ RUN SETUP PROCEDURE FROM FILE= C:\Program Files\ANSYS Inc\v251\ANSYS\apdl\start.ans
+
+ /INPUT FILE= C:\Program Files\ANSYS Inc\v251\ANSYS\apdl\start.ans  LINE=       0
+
+ MPA UNITS SPECIFIED FOR INTERNAL    
+  LENGTH      = MILLIMETERS (mm)
+  MASS        = TONNE (Mg)
+  TIME        = SECONDS (sec)
+  TEMPERATURE = CELSIUS (C)
+  TOFFSET     = 273.0
+  FORCE       = NEWTON (N)
+  HEAT        = MILLIJOULES (mJ)
+
+ INPUT  UNITS ARE ALSO SET TO MPA 
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00254321  VERSION=WINDOWS x64   09:38:47  MAR 20, 2026 CP=      0.156
+
+                                                                               
+
+
+
+          ***** MAPDL ANALYSIS DEFINITION (PREP7) *****
+
+ ELEMENT TYPE          1 IS BEAM189      3-D 3-NODE BEAM             
+  KEYOPT( 1- 6)=        0      0      0        0      0      0
+  KEYOPT( 7-12)=        0      0      0        0      0      0
+  KEYOPT(13-18)=        0      0      0        0      0      0
+
+ CURRENT NODAL DOF SET IS  UX    UY    UZ    ROTX  ROTY  ROTZ
+  THREE-DIMENSIONAL MODEL
+                                   
+   INPUT SECTION ID NUMBER                  1
+   INPUT SECTION TYPE                 BEAM
+   INPUT BEAM SECTION SUBTYPE         Circular Tube   
+   INPUT BEAM SECTION NAME                    
+                     
+   SECTION ID NUMBER IS:            1
+   BEAM SECTION TYPE IS:     Circular Tube   
+   BEAM SECTION NAME IS:             
+   COMPUTED BEAM SECTION DATA SUMMARY:
+    Area                 =  688.42    
+    Iyy                  = 0.46001E+06
+    Iyz                  = 0.18190E-11
+    Izz                  = 0.46001E+06
+    Warping Constant     = 0.27582E-21
+    Torsion Constant     = 0.92002E+06
+    Centroid Y           = 0.26423E-14
+    Centroid Z           = 0.29726E-14
+    Shear Center Y       = 0.10545E-13
+    Shear Center Z       =-0.59903E-15
+    Shear Correction-xy  = 0.50089    
+    Shear Correction-yz  = 0.13712E-13
+    Shear Correction-xz  = 0.50089    
+                 
+    Beam Section is offset to CENTROID of cross section
+                                   
+   INPUT SECTION ID NUMBER                  2
+   INPUT SECTION TYPE                 BEAM
+   INPUT BEAM SECTION SUBTYPE         Circular Tube   
+   INPUT BEAM SECTION NAME                    
+                     
+   SECTION ID NUMBER IS:            2
+   BEAM SECTION TYPE IS:     Circular Tube   
+   BEAM SECTION NAME IS:             
+   COMPUTED BEAM SECTION DATA SUMMARY:
+    Area                 =  177.61    
+    Iyy                  =  13536.    
+    Iyz                  =-0.56843E-13
+    Izz                  =  13536.    
+    Warping Constant     = 0.36708E-24
+    Torsion Constant     =  27071.    
+    Centroid Y           =-0.64008E-15
+    Centroid Z           = 0.40005E-15
+    Shear Center Y       =-0.10064E-14
+    Shear Center Z       = 0.34175E-14
+    Shear Correction-xy  = 0.50676    
+    Shear Correction-yz  =-0.96728E-14
+    Shear Correction-xz  = 0.50676    
+                 
+    Beam Section is offset to CENTROID of cross section
+
+ MATERIAL          1     EX   =   200000.0      
+
+ MATERIAL          1     PRXY =  0.3000000      
+
+ MATERIAL          1     DENS =   0.000000      
+
+ KEYPOINT        1                  X,Y,Z=   0.00000       0.00000       0.00000      IN CSYS=        0
+
+ KEYPOINT        2                  X,Y,Z=   0.00000       1000.00       0.00000      IN CSYS=        0
+
+ LINE CONNECTS KEYPOINTS      1     2
+  LINE NO.=     1  KP1=      1  TAN1=    0.0000  -1.0000   0.0000
+                   KP2=      2  TAN2=    0.0000   1.0000   0.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          1 STEP          1
+
+        1  LINES (OF        1  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = COLUMN_1  ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          1 STEP          1
+
+        1  LINES (OF        1  DEFINED) SELECTED BY LSEL COMMAND.
+
+ KEYPOINT        3                  X,Y,Z=   1000.00       1000.00       0.00000      IN CSYS=        0
+
+ LINE CONNECTS KEYPOINTS      2     3
+  LINE NO.=     2  KP1=      2  TAN1=   -1.0000   0.0000   0.0000
+                   KP2=      3  TAN2=    1.0000   0.0000   0.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE         2 TO          2 STEP          1
+
+        1  LINES (OF        2  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_1   ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          2 STEP          1
+
+        2  LINES (OF        2  DEFINED) SELECTED BY LSEL COMMAND.
+
+ KEYPOINT        4                  X,Y,Z=   1000.00       0.00000       0.00000      IN CSYS=        0
+
+ LINE CONNECTS KEYPOINTS      3     4
+  LINE NO.=     3  KP1=      3  TAN1=    0.0000   1.0000   0.0000
+                   KP2=      4  TAN2=    0.0000  -1.0000   0.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE         3 TO          3 STEP          1
+
+        1  LINES (OF        3  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = COLUMN_2  ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          3 STEP          1
+
+        3  LINES (OF        3  DEFINED) SELECTED BY LSEL COMMAND.
+
+ DEFAULT ELEMENT DIVISIONS PER LINE BASED ON ELEMENT SIZE =   10.0    
+
+ SECTION ID NUMBER=        1
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          3 STEP          1
+
+        3  LINES (OF        3  DEFINED) SELECTED BY LSEL COMMAND.
+
+ NONE SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          3 STEP          1
+
+        0 LINES (OF        3  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          1 STEP          1
+
+        1  LINES (OF        3  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE         3 TO          3 STEP          1
+
+        2  LINES (OF        3  DEFINED) SELECTED BY LSEL COMMAND.
+
+ GENERATE NODES AND ELEMENTS   ON  ALL  SELECTED LINES    
+
+ NUMBER OF LINES MESHED     =         2
+ MAXIMUM NODE NUMBER        =       402
+ MAXIMUM ELEMENT NUMBER     =       200
+
+ SECTION ID NUMBER=        2
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          3 STEP          1
+
+        3  LINES (OF        3  DEFINED) SELECTED BY LSEL COMMAND.
+
+ NONE SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          3 STEP          1
+
+        0 LINES (OF        3  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE         2 TO          2 STEP          1
+
+        1  LINES (OF        3  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ GENERATE NODES AND ELEMENTS   ON  ALL  SELECTED LINES    
+
+ NUMBER OF LINES MESHED     =         1
+ MAXIMUM NODE NUMBER        =       601
+ MAXIMUM ELEMENT NUMBER     =       300
+
+ ELEMENT DISPLAYS USING REAL CONSTANT OR SECTION DATA WITH FACTOR     1.00
+
+
+ ***** ROUTINE COMPLETED *****  CP =         0.156
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+
+ PERFORM A STATIC ANALYSIS
+  THIS WILL BE A NEW ANALYSIS
+
+ USE SPARSE MATRIX DIRECT SOLVER
+
+
+ CALCULATE PRESTRESS EFFECTS FOR A SUBSEQUENT PRESTRESSED ANALYSIS
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ SELECT TOLERANCE= 0.10000E-05
+
+ *GET  NODEXMAX  FROM  NODE  ITEM=MXLO X     VALUE=  1000.00000     
+
+ *GET  NODEXMIN  FROM  NODE  ITEM=MNLO X     VALUE=  0.00000000     
+
+ *GET  NODEYMAX  FROM  NODE  ITEM=MXLO Y     VALUE=  1000.00000     
+
+ SELECT       FOR ITEM=LOC  COMPONENT=X     BETWEEN  0.0000     AND   0.0000    
+   KABS=  0.  TOLERANCE= 0.100000E-05
+
+        201  NODES (OF        601  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ RESELECT     FOR ITEM=LOC  COMPONENT=Y     BETWEEN  1000.0     AND   1000.0    
+   KABS=  0.  TOLERANCE= 0.100000E-05
+
+          1  NODES (OF        601  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ SPECIFIED NODAL LOAD FY   FOR SELECTED NODES         1 TO      601 BY        1
+  REAL= -100.000000       IMAG=  0.00000000    
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ SELECT       FOR ITEM=LOC  COMPONENT=X     BETWEEN  1000.0     AND   1000.0    
+   KABS=  0.  TOLERANCE= 0.100000E-05
+
+        201  NODES (OF        601  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ RESELECT     FOR ITEM=LOC  COMPONENT=Y     BETWEEN  1000.0     AND   1000.0    
+   KABS=  0.  TOLERANCE= 0.100000E-05
+
+          1  NODES (OF        601  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ SPECIFIED NODAL LOAD FY   FOR SELECTED NODES         1 TO      601 BY        1
+  REAL= -100.000000       IMAG=  0.00000000    
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ SELECT       FOR ITEM=LOC  COMPONENT=X     BETWEEN  0.0000     AND   0.0000    
+   KABS=  0.  TOLERANCE= 0.100000E-05
+
+        201  NODES (OF        601  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ RESELECT     FOR ITEM=LOC  COMPONENT=Y     BETWEEN  1000.0     AND   1000.0    
+   KABS=  0.  TOLERANCE= 0.100000E-05
+
+          1  NODES (OF        601  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ SPECIFIED NODAL LOAD FX   FOR SELECTED NODES         1 TO      601 BY        1
+  REAL=  260.000000       IMAG=  0.00000000    
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ *GET  NODEYMIN  FROM  NODE  ITEM=MNLO Y     VALUE=  0.00000000     
+
+ SELECT       FOR ITEM=LOC  COMPONENT=Y     BETWEEN  0.0000     AND   0.0000    
+   KABS=  0.  TOLERANCE= 0.100000E-05
+
+          2  NODES (OF        601  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ SPECIFIED CONSTRAINT UX   FOR SELECTED NODES            1 TO         601 BY           1
+ REAL=  0.00000000       IMAG=  0.00000000    
+ ADDITIONAL DOFS=  UY    UZ    ROTX  ROTY  ROTZ
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** NOTE ***                            CP =       0.156   TIME= 09:38:47
+ There is no title defined for this analysis.                            
+
+ *** SELECTION OF ELEMENT TECHNOLOGIES FOR APPLICABLE ELEMENTS ***
+                ---GIVE SUGGESTIONS ONLY---
+
+ ELEMENT TYPE         1 IS BEAM189 . KEYOPT(1)=1 IS SUGGESTED FOR NON-CIRCULAR CROSS
+ SECTIONS.
+
+ ELEMENT TYPE         1 IS BEAM189 . KEYOPT(15) IS ALREADY SET AS SUGGESTED.
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00254321  VERSION=WINDOWS x64   09:38:47  MAR 20, 2026 CP=      0.156
+
+                                                                               
+
+
+
+                       S O L U T I O N   O P T I O N S
+
+   PROBLEM DIMENSIONALITY. . . . . . . . . . . . .3-D                  
+   DEGREES OF FREEDOM. . . . . . UX   UY   UZ   ROTX ROTY ROTZ
+   ANALYSIS TYPE . . . . . . . . . . . . . . . . .STATIC (STEADY-STATE)
+   PRESTRESS EFFECTS CALCULATED. . . . . . . . . .YES
+   EQUATION SOLVER OPTION. . . . . . . . . . . . .SPARSE             
+   GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
+
+ *** NOTE ***                            CP =       0.156   TIME= 09:38:47
+ Present time 0 is less than or equal to the previous time.  Time will   
+ default to 1.                                                           
+
+ *** NOTE ***                            CP =       0.156   TIME= 09:38:47
+ The conditions for direct assembly have been met.  No .emat or .erot    
+ files will be produced.                                                 
+
+                      L O A D   S T E P   O P T I O N S
+
+   LOAD STEP NUMBER. . . . . . . . . . . . . . . .     1
+   TIME AT END OF THE LOAD STEP. . . . . . . . . .  1.0000    
+   NUMBER OF SUBSTEPS. . . . . . . . . . . . . . .     1
+   STEP CHANGE BOUNDARY CONDITIONS . . . . . . . .    NO
+   PRINT OUTPUT CONTROLS . . . . . . . . . . . . .NO PRINTOUT
+   DATABASE OUTPUT CONTROLS. . . . . . . . . . . .ALL DATA WRITTEN
+                                                  FOR THE LAST SUBSTEP
+
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+ *** NOTE ***                            CP =       0.172   TIME= 09:38:47
+ Predictor is ON by default for structural elements with rotational      
+ degrees of freedom.  Use the PRED,OFF command to turn the predictor     
+ OFF if it adversely affects the convergence.                            
+
+
+ Range of element maximum matrix coefficients in global coordinates
+ Maximum = 4.918552305E+10 at element 100.                               
+ Minimum = 1.474561095E+09 at element 291.                               
+
+   *** ELEMENT MATRIX FORMULATION TIMES
+     TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
+
+        1       300  BEAM189       0.000   0.000000
+ Time at end of element matrix formulation CP = 0.171875.                
+
+ SPARSE MATRIX DIRECT SOLVER.
+  Number of equations =        3594,    Maximum wavefront =     30
+
+
+  Memory allocated on this process
+  -------------------------------------------------------------------
+  Equation solver memory allocated                     =     3.530 MB
+  Equation solver memory required for in-core mode     =     3.414 MB
+  Equation solver memory required for out-of-core mode =     2.668 MB
+  Total (solver and non-solver) memory allocated       =   365.042 MB
+
+ *** NOTE ***                            CP =       0.297   TIME= 09:38:47
+ The Sparse Matrix Solver is currently running in the in-core memory     
+ mode.  This memory mode uses the most amount of memory in order to      
+ avoid using the hard drive as much as possible, which most often        
+ results in the fastest solution time.  This mode is recommended if      
+ enough physical memory is present to accommodate all of the solver      
+ data.                                                                   
+ Sparse solver maximum pivot= 4.918552305E+10 at node 201 ROTZ.          
+ Sparse solver minimum pivot= 241.44023 at node 502 UZ.                  
+ Sparse solver minimum pivot in absolute value= 241.44023 at node 502    
+ UZ.                                                                     
+
+   *** ELEMENT RESULT CALCULATION TIMES
+     TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
+
+        1       300  BEAM189       0.766   0.002552
+
+   *** NODAL LOAD CALCULATION TIMES
+     TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
+
+        1       300  BEAM189       0.109   0.000365
+ *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      1
+ *** TIME =   1.00000         TIME INC =   1.00000      NEW TRIANG MATRIX
+
+
+ *** MAPDL BINARY FILE STATISTICS
+  BUFFER SIZE USED= 16384
+        0.375 MB WRITTEN ON ASSEMBLED MATRIX FILE: file.full
+        0.875 MB WRITTEN ON RESULTS FILE: file.rst
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  CP =         0.406
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+
+ PERFORM A BUCKLING ANALYSIS
+  THIS WILL BE A NEW ANALYSIS
+
+ *** NOTE ***                            CP =       0.406   TIME= 09:38:47
+ Some analysis options have been reset to their defaults.  Please verify 
+ current settings or respecify as required.                              
+
+
+ USE SYM. BLOCK LANCZOS METHOD TO EXTRACT       4 MODES
+  EXTRACT EIGENVALUES CENTERED ABOUT   0.0000    
+
+
+ EXPAND ALL EXTRACTED MODES
+  DO NOT CALCULATE ELEMENT RESULTS
+
+ *** NOTE ***                            CP =       0.406   TIME= 09:38:47
+ To view 3-D mode shapes of beam or pipe elements, expand the modes with 
+ element results calculation active via Elcalc=YES.                      
+
+ WRITE ALL  ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ ALL CURRENT MAPDL DATA WRITTEN TO FILE NAME= BUCKLE
+  FOR POSSIBLE RESUME FROM THIS POINT
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** NOTE ***                            CP =       0.594   TIME= 09:38:47
+ There is no title defined for this analysis.                            
+
+ *** NOTE ***                            CP =       0.656   TIME= 09:38:47
+ To view 3-D mode shapes of beam or pipe elements, expand the modes with 
+ element results calculation active via the MXPAND command's             
+ Elcalc=YES.                                                             
+
+ *** SELECTION OF ELEMENT TECHNOLOGIES FOR APPLICABLE ELEMENTS ***
+                ---GIVE SUGGESTIONS ONLY---
+
+ ELEMENT TYPE         1 IS BEAM189 . KEYOPT(1)=1 IS SUGGESTED FOR NON-CIRCULAR CROSS
+ SECTIONS.
+
+ ELEMENT TYPE         1 IS BEAM189 . KEYOPT(15) IS ALREADY SET AS SUGGESTED.
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00254321  VERSION=WINDOWS x64   09:38:47  MAR 20, 2026 CP=      0.656
+
+                                                                               
+
+
+
+                       S O L U T I O N   O P T I O N S
+
+   PROBLEM DIMENSIONALITY. . . . . . . . . . . . .3-D                  
+   DEGREES OF FREEDOM. . . . . . UX   UY   UZ   ROTX ROTY ROTZ
+   ANALYSIS TYPE . . . . . . . . . . . . . . . . .BUCKLING             
+      EXTRACTION METHOD. . . . . . . . . . . . . .BLOCK LANCZOS
+   PRESTRESS EFFECTS INCLUDED IF AVAILABLE . . . .YES
+   GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
+
+ *** NOTE ***                            CP =       0.656   TIME= 09:38:47
+ The conditions for direct assembly have been met.  No .emat or .erot    
+ files will be produced.                                                 
+
+                      L O A D   S T E P   O P T I O N S
+
+   LOAD STEP NUMBER. . . . . . . . . . . . . . . .     1
+   PRINT OUTPUT CONTROLS . . . . . . . . . . . . .NO PRINTOUT
+   DATABASE OUTPUT CONTROLS
+      ITEM     FREQUENCY   COMPONENT
+       ALL        ALL               
+
+
+  BLOCK LANCZOS CALCULATION OF UP TO     4 EIGENVECTORS.
+  NUMBER OF EQUATIONS              =         3594
+  MAXIMUM WAVEFRONT                =           18
+  MAXIMUM MODES STORED             =            4
+  MINIMUM EIGENVALUE               = -0.10000E+31
+  MAXIMUM EIGENVALUE               =  0.10000E+31
+  CENTER EIGENVALUE                =  0.00000E+00
+
+
+
+  Memory allocated on this process
+  -------------------------------------------------------------------
+  Equation solver memory allocated                     =     2.700 MB
+  Equation solver memory required for in-core mode     =     2.591 MB
+  Equation solver memory required for out-of-core mode =     1.478 MB
+  Total (solver and non-solver) memory allocated       =   400.137 MB
+
+ *** NOTE ***                            CP =       1.156   TIME= 09:38:47
+ The Sparse Matrix Solver is currently running in the in-core memory     
+ mode.  This memory mode uses the most amount of memory in order to      
+ avoid using the hard drive as much as possible, which most often        
+ results in the fastest solution time.  This mode is recommended if      
+ enough physical memory is present to accommodate all of the solver      
+ data.                                                                   
+
+  Process memory required for in-core LANCZOS Workspace             =     14.075333 MB
+  Process memory required for out-of-core LANCZOS Workspace         =     711.015625 KB
+  Lanczos Memory Mode : INCORE
+
+
+  >> Shift # 1 :  | |                                : 4 Eigenvalues Converged
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00254321  VERSION=WINDOWS x64   09:38:47  MAR 20, 2026 CP=      1.406
+
+                                                                               
+
+
+
+  ***** EIGENVALUES (LOAD MULTIPLIERS FOR BUCKLING) *****
+            *** FROM BLOCK LANCZOS ITERATION ***
+
+      SHAPE NUMBER   LOAD MULTIPLIER
+
+            1            627.15173    
+            2            787.22983    
+            3            788.09976    
+            4            1310.3005    
+
+
+
+
+ *** MAPDL BINARY FILE STATISTICS
+  BUFFER SIZE USED= 16384
+        0.688 MB WRITTEN ON ASSEMBLED MATRIX FILE: file.full
+        0.125 MB WRITTEN ON MODAL MATRIX FILE: file.mode
+        0.500 MB WRITTEN ON RESULTS FILE: file.rst
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  CP =         1.531
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00254321  VERSION=WINDOWS x64   09:38:47  MAR 20, 2026 CP=      1.578
+
+                                                                               
+
+
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ *** NOTE ***                            CP =       1.578   TIME= 09:38:47
+ Reading results into the database (SET command) will update the current 
+ displacement and force boundary conditions in the database with the     
+ values from the results file for that load set.  Note that any          
+ subsequent solutions will use these values unless action is taken to    
+ either SAVE the current values or not overwrite them (/EXIT,NOSAVE).    
+
+ *GET  MS1       FROM  MODE      1  ITEM=FREQ       VALUE=  627.151726    
+
+ OPENED FILE= Eigenvalue1.txt FOR COMMAND FILE DATA 
+
+
+  COMMAND FILE CLOSED 
+
+
+ ***** END OF INPUT ENCOUNTERED *****
+
+
+ NUMBER OF WARNING MESSAGES ENCOUNTERED=          0
+ NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+
+
+
+ ***** PROBLEM TERMINATED BY INDICATED ERROR(S) OR BY END OF INPUT DATA *****
+
++--------------------- M A P D L   S T A T I S T I C S ------------------------+
+
+Release: 2025 R1            Build: 25.1       Update: UP20241202   Platform: WINDOWS x64 
+Date Run: 03/20/2026   Time: 09:38     Process ID: 39540
+Operating System: Windows 11  (Build: 26200)
+
+Processor Model: AMD Ryzen 7 5800H with Radeon Graphics
+
+Compiler: Intel(R) Fortran Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) C/C++ Compiler Classic Version 2021.9  (Build: 20230302)
+          AOCL-BLAS 4.2.1 Build 20240528
+
+Number of machines requested            :    1
+Total number of cores available         :   16
+Number of physical cores available      :    8
+Number of processes requested           :    1
+Number of threads per process requested :    8
+Total number of cores requested         :    8 (Shared Memory Parallel)                    
+
+GPU Acceleration: Not Requested
+
+Job Name: file
+Input File: RunFile.txt
+Working Directory: C:\Users\atbys\Desktop\DMS4 Local\DMS4\04_EURO_APDL
+
+Total CPU time for main thread                    :        0.5 seconds
+Total CPU time summed for all threads             :        2.9 seconds
+
+Elapsed time spent obtaining a license            :        5.3 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.0 seconds
+Elapsed time spent solution - preprocessing       :        0.0 seconds
+Elapsed time spent computing solution             :        0.1 seconds
+Elapsed time spent solution - postprocessing      :        0.0 seconds
+Elapsed time spent post-processing model (/POST1) :        0.0 seconds
+ 
+Eigensolver used                                  :            Block Lanczos
+
+Sum of disk space used on all processes           :        3.0 MB
+
+Sum of memory used on all processes               :       51.0 MB
+Sum of memory allocated on all processes          :     2304.0 MB
+Physical memory available                         :         14 GB
+Total amount of I/O written to disk               :        0.0 GB
+Total amount of I/O read from disk                :        0.0 GB
+
++------------------ E N D   M A P D L   S T A T I S T I C S -------------------+
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2025 R1         Build 25.1         UP20241202    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
+ |  Maximum Database Used       3 MB     Maximum Scratch Memory Used     48 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =          2.875       Time  =  09:38:48          |
+ |        Elapsed Time (sec) =          8.000       Date  =  03/20/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*

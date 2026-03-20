@@ -14,7 +14,7 @@ SECTYPE,2,BEAM,CTUBE
 SECDATA,11.15,13.45,8 
  
 ! MATERIAL DATA
-MP,EX,1,200000 ! [MPa]
+MP,EX,1,200000.0 ! [MPa]
 MP,PRXY,1,0.3 
 MP,DENS,1.7850E-6 ! [kg/mm^3] 
  
@@ -70,7 +70,7 @@ F,ALL,FY,-300000
 ALLSEL,ALL 
 NSEL,S,LOC,X,NodeXMax 
 NSEL,R,LOC,Y,NodeYMax 
-F,ALL,FY,-300000 
+F,ALL,FY,-10000 
 ALLSEL,ALL 
 NSEL,S,LOC,X,NodeXMin 
 NSEL,R,LOC,Y,NodeYMax 
@@ -103,8 +103,6 @@ FINISH
 SET,LAST 
  
 ALLSEL,ALL 
-/INPUT,APDL_out,txt 
-ESEL,S, ENAME,, 189 
 *GET,E_COUNT,ELEM,0,COUNT 
  
 ! Number of Columns: 2 
@@ -114,7 +112,9 @@ ESEL,S, ENAME,, 189
  
 ! Loop over Columns 
 *DO,ii,1,2,1 
-   CMSEL,S,COLUMN_%ii%,NODE 
+   CMSEL,S,COLUMN_%ii% 
+ESLL,S 
+ESEL,R,ENAME,,189 
    *IF,ii,LT,10,THEN 
        *VWRITE,ii 
        ("NS ColMember_",F2.0) 
@@ -122,11 +122,12 @@ ESEL,S, ENAME,, 189
        *VWRITE,ii 
        ("NS ColMember_",F3.0) 
    *ENDIF 
-*GET nElem,ELEM,0,COUNT 
-   *VWRITE,'ElemID','NF','My','Mz','Vy',Vz','T' 
-   (A12,6A20) 
-   elem = 0 
+*GET,nElem,ELEM,0,COUNT 
+   *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]' 
+   (A12,A20,A20,A20,A20,A20,A20) 
+   ELEM = 0 
    *DO,jj,1,nElem,1 
+       ELEM = ELNEXT(ELEM) 
        *GET,NF,ELEM,ELEM,SMISC,1 
        *GET,MY,ELEM,ELEM,SMISC,2 
        *GET,MZ,ELEM,ELEM,SMISC,3 
@@ -137,9 +138,11 @@ ESEL,S, ENAME,, 189
        (F12.0,6E20.8) 
    *ENDDO 
  
-! Loop over Braces 
+*ENDDO! Loop over Braces 
 *DO,ii,1,1,1 
-   CMSEL,S,BRACE_%ii%,NODE 
+   CMSEL,S,BRACE_%ii%,LINE 
+   ESLL,S 
+   ESEL,R,ENAME,,189 
    *IF,ii,LT,10,THEN 
        *VWRITE,ii 
        ("NS BraceMember_",F2.0) 
@@ -147,11 +150,12 @@ ESEL,S, ENAME,, 189
        *VWRITE,ii 
        ("NS BraceMember_",F3.0) 
    *ENDIF 
-*GET nElem,ELEM,0,COUNT 
-   *VWRITE,'ElemID','NF','My','Mz','Vy',Vz','T' 
+*GET,nElem,ELEM,0,COUNT 
+   *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]' 
    (A12,6A20) 
    elem = 0 
    *DO,jj,1,nElem,1 
+       ELEM = ELNEXT(ELEM) 
        *GET,NF,ELEM,ELEM,SMISC,1 
        *GET,MY,ELEM,ELEM,SMISC,2 
        *GET,MZ,ELEM,ELEM,SMISC,3 
@@ -162,3 +166,4 @@ ESEL,S, ENAME,, 189
        (F12.0,6E20.8) 
    *ENDDO 
 *ENDDO 
+*CFCLOS 

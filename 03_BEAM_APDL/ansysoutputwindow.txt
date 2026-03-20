@@ -97,10 +97,11 @@
     SINGLE PROCESS WITH   8 THREADS REQUESTED
     TOTAL OF     8 CORES REQUESTED
   INPUT FILE NAME              = C:\Users\atbys\Desktop\DMS4 Local\DMS4\03_BEAM_APDL\RunFile.txt
-  OUTPUT FILE NAME             = C:\Users\atbys\Desktop\DMS4 Local\DMS4\03_BEAM_APDL\AnsysOutputWindow.txt
+  OUTPUT FILE NAME             = C:\Users\atbys\Desktop\DMS4 Local\DMS4\03_BEAM_APDL\Ansout\AnsysOutputWindow.txt
+  INITIAL DIRECTORY = C:\Users\atbys\Desktop\DMS4 Local\DMS4\03_BEAM_APDL\Ansout
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
- CURRENT JOBNAME=file  08:14:18  MAR 18, 2026 CP=      0.047
+ CURRENT JOBNAME=file  15:07:55  MAR 18, 2026 CP=      0.094
 
      1  ! ===== APDL INPUT FILE ====== !
      2      
@@ -118,7 +119,7 @@
     14  SECDATA,11.15,13.45,8   
     15      
     16  ! MATERIAL DATA 
-    17  MP,EX,1,200000 ! [MPa]  
+    17  MP,EX,1,200000.0 ! [MPa]
     18  MP,PRXY,1,0.3   
     19  MP,DENS,1.7850E-6 ! [kg/mm^3]   
     20      
@@ -174,7 +175,7 @@
     70  ALLSEL,ALL  
     71  NSEL,S,LOC,X,NodeXMax   
     72  NSEL,R,LOC,Y,NodeYMax   
-    73  F,ALL,FY,-300000
+    73  F,ALL,FY,-10000 
     74  ALLSEL,ALL  
     75  NSEL,S,LOC,X,NodeXMin   
     76  NSEL,R,LOC,Y,NodeYMax   
@@ -207,18 +208,18 @@
    103  SET,LAST
    104      
    105  ALLSEL,ALL  
-   106  /INPUT,APDL_out,txt 
-   107  ESEL,S, ENAME,, 189 
-   108  *GET,E_COUNT,ELEM,0,COUNT   
-   109      
-   110  ! Number of Columns: 2  
-   111  ! Number of Braces : 1  
+   106  *GET,E_COUNT,ELEM,0,COUNT   
+   107      
+   108  ! Number of Columns: 2  
+   109  ! Number of Braces : 1  
+   110      
+   111  *CFOPEN, APDL_out,txt   
    112      
-   113  *CFOPEN, APDL_out,txt   
-   114      
-   115  ! Loop over Columns 
-   116  *DO,ii,1,2,1
-   117     CMSEL,S,COLUMN_%ii%,NODE 
+   113  ! Loop over Columns 
+   114  *DO,ii,1,2,1
+   115     CMSEL,S,COLUMN_%ii%  
+   116  ESLL,S  
+   117  ESEL,R,ENAME,,189   
    118     *IF,ii,LT,10,THEN
    119         *VWRITE,ii   
    120         ("NS ColMember_",F2.0)   
@@ -226,46 +227,51 @@
    122         *VWRITE,ii   
    123         ("NS ColMember_",F3.0)   
    124     *ENDIF   
-   125  *GET nElem,ELEM,0,COUNT 
-   126     *VWRITE,'ElemID','NF','My','Mz','Vy',Vz','T' 
-   127     (A12,6A20)   
-   128     elem = 0 
+   125  *GET,nElem,ELEM,0,COUNT 
+   126     *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]' 
+   127     (A12,A20,A20,A20,A20,A20,A20)
+   128     ELEM = 0 
    129     *DO,jj,1,nElem,1 
-   130         *GET,NF,ELEM,ELEM,SMISC,1
-   131         *GET,MY,ELEM,ELEM,SMISC,2
-   132         *GET,MZ,ELEM,ELEM,SMISC,3
-   133         *GET,VY,ELEM,ELEM,SMISC,4
-   134         *GET,VZ,ELEM,ELEM,SMISC,5
-   135         *GET,TQ,ELEM,ELEM,SMISC,6
-   136         *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ   
-   137         (F12.0,6E20.8)   
-   138     *ENDDO   
-   139      
-   140  ! Loop over Braces  
-   141  *DO,ii,1,1,1
-   142     CMSEL,S,BRACE_%ii%,NODE  
-   143     *IF,ii,LT,10,THEN
-   144         *VWRITE,ii   
-   145         ("NS BraceMember_",F2.0) 
-   146     *ELSE
+   130         ELEM = ELNEXT(ELEM)  
+   131         *GET,NF,ELEM,ELEM,SMISC,1
+   132         *GET,MY,ELEM,ELEM,SMISC,2
+   133         *GET,MZ,ELEM,ELEM,SMISC,3
+   134         *GET,VY,ELEM,ELEM,SMISC,4
+   135         *GET,VZ,ELEM,ELEM,SMISC,5
+   136         *GET,TQ,ELEM,ELEM,SMISC,6
+   137         *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ   
+   138         (F12.0,6E20.8)   
+   139     *ENDDO   
+   140      
+   141  *ENDDO! Loop over Braces
+   142  *DO,ii,1,1,1
+   143     CMSEL,S,BRACE_%ii%,LINE  
+   144     ESLL,S   
+   145     ESEL,R,ENAME,,189
+   146     *IF,ii,LT,10,THEN
    147         *VWRITE,ii   
-   148         ("NS BraceMember_",F3.0) 
-   149     *ENDIF   
-   150  *GET nElem,ELEM,0,COUNT 
-   151     *VWRITE,'ElemID','NF','My','Mz','Vy',Vz','T' 
-   152     (A12,6A20)   
-   153     elem = 0 
-   154     *DO,jj,1,nElem,1 
-   155         *GET,NF,ELEM,ELEM,SMISC,1
-   156         *GET,MY,ELEM,ELEM,SMISC,2
-   157         *GET,MZ,ELEM,ELEM,SMISC,3
-   158         *GET,VY,ELEM,ELEM,SMISC,4
-   159         *GET,VZ,ELEM,ELEM,SMISC,5
-   160         *GET,TQ,ELEM,ELEM,SMISC,6
-   161         *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ   
-   162         (F12.0,6E20.8)   
-   163     *ENDDO   
-   164  *ENDDO  
+   148         ("NS BraceMember_",F2.0) 
+   149     *ELSE
+   150         *VWRITE,ii   
+   151         ("NS BraceMember_",F3.0) 
+   152     *ENDIF   
+   153  *GET,nElem,ELEM,0,COUNT 
+   154     *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]' 
+   155     (A12,6A20)   
+   156     elem = 0 
+   157     *DO,jj,1,nElem,1 
+   158         ELEM = ELNEXT(ELEM)  
+   159         *GET,NF,ELEM,ELEM,SMISC,1
+   160         *GET,MY,ELEM,ELEM,SMISC,2
+   161         *GET,MZ,ELEM,ELEM,SMISC,3
+   162         *GET,VY,ELEM,ELEM,SMISC,4
+   163         *GET,VZ,ELEM,ELEM,SMISC,5
+   164         *GET,TQ,ELEM,ELEM,SMISC,6
+   165         *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ   
+   166         (F12.0,6E20.8)   
+   167     *ENDDO   
+   168  *ENDDO  
+   169  *CFCLOS 
 
  RUN SETUP PROCEDURE FROM FILE= C:\Program Files\ANSYS Inc\v251\ANSYS\apdl\start.ans
 
@@ -284,7 +290,7 @@
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   08:14:18  MAR 18, 2026 CP=      0.172
+ 00254321  VERSION=WINDOWS x64   15:07:55  MAR 18, 2026 CP=      0.172
 
                                                                                
 
@@ -503,7 +509,7 @@
           1  NODES (OF        601  DEFINED) SELECTED BY  NSEL  COMMAND.
 
  SPECIFIED NODAL LOAD FY   FOR SELECTED NODES         1 TO      601 BY        1
-  REAL= -300000.000       IMAG=  0.00000000    
+  REAL= -10000.0000       IMAG=  0.00000000    
 
  SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
 
@@ -538,7 +544,7 @@
  SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
 
 
- ***** ROUTINE COMPLETED *****  CP =         0.172
+ ***** ROUTINE COMPLETED *****  CP =         0.188
 
 
 
@@ -566,7 +572,7 @@
 
  *****  MAPDL SOLVE    COMMAND  *****
 
- *** NOTE ***                            CP =       0.188   TIME= 08:14:18
+ *** NOTE ***                            CP =       0.188   TIME= 15:07:55
  There is no title defined for this analysis.                            
 
  *** SELECTION OF ELEMENT TECHNOLOGIES FOR APPLICABLE ELEMENTS ***
@@ -581,7 +587,7 @@
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   08:14:18  MAR 18, 2026 CP=      0.188
+ 00254321  VERSION=WINDOWS x64   15:07:55  MAR 18, 2026 CP=      0.188
 
                                                                                
 
@@ -596,11 +602,11 @@
    NEWTON-RAPHSON OPTION . . . . . . . . . . . . .PROGRAM CHOSEN   
    GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
 
- *** NOTE ***                            CP =       0.188   TIME= 08:14:18
+ *** NOTE ***                            CP =       0.188   TIME= 15:07:55
  This nonlinear analysis defaults to using the full Newton-Raphson       
  solution procedure.  This can be modified using the NROPT command.      
 
- *** NOTE ***                            CP =       0.188   TIME= 08:14:18
+ *** NOTE ***                            CP =       0.188   TIME= 15:07:55
  The conditions for direct assembly have been met.  No .emat or .erot    
  files will be produced.                                                 
 
@@ -622,7 +628,7 @@
 
  SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
 
- *** NOTE ***                            CP =       0.234   TIME= 08:14:19
+ *** NOTE ***                            CP =       0.250   TIME= 15:07:55
  Predictor is ON by default for structural elements with rotational      
  degrees of freedom.  Use the PRED,OFF command to turn the predictor     
  OFF if it adversely affects the convergence.                            
@@ -640,8 +646,8 @@
 
  ALL CURRENT MAPDL DATA WRITTEN TO FILE NAME= file.rdb
   FOR POSSIBLE RESUME FROM THIS POINT
-     FORCE CONVERGENCE VALUE  =   5303.      CRITERION=   26.52    
-     MOMENT CONVERGENCE VALUE =  0.2940E-20  CRITERION=   26.52    
+     FORCE CONVERGENCE VALUE  =   3752.      CRITERION=   18.76    
+     MOMENT CONVERGENCE VALUE =  0.2940E-20  CRITERION=   18.76    
 
  SPARSE MATRIX DIRECT SOLVER.
   Number of equations =        3594,    Maximum wavefront =     30
@@ -652,9 +658,9 @@
   Equation solver memory allocated                     =     3.530 MB
   Equation solver memory required for in-core mode     =     3.414 MB
   Equation solver memory required for out-of-core mode =     2.668 MB
-  Total (solver and non-solver) memory allocated       =   365.592 MB
+  Total (solver and non-solver) memory allocated       =   370.815 MB
 
- *** NOTE ***                            CP =       0.594   TIME= 08:14:19
+ *** NOTE ***                            CP =       0.500   TIME= 15:07:55
  The Sparse Matrix Solver is currently running in the in-core memory     
  mode.  This memory mode uses the most amount of memory in order to      
  avoid using the hard drive as much as possible, which most often        
@@ -665,120 +671,120 @@
  Sparse solver minimum pivot= 241.44023 at node 502 UZ.                  
  Sparse solver minimum pivot in absolute value= 241.44023 at node 502    
  UZ.                                                                     
-     ARCLEN NEW TIME =  0.12500E-01 ARC-LENGTH =  0.50565    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.2796E-01
-     FORCE CONVERGENCE VALUE  =  0.2136      CRITERION=   37.50     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =  0.4339      CRITERION=   37.50     <<< CONVERGED
+     ARCLEN NEW TIME =  0.12500E-01 ARC-LENGTH =  0.33185    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.2726E-01
+     FORCE CONVERGENCE VALUE  =  0.1527      CRITERION=   26.53     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =  0.1897      CRITERION=   26.53     <<< CONVERGED
 
- *** WARNING ***                         CP =       0.922   TIME= 08:14:19
+ *** WARNING ***                         CP =       0.609   TIME= 15:07:55
  A reference moment value times the tolerance is used by the             
  Newton-Raphson method for checking convergence.  The calculated         
- reference MOMENT CONVERGENCE VALUE = 2126.50652 is less than a          
+ reference MOMENT CONVERGENCE VALUE = 1614.69206 is less than a          
  threshold.  This threshold is internally calculated.  You can           
  overwrite it by specifying MINREF on the CNVTOL command.  Check         
  results carefully.                                                      
-     FORCE CONVERGENCE VALUE  =  0.2136      CRITERION=   37.50     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =  0.4339      CRITERION=   37.50     <<< CONVERGED
+     FORCE CONVERGENCE VALUE  =  0.1527      CRITERION=   26.53     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =  0.1897      CRITERION=   26.53     <<< CONVERGED
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
 
    *** ELEMENT RESULT CALCULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1       300  BEAM189       0.984   0.003281
+        1       300  BEAM189       0.000   0.000000
 
    *** NODAL LOAD CALCULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1       300  BEAM189       0.016   0.000052
+        1       300  BEAM189       0.000   0.000000
  *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      2
- *** TIME =  0.125000E-01  TIME INC =  0.125000E-01  MAX DISPLACEMENT =   -0.2796E-01
+ *** TIME =  0.125000E-01  TIME INC =  0.125000E-01  MAX DISPLACEMENT =   -0.2726E-01
 
-     FORCE CONVERGENCE VALUE  =   5303.      CRITERION=   59.29    
-     MOMENT CONVERGENCE VALUE =  0.4339      CRITERION=   59.29    
-     ARCLEN NEW TIME =  0.25000E-01 ARC-LENGTH =  0.50565    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.2799E-01
-     FORCE CONVERGENCE VALUE  =  0.5006      CRITERION=   75.00     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =  0.4534      CRITERION=   75.00     <<< CONVERGED
+     FORCE CONVERGENCE VALUE  =   3752.      CRITERION=   41.95    
+     MOMENT CONVERGENCE VALUE =  0.1897      CRITERION=   41.95    
+     ARCLEN NEW TIME =  0.25000E-01 ARC-LENGTH =  0.33185    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.2726E-01
+     FORCE CONVERGENCE VALUE  =  0.3565      CRITERION=   53.06     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =  0.1956      CRITERION=   53.06     <<< CONVERGED
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   1
  *** LOAD STEP     1   SUBSTEP     2  COMPLETED.    CUM ITER =      3
- *** TIME =  0.250000E-01  TIME INC =  0.187370E-01  MAX DISPLACEMENT =   -0.5595E-01
+ *** TIME =  0.250000E-01  TIME INC =  0.187431E-01  MAX DISPLACEMENT =   -0.5453E-01
 
-     FORCE CONVERGENCE VALUE  =   1.202      CRITERION=   131.2    
-     MOMENT CONVERGENCE VALUE =  0.2993      CRITERION=   131.2    
-     ARCLEN NEW TIME =  0.43736E-01 ARC-LENGTH =   1.0734    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5404E-04
-     FORCE CONVERGENCE VALUE  =  0.3201E-03  CRITERION=   131.2     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =  0.4918E-04  CRITERION=   131.2     <<< CONVERGED
+     FORCE CONVERGENCE VALUE  =  0.8535      CRITERION=   92.84    
+     MOMENT CONVERGENCE VALUE =  0.1075      CRITERION=   92.84    
+     ARCLEN NEW TIME =  0.43744E-01 ARC-LENGTH =  0.70421    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.1243E-04
+     FORCE CONVERGENCE VALUE  =  0.1716E-03  CRITERION=   92.83     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =  0.4767E-04  CRITERION=   92.83     <<< CONVERGED
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   1
  *** LOAD STEP     1   SUBSTEP     3  COMPLETED.    CUM ITER =      4
- *** TIME =  0.437361E-01  TIME INC =  0.280888E-01  MAX DISPLACEMENT =   -0.9796E-01
+ *** TIME =  0.437436E-01  TIME INC =  0.281090E-01  MAX DISPLACEMENT =   -0.9540E-01
 
-     FORCE CONVERGENCE VALUE  =  0.8109      CRITERION=   215.5    
-     MOMENT CONVERGENCE VALUE =   1.095      CRITERION=   215.5    
-     ARCLEN NEW TIME =  0.71815E-01 ARC-LENGTH =   1.6102    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2052E-03
-     FORCE CONVERGENCE VALUE  =  0.1092E-02  CRITERION=   215.4     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =  0.5177E-04  CRITERION=   215.4     <<< CONVERGED
+     FORCE CONVERGENCE VALUE  =  0.4634      CRITERION=   152.5    
+     MOMENT CONVERGENCE VALUE =  0.4895      CRITERION=   152.5    
+     ARCLEN NEW TIME =  0.71847E-01 ARC-LENGTH =   1.0563    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.6474E-04
+     FORCE CONVERGENCE VALUE  =  0.3794E-03  CRITERION=   152.5     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =  0.5721E-04  CRITERION=   152.5     <<< CONVERGED
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   1
  *** LOAD STEP     1   SUBSTEP     4  COMPLETED.    CUM ITER =      5
- *** TIME =  0.718149E-01  TIME INC =  0.420958E-01  MAX DISPLACEMENT =   -0.1610    
+ *** TIME =  0.718472E-01  TIME INC =  0.421462E-01  MAX DISPLACEMENT =   -0.1567    
 
-     FORCE CONVERGENCE VALUE  =   3.114      CRITERION=   341.7    
-     MOMENT CONVERGENCE VALUE =   6.732      CRITERION=   341.7    
-     ARCLEN NEW TIME =  0.11385     ARC-LENGTH =   2.4153    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.1327E-02
-     FORCE CONVERGENCE VALUE  =  0.1439E-01  CRITERION=   341.6     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =  0.6537E-03  CRITERION=   341.6     <<< CONVERGED
+     FORCE CONVERGENCE VALUE  =   2.312      CRITERION=   241.9    
+     MOMENT CONVERGENCE VALUE =   2.826      CRITERION=   241.9    
+     ARCLEN NEW TIME =  0.11397     ARC-LENGTH =   1.5845    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.3857E-03
+     FORCE CONVERGENCE VALUE  =  0.4863E-02  CRITERION=   241.9     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =  0.3400E-03  CRITERION=   241.9     <<< CONVERGED
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   1
  *** LOAD STEP     1   SUBSTEP     5  COMPLETED.    CUM ITER =      6
- *** TIME =  0.113851      TIME INC =  0.629001E-01  MAX DISPLACEMENT =   -0.2556    
+ *** TIME =  0.113969      TIME INC =  0.631200E-01  MAX DISPLACEMENT =   -0.2485    
 
-     FORCE CONVERGENCE VALUE  =   1.363      CRITERION=   530.3    
-     MOMENT CONVERGENCE VALUE =   6.901      CRITERION=   530.3    
-     ARCLEN NEW TIME =  0.17667     ARC-LENGTH =   3.6239    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.1472E-02
-     FORCE CONVERGENCE VALUE  =  0.2749E-01  CRITERION=   530.0     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =  0.9985E-03  CRITERION=   530.0     <<< CONVERGED
+     FORCE CONVERGENCE VALUE  =   1.193      CRITERION=   375.8    
+     MOMENT CONVERGENCE VALUE =   2.315      CRITERION=   375.8    
+     ARCLEN NEW TIME =  0.17706     ARC-LENGTH =   2.3768    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.3286E-03
+     FORCE CONVERGENCE VALUE  =  0.6515E-02  CRITERION=   375.8     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =  0.4520E-03  CRITERION=   375.8     <<< CONVERGED
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   1
  *** LOAD STEP     1   SUBSTEP     6  COMPLETED.    CUM ITER =      7
- *** TIME =  0.176672      TIME INC =  0.937964E-01  MAX DISPLACEMENT =   -0.3977    
+ *** TIME =  0.177065      TIME INC =  0.944996E-01  MAX DISPLACEMENT =   -0.3861    
 
-     FORCE CONVERGENCE VALUE  =   4.169      CRITERION=   811.4    
-     MOMENT CONVERGENCE VALUE =   24.70      CRITERION=   811.4    
-     ARCLEN NEW TIME =  0.27007     ARC-LENGTH =   5.4396    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5979E-02
-     FORCE CONVERGENCE VALUE  =  0.2131      CRITERION=   810.2     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =  0.1727E-01  CRITERION=   810.2     <<< CONVERGED
+     FORCE CONVERGENCE VALUE  =   3.991      CRITERION=   576.3    
+     MOMENT CONVERGENCE VALUE =   8.022      CRITERION=   576.3    
+     ARCLEN NEW TIME =  0.27147     ARC-LENGTH =   3.5656    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.1211E-02
+     FORCE CONVERGENCE VALUE  =  0.3959E-01  CRITERION=   576.1     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =  0.2819E-02  CRITERION=   576.1     <<< CONVERGED
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   1
  *** LOAD STEP     1   SUBSTEP     7  COMPLETED.    CUM ITER =      8
- *** TIME =  0.270066      TIME INC =  0.138414      MAX DISPLACEMENT =   -0.6110    
+ *** TIME =  0.271467      TIME INC =  0.141180      MAX DISPLACEMENT =   -0.5920    
 
-     FORCE CONVERGENCE VALUE  =   6.627      CRITERION=   1225.    
-     MOMENT CONVERGENCE VALUE =   79.55      CRITERION=   1225.    
-     ARCLEN NEW TIME =  0.40619     ARC-LENGTH =   8.1839    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2335E-01
-     FORCE CONVERGENCE VALUE  =   1.850      CRITERION=   1219.     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =  0.3644      CRITERION=   1219.     <<< CONVERGED
+     FORCE CONVERGENCE VALUE  =   7.726      CRITERION=   875.8    
+     MOMENT CONVERGENCE VALUE =   21.34      CRITERION=   875.8    
+     ARCLEN NEW TIME =  0.41231     ARC-LENGTH =   5.3500    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.3546E-02
+     FORCE CONVERGENCE VALUE  =  0.1980      CRITERION=   875.0     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =  0.1530E-01  CRITERION=   875.0     <<< CONVERGED
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   1
  *** LOAD STEP     1   SUBSTEP     8  COMPLETED.    CUM ITER =      9
- *** TIME =  0.406187      TIME INC =  0.195218      MAX DISPLACEMENT =   -0.9292    
+ *** TIME =  0.412309      TIME INC =  0.209832      MAX DISPLACEMENT =   -0.8993    
 
-     FORCE CONVERGENCE VALUE  =   42.32      CRITERION=   1804.    
-     MOMENT CONVERGENCE VALUE =   308.0      CRITERION=   1804.    
-     ARCLEN NEW TIME =  0.58152     ARC-LENGTH =   12.505    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.1026    
-     FORCE CONVERGENCE VALUE  =   23.87      CRITERION=   1744.     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =   13.68      CRITERION=   1744.     <<< CONVERGED
+     FORCE CONVERGENCE VALUE  =   13.11      CRITERION=   1320.    
+     MOMENT CONVERGENCE VALUE =   63.12      CRITERION=   1320.    
+     ARCLEN NEW TIME =  0.62063     ARC-LENGTH =   8.0339    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.1224E-01
+     FORCE CONVERGENCE VALUE  =   1.286      CRITERION=   1317.     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =  0.1317      CRITERION=   1317.     <<< CONVERGED
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   1
  *** LOAD STEP     1   SUBSTEP     9  COMPLETED.    CUM ITER =     10
- *** TIME =  0.581518      TIME INC =  0.181760      MAX DISPLACEMENT =    -1.373    
+ *** TIME =  0.620631      TIME INC =  0.298260      MAX DISPLACEMENT =    -1.355    
 
-     FORCE CONVERGENCE VALUE  =   482.9      CRITERION=   2289.    
-     MOMENT CONVERGENCE VALUE =   688.2      CRITERION=   3113.    
+     FORCE CONVERGENCE VALUE  =   18.84      CRITERION=   1950.    
+     MOMENT CONVERGENCE VALUE =   206.7      CRITERION=   1950.    
 
- *** NOTE ***                            CP =       5.078   TIME= 08:14:19
- First limit point was found at time 0.763277419.  Previous converged    
- time is 0.601405041.  Terminate the analysis as the user requested.     
+ *** NOTE ***                            CP =       4.078   TIME= 15:07:56
+ First limit point was found at time 0.918891249.  Previous converged    
+ time is 0.622141497.  Terminate the analysis as the user requested.     
 
 
 
@@ -789,7 +795,7 @@
  FILES NEEDED FOR RESTARTING . . . . . . .  file.esav
                                             file.db
 
- TIME OF LAST SOLUTION . . . . . . . . . . 0.76328    
+ TIME OF LAST SOLUTION . . . . . . . . . . 0.91889    
     TIME AT START OF THE LOAD STEP . . . .  0.0000    
     TIME AT END OF THE LOAD STEP . . . . .  1.0000    
 
@@ -807,13 +813,13 @@
         1.062 MB WRITTEN ON RESULTS FILE: file.rst
 
 
- ***** ROUTINE COMPLETED *****  CP =         5.578
+ ***** ROUTINE COMPLETED *****  CP =         4.453
 
 
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   08:14:19  MAR 18, 2026 CP=      5.688
+ 00254321  VERSION=WINDOWS x64   15:07:56  MAR 18, 2026 CP=      4.453
 
                                                                                
 
@@ -821,7 +827,7 @@
 
           ***** MAPDL RESULTS INTERPRETATION (POST1) *****
 
- *** NOTE ***                            CP =       5.688   TIME= 08:14:19
+ *** NOTE ***                            CP =       4.453   TIME= 15:07:56
  Reading results into the database (SET command) will update the current 
  displacement and force boundary conditions in the database with the     
  values from the results file for that load set.  Note that any          
@@ -832,19 +838,10 @@
  USE LAST SUBSTEP ON RESULT FILE  FOR LOAD CASE 0 
 
  SET COMMAND GOT LOAD STEP=     1  SUBSTEP=    10  CUMULATIVE ITERATION=    11
-   TIME/FREQUENCY= 0.76328    
+   TIME/FREQUENCY= 0.91889    
  TITLE=                                                                         
 
  SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
-
- *** WARNING ***                         CP =       5.797   TIME= 08:14:19
- File APDL_out.txt does not exist.                                       
-  The /INPUT command is ignored.                                         
-
- SELECT       FOR ITEM=ENAM COMPONENT=    
-  IN RANGE       189 TO        189 STEP          1
-
-        300  ELEMENTS (OF        300  DEFINED) SELECTED BY  ESEL  COMMAND.
 
  *GET  E_COUNT   FROM  ELEM  ITEM=COUN           VALUE=  300.000000    
 
@@ -855,6 +852,16 @@
 
  SELECT      COMPONENT COLUMN_1                                                                                                                                                                                                                                                        
 
+ SELECT      ELEMENTS CREATED FROM SELECTED LINES.
+
+        100  ELEMENTS (OF        300  DEFINED) SELECTED FROM        1 SELECTED LINES
+         BY  ESLL  COMMAND.
+
+ RESELECT     FOR ITEM=ENAM COMPONENT=    
+  IN RANGE       189 TO        189 STEP          1
+
+        100  ELEMENTS (OF        300  DEFINED) SELECTED BY  ESEL  COMMAND.
+
  *IF  ii  ( =   1.00000     )  LT  
       10  ( =   10.0000     )  THEN    
 
@@ -862,51 +869,92 @@
 
  *ENDIF
 
- *** WARNING ***                         CP =       5.797   TIME= 08:14:19
- Unknown label for *GET command= 0                                       
-  The *GET command is ignored.                                           
+ *GET  NELEM     FROM  ELEM  ITEM=COUN           VALUE=  100.000000    
 
  PARAMETER ELEM =     0.000000000    
 
- *** WARNING ***                         CP =       5.797   TIME= 08:14:19
- *DO loop FVAL value is undefined: (NELEM).  Using default (0).          
+ *DO LOOP ON PARAMETER= JJ FROM  1.0000     TO  100.00     BY  1.0000    
 
-     *****  PrintMacroTrace  *****
+ PARAMETER ELEM =     1.000000000    
 
- Command=*DO,jj,1,nElem,1
+ *GET  NF        FROM  ELEM         1  ITEM=SMIS 1         VALUE= -275593.062    
 
- File/Index                         Line Type  Loop      Min      Max      Inc
- FILE                                119    1
- II                                  128    5     1      1.0      2.0      1.0
+ *GET  MY        FROM  ELEM         1  ITEM=SMIS 2         VALUE= 0.227630035E-12
 
- *DO LOOP ON PARAMETER= JJ FROM  1.0000     TO  0.0000     BY  1.0000    
+ *GET  MZ        FROM  ELEM         1  ITEM=SMIS 3         VALUE= -76394.9062    
 
- *** WARNING ***                         CP =       5.797   TIME= 08:14:19
- No *DO trips needed, enter *ENDDO .                                     
+ *GET  VY        FROM  ELEM         1  ITEM=SMIS 4         VALUE= 0.225457335E-12
+
+ *GET  VZ        FROM  ELEM         1  ITEM=SMIS 5         VALUE=-0.528666085E-16
+
+ *GET  TQ        FROM  ELEM         1  ITEM=SMIS 6         VALUE= -51.9092407    
 
  *ENDDO  INDEX= JJ                              
 
+ *ENDDO  INDEX= II                              
+
  *DO LOOP ON PARAMETER= II FROM  1.0000     TO  1.0000     BY  1.0000    
 
- *** ERROR ***                           CP =       5.797   TIME= 08:14:19
- *DO loop index same as outer index II.                                  
+ SELECT      COMPONENT BRACE_1                                                                                                                                                                                                                                                         
 
-     *****  PrintMacroTrace  *****
+ SELECT      ELEMENTS CREATED FROM SELECTED LINES.
 
- Command=*DO,ii,1,1,1
+        100  ELEMENTS (OF        300  DEFINED) SELECTED FROM        1 SELECTED LINES
+         BY  ESLL  COMMAND.
 
- File/Index                         Line Type  Loop      Min      Max      Inc
- FILE                                119    1
- II                                  139    5     1      1.0      2.0      1.0
+ RESELECT     FOR ITEM=ENAM COMPONENT=    
+  IN RANGE       189 TO        189 STEP          1
+
+        100  ELEMENTS (OF        300  DEFINED) SELECTED BY  ESEL  COMMAND.
+
+ *IF  ii  ( =   1.00000     )  LT  
+      10  ( =   10.0000     )  THEN    
+
+ *ELSE
+
+ *ENDIF
+
+ *GET  NELEM     FROM  ELEM  ITEM=COUN           VALUE=  100.000000    
+
+ PARAMETER ELEM =     0.000000000    
+
+ *DO LOOP ON PARAMETER= JJ FROM  1.0000     TO  100.00     BY  1.0000    
+
+ PARAMETER ELEM =     201.0000000    
+
+ *GET  NF        FROM  ELEM       201  ITEM=SMIS 1         VALUE= -185.960861    
+
+ *GET  MY        FROM  ELEM       201  ITEM=SMIS 2         VALUE= 0.192165670E-13
+
+ *GET  MZ        FROM  ELEM       201  ITEM=SMIS 3         VALUE=  26283.5078    
+
+ *GET  VY        FROM  ELEM       201  ITEM=SMIS 4         VALUE= 0.279777015E-14
+
+ *GET  VZ        FROM  ELEM       201  ITEM=SMIS 5         VALUE=-0.246059412E-13
+
+ *GET  TQ        FROM  ELEM       201  ITEM=SMIS 6         VALUE= -2060.61060    
+
+ *ENDDO  INDEX= JJ                              
+
+ *ENDDO  INDEX= II                              
+
+  COMMAND FILE CLOSED 
 
 
- NUMBER OF WARNING MESSAGES ENCOUNTERED=          5
- NUMBER OF ERROR   MESSAGES ENCOUNTERED=          1
+ ***** END OF INPUT ENCOUNTERED *****
+
+
+ NUMBER OF WARNING MESSAGES ENCOUNTERED=          1
+ NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+
+
+
+ ***** PROBLEM TERMINATED BY INDICATED ERROR(S) OR BY END OF INPUT DATA *****
 
 +--------------------- M A P D L   S T A T I S T I C S ------------------------+
 
 Release: 2025 R1            Build: 25.1       Update: UP20241202   Platform: WINDOWS x64 
-Date Run: 03/18/2026   Time: 08:14     Process ID: 5532
+Date Run: 03/18/2026   Time: 15:07     Process ID: 28620
 Operating System: Windows 11  (Build: 26200)
 
 Processor Model: AMD Ryzen 7 5800H with Radeon Graphics
@@ -928,13 +976,13 @@ Job Name: file
 Input File: RunFile.txt
 Working Directory: C:\Users\atbys\Desktop\DMS4 Local\DMS4\03_BEAM_APDL
 
-Total CPU time for main thread                    :        1.1 seconds
-Total CPU time summed for all threads             :        6.9 seconds
+Total CPU time for main thread                    :        0.9 seconds
+Total CPU time summed for all threads             :        5.8 seconds
 
-Elapsed time spent obtaining a license            :        5.5 seconds
-Elapsed time spent pre-processing model (/PREP7)  :        0.1 seconds
+Elapsed time spent obtaining a license            :        6.3 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.0 seconds
 Elapsed time spent solution - preprocessing       :        0.0 seconds
-Elapsed time spent computing solution             :        0.8 seconds
+Elapsed time spent computing solution             :        0.6 seconds
 Elapsed time spent solution - postprocessing      :        0.0 seconds
 Elapsed time spent post-processing model (/POST1) :        0.0 seconds
  
@@ -966,7 +1014,7 @@ Total amount of I/O read from disk                :        0.3 GB
  |                                                                             |
  |-----------------------------------------------------------------------------|
  |                                                                             |
- |        CP Time      (sec) =          6.938       Time  =  08:14:20          |
+ |        CP Time      (sec) =          5.844       Time  =  15:07:57          |
  |        Elapsed Time (sec) =          9.000       Date  =  03/18/2026        |
  |                                                                             |
  *-----------------------------------------------------------------------------*

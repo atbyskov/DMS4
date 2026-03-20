@@ -1,0 +1,9 @@
+/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       15:07:49
+
+ *** WARNING ***                         CP =       0.609   TIME= 15:07:55
+ A reference moment value times the tolerance is used by the             
+ Newton-Raphson method for checking convergence.  The calculated         
+ reference MOMENT CONVERGENCE VALUE = 1614.69206 is less than a          
+ threshold.  This threshold is internally calculated.  You can           
+ overwrite it by specifying MINREF on the CNVTOL command.  Check         
+ results carefully.                                                      

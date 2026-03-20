@@ -4,7 +4,7 @@
 
 import numpy as np
 
-nSegments = 5
+nSegments = 8
 y_offset = 0.810
 
 # Read SW_Coordinates.txt
