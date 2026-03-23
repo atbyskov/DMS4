@@ -21,9 +21,10 @@
     # Apply SECTYPE,2 to brace beams
     # Apply same material and element type to all lines
 
+import os
 
 
-def Eigen_Fun(SWcoor, var, Misc):
+def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
     
 
     # Import Radii
@@ -43,7 +44,7 @@ def Eigen_Fun(SWcoor, var, Misc):
         else:
             return "brace"
     
-    pre_file = "APDL_Eigen.txt"
+    pre_file = os.path.join(out_dir, "APDL_Eigen.txt")
 
     with open(pre_file, "w") as f:
     # SETUP
@@ -211,32 +212,7 @@ def Eigen_Fun(SWcoor, var, Misc):
         # SOLVE
         f.write("SOLVE \n \n")
         f.write("FINISH \n")
-        
-
-        f.write("! Eigenbuckling Solution! \n")
-        f.write("/SOLU \n")
-        f.write("ANTYPE,BUCKLE \n")
-        f.write("BUCOPT,LANB,10 \n")
-        f.write("MXPAND,ALL \n")
-        f.write("OUTRES,ALL,ALL \n")
-        #f.write("SAVE,BUCKLE \n")
-        f.write("SOLVE \n")
-        f.write("FINISH \n")
-        
-
-        f.write("/POST1 \n")
-        f.write("*CFOPEN,Eigenvalue1,txt \n")
-
-        f.write("*DO,jj,1,10,1 \n")
-        f.write("   *GET,MS%jj%,MODE,jj,FREQ \n")
-        f.write("   *VWRITE,MS%jj% \n")
-        f.write('   (F10.5) \n')
-        f.write("*ENDDO \n")
-
-        f.write("*CFCLOS \n \n \n")
-
-
-
+    
 
         CM_dict = [CM_Column_dict, CM_Brace_dict]
 
@@ -321,6 +297,54 @@ def Eigen_Fun(SWcoor, var, Misc):
         f.write("*ENDDO \n")
 
         f.write("*CFCLOS \n")
+
+        # MASS OF ASSEMBLY
+        f.write("ALLSEL \n")
+        f.write("*GET,ecnt,ELEM,0,COUNT \n")
+        f.write("*GET,enum,ELEM,0,NUM,MIN \n")
+        f.write("totvol = 0 \n")
+
+        f.write("*DO,i,1,ecnt \n")
+        f.write("   *GET,ev,ELEM,enum,VOLU \n")
+        f.write("   totvol = totvol + ev \n")
+        f.write("   enum = ELNEXT(enum) \n")
+        f.write("*ENDDO \n")
+
+        f.write("dens = 7.85E-6 ! kg/mm^3 \n") # Desnity
+        f.write("Comp_mass = dens*totvol \n")
+
+        f.write("*CFOPEN,MASS_assembly,txt \n")
+        f.write("*VWRITE,Comp_mass \n")
+        f.write("(F12.5) \n")
+        f.write("*CFCLOS \n")
+
+        ######
+
+        f.write("FINISH \n")
+        f.write("ALLSEL,ALL \n")
+
+
+        f.write("! Eigenbuckling Solution! \n")
+        f.write("/SOLU \n")
+        f.write("ANTYPE,BUCKLE \n")
+        f.write("BUCOPT,LANB,10 \n")
+        f.write("MXPAND,ALL \n")
+        f.write("OUTRES,ALL,ALL \n")
+        #f.write("SAVE,BUCKLE \n")
+        f.write("SOLVE \n")
+        f.write("FINISH \n")
+        
+
+        f.write("/POST1 \n")
+        f.write("*CFOPEN,Eigenvalue1,txt \n")
+
+        f.write("*DO,jj,1,10,1 \n")
+        f.write("   *GET,MS%jj%,MODE,jj,FREQ \n")
+        f.write("   *VWRITE,MS%jj% \n")
+        f.write('   (F10.5) \n')
+        f.write("*ENDDO \n")
+
+        f.write("*CFCLOS \n \n \n")
 
         
         

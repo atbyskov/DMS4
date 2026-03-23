@@ -21,9 +21,10 @@
     # Apply SECTYPE,2 to brace beams
     # Apply same material and element type to all lines
 
+import os
 
 
-def Nonlin_Fun(SWcoor, var, Misc):
+def Nonlin_Fun(SWcoor, var, Misc, out_dir = "AnsoutNonlin"):
     
 
     # Import Radii
@@ -43,7 +44,8 @@ def Nonlin_Fun(SWcoor, var, Misc):
         else:
             return "brace"
     
-    Nonlin_file = "APDL_Nonlin_Input.txt"
+
+    Nonlin_file = os.path.join(out_dir,"APDL_Nonlin_Input.txt")
 
     with open(Nonlin_file, "w") as f:
     # SETUP
@@ -163,8 +165,9 @@ def Nonlin_Fun(SWcoor, var, Misc):
         f.write("NLGEOM,ON \n")
         f.write("ARCLEN,ON \n")
         f.write("ARCTRM,L \n")
+        f.write("AUTOTS,OFF \n")
         f.write("NSUBST,10,100,10 \n")
-        f.write("NEQIT,50 \n")
+        f.write("NEQIT,200 \n")
 
         # BOUNDARY CONDITIONS
         f.write("\n! -- BOUNDARY CONDITIONS -- ! \n \n! Force \n")
@@ -212,7 +215,7 @@ def Nonlin_Fun(SWcoor, var, Misc):
         f.write(f"! Number of Columns: {CM_dict[0]} \n")
         f.write(f"! Number of Braces : {CM_dict[1]} \n \n")
         # SET OUTPUT FILE
-        f.write("*CFOPEN, APDL_Eigen_Internal,txt \n \n")
+        f.write("*CFOPEN, APDL_Nonlin_Internal,txt \n \n")
         # LOOP OVER COLUMNS
         f.write("! Loop over Columns \n")
         f.write(f"*DO,ii,1,{CM_dict[0]},1 \n")
