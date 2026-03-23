@@ -43,7 +43,7 @@ def Eigen_Fun(SWcoor, var, Misc):
         else:
             return "brace"
     
-    pre_file = "APDL_Pre.txt"
+    pre_file = "APDL_Eigen.txt"
 
     with open(pre_file, "w") as f:
     # SETUP
@@ -158,6 +158,21 @@ def Eigen_Fun(SWcoor, var, Misc):
 
         f.write("/ESHAPE,1 ! Display Cross Section\n")
 
+        # Save PNG
+        f.write("/SHOW,PNG,,0 \n")
+        f.write("/RGB,INDEX,100,100,100,0 \n")
+        f.write("/RGB,INDEX,80,80,80,13 \n")
+        f.write("/RGB,INDEX,60,60,60,14 \n")
+        f.write("/RGB,INDEX,0,0,0,15 \n")
+        f.write("/TYPE,,4 \n")
+
+        f.write("/VIEW,,0,0,1 \n")
+        f.write("/ANGLE,,30,YM \n")
+
+        f.write("EPLOT \n")
+        f.write("/SHOW,close \n")
+        f.write("/SHOW,TERM \n")
+
         
 
         # RUN STATIC ANALYSIS
@@ -165,7 +180,7 @@ def Eigen_Fun(SWcoor, var, Misc):
         f.write("/SOLU \n")
         f.write("ANTYPE, STATIC \n")
         f.write("EQSLV,SPARSE \n")
-        f.write("PSTRES,ON")
+        f.write("PSTRES,ON \n")
 
 
         # BOUNDARY CONDITIONS
@@ -173,33 +188,22 @@ def Eigen_Fun(SWcoor, var, Misc):
         f.write("\n! -- BOUNDARY CONDITIONS -- ! \n \n! Force \n")
         f.write("ALLSEL,ALL \n")
         f.write("SELTOL,1.0E-6 \n")
-        #f.write("*GET, NodeYMax, NODE, 0, MXLOC, Y \n")
-        #f.write("NSEL,S,LOC,Y,NodeYMax \n")
-        #f.write("F,ALL,FX,300000 !N \n")
-        #f.write("ALLSEL,ALL\n\n")
+
         
-        # ONLY FOR SIMPLEFRAME
+        # APPLY ONLY AT TOP NODE
         f.write("*GET, NodeXMax, NODE, 0, MXLOC, X \n")
         f.write("*GET, NodeXMin, NODE, 0, MNLOC, X \n")
         f.write("*GET, NodeYMax, NODE, 0, MXLOC, Y \n")
-        f.write("NSEL,S,LOC,X,NodeXMin \n")
-        f.write("NSEL,R,LOC,Y,NodeYMax \n")
+        f.write("*GET, NodeYMin, NODE, 0, MNLOC, Y \n")
+        f.write("NSEL,S,LOC,Y,NodeYMax \n")
         f.write(f"F,ALL,FY,{-Ver_Force} \n")
-        f.write("ALLSEL,ALL \n")
-        f.write("NSEL,S,LOC,X,NodeXMax \n")
-        f.write("NSEL,R,LOC,Y,NodeYMax \n")
-        f.write(f"F,ALL,FY,{-Ver_Force} \n")
-        f.write("ALLSEL,ALL \n")
-
-        f.write("NSEL,S,LOC,X,NodeXMin \n")
-        f.write("NSEL,R,LOC,Y,NodeYMax \n")
         f.write(f"F,ALL,FX,{Hor_Force} \n")
         f.write("ALLSEL,ALL \n")
+
 
         # FIXED DISPLACEMENT
         f.write("! Displacement ! \n")
         f.write("ALLSEL,ALL \n")
-        f.write("*GET, NodeYMin, NODE, 0, MNLOC, Y \n")
         f.write("NSEL,S,LOC,Y,NodeYMin \n")
         f.write("D,ALL,ALL,0 \n")
         f.write("ALLSEL,ALL\n\n")
@@ -212,25 +216,113 @@ def Eigen_Fun(SWcoor, var, Misc):
         f.write("! Eigenbuckling Solution! \n")
         f.write("/SOLU \n")
         f.write("ANTYPE,BUCKLE \n")
-        f.write("BUCOPT,LANB,4 \n")
+        f.write("BUCOPT,LANB,10 \n")
         f.write("MXPAND,ALL \n")
         f.write("OUTRES,ALL,ALL \n")
-        f.write("SAVE,BUCKLE \n")
+        #f.write("SAVE,BUCKLE \n")
         f.write("SOLVE \n")
         f.write("FINISH \n")
         
 
         f.write("/POST1 \n")
-        f.write("*GET,MS1,MODE,1,FREQ \n")
-
         f.write("*CFOPEN,Eigenvalue1,txt \n")
 
-        f.write("*VWRITE,MS1\n")
-        f.write('(F10.5) \n')
+        f.write("*DO,jj,1,10,1 \n")
+        f.write("   *GET,MS%jj%,MODE,jj,FREQ \n")
+        f.write("   *VWRITE,MS%jj% \n")
+        f.write('   (F10.5) \n')
+        f.write("*ENDDO \n")
+
+        f.write("*CFCLOS \n \n \n")
+
+
+
+
+        CM_dict = [CM_Column_dict, CM_Brace_dict]
+
+
+
+        f.write("! ===== APDL OUTPUT FILE ===== ! \n \n")
+
+        f.write("/POST1 \n")
+        f.write("SET,LAST \n \n")
+        f.write("ALLSEL,ALL \n")
+
+        # ONLY SELECT BEAM189 ELEMENTS
+        f.write("*GET,E_COUNT,ELEM,0,COUNT \n \n") 
+        f.write(f"! Number of Columns: {CM_dict[0]} \n")
+        f.write(f"! Number of Braces : {CM_dict[1]} \n \n")
+        # SET OUTPUT FILE
+        f.write("*CFOPEN, APDL_Eigen_Internal,txt \n \n")
+        # LOOP OVER COLUMNS
+        f.write("! Loop over Columns \n")
+        f.write(f"*DO,ii,1,{CM_dict[0]},1 \n")
+        f.write("   CMSEL,S,COLUMN_%ii% \n")
+
+        f.write("ESLL,S \n")
+        f.write("ESEL,R,ENAME,,189 \n")
+        # FORMAT
+        f.write("   *IF,ii,LT,10,THEN \n")
+        f.write("       *VWRITE,ii \n")
+        f.write('       ("NS ColMember_",F2.0) \n')
+        f.write("   *ELSE \n")
+        f.write("       *VWRITE,ii \n")
+        f.write('       ("NS ColMember_",F3.0) \n')
+        f.write("   *ENDIF \n")
+        # RESULT 
+        f.write("*GET,nElem,ELEM,0,COUNT \n")
+        f.write("   *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]' \n")
+        f.write("   (A12,A20,A20,A20,A20,A20,A20) \n")
+        f.write("   ELEM = 0 \n")
+        f.write("   *DO,jj,1,nElem,1 \n")
+        f.write("       ELEM = ELNEXT(ELEM) \n")
+        f.write("       *GET,NF,ELEM,ELEM,SMISC,1 \n")
+        f.write("       *GET,MY,ELEM,ELEM,SMISC,2 \n")
+        f.write("       *GET,MZ,ELEM,ELEM,SMISC,3 \n")
+        f.write("       *GET,VY,ELEM,ELEM,SMISC,4 \n")
+        f.write("       *GET,VZ,ELEM,ELEM,SMISC,5 \n")
+        f.write("       *GET,TQ,ELEM,ELEM,SMISC,6 \n")
+        f.write("       *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ \n")
+        f.write("       (F12.0,6E20.8) \n")
+        f.write("   *ENDDO \n \n")
+        f.write("*ENDDO")
+
+        # LOOP OVER BRACES
+        f.write("! Loop over Braces \n")
+        f.write(f"*DO,ii,1,{CM_dict[1]},1 \n")
+        f.write("   CMSEL,S,BRACE_%ii%,LINE \n")
+        f.write("   ESLL,S \n")
+        f.write("   ESEL,R,ENAME,,189 \n")
+        # FORMAT
+        f.write("   *IF,ii,LT,10,THEN \n")
+        f.write("       *VWRITE,ii \n")
+        f.write('       ("NS BraceMember_",F2.0) \n')
+        f.write("   *ELSE \n")
+        f.write("       *VWRITE,ii \n")
+        f.write('       ("NS BraceMember_",F3.0) \n')
+        f.write("   *ENDIF \n")
+        # RESULT 
+        f.write("*GET,nElem,ELEM,0,COUNT \n")
+        f.write("   *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]' \n")
+        f.write("   (A12,6A20) \n")
+        f.write("   elem = 0 \n")
+        f.write("   *DO,jj,1,nElem,1 \n")
+        f.write("       ELEM = ELNEXT(ELEM) \n")
+        f.write("       *GET,NF,ELEM,ELEM,SMISC,1 \n")
+        f.write("       *GET,MY,ELEM,ELEM,SMISC,2 \n")
+        f.write("       *GET,MZ,ELEM,ELEM,SMISC,3 \n")
+        f.write("       *GET,VY,ELEM,ELEM,SMISC,4 \n")
+        f.write("       *GET,VZ,ELEM,ELEM,SMISC,5 \n")
+        f.write("       *GET,TQ,ELEM,ELEM,SMISC,6 \n")
+        f.write("       *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ \n")
+        f.write("       (F12.0,6E20.8) \n")
+        f.write("   *ENDDO \n")
+
+        f.write("*ENDDO \n")
 
         f.write("*CFCLOS \n")
 
-        CM_dict = [CM_Column_dict, CM_Brace_dict]
+        
         
             
     
@@ -240,5 +332,3 @@ def Eigen_Fun(SWcoor, var, Misc):
 
 
     
-
-
