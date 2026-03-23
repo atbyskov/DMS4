@@ -6,15 +6,15 @@
  ===========================
 
      number of equations                     =           24198
-     no. of nonzeroes in lower triangle of a =          275420
-     no. of nonzeroes in the factor l        =          639849
+     no. of nonzeroes in lower triangle of a =          275414
+     no. of nonzeroes in the factor l        =          641257
      ratio of nonzeroes in factor (min/max)  =          1.0000
-     number of super nodes                   =            1560
-     maximum order of a front matrix         =              54
-     maximum size of a front matrix          =            1485
-     maximum size of a front trapezoid       =            1185
+     number of super nodes                   =            1566
+     maximum order of a front matrix         =              66
+     maximum size of a front matrix          =            2211
+     maximum size of a front trapezoid       =            1911
      METIS reordering method used 
-     no. of floating point ops for factor    =      1.0979D+07
+     no. of floating point ops for factor    =      1.1066D+07
      no. of floating point ops for solve     =      0.0000D+00
      ratio of flops for factor (min/max)     =          1.0000
      ratio of allocated memory (max/min)     =          1.0000
@@ -27,13 +27,13 @@
      number of threads per process used      =               8
      number of cores used                    =               8
      time (cpu & wall) for structure input   =        0.000000        0.001000
-     time (cpu & wall) for ordering          =        0.281250        0.051000
+     time (cpu & wall) for ordering          =        0.375000        0.053000
      time (cpu & wall) for other matrix prep =        0.000000        0.000000
      time (cpu & wall) for value input       =        0.000000        0.000000
      time (cpu & wall) for matrix distrib.   =        0.125000        0.012000
      time (cpu & wall) for numeric factor    =        0.125000        0.015000
-     computational rate (gflops) for factor  =        0.087832        0.731932
+     computational rate (gflops) for factor  =        0.088526        0.737717
 
      no input or output performed
 
-  Total Solver Memory allocated              =       20.016 MB
+  Total Solver Memory allocated              =       20.035 MB

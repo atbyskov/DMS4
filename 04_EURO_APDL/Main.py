@@ -121,9 +121,10 @@ with open(FileNameNonlin, 'w') as FileID:
 os.system(f"{FileNameNonlin}")
 print("Nonlinear Analysis Complete")
 
-
+Misc = [esize, Hor_Force, Ver_Force, f_y, E_mod, alpha_crit]
 
 # Run Post_Process.py
-gg = Util_ratio(var,Misc)
+Util_worst = Util_ratio(var,Misc)
 
-print(gg)
+print(Util_worst)
+
