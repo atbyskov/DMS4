@@ -1,0 +1,1819 @@
+
+ Ansys Mechanical Enterprise Academic Research     
+
+
+ *------------------------------------------------------------------*
+ |                                                                  |
+ |   W E L C O M E   T O   T H E   A N S Y S (R)  P R O G R A M     |
+ |                                                                  |
+ *------------------------------------------------------------------*
+
+
+
+
+ ***************************************************************
+ *         ANSYS MAPDL 2025 R1          LEGAL NOTICES          *
+ ***************************************************************
+ *                                                             *
+ * Copyright 1971-2025 Ansys, Inc.  All rights reserved.       *
+ * Unauthorized use, distribution or duplication is            *
+ * prohibited.                                                 *
+ *                                                             *
+ * Ansys is a registered trademark of Ansys, Inc. or its       *
+ * subsidiaries in the United States or other countries.       *
+ * See the Ansys, Inc. online documentation or the Ansys, Inc. *
+ * documentation CD or online help for the complete Legal      *
+ * Notice.                                                     *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION       *
+ * INCLUDE TRADE SECRETS AND CONFIDENTIAL AND PROPRIETARY      *
+ * PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR LICENSORS.    *
+ * The software products and documentation are furnished by    *
+ * Ansys, Inc. or its subsidiaries under a software license    *
+ * agreement that contains provisions concerning               *
+ * non-disclosure, copying, length and nature of use,          *
+ * compliance with exporting laws, warranties, disclaimers,    *
+ * limitations of liability, and remedies, and other           *
+ * provisions.  The software products and documentation may be *
+ * used, disclosed, transferred, or copied only in accordance  *
+ * with the terms and conditions of that software license      *
+ * agreement.                                                  *
+ *                                                             *
+ * Ansys, Inc. is a UL registered                              *
+ * ISO 9001:2015 company.                                      *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * This product is subject to U.S. laws governing export and   *
+ * re-export.                                                  *
+ *                                                             *
+ * For U.S. Government users, except as specifically granted   *
+ * by the Ansys, Inc. software license agreement, the use,     *
+ * duplication, or disclosure by the United States Government  *
+ * is subject to restrictions stated in the Ansys, Inc.        *
+ * software license agreement and FAR 12.212 (for non-DOD      *
+ * licenses).                                                  *
+ *                                                             *
+ ***************************************************************
+
+ 2025 R1 
+     
+ Point Releases and Patches installed:   
+     
+ Ansys, Inc. License Manager 2025 R1 
+ Discovery (reduced install) 2025 R1 
+ Core WB Files 2025 R1   
+ CFD-Post only 2025 R1   
+ Fluent (includes CFD-Post) 2025 R1  
+ Polyflow (includes CFD-Post) 2025 R1
+ Remote Solve Manager Standalone Services 2025 R1
+ Additive 2025 R1
+ Autodyn 2025 R1 
+ Customization Files for User Programmable Features 2025 R1  
+ LS-DYNA 2025 R1 
+ Material Designer 2025 R1   
+ Mechanical Products 2025 R1 
+ ACIS Geometry Interface 2025 R1 
+ AutoCAD Geometry Interface 2025 R1  
+ Catia, Version 4 Geometry Interface 2025 R1 
+ Catia, Version 5 Geometry Interface 2025 R1 
+ Catia, Version 6 Geometry Interface 2025 R1 
+ Creo Elements/Direct Modeling Geometry Interface 2025 R1
+ Creo Parametric Geometry Interface 2025 R1  
+ Inventor Geometry Interface 2025 R1 
+ JTOpen Geometry Interface 2025 R1   
+ NX Geometry Interface 2025 R1   
+ Parasolid Geometry Interface  2025 R1   
+ Solid Edge Geometry Interface 2025 R1   
+ SOLIDWORKS Geometry Interface 2025 R1   
+
+
+          *****  MAPDL COMMAND LINE ARGUMENTS  *****
+  BATCH MODE REQUESTED (-b)    = LIST
+  INPUT FILE COPY MODE (-c)    = COPY
+  SHARED MEMORY PARALLEL REQUESTED
+    SINGLE PROCESS WITH   8 THREADS REQUESTED
+    TOTAL OF     8 CORES REQUESTED
+  INPUT FILE NAME              = C:\Users\atbys\Desktop\DMS4 Local\DMS4\04_EURO_APDL\AnsoutEigen\APDL_Eigen.txt
+  OUTPUT FILE NAME             = C:\Users\atbys\Desktop\DMS4 Local\DMS4\04_EURO_APDL\AnsoutEigen\AnsoutEigen\AnsysOutputWindow.txt
+  INITIAL DIRECTORY = C:\Users\atbys\Desktop\DMS4 Local\DMS4\04_EURO_APDL\AnsoutEigen
+
+ RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
+ CURRENT JOBNAME=file  14:57:25  MAR 23, 2026 CP=      0.094
+
+     1  ! ===== APDL INPUT FILE ====== !
+     2      
+     3  /UNITS,MPa  
+     4      
+     5  ! EigenBuckling Analysis !  
+     6  /PREP7  
+     7      
+     8  ET,1,BEAM189 ! Use BEAM189  
+     9      
+    10  ! CROSS SECTION !   
+    11  ! Corner Type (SECTYPE = 1) 
+    12  SECTYPE,1,BEAM,CTUBE
+    13  SECDATA,35.05,38.05,8   
+    14  ! Brace Section Type (SECTYPE = 2)  
+    15  SECTYPE,2,BEAM,CTUBE
+    16  SECDATA,11.15,13.45,8   
+    17      
+    18  ! MATERIAL DATA 
+    19  MP,EX,1,200000.0 ! [MPa]
+    20  MP,PRXY,1,0.3   
+    21  MP,DENS,1.7850E-6 ! [kg/mm^3]   
+    22      
+    23  ! KEYPOINT AND LINES !  
+    24  K,1, 0.000, 0.000, 0.000
+    25  K,2, 0.000, 2000.000, 0.000 
+    26  L,1,2   
+    27  LSEL,S,LINE,,1  
+    28  CM,COLUMN_1,LINE
+    29  LSEL,ALL
+    30  K,3, 0.000, 50.000, 0.000   
+    31  K,4, 250.000, 50.000, 0.000 
+    32  L,3,4   
+    33  LSEL,S,LINE,,2  
+    34  CM,BRACE_1,LINE 
+    35  LSEL,ALL
+    36  K,5, 250.000, 50.000, 250.000   
+    37  L,4,5   
+    38  LSEL,S,LINE,,3  
+    39  CM,BRACE_2,LINE 
+    40  LSEL,ALL
+    41  K,6, 0.000, 50.000, 250.000 
+    42  L,5,6   
+    43  LSEL,S,LINE,,4  
+    44  CM,BRACE_3,LINE 
+    45  LSEL,ALL
+    46  L,6,3   
+    47  LSEL,S,LINE,,5  
+    48  CM,BRACE_4,LINE 
+    49  LSEL,ALL
+    50  K,7, 250.000, 0.000, 250.000
+    51  K,8, 250.000, 2000.000, 250.000 
+    52  L,7,8   
+    53  LSEL,S,LINE,,6  
+    54  CM,COLUMN_2,LINE
+    55  LSEL,ALL
+    56  K,9, 0.000, 0.000, 250.000  
+    57  K,10, 0.000, 2000.000, 250.000  
+    58  L,9,10  
+    59  LSEL,S,LINE,,7  
+    60  CM,COLUMN_3,LINE
+    61  LSEL,ALL
+    62  K,11, 250.000, 0.000, 0.000 
+    63  K,12, 250.000, 2000.000, 0.000  
+    64  L,11,12 
+    65  LSEL,S,LINE,,8  
+    66  CM,COLUMN_4,LINE
+    67  LSEL,ALL
+    68  L,12,8  
+    69  LSEL,S,LINE,,9  
+    70  CM,BRACE_5,LINE 
+    71  LSEL,ALL
+    72  L,10,8  
+    73  LSEL,S,LINE,,10 
+    74  CM,BRACE_6,LINE 
+    75  LSEL,ALL
+    76  L,12,2  
+    77  LSEL,S,LINE,,11 
+    78  CM,BRACE_7,LINE 
+    79  LSEL,ALL
+    80  L,2,10  
+    81  LSEL,S,LINE,,12 
+    82  CM,BRACE_8,LINE 
+    83  LSEL,ALL
+    84  K,13, 117.500, 2212.000, 125.000
+    85  L,10,13 
+    86  LSEL,S,LINE,,13 
+    87  CM,BRACE_9,LINE 
+    88  LSEL,ALL
+    89  L,13,2  
+    90  LSEL,S,LINE,,14 
+    91  CM,BRACE_10,LINE
+    92  LSEL,ALL
+    93  L,13,8  
+    94  LSEL,S,LINE,,15 
+    95  CM,BRACE_11,LINE
+    96  LSEL,ALL
+    97  L,13,12 
+    98  LSEL,S,LINE,,16 
+    99  CM,BRACE_12,LINE
+   100  LSEL,ALL
+   101  K,14, 0.000, 1050.000, 250.000  
+   102  L,3,14  
+   103  LSEL,S,LINE,,17 
+   104  CM,BRACE_13,LINE
+   105  LSEL,ALL
+   106  L,14,2  
+   107  LSEL,S,LINE,,18 
+   108  CM,BRACE_14,LINE
+   109  LSEL,ALL
+   110  K,15, 0.000, 1050.000, 0.000
+   111  L,14,15 
+   112  LSEL,S,LINE,,19 
+   113  CM,BRACE_15,LINE
+   114  LSEL,ALL
+   115  K,16, 250.000, 1050.000, 250.000
+   116  L,6,16  
+   117  LSEL,S,LINE,,20 
+   118  CM,BRACE_16,LINE
+   119  LSEL,ALL
+   120  L,16,14 
+   121  LSEL,S,LINE,,21 
+   122  CM,BRACE_17,LINE
+   123  LSEL,ALL
+   124  K,17, 250.000, 1050.000, 0.000  
+   125  L,16,17 
+   126  LSEL,S,LINE,,22 
+   127  CM,BRACE_18,LINE
+   128  LSEL,ALL
+   129  L,5,17  
+   130  LSEL,S,LINE,,23 
+   131  CM,BRACE_19,LINE
+   132  LSEL,ALL
+   133  L,4,15  
+   134  LSEL,S,LINE,,24 
+   135  CM,BRACE_20,LINE
+   136  LSEL,ALL
+   137  L,15,17 
+   138  LSEL,S,LINE,,25 
+   139  CM,BRACE_21,LINE
+   140  LSEL,ALL
+   141  L,15,12 
+   142  LSEL,S,LINE,,26 
+   143  CM,BRACE_22,LINE
+   144  LSEL,ALL
+   145  L,17,8  
+   146  LSEL,S,LINE,,27 
+   147  CM,BRACE_23,LINE
+   148  LSEL,ALL
+   149  L,16,10 
+   150  LSEL,S,LINE,,28 
+   151  CM,BRACE_24,LINE
+   152  LSEL,ALL
+   153      
+   154  ! ELEMENT SIZE !
+   155  ESIZE,10
+   156      
+   157  ! Meshing CORNER Beams (SECNUM=1) ! 
+   158  SECNUM,1
+   159  LSEL,ALL
+   160  LSEL,NONE   
+   161  LSEL,S,LINE,,1  
+   162  LSEL,A,LINE,,6  
+   163  LSEL,A,LINE,,7  
+   164  LSEL,A,LINE,,8  
+   165  LMESH,ALL   
+   166      
+   167  ! Meshing BRACE beam (SECNUM=2) !   
+   168  SECNUM,2
+   169  LSEL,ALL
+   170  LSEL,NONE   
+   171  LSEL,S,LINE,,2  
+   172  LSEL,A,LINE,,3  
+   173  LSEL,A,LINE,,4  
+   174  LSEL,A,LINE,,5  
+   175  LSEL,A,LINE,,9  
+   176  LSEL,A,LINE,,10 
+   177  LSEL,A,LINE,,11 
+   178  LSEL,A,LINE,,12 
+   179  LSEL,A,LINE,,13 
+   180  LSEL,A,LINE,,14 
+   181  LSEL,A,LINE,,15 
+   182  LSEL,A,LINE,,16 
+   183  LSEL,A,LINE,,17 
+   184  LSEL,A,LINE,,18 
+   185  LSEL,A,LINE,,19 
+   186  LSEL,A,LINE,,20 
+   187  LSEL,A,LINE,,21 
+   188  LSEL,A,LINE,,22 
+   189  LSEL,A,LINE,,23 
+   190  LSEL,A,LINE,,24 
+   191  LSEL,A,LINE,,25 
+   192  LSEL,A,LINE,,26 
+   193  LSEL,A,LINE,,27 
+   194  LSEL,A,LINE,,28 
+   195  LMESH,ALL   
+   196      
+   197  /ESHAPE,1 ! Display Cross Section   
+   198  /SHOW,PNG,,0
+   199  /RGB,INDEX,100,100,100,0
+   200  /RGB,INDEX,80,80,80,13  
+   201  /RGB,INDEX,60,60,60,14  
+   202  /RGB,INDEX,0,0,0,15 
+   203  /TYPE,,4
+   204  /VIEW,,0,0,1
+   205  /ANGLE,,30,YM   
+   206  EPLOT   
+   207  /SHOW,close 
+   208  /SHOW,TERM  
+   209  ! SOLUTION !
+   210  /SOLU   
+   211  ANTYPE, STATIC  
+   212  EQSLV,SPARSE
+   213  PSTRES,ON   
+   214      
+   215  ! -- BOUNDARY CONDITIONS -- !   
+   216      
+   217  ! Force 
+   218  ALLSEL,ALL  
+   219  SELTOL,1.0E-6   
+   220  *GET, NodeXMax, NODE, 0, MXLOC, X   
+   221  *GET, NodeXMin, NODE, 0, MNLOC, X   
+   222  *GET, NodeYMax, NODE, 0, MXLOC, Y   
+   223  *GET, NodeYMin, NODE, 0, MNLOC, Y   
+   224  NSEL,S,LOC,Y,NodeYMax   
+   225  F,ALL,FY,-10000 
+   226  F,ALL,FX,0  
+   227  ALLSEL,ALL  
+   228  ! Displacement !
+   229  ALLSEL,ALL  
+   230  NSEL,S,LOC,Y,NodeYMin   
+   231  D,ALL,ALL,0 
+   232  ALLSEL,ALL  
+   233      
+   234  SOLVE   
+   235      
+   236  FINISH  
+   237  ! ===== APDL OUTPUT FILE ===== !
+   238      
+   239  /POST1  
+   240  SET,LAST
+   241      
+   242  ALLSEL,ALL  
+   243  *GET,E_COUNT,ELEM,0,COUNT   
+   244      
+   245  ! Number of Columns: 4  
+   246  ! Number of Braces : 24 
+   247      
+   248  *CFOPEN, APDL_Eigen_Internal,txt
+   249      
+   250  ! Loop over Columns 
+   251  *DO,ii,1,4,1
+   252     CMSEL,S,COLUMN_%ii%  
+   253  ESLL,S  
+   254  ESEL,R,ENAME,,189   
+   255     *IF,ii,LT,10,THEN
+   256         *VWRITE,ii   
+   257         ("NS ColMember_",F2.0)   
+   258     *ELSE
+   259         *VWRITE,ii   
+   260         ("NS ColMember_",F3.0)   
+   261     *ENDIF   
+   262  *GET,nElem,ELEM,0,COUNT 
+   263     *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]' 
+   264     (A12,A20,A20,A20,A20,A20,A20)
+   265     ELEM = 0 
+   266     *DO,jj,1,nElem,1 
+   267         ELEM = ELNEXT(ELEM)  
+   268         *GET,NF,ELEM,ELEM,SMISC,1
+   269         *GET,MY,ELEM,ELEM,SMISC,2
+   270         *GET,MZ,ELEM,ELEM,SMISC,3
+   271         *GET,VY,ELEM,ELEM,SMISC,4
+   272         *GET,VZ,ELEM,ELEM,SMISC,5
+   273         *GET,TQ,ELEM,ELEM,SMISC,6
+   274         *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ   
+   275         (F12.0,6E20.8)   
+   276     *ENDDO   
+   277      
+   278  *ENDDO! Loop over Braces
+   279  *DO,ii,1,24,1   
+   280     CMSEL,S,BRACE_%ii%,LINE  
+   281     ESLL,S   
+   282     ESEL,R,ENAME,,189
+   283     *IF,ii,LT,10,THEN
+   284         *VWRITE,ii   
+   285         ("NS BraceMember_",F2.0) 
+   286     *ELSE
+   287         *VWRITE,ii   
+   288         ("NS BraceMember_",F3.0) 
+   289     *ENDIF   
+   290  *GET,nElem,ELEM,0,COUNT 
+   291     *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]' 
+   292     (A12,6A20)   
+   293     elem = 0 
+   294     *DO,jj,1,nElem,1 
+   295         ELEM = ELNEXT(ELEM)  
+   296         *GET,NF,ELEM,ELEM,SMISC,1
+   297         *GET,MY,ELEM,ELEM,SMISC,2
+   298         *GET,MZ,ELEM,ELEM,SMISC,3
+   299         *GET,VY,ELEM,ELEM,SMISC,4
+   300         *GET,VZ,ELEM,ELEM,SMISC,5
+   301         *GET,TQ,ELEM,ELEM,SMISC,6
+   302         *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ   
+   303         (F12.0,6E20.8)   
+   304     *ENDDO   
+   305  *ENDDO  
+   306  *CFCLOS 
+   307  ALLSEL  
+   308  *GET,ecnt,ELEM,0,COUNT  
+   309  *GET,enum,ELEM,0,NUM,MIN
+   310  totvol = 0  
+   311  *DO,i,1,ecnt
+   312     *GET,ev,ELEM,enum,VOLU   
+   313     totvol = totvol + ev 
+   314     enum = ELNEXT(enum)  
+   315  *ENDDO  
+   316  dens = 7.85E-6 ! kg/mm^3
+   317  Comp_mass = dens*totvol 
+   318  *CFOPEN,MASS_assembly,txt   
+   319  *VWRITE,Comp_mass   
+   320  (F12.5) 
+   321  *CFCLOS 
+   322  FINISH  
+   323  ALLSEL,ALL  
+   324  ! Eigenbuckling Solution!   
+   325  /SOLU   
+   326  ANTYPE,BUCKLE   
+   327  BUCOPT,LANB,10  
+   328  MXPAND,ALL  
+   329  OUTRES,ALL,ALL  
+   330  SOLVE   
+   331  FINISH  
+   332  /POST1  
+   333  *CFOPEN,Eigenvalue1,txt 
+   334  *DO,jj,1,10,1   
+   335     *GET,MS%jj%,MODE,jj,FREQ 
+   336     *VWRITE,MS%jj%   
+   337     (F10.5)  
+   338  *ENDDO  
+   339  *CFCLOS 
+   340      
+   341      
+
+ RUN SETUP PROCEDURE FROM FILE= C:\Program Files\ANSYS Inc\v251\ANSYS\apdl\start.ans
+
+ /INPUT FILE= C:\Program Files\ANSYS Inc\v251\ANSYS\apdl\start.ans  LINE=       0
+
+ MPA UNITS SPECIFIED FOR INTERNAL    
+  LENGTH      = MILLIMETERS (mm)
+  MASS        = TONNE (Mg)
+  TIME        = SECONDS (sec)
+  TEMPERATURE = CELSIUS (C)
+  TOFFSET     = 273.0
+  FORCE       = NEWTON (N)
+  HEAT        = MILLIJOULES (mJ)
+
+ INPUT  UNITS ARE ALSO SET TO MPA 
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00254321  VERSION=WINDOWS x64   14:57:25  MAR 23, 2026 CP=      0.188
+
+                                                                               
+
+
+
+          ***** MAPDL ANALYSIS DEFINITION (PREP7) *****
+
+ ELEMENT TYPE          1 IS BEAM189      3-D 3-NODE BEAM             
+  KEYOPT( 1- 6)=        0      0      0        0      0      0
+  KEYOPT( 7-12)=        0      0      0        0      0      0
+  KEYOPT(13-18)=        0      0      0        0      0      0
+
+ CURRENT NODAL DOF SET IS  UX    UY    UZ    ROTX  ROTY  ROTZ
+  THREE-DIMENSIONAL MODEL
+                                   
+   INPUT SECTION ID NUMBER                  1
+   INPUT SECTION TYPE                 BEAM
+   INPUT BEAM SECTION SUBTYPE         Circular Tube   
+   INPUT BEAM SECTION NAME                    
+                     
+   SECTION ID NUMBER IS:            1
+   BEAM SECTION TYPE IS:     Circular Tube   
+   BEAM SECTION NAME IS:             
+   COMPUTED BEAM SECTION DATA SUMMARY:
+    Area                 =  688.42    
+    Iyy                  = 0.46001E+06
+    Iyz                  = 0.18190E-11
+    Izz                  = 0.46001E+06
+    Warping Constant     = 0.27582E-21
+    Torsion Constant     = 0.92002E+06
+    Centroid Y           = 0.26423E-14
+    Centroid Z           = 0.29726E-14
+    Shear Center Y       = 0.10545E-13
+    Shear Center Z       =-0.59903E-15
+    Shear Correction-xy  = 0.50089    
+    Shear Correction-yz  = 0.13712E-13
+    Shear Correction-xz  = 0.50089    
+                 
+    Beam Section is offset to CENTROID of cross section
+                                   
+   INPUT SECTION ID NUMBER                  2
+   INPUT SECTION TYPE                 BEAM
+   INPUT BEAM SECTION SUBTYPE         Circular Tube   
+   INPUT BEAM SECTION NAME                    
+                     
+   SECTION ID NUMBER IS:            2
+   BEAM SECTION TYPE IS:     Circular Tube   
+   BEAM SECTION NAME IS:             
+   COMPUTED BEAM SECTION DATA SUMMARY:
+    Area                 =  177.61    
+    Iyy                  =  13536.    
+    Iyz                  =-0.56843E-13
+    Izz                  =  13536.    
+    Warping Constant     = 0.36708E-24
+    Torsion Constant     =  27071.    
+    Centroid Y           =-0.64008E-15
+    Centroid Z           = 0.40005E-15
+    Shear Center Y       =-0.10064E-14
+    Shear Center Z       = 0.34175E-14
+    Shear Correction-xy  = 0.50676    
+    Shear Correction-yz  =-0.96728E-14
+    Shear Correction-xz  = 0.50676    
+                 
+    Beam Section is offset to CENTROID of cross section
+
+ MATERIAL          1     EX   =   200000.0      
+
+ MATERIAL          1     PRXY =  0.3000000      
+
+ MATERIAL          1     DENS =   0.000000      
+
+ KEYPOINT        1                  X,Y,Z=   0.00000       0.00000       0.00000      IN CSYS=        0
+
+ KEYPOINT        2                  X,Y,Z=   0.00000       2000.00       0.00000      IN CSYS=        0
+
+ LINE CONNECTS KEYPOINTS      1     2
+  LINE NO.=     1  KP1=      1  TAN1=    0.0000  -1.0000   0.0000
+                   KP2=      2  TAN2=    0.0000   1.0000   0.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          1 STEP          1
+
+        1  LINES (OF        1  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = COLUMN_1  ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          1 STEP          1
+
+        1  LINES (OF        1  DEFINED) SELECTED BY LSEL COMMAND.
+
+ KEYPOINT        3                  X,Y,Z=   0.00000       50.0000       0.00000      IN CSYS=        0
+
+ KEYPOINT        4                  X,Y,Z=   250.000       50.0000       0.00000      IN CSYS=        0
+
+ LINE CONNECTS KEYPOINTS      3     4
+  LINE NO.=     2  KP1=      3  TAN1=   -1.0000   0.0000   0.0000
+                   KP2=      4  TAN2=    1.0000   0.0000   0.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE         2 TO          2 STEP          1
+
+        1  LINES (OF        2  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_1   ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          2 STEP          1
+
+        2  LINES (OF        2  DEFINED) SELECTED BY LSEL COMMAND.
+
+ KEYPOINT        5                  X,Y,Z=   250.000       50.0000       250.000      IN CSYS=        0
+
+ LINE CONNECTS KEYPOINTS      4     5
+  LINE NO.=     3  KP1=      4  TAN1=    0.0000   0.0000  -1.0000
+                   KP2=      5  TAN2=    0.0000   0.0000   1.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE         3 TO          3 STEP          1
+
+        1  LINES (OF        3  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_2   ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          3 STEP          1
+
+        3  LINES (OF        3  DEFINED) SELECTED BY LSEL COMMAND.
+
+ KEYPOINT        6                  X,Y,Z=   0.00000       50.0000       250.000      IN CSYS=        0
+
+ LINE CONNECTS KEYPOINTS      5     6
+  LINE NO.=     4  KP1=      5  TAN1=    1.0000   0.0000   0.0000
+                   KP2=      6  TAN2=   -1.0000   0.0000   0.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE         4 TO          4 STEP          1
+
+        1  LINES (OF        4  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_3   ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          4 STEP          1
+
+        4  LINES (OF        4  DEFINED) SELECTED BY LSEL COMMAND.
+
+ LINE CONNECTS KEYPOINTS      6     3
+  LINE NO.=     5  KP1=      6  TAN1=    0.0000   0.0000   1.0000
+                   KP2=      3  TAN2=    0.0000   0.0000  -1.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE         5 TO          5 STEP          1
+
+        1  LINES (OF        5  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_4   ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          5 STEP          1
+
+        5  LINES (OF        5  DEFINED) SELECTED BY LSEL COMMAND.
+
+ KEYPOINT        7                  X,Y,Z=   250.000       0.00000       250.000      IN CSYS=        0
+
+ KEYPOINT        8                  X,Y,Z=   250.000       2000.00       250.000      IN CSYS=        0
+
+ LINE CONNECTS KEYPOINTS      7     8
+  LINE NO.=     6  KP1=      7  TAN1=    0.0000  -1.0000   0.0000
+                   KP2=      8  TAN2=    0.0000   1.0000   0.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE         6 TO          6 STEP          1
+
+        1  LINES (OF        6  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = COLUMN_2  ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          6 STEP          1
+
+        6  LINES (OF        6  DEFINED) SELECTED BY LSEL COMMAND.
+
+ KEYPOINT        9                  X,Y,Z=   0.00000       0.00000       250.000      IN CSYS=        0
+
+ KEYPOINT       10                  X,Y,Z=   0.00000       2000.00       250.000      IN CSYS=        0
+
+ LINE CONNECTS KEYPOINTS      9    10
+  LINE NO.=     7  KP1=      9  TAN1=    0.0000  -1.0000   0.0000
+                   KP2=     10  TAN2=    0.0000   1.0000   0.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE         7 TO          7 STEP          1
+
+        1  LINES (OF        7  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = COLUMN_3  ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          7 STEP          1
+
+        7  LINES (OF        7  DEFINED) SELECTED BY LSEL COMMAND.
+
+ KEYPOINT       11                  X,Y,Z=   250.000       0.00000       0.00000      IN CSYS=        0
+
+ KEYPOINT       12                  X,Y,Z=   250.000       2000.00       0.00000      IN CSYS=        0
+
+ LINE CONNECTS KEYPOINTS     11    12
+  LINE NO.=     8  KP1=     11  TAN1=    0.0000  -1.0000   0.0000
+                   KP2=     12  TAN2=    0.0000   1.0000   0.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE         8 TO          8 STEP          1
+
+        1  LINES (OF        8  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = COLUMN_4  ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          8 STEP          1
+
+        8  LINES (OF        8  DEFINED) SELECTED BY LSEL COMMAND.
+
+ LINE CONNECTS KEYPOINTS     12     8
+  LINE NO.=     9  KP1=     12  TAN1=    0.0000   0.0000  -1.0000
+                   KP2=      8  TAN2=    0.0000   0.0000   1.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE         9 TO          9 STEP          1
+
+        1  LINES (OF        9  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_5   ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          9 STEP          1
+
+        9  LINES (OF        9  DEFINED) SELECTED BY LSEL COMMAND.
+
+ LINE CONNECTS KEYPOINTS     10     8
+  LINE NO.=    10  KP1=     10  TAN1=   -1.0000   0.0000   0.0000
+                   KP2=      8  TAN2=    1.0000   0.0000   0.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE        10 TO         10 STEP          1
+
+        1  LINES (OF       10  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_6   ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         10 STEP          1
+
+       10  LINES (OF       10  DEFINED) SELECTED BY LSEL COMMAND.
+
+ LINE CONNECTS KEYPOINTS     12     2
+  LINE NO.=    11  KP1=     12  TAN1=    1.0000   0.0000   0.0000
+                   KP2=      2  TAN2=   -1.0000   0.0000   0.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE        11 TO         11 STEP          1
+
+        1  LINES (OF       11  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_7   ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         11 STEP          1
+
+       11  LINES (OF       11  DEFINED) SELECTED BY LSEL COMMAND.
+
+ LINE CONNECTS KEYPOINTS      2    10
+  LINE NO.=    12  KP1=      2  TAN1=    0.0000   0.0000  -1.0000
+                   KP2=     10  TAN2=    0.0000   0.0000   1.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE        12 TO         12 STEP          1
+
+        1  LINES (OF       12  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_8   ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         12 STEP          1
+
+       12  LINES (OF       12  DEFINED) SELECTED BY LSEL COMMAND.
+
+ KEYPOINT       13                  X,Y,Z=   117.500       2212.00       125.000      IN CSYS=        0
+
+ LINE CONNECTS KEYPOINTS     10    13
+  LINE NO.=    13  KP1=     10  TAN1=   -0.4308  -0.7774   0.4583
+                   KP2=     13  TAN2=    0.4308   0.7774  -0.4583
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE        13 TO         13 STEP          1
+
+        1  LINES (OF       13  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_9   ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         13 STEP          1
+
+       13  LINES (OF       13  DEFINED) SELECTED BY LSEL COMMAND.
+
+ LINE CONNECTS KEYPOINTS     13     2
+  LINE NO.=    14  KP1=     13  TAN1=    0.4308   0.7774   0.4583
+                   KP2=      2  TAN2=   -0.4308  -0.7774  -0.4583
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE        14 TO         14 STEP          1
+
+        1  LINES (OF       14  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_10  ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         14 STEP          1
+
+       14  LINES (OF       14  DEFINED) SELECTED BY LSEL COMMAND.
+
+ LINE CONNECTS KEYPOINTS     13     8
+  LINE NO.=    15  KP1=     13  TAN1=   -0.4740   0.7585  -0.4472
+                   KP2=      8  TAN2=    0.4740  -0.7585   0.4472
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE        15 TO         15 STEP          1
+
+        1  LINES (OF       15  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_11  ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         15 STEP          1
+
+       15  LINES (OF       15  DEFINED) SELECTED BY LSEL COMMAND.
+
+ LINE CONNECTS KEYPOINTS     13    12
+  LINE NO.=    16  KP1=     13  TAN1=   -0.4740   0.7585   0.4472
+                   KP2=     12  TAN2=    0.4740  -0.7585  -0.4472
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE        16 TO         16 STEP          1
+
+        1  LINES (OF       16  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_12  ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         16 STEP          1
+
+       16  LINES (OF       16  DEFINED) SELECTED BY LSEL COMMAND.
+
+ KEYPOINT       14                  X,Y,Z=   0.00000       1050.00       250.000      IN CSYS=        0
+
+ LINE CONNECTS KEYPOINTS      3    14
+  LINE NO.=    17  KP1=      3  TAN1=    0.0000  -0.9701  -0.2425
+                   KP2=     14  TAN2=    0.0000   0.9701   0.2425
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE        17 TO         17 STEP          1
+
+        1  LINES (OF       17  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_13  ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         17 STEP          1
+
+       17  LINES (OF       17  DEFINED) SELECTED BY LSEL COMMAND.
+
+ LINE CONNECTS KEYPOINTS     14     2
+  LINE NO.=    18  KP1=     14  TAN1=    0.0000  -0.9671   0.2545
+                   KP2=      2  TAN2=    0.0000   0.9671  -0.2545
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE        18 TO         18 STEP          1
+
+        1  LINES (OF       18  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_14  ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         18 STEP          1
+
+       18  LINES (OF       18  DEFINED) SELECTED BY LSEL COMMAND.
+
+ KEYPOINT       15                  X,Y,Z=   0.00000       1050.00       0.00000      IN CSYS=        0
+
+ LINE CONNECTS KEYPOINTS     14    15
+  LINE NO.=    19  KP1=     14  TAN1=    0.0000   0.0000   1.0000
+                   KP2=     15  TAN2=    0.0000   0.0000  -1.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE        19 TO         19 STEP          1
+
+        1  LINES (OF       19  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_15  ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         19 STEP          1
+
+       19  LINES (OF       19  DEFINED) SELECTED BY LSEL COMMAND.
+
+ KEYPOINT       16                  X,Y,Z=   250.000       1050.00       250.000      IN CSYS=        0
+
+ LINE CONNECTS KEYPOINTS      6    16
+  LINE NO.=    20  KP1=      6  TAN1=   -0.2425  -0.9701   0.0000
+                   KP2=     16  TAN2=    0.2425   0.9701   0.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE        20 TO         20 STEP          1
+
+        1  LINES (OF       20  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_16  ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         20 STEP          1
+
+       20  LINES (OF       20  DEFINED) SELECTED BY LSEL COMMAND.
+
+ LINE CONNECTS KEYPOINTS     16    14
+  LINE NO.=    21  KP1=     16  TAN1=    1.0000   0.0000   0.0000
+                   KP2=     14  TAN2=   -1.0000   0.0000   0.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE        21 TO         21 STEP          1
+
+        1  LINES (OF       21  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_17  ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         21 STEP          1
+
+       21  LINES (OF       21  DEFINED) SELECTED BY LSEL COMMAND.
+
+ KEYPOINT       17                  X,Y,Z=   250.000       1050.00       0.00000      IN CSYS=        0
+
+ LINE CONNECTS KEYPOINTS     16    17
+  LINE NO.=    22  KP1=     16  TAN1=    0.0000   0.0000   1.0000
+                   KP2=     17  TAN2=    0.0000   0.0000  -1.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE        22 TO         22 STEP          1
+
+        1  LINES (OF       22  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_18  ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         22 STEP          1
+
+       22  LINES (OF       22  DEFINED) SELECTED BY LSEL COMMAND.
+
+ LINE CONNECTS KEYPOINTS      5    17
+  LINE NO.=    23  KP1=      5  TAN1=    0.0000  -0.9701   0.2425
+                   KP2=     17  TAN2=    0.0000   0.9701  -0.2425
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE        23 TO         23 STEP          1
+
+        1  LINES (OF       23  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_19  ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         23 STEP          1
+
+       23  LINES (OF       23  DEFINED) SELECTED BY LSEL COMMAND.
+
+ LINE CONNECTS KEYPOINTS      4    15
+  LINE NO.=    24  KP1=      4  TAN1=    0.2425  -0.9701   0.0000
+                   KP2=     15  TAN2=   -0.2425   0.9701   0.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE        24 TO         24 STEP          1
+
+        1  LINES (OF       24  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_20  ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         24 STEP          1
+
+       24  LINES (OF       24  DEFINED) SELECTED BY LSEL COMMAND.
+
+ LINE CONNECTS KEYPOINTS     15    17
+  LINE NO.=    25  KP1=     15  TAN1=   -1.0000   0.0000   0.0000
+                   KP2=     17  TAN2=    1.0000   0.0000   0.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE        25 TO         25 STEP          1
+
+        1  LINES (OF       25  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_21  ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         25 STEP          1
+
+       25  LINES (OF       25  DEFINED) SELECTED BY LSEL COMMAND.
+
+ LINE CONNECTS KEYPOINTS     15    12
+  LINE NO.=    26  KP1=     15  TAN1=   -0.2545  -0.9671   0.0000
+                   KP2=     12  TAN2=    0.2545   0.9671   0.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE        26 TO         26 STEP          1
+
+        1  LINES (OF       26  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_22  ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         26 STEP          1
+
+       26  LINES (OF       26  DEFINED) SELECTED BY LSEL COMMAND.
+
+ LINE CONNECTS KEYPOINTS     17     8
+  LINE NO.=    27  KP1=     17  TAN1=    0.0000  -0.9671  -0.2545
+                   KP2=      8  TAN2=    0.0000   0.9671   0.2545
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE        27 TO         27 STEP          1
+
+        1  LINES (OF       27  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_23  ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         27 STEP          1
+
+       27  LINES (OF       27  DEFINED) SELECTED BY LSEL COMMAND.
+
+ LINE CONNECTS KEYPOINTS     16    10
+  LINE NO.=    28  KP1=     16  TAN1=    0.2545  -0.9671   0.0000
+                   KP2=     10  TAN2=   -0.2545   0.9671   0.0000
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE        28 TO         28 STEP          1
+
+        1  LINES (OF       28  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ DEFINITION OF COMPONENT = BRACE_24  ENTITY=LINE
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         28 STEP          1
+
+       28  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ DEFAULT ELEMENT DIVISIONS PER LINE BASED ON ELEMENT SIZE =   10.0    
+
+ SECTION ID NUMBER=        1
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         28 STEP          1
+
+       28  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ NONE SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         28 STEP          1
+
+        0 LINES (OF       28  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO          1 STEP          1
+
+        1  LINES (OF       28  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE         6 TO          6 STEP          1
+
+        2  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE         7 TO          7 STEP          1
+
+        3  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE         8 TO          8 STEP          1
+
+        4  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ GENERATE NODES AND ELEMENTS   ON  ALL  SELECTED LINES    
+
+ NUMBER OF LINES MESHED     =         4
+ MAXIMUM NODE NUMBER        =      1604
+ MAXIMUM ELEMENT NUMBER     =       800
+
+ SECTION ID NUMBER=        2
+
+ ALL SELECT   FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         28 STEP          1
+
+       28  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ NONE SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE         1 TO         28 STEP          1
+
+        0 LINES (OF       28  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ SELECT       FOR ITEM=LINE COMPONENT=    
+  IN RANGE         2 TO          2 STEP          1
+
+        1  LINES (OF       28  DEFINED) SELECTED BY LSEL  COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE         3 TO          3 STEP          1
+
+        2  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE         4 TO          4 STEP          1
+
+        3  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE         5 TO          5 STEP          1
+
+        4  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE         9 TO          9 STEP          1
+
+        5  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE        10 TO         10 STEP          1
+
+        6  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE        11 TO         11 STEP          1
+
+        7  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE        12 TO         12 STEP          1
+
+        8  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE        13 TO         13 STEP          1
+
+        9  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE        14 TO         14 STEP          1
+
+       10  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE        15 TO         15 STEP          1
+
+       11  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE        16 TO         16 STEP          1
+
+       12  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE        17 TO         17 STEP          1
+
+       13  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE        18 TO         18 STEP          1
+
+       14  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE        19 TO         19 STEP          1
+
+       15  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE        20 TO         20 STEP          1
+
+       16  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE        21 TO         21 STEP          1
+
+       17  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE        22 TO         22 STEP          1
+
+       18  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE        23 TO         23 STEP          1
+
+       19  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE        24 TO         24 STEP          1
+
+       20  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE        25 TO         25 STEP          1
+
+       21  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE        26 TO         26 STEP          1
+
+       22  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE        27 TO         27 STEP          1
+
+       23  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ ALSO SELECT  FOR ITEM=LINE COMPONENT=    
+  IN RANGE        28 TO         28 STEP          1
+
+       24  LINES (OF       28  DEFINED) SELECTED BY LSEL COMMAND.
+
+ GENERATE NODES AND ELEMENTS   ON  ALL  SELECTED LINES    
+
+ NUMBER OF LINES MESHED     =        24
+ MAXIMUM NODE NUMBER        =      4037
+ MAXIMUM ELEMENT NUMBER     =      2024
+
+ ELEMENT DISPLAYS USING REAL CONSTANT OR SECTION DATA WITH FACTOR     1.00
+
+ /SHOW SWITCH PLOTS TO  PNG         - RASTER MODE.
+
+ RED=100% GREEN=100% BLUE=100%
+  for color index  0.
+
+ RED=80% GREEN=80% BLUE=80%
+  for color index 13.
+
+ RED=60% GREEN=60% BLUE=60%
+  for color index 14.
+
+ RED=0% GREEN=0% BLUE=0%
+  for color index 15.
+
+ HIDDEN DISPLAY (PRECISE) IN WINDOW  1
+
+ view point for window  1    0.0000      0.0000      1.0000    
+
+ ROTATION ANGLE FOR WINDOW 1 IS    30.00 ABOUT AXIS YM
+
+ PRODUCE ELEMENT PLOT IN DSYS =   0
+
+ CUMULATIVE DISPLAY NUMBER   1 WRITTEN TO FILE file000.png       - RASTER MODE.
+ DISPLAY TITLE= 
+                                                                         
+
+ *** NOTE ***
+
+  libpng version 1.0.8 - July 24, 2000
+    Copyright (c) 1998-2000 Glenn Randers-Pehrson
+    Copyright (c) 1996, 1997 Andreas Dilger
+    Copyright (c) 1995, 1996 Guy Eric Schalnat, Group 42, Inc.
+
+ ZLIB Version 1.2.13 Copyright (C) 1995-1998 Jean-loup Gailly and Mark Adler
+
+
+ ***** ROUTINE COMPLETED *****  CP =         2.062
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+
+ PERFORM A STATIC ANALYSIS
+  THIS WILL BE A NEW ANALYSIS
+
+ USE SPARSE MATRIX DIRECT SOLVER
+
+
+ CALCULATE PRESTRESS EFFECTS FOR A SUBSEQUENT PRESTRESSED ANALYSIS
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ SELECT TOLERANCE= 0.10000E-05
+
+ *GET  NODEXMAX  FROM  NODE  ITEM=MXLO X     VALUE=  250.000000     
+
+ *GET  NODEXMIN  FROM  NODE  ITEM=MNLO X     VALUE=  0.00000000     
+
+ *GET  NODEYMAX  FROM  NODE  ITEM=MXLO Y     VALUE=  2212.00000     
+
+ *GET  NODEYMIN  FROM  NODE  ITEM=MNLO Y     VALUE=  0.00000000     
+
+ SELECT       FOR ITEM=LOC  COMPONENT=Y     BETWEEN  2212.0     AND   2212.0    
+   KABS=  0.  TOLERANCE= 0.100000E-05
+
+          1  NODES (OF       4037  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ SPECIFIED NODAL LOAD FY   FOR SELECTED NODES         1 TO     4037 BY        1
+  REAL= -10000.0000       IMAG=  0.00000000    
+
+ SPECIFIED NODAL LOAD FX   FOR SELECTED NODES         1 TO     4037 BY        1
+  REAL=  0.00000000       IMAG=  0.00000000    
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ SELECT       FOR ITEM=LOC  COMPONENT=Y     BETWEEN  0.0000     AND   0.0000    
+   KABS=  0.  TOLERANCE= 0.100000E-05
+
+          4  NODES (OF       4037  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ SPECIFIED CONSTRAINT UX   FOR SELECTED NODES            1 TO        4037 BY           1
+ REAL=  0.00000000       IMAG=  0.00000000    
+ ADDITIONAL DOFS=  UY    UZ    ROTX  ROTY  ROTZ
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** NOTE ***                            CP =       2.156   TIME= 14:57:25
+ There is no title defined for this analysis.                            
+
+ *** SELECTION OF ELEMENT TECHNOLOGIES FOR APPLICABLE ELEMENTS ***
+                ---GIVE SUGGESTIONS ONLY---
+
+ ELEMENT TYPE         1 IS BEAM189 . KEYOPT(1)=1 IS SUGGESTED FOR NON-CIRCULAR CROSS
+ SECTIONS.
+
+ ELEMENT TYPE         1 IS BEAM189 . KEYOPT(15) IS ALREADY SET AS SUGGESTED.
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00254321  VERSION=WINDOWS x64   14:57:25  MAR 23, 2026 CP=      2.188
+
+                                                                               
+
+
+
+                       S O L U T I O N   O P T I O N S
+
+   PROBLEM DIMENSIONALITY. . . . . . . . . . . . .3-D                  
+   DEGREES OF FREEDOM. . . . . . UX   UY   UZ   ROTX ROTY ROTZ
+   ANALYSIS TYPE . . . . . . . . . . . . . . . . .STATIC (STEADY-STATE)
+   PRESTRESS EFFECTS CALCULATED. . . . . . . . . .YES
+   EQUATION SOLVER OPTION. . . . . . . . . . . . .SPARSE             
+   GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
+
+ *** NOTE ***                            CP =       2.188   TIME= 14:57:25
+ Present time 0 is less than or equal to the previous time.  Time will   
+ default to 1.                                                           
+
+ *** NOTE ***                            CP =       2.188   TIME= 14:57:25
+ The conditions for direct assembly have been met.  No .emat or .erot    
+ files will be produced.                                                 
+
+                      L O A D   S T E P   O P T I O N S
+
+   LOAD STEP NUMBER. . . . . . . . . . . . . . . .     1
+   TIME AT END OF THE LOAD STEP. . . . . . . . . .  1.0000    
+   NUMBER OF SUBSTEPS. . . . . . . . . . . . . . .     1
+   STEP CHANGE BOUNDARY CONDITIONS . . . . . . . .    NO
+   PRINT OUTPUT CONTROLS . . . . . . . . . . . . .NO PRINTOUT
+   DATABASE OUTPUT CONTROLS. . . . . . . . . . . .ALL DATA WRITTEN
+                                                  FOR THE LAST SUBSTEP
+
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+ *** NOTE ***                            CP =       2.438   TIME= 14:57:25
+ Predictor is ON by default for structural elements with rotational      
+ degrees of freedom.  Use the PRED,OFF command to turn the predictor     
+ OFF if it adversely affects the convergence.                            
+
+
+ Range of element maximum matrix coefficients in global coordinates
+ Maximum = 4.918552305E+10 at element 400.                               
+ Minimum = 1.404146883E+09 at element 1103.                              
+
+   *** ELEMENT MATRIX FORMULATION TIMES
+     TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
+
+        1      2024  BEAM189       0.969   0.000479
+ Time at end of element matrix formulation CP = 2.5625.                  
+
+ SPARSE MATRIX DIRECT SOLVER.
+  Number of equations =       24198,    Maximum wavefront =     54
+
+
+  Memory allocated on this process
+  -------------------------------------------------------------------
+  Equation solver memory allocated                     =    23.877 MB
+  Equation solver memory required for in-core mode     =    23.093 MB
+  Equation solver memory required for out-of-core mode =    17.977 MB
+  Total (solver and non-solver) memory allocated       =   409.569 MB
+
+ *** NOTE ***                            CP =       2.812   TIME= 14:57:25
+ The Sparse Matrix Solver is currently running in the in-core memory     
+ mode.  This memory mode uses the most amount of memory in order to      
+ avoid using the hard drive as much as possible, which most often        
+ results in the fastest solution time.  This mode is recommended if      
+ enough physical memory is present to accommodate all of the solver      
+ data.                                                                   
+ Sparse solver maximum pivot= 4.918552305E+10 at node 1203 ROTZ.         
+ Sparse solver minimum pivot= 118.765804 at node 2406 UZ.                
+ Sparse solver minimum pivot in absolute value= 118.765804 at node 2406  
+ UZ.                                                                     
+
+   *** ELEMENT RESULT CALCULATION TIMES
+     TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
+
+        1      2024  BEAM189       2.156   0.001065
+
+   *** NODAL LOAD CALCULATION TIMES
+     TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
+
+        1      2024  BEAM189       0.094   0.000046
+ *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      1
+ *** TIME =   1.00000         TIME INC =   1.00000      NEW TRIANG MATRIX
+
+
+ *** MAPDL BINARY FILE STATISTICS
+  BUFFER SIZE USED= 16384
+        2.750 MB WRITTEN ON ASSEMBLED MATRIX FILE: file.full
+        4.750 MB WRITTEN ON RESULTS FILE: file.rst
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  CP =         3.922
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00254321  VERSION=WINDOWS x64   14:57:25  MAR 23, 2026 CP=      3.922
+
+                                                                               
+
+
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ *** NOTE ***                            CP =       3.922   TIME= 14:57:25
+ Reading results into the database (SET command) will update the current 
+ displacement and force boundary conditions in the database with the     
+ values from the results file for that load set.  Note that any          
+ subsequent solutions will use these values unless action is taken to    
+ either SAVE the current values or not overwrite them (/EXIT,NOSAVE).    
+
+
+ USE LAST SUBSTEP ON RESULT FILE  FOR LOAD CASE 0 
+
+ SET COMMAND GOT LOAD STEP=     1  SUBSTEP=     1  CUMULATIVE ITERATION=     1
+   TIME/FREQUENCY=  1.0000    
+ TITLE=                                                                         
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ *GET  E_COUNT   FROM  ELEM  ITEM=COUN           VALUE=  2024.00000    
+
+ OPENED FILE= APDL_Eigen_Internal.txt FOR COMMAND FILE DATA 
+
+
+ *DO LOOP ON PARAMETER= II FROM  1.0000     TO  4.0000     BY  1.0000    
+
+ SELECT      COMPONENT COLUMN_1                                                                                                                                                                                                                                                        
+
+ SELECT      ELEMENTS CREATED FROM SELECTED LINES.
+
+        200  ELEMENTS (OF       2024  DEFINED) SELECTED FROM        1 SELECTED LINES
+         BY  ESLL  COMMAND.
+
+ RESELECT     FOR ITEM=ENAM COMPONENT=    
+  IN RANGE       189 TO        189 STEP          1
+
+        200  ELEMENTS (OF       2024  DEFINED) SELECTED BY  ESEL  COMMAND.
+
+ *IF  ii  ( =   1.00000     )  LT  
+      10  ( =   10.0000     )  THEN    
+
+ *ELSE
+
+ *ENDIF
+
+ *GET  NELEM     FROM  ELEM  ITEM=COUN           VALUE=  200.000000    
+
+ PARAMETER ELEM =     0.000000000    
+
+ *DO LOOP ON PARAMETER= JJ FROM  1.0000     TO  200.00     BY  1.0000    
+
+ PARAMETER ELEM =     1.000000000    
+
+ *GET  NF        FROM  ELEM         1  ITEM=SMIS 1         VALUE= -2645.49805    
+
+ *GET  MY        FROM  ELEM         1  ITEM=SMIS 2         VALUE=  2055.59741    
+
+ *GET  MZ        FROM  ELEM         1  ITEM=SMIS 3         VALUE=  2512.24658    
+
+ *GET  VY        FROM  ELEM         1  ITEM=SMIS 4         VALUE= -56.1919937    
+
+ *GET  VZ        FROM  ELEM         1  ITEM=SMIS 5         VALUE= -2.72920656    
+
+ *GET  TQ        FROM  ELEM         1  ITEM=SMIS 6         VALUE=  2.58899426    
+
+ *ENDDO  INDEX= JJ                              
+
+ *ENDDO  INDEX= II                              
+
+ *DO LOOP ON PARAMETER= II FROM  1.0000     TO  24.000     BY  1.0000    
+
+ SELECT      COMPONENT BRACE_1                                                                                                                                                                                                                                                         
+
+ SELECT      ELEMENTS CREATED FROM SELECTED LINES.
+
+         25  ELEMENTS (OF       2024  DEFINED) SELECTED FROM        1 SELECTED LINES
+         BY  ESLL  COMMAND.
+
+ RESELECT     FOR ITEM=ENAM COMPONENT=    
+  IN RANGE       189 TO        189 STEP          1
+
+         25  ELEMENTS (OF       2024  DEFINED) SELECTED BY  ESEL  COMMAND.
+
+ *IF  ii  ( =   1.00000     )  LT  
+      10  ( =   10.0000     )  THEN    
+
+ *ELSE
+
+ *ENDIF
+
+ *GET  NELEM     FROM  ELEM  ITEM=COUN           VALUE=  25.0000000    
+
+ PARAMETER ELEM =     0.000000000    
+
+ *DO LOOP ON PARAMETER= JJ FROM  1.0000     TO  25.000     BY  1.0000    
+
+ PARAMETER ELEM =     801.0000000    
+
+ *GET  NF        FROM  ELEM       801  ITEM=SMIS 1         VALUE=-0.151714850E-01
+
+ *GET  MY        FROM  ELEM       801  ITEM=SMIS 2         VALUE=-0.712438285    
+
+ *GET  MZ        FROM  ELEM       801  ITEM=SMIS 3         VALUE=  5.73609686    
+
+ *GET  VY        FROM  ELEM       801  ITEM=SMIS 4         VALUE= 0.570305213E-01
+
+ *GET  VZ        FROM  ELEM       801  ITEM=SMIS 5         VALUE= 0.552210584E-02
+
+ *GET  TQ        FROM  ELEM       801  ITEM=SMIS 6         VALUE= 0.176906884E-01
+
+ *ENDDO  INDEX= JJ                              
+
+ *ENDDO  INDEX= II                              
+
+  COMMAND FILE CLOSED 
+
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ *GET  ECNT      FROM  ELEM  ITEM=COUN           VALUE=  2024.00000    
+
+ *GET  ENUM      FROM  ELEM  ITEM=NUM  MIN       VALUE=  1.00000000    
+
+ PARAMETER TOTVOL =     0.000000000    
+
+ *DO LOOP ON PARAMETER= I FROM  1.0000     TO  2024.0     BY  1.0000    
+
+ *GET  EV        FROM  ELEM         1  ITEM=VOLU           VALUE=  6884.15039    
+
+ PARAMETER TOTVOL =     6884.150391    
+
+ PARAMETER ENUM =     2.000000000    
+
+ *ENDDO  INDEX= I                               
+
+ PARAMETER DENS =    0.7850000000E-05
+
+ PARAMETER COMP_MASS =     60.18241659    
+
+ OPENED FILE= MASS_assembly.txt FOR COMMAND FILE DATA 
+
+
+  COMMAND FILE CLOSED 
+
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  CP =         7.391
+
+
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+
+ PERFORM A BUCKLING ANALYSIS
+  THIS WILL BE A NEW ANALYSIS
+
+ *** NOTE ***                            CP =       7.422   TIME= 14:57:26
+ Some analysis options have been reset to their defaults.  Please verify 
+ current settings or respecify as required.                              
+
+
+ USE SYM. BLOCK LANCZOS METHOD TO EXTRACT      10 MODES
+  EXTRACT EIGENVALUES CENTERED ABOUT   0.0000    
+
+
+ EXPAND ALL EXTRACTED MODES
+  DO NOT CALCULATE ELEMENT RESULTS
+
+ *** NOTE ***                            CP =       7.422   TIME= 14:57:26
+ To view 3-D mode shapes of beam or pipe elements, expand the modes with 
+ element results calculation active via Elcalc=YES.                      
+
+ WRITE ALL  ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** NOTE ***                            CP =       7.516   TIME= 14:57:26
+ There is no title defined for this analysis.                            
+
+ *** NOTE ***                            CP =       7.516   TIME= 14:57:26
+ To view 3-D mode shapes of beam or pipe elements, expand the modes with 
+ element results calculation active via the MXPAND command's             
+ Elcalc=YES.                                                             
+
+ *** SELECTION OF ELEMENT TECHNOLOGIES FOR APPLICABLE ELEMENTS ***
+                ---GIVE SUGGESTIONS ONLY---
+
+ ELEMENT TYPE         1 IS BEAM189 . KEYOPT(1)=1 IS SUGGESTED FOR NON-CIRCULAR CROSS
+ SECTIONS.
+
+ ELEMENT TYPE         1 IS BEAM189 . KEYOPT(15) IS ALREADY SET AS SUGGESTED.
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00254321  VERSION=WINDOWS x64   14:57:26  MAR 23, 2026 CP=      7.516
+
+                                                                               
+
+
+
+                       S O L U T I O N   O P T I O N S
+
+   PROBLEM DIMENSIONALITY. . . . . . . . . . . . .3-D                  
+   DEGREES OF FREEDOM. . . . . . UX   UY   UZ   ROTX ROTY ROTZ
+   ANALYSIS TYPE . . . . . . . . . . . . . . . . .BUCKLING             
+      EXTRACTION METHOD. . . . . . . . . . . . . .BLOCK LANCZOS
+   PRESTRESS EFFECTS INCLUDED IF AVAILABLE . . . .YES
+   GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
+
+ *** NOTE ***                            CP =       7.516   TIME= 14:57:26
+ The conditions for direct assembly have been met.  No .emat or .erot    
+ files will be produced.                                                 
+
+                      L O A D   S T E P   O P T I O N S
+
+   LOAD STEP NUMBER. . . . . . . . . . . . . . . .     1
+   PRINT OUTPUT CONTROLS . . . . . . . . . . . . .NO PRINTOUT
+   DATABASE OUTPUT CONTROLS
+      ITEM     FREQUENCY   COMPONENT
+       ALL        ALL               
+
+
+  BLOCK LANCZOS CALCULATION OF UP TO    10 EIGENVECTORS.
+  NUMBER OF EQUATIONS              =        24198
+  MAXIMUM WAVEFRONT                =           54
+  MAXIMUM MODES STORED             =           10
+  MINIMUM EIGENVALUE               = -0.10000E+31
+  MAXIMUM EIGENVALUE               =  0.10000E+31
+  CENTER EIGENVALUE                =  0.00000E+00
+
+
+
+  Memory allocated on this process
+  -------------------------------------------------------------------
+  Equation solver memory allocated                     =    20.035 MB
+  Equation solver memory required for in-core mode     =    19.177 MB
+  Equation solver memory required for out-of-core mode =    11.859 MB
+  Total (solver and non-solver) memory allocated       =   472.918 MB
+
+ *** NOTE ***                            CP =       9.078   TIME= 14:57:26
+ The Sparse Matrix Solver is currently running in the in-core memory     
+ mode.  This memory mode uses the most amount of memory in order to      
+ avoid using the hard drive as much as possible, which most often        
+ results in the fastest solution time.  This mode is recommended if      
+ enough physical memory is present to accommodate all of the solver      
+ data.                                                                   
+
+  Process memory required for in-core LANCZOS Workspace             =     92.044571 MB
+  Process memory required for out-of-core LANCZOS Workspace         =     1.951920 MB
+  Lanczos Memory Mode : INCORE
+
+
+  >> Shift # 1 :                                       : 0 Eigenvalues Converged
+
+  >> Shift # 2 :                                       : 0 Eigenvalues Converged
+
+  >> Shift # 3 :                                       : 0 Eigenvalues Converged
+
+  >> Shift # 4 :  | | |                              : 10 Eigenvalues Converged
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00254321  VERSION=WINDOWS x64   14:57:27  MAR 23, 2026 CP=     12.375
+
+                                                                               
+
+
+
+  ***** EIGENVALUES (LOAD MULTIPLIERS FOR BUCKLING) *****
+            *** FROM BLOCK LANCZOS ITERATION ***
+
+      SHAPE NUMBER   LOAD MULTIPLIER
+
+            1            45.329103    
+            2            45.334242    
+            3            177.75879    
+            4            178.06713    
+            5            186.74980    
+            6            198.04671    
+            7            203.88425    
+            8            211.65182    
+            9            222.35772    
+           10            222.50289    
+
+
+
+
+ *** MAPDL BINARY FILE STATISTICS
+  BUFFER SIZE USED= 16384
+        6.438 MB WRITTEN ON ASSEMBLED MATRIX FILE: file.full
+        1.875 MB WRITTEN ON MODAL MATRIX FILE: file.mode
+        2.750 MB WRITTEN ON RESULTS FILE: file.rst
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  CP =        12.609
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 00254321  VERSION=WINDOWS x64   14:57:27  MAR 23, 2026 CP=     12.734
+
+                                                                               
+
+
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ OPENED FILE= Eigenvalue1.txt FOR COMMAND FILE DATA 
+
+
+ *DO LOOP ON PARAMETER= JJ FROM  1.0000     TO  10.000     BY  1.0000    
+
+ *GET  MS1       FROM  MODE      1  ITEM=FREQ       VALUE=  45.3291034    
+
+ *ENDDO  INDEX= JJ                              
+
+  COMMAND FILE CLOSED 
+
+
+ ***** END OF INPUT ENCOUNTERED *****
+
+
+ NUMBER OF WARNING MESSAGES ENCOUNTERED=          0
+ NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+
+
+
+ ***** PROBLEM TERMINATED BY INDICATED ERROR(S) OR BY END OF INPUT DATA *****
+
++--------------------- M A P D L   S T A T I S T I C S ------------------------+
+
+Release: 2025 R1            Build: 25.1       Update: UP20241202   Platform: WINDOWS x64 
+Date Run: 03/23/2026   Time: 14:57     Process ID: 14520
+Operating System: Windows 11  (Build: 26200)
+
+Processor Model: AMD Ryzen 7 5800H with Radeon Graphics
+
+Compiler: Intel(R) Fortran Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) C/C++ Compiler Classic Version 2021.9  (Build: 20230302)
+          AOCL-BLAS 4.2.1 Build 20240528
+
+Number of machines requested            :    1
+Total number of cores available         :   16
+Number of physical cores available      :    8
+Number of processes requested           :    1
+Number of threads per process requested :    8
+Total number of cores requested         :    8 (Shared Memory Parallel)                    
+
+GPU Acceleration: Not Requested
+
+Job Name: file
+Input File: AnsoutEigen\APDL_Eigen.txt
+Working Directory: C:\Users\atbys\Desktop\DMS4 Local\DMS4\04_EURO_APDL
+
+Total CPU time for main thread                    :        2.0 seconds
+Total CPU time summed for all threads             :       14.0 seconds
+
+Elapsed time spent obtaining a license            :        5.5 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.5 seconds
+Elapsed time spent solution - preprocessing       :        0.0 seconds
+Elapsed time spent computing solution             :        0.8 seconds
+Elapsed time spent solution - postprocessing      :        0.0 seconds
+Elapsed time spent post-processing model (/POST1) :        0.4 seconds
+ 
+Eigensolver used                                  :            Block Lanczos
+Equation solver computational rate                :        0.7 Gflops
+
+Sum of disk space used on all processes           :       15.8 MB
+
+Sum of memory used on all processes               :       99.0 MB
+Sum of memory allocated on all processes          :     2304.0 MB
+Physical memory available                         :         14 GB
+Total amount of I/O written to disk               :        0.0 GB
+Total amount of I/O read from disk                :        0.0 GB
+
++------------------ E N D   M A P D L   S T A T I S T I C S -------------------+
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2025 R1         Build 25.1         UP20241202    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
+ |  Maximum Database Used      16 MB     Maximum Scratch Memory Used     83 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =         13.953       Time  =  14:57:28          |
+ |        Elapsed Time (sec) =         10.000       Date  =  03/23/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*
