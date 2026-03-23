@@ -24,14 +24,14 @@
 import os
 
 
-def Nonlin_Fun(SWcoor, var, Misc, out_dir = "AnsoutNonlin"):
+def Nonlin_Fun(SWcoor, var, Misc, imp_force, out_dir = "AnsoutNonlin"):
     
 
     # Import Radii
     R0, R1, R2, R3 = var 
 
     # Import Misc
-    esize, Hor_Force, Ver_Force, f_y, E_mod, imp_force = Misc
+    esize, Hor_Force, Ver_Force, f_y, E_mod = Misc
 
     # Function to group lines
     def beam_class(p1, p2):

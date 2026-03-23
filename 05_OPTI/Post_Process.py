@@ -68,6 +68,11 @@ def read_forces(filepath: str) -> pd.DataFrame:
             
 def Util_ratio(var, Misc):
 
+    with open("AnsoutEigen/Eigenvalue1.txt") as f:
+        eigenvalues = [float(line.strip()) for line in f if line.strip()]
+
+    alpha_crit = next(v for v in eigenvalues if v > 0)
+
     # Initialize
     Util_list = np.zeros(2)
     # Import Radii
@@ -78,7 +83,7 @@ def Util_ratio(var, Misc):
     A_Brace = np.pi * ((R3**2) - (R2**2)) 
 
     # Import Misc
-    esize, Hor_Force, Ver_Force, f_y, E_mod, alpha_crit = Misc
+    esize, Hor_Force, Ver_Force, f_y, E_mod = Misc
     
     # Read Internal Force Data from APDL
     EigenData = "AnsoutEigen/APDL_Eigen_Internal.txt"
