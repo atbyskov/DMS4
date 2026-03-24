@@ -1,11 +1,12 @@
 ! ===== APDL INPUT FILE ====== ! 
- 
-/UNITS,MPa 
- 
-! EigenBuckling Analysis ! 
+!   Eigenbuckling Analysis     ! 
+! ============================ ! 
+
+/UNITS,MPa ! Set units [mm,Mg,s,C] 
+
+! Static Structural Analysis ! 
 /PREP7 
- 
-ET,1,BEAM189 ! Use BEAM189 
+ET,1,BEAM189 ! Use BEAM189 Elements 
  
 ! CROSS SECTION !
 ! Corner Type (SECTYPE = 1) 

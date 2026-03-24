@@ -7,13 +7,9 @@
 
 # Import packages
 import os
-import shutil
-import math
 
 # Import Functions
 import SW_Import as SW
-from APDL_Eigen import Eigen_Fun
-from APDL_Nonlin import Nonlin_Fun
 from Post_Process import Util_ratio
 from MyAPDLCall import RunAPDL
 
@@ -41,6 +37,7 @@ Misc = [esize, Hor_Force, Ver_Force, f_y, E_mod]
 
 
 f = RunAPDL(SWcoor,var,Misc) # Runs APDL and returns MASS
+
 
 print(f"Mass of Assembly: {f} kg")
 

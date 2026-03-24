@@ -96,354 +96,355 @@
   SHARED MEMORY PARALLEL REQUESTED
     SINGLE PROCESS WITH   8 THREADS REQUESTED
     TOTAL OF     8 CORES REQUESTED
-  INPUT FILE NAME              = C:\Users\atbys\Desktop\DMS4 Local\DMS4\04_EURO_APDL\AnsoutEigen\APDL_Eigen.txt
-  OUTPUT FILE NAME             = C:\Users\atbys\Desktop\DMS4 Local\DMS4\04_EURO_APDL\AnsoutEigen\AnsoutEigen\AnsysOutputWindow.txt
-  INITIAL DIRECTORY = C:\Users\atbys\Desktop\DMS4 Local\DMS4\04_EURO_APDL\AnsoutEigen
+  INPUT FILE NAME              = C:\Users\atbys\Desktop\DMS4 Local\DMS4\05_OPTI\AnsoutEigen\APDL_Eigen.txt
+  OUTPUT FILE NAME             = C:\Users\atbys\Desktop\DMS4 Local\DMS4\05_OPTI\AnsoutEigen\AnsoutEigen\AnsysOutputWindow.txt
+  INITIAL DIRECTORY = C:\Users\atbys\Desktop\DMS4 Local\DMS4\05_OPTI\AnsoutEigen
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
- CURRENT JOBNAME=file  14:57:25  MAR 23, 2026 CP=      0.094
+ CURRENT JOBNAME=file  09:36:45  MAR 24, 2026 CP=      0.062
 
      1  ! ===== APDL INPUT FILE ====== !
-     2      
-     3  /UNITS,MPa  
+     2  !   Eigenbuckling Analysis     !
+     3  ! ============================ !
      4      
-     5  ! EigenBuckling Analysis !  
-     6  /PREP7  
-     7      
-     8  ET,1,BEAM189 ! Use BEAM189  
-     9      
-    10  ! CROSS SECTION !   
-    11  ! Corner Type (SECTYPE = 1) 
-    12  SECTYPE,1,BEAM,CTUBE
-    13  SECDATA,35.05,38.05,8   
-    14  ! Brace Section Type (SECTYPE = 2)  
-    15  SECTYPE,2,BEAM,CTUBE
-    16  SECDATA,11.15,13.45,8   
-    17      
-    18  ! MATERIAL DATA 
-    19  MP,EX,1,200000.0 ! [MPa]
-    20  MP,PRXY,1,0.3   
-    21  MP,DENS,1.7850E-6 ! [kg/mm^3]   
-    22      
-    23  ! KEYPOINT AND LINES !  
-    24  K,1, 0.000, 0.000, 0.000
-    25  K,2, 0.000, 2000.000, 0.000 
-    26  L,1,2   
-    27  LSEL,S,LINE,,1  
-    28  CM,COLUMN_1,LINE
-    29  LSEL,ALL
-    30  K,3, 0.000, 50.000, 0.000   
-    31  K,4, 250.000, 50.000, 0.000 
-    32  L,3,4   
-    33  LSEL,S,LINE,,2  
-    34  CM,BRACE_1,LINE 
-    35  LSEL,ALL
-    36  K,5, 250.000, 50.000, 250.000   
-    37  L,4,5   
-    38  LSEL,S,LINE,,3  
-    39  CM,BRACE_2,LINE 
-    40  LSEL,ALL
-    41  K,6, 0.000, 50.000, 250.000 
-    42  L,5,6   
-    43  LSEL,S,LINE,,4  
-    44  CM,BRACE_3,LINE 
-    45  LSEL,ALL
-    46  L,6,3   
-    47  LSEL,S,LINE,,5  
-    48  CM,BRACE_4,LINE 
-    49  LSEL,ALL
-    50  K,7, 250.000, 0.000, 250.000
-    51  K,8, 250.000, 2000.000, 250.000 
-    52  L,7,8   
-    53  LSEL,S,LINE,,6  
-    54  CM,COLUMN_2,LINE
-    55  LSEL,ALL
-    56  K,9, 0.000, 0.000, 250.000  
-    57  K,10, 0.000, 2000.000, 250.000  
-    58  L,9,10  
-    59  LSEL,S,LINE,,7  
-    60  CM,COLUMN_3,LINE
-    61  LSEL,ALL
-    62  K,11, 250.000, 0.000, 0.000 
-    63  K,12, 250.000, 2000.000, 0.000  
-    64  L,11,12 
-    65  LSEL,S,LINE,,8  
-    66  CM,COLUMN_4,LINE
-    67  LSEL,ALL
-    68  L,12,8  
-    69  LSEL,S,LINE,,9  
-    70  CM,BRACE_5,LINE 
-    71  LSEL,ALL
-    72  L,10,8  
-    73  LSEL,S,LINE,,10 
-    74  CM,BRACE_6,LINE 
-    75  LSEL,ALL
-    76  L,12,2  
-    77  LSEL,S,LINE,,11 
-    78  CM,BRACE_7,LINE 
-    79  LSEL,ALL
-    80  L,2,10  
-    81  LSEL,S,LINE,,12 
-    82  CM,BRACE_8,LINE 
-    83  LSEL,ALL
-    84  K,13, 117.500, 2212.000, 125.000
-    85  L,10,13 
-    86  LSEL,S,LINE,,13 
-    87  CM,BRACE_9,LINE 
-    88  LSEL,ALL
-    89  L,13,2  
-    90  LSEL,S,LINE,,14 
-    91  CM,BRACE_10,LINE
-    92  LSEL,ALL
-    93  L,13,8  
-    94  LSEL,S,LINE,,15 
-    95  CM,BRACE_11,LINE
-    96  LSEL,ALL
-    97  L,13,12 
-    98  LSEL,S,LINE,,16 
-    99  CM,BRACE_12,LINE
-   100  LSEL,ALL
-   101  K,14, 0.000, 1050.000, 250.000  
-   102  L,3,14  
-   103  LSEL,S,LINE,,17 
-   104  CM,BRACE_13,LINE
-   105  LSEL,ALL
-   106  L,14,2  
-   107  LSEL,S,LINE,,18 
-   108  CM,BRACE_14,LINE
-   109  LSEL,ALL
-   110  K,15, 0.000, 1050.000, 0.000
-   111  L,14,15 
-   112  LSEL,S,LINE,,19 
-   113  CM,BRACE_15,LINE
-   114  LSEL,ALL
-   115  K,16, 250.000, 1050.000, 250.000
-   116  L,6,16  
-   117  LSEL,S,LINE,,20 
-   118  CM,BRACE_16,LINE
-   119  LSEL,ALL
-   120  L,16,14 
-   121  LSEL,S,LINE,,21 
-   122  CM,BRACE_17,LINE
-   123  LSEL,ALL
-   124  K,17, 250.000, 1050.000, 0.000  
-   125  L,16,17 
-   126  LSEL,S,LINE,,22 
-   127  CM,BRACE_18,LINE
-   128  LSEL,ALL
-   129  L,5,17  
-   130  LSEL,S,LINE,,23 
-   131  CM,BRACE_19,LINE
-   132  LSEL,ALL
-   133  L,4,15  
-   134  LSEL,S,LINE,,24 
-   135  CM,BRACE_20,LINE
-   136  LSEL,ALL
-   137  L,15,17 
-   138  LSEL,S,LINE,,25 
-   139  CM,BRACE_21,LINE
-   140  LSEL,ALL
-   141  L,15,12 
-   142  LSEL,S,LINE,,26 
-   143  CM,BRACE_22,LINE
-   144  LSEL,ALL
-   145  L,17,8  
-   146  LSEL,S,LINE,,27 
-   147  CM,BRACE_23,LINE
-   148  LSEL,ALL
-   149  L,16,10 
-   150  LSEL,S,LINE,,28 
-   151  CM,BRACE_24,LINE
-   152  LSEL,ALL
-   153      
-   154  ! ELEMENT SIZE !
-   155  ESIZE,10
-   156      
-   157  ! Meshing CORNER Beams (SECNUM=1) ! 
-   158  SECNUM,1
-   159  LSEL,ALL
-   160  LSEL,NONE   
-   161  LSEL,S,LINE,,1  
-   162  LSEL,A,LINE,,6  
-   163  LSEL,A,LINE,,7  
-   164  LSEL,A,LINE,,8  
-   165  LMESH,ALL   
-   166      
-   167  ! Meshing BRACE beam (SECNUM=2) !   
-   168  SECNUM,2
-   169  LSEL,ALL
-   170  LSEL,NONE   
-   171  LSEL,S,LINE,,2  
-   172  LSEL,A,LINE,,3  
-   173  LSEL,A,LINE,,4  
-   174  LSEL,A,LINE,,5  
-   175  LSEL,A,LINE,,9  
-   176  LSEL,A,LINE,,10 
-   177  LSEL,A,LINE,,11 
-   178  LSEL,A,LINE,,12 
-   179  LSEL,A,LINE,,13 
-   180  LSEL,A,LINE,,14 
-   181  LSEL,A,LINE,,15 
-   182  LSEL,A,LINE,,16 
-   183  LSEL,A,LINE,,17 
-   184  LSEL,A,LINE,,18 
-   185  LSEL,A,LINE,,19 
-   186  LSEL,A,LINE,,20 
-   187  LSEL,A,LINE,,21 
-   188  LSEL,A,LINE,,22 
-   189  LSEL,A,LINE,,23 
-   190  LSEL,A,LINE,,24 
-   191  LSEL,A,LINE,,25 
-   192  LSEL,A,LINE,,26 
-   193  LSEL,A,LINE,,27 
-   194  LSEL,A,LINE,,28 
-   195  LMESH,ALL   
-   196      
-   197  /ESHAPE,1 ! Display Cross Section   
-   198  /SHOW,PNG,,0
-   199  /RGB,INDEX,100,100,100,0
-   200  /RGB,INDEX,80,80,80,13  
-   201  /RGB,INDEX,60,60,60,14  
-   202  /RGB,INDEX,0,0,0,15 
-   203  /TYPE,,4
-   204  /VIEW,,0,0,1
-   205  /ANGLE,,30,YM   
-   206  EPLOT   
-   207  /SHOW,close 
-   208  /SHOW,TERM  
-   209  ! SOLUTION !
-   210  /SOLU   
-   211  ANTYPE, STATIC  
-   212  EQSLV,SPARSE
-   213  PSTRES,ON   
-   214      
-   215  ! -- BOUNDARY CONDITIONS -- !   
-   216      
-   217  ! Force 
-   218  ALLSEL,ALL  
-   219  SELTOL,1.0E-6   
-   220  *GET, NodeXMax, NODE, 0, MXLOC, X   
-   221  *GET, NodeXMin, NODE, 0, MNLOC, X   
-   222  *GET, NodeYMax, NODE, 0, MXLOC, Y   
-   223  *GET, NodeYMin, NODE, 0, MNLOC, Y   
-   224  NSEL,S,LOC,Y,NodeYMax   
-   225  F,ALL,FY,-10000 
-   226  F,ALL,FX,0  
-   227  ALLSEL,ALL  
-   228  ! Displacement !
-   229  ALLSEL,ALL  
-   230  NSEL,S,LOC,Y,NodeYMin   
-   231  D,ALL,ALL,0 
-   232  ALLSEL,ALL  
-   233      
-   234  SOLVE   
-   235      
-   236  FINISH  
-   237  ! ===== APDL OUTPUT FILE ===== !
-   238      
-   239  /POST1  
-   240  SET,LAST
-   241      
-   242  ALLSEL,ALL  
-   243  *GET,E_COUNT,ELEM,0,COUNT   
-   244      
-   245  ! Number of Columns: 4  
-   246  ! Number of Braces : 24 
-   247      
-   248  *CFOPEN, APDL_Eigen_Internal,txt
-   249      
-   250  ! Loop over Columns 
-   251  *DO,ii,1,4,1
-   252     CMSEL,S,COLUMN_%ii%  
-   253  ESLL,S  
-   254  ESEL,R,ENAME,,189   
-   255     *IF,ii,LT,10,THEN
-   256         *VWRITE,ii   
-   257         ("NS ColMember_",F2.0)   
-   258     *ELSE
-   259         *VWRITE,ii   
-   260         ("NS ColMember_",F3.0)   
-   261     *ENDIF   
-   262  *GET,nElem,ELEM,0,COUNT 
-   263     *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]' 
-   264     (A12,A20,A20,A20,A20,A20,A20)
-   265     ELEM = 0 
-   266     *DO,jj,1,nElem,1 
-   267         ELEM = ELNEXT(ELEM)  
-   268         *GET,NF,ELEM,ELEM,SMISC,1
-   269         *GET,MY,ELEM,ELEM,SMISC,2
-   270         *GET,MZ,ELEM,ELEM,SMISC,3
-   271         *GET,VY,ELEM,ELEM,SMISC,4
-   272         *GET,VZ,ELEM,ELEM,SMISC,5
-   273         *GET,TQ,ELEM,ELEM,SMISC,6
-   274         *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ   
-   275         (F12.0,6E20.8)   
-   276     *ENDDO   
-   277      
-   278  *ENDDO! Loop over Braces
-   279  *DO,ii,1,24,1   
-   280     CMSEL,S,BRACE_%ii%,LINE  
-   281     ESLL,S   
-   282     ESEL,R,ENAME,,189
-   283     *IF,ii,LT,10,THEN
-   284         *VWRITE,ii   
-   285         ("NS BraceMember_",F2.0) 
-   286     *ELSE
-   287         *VWRITE,ii   
-   288         ("NS BraceMember_",F3.0) 
-   289     *ENDIF   
-   290  *GET,nElem,ELEM,0,COUNT 
-   291     *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]' 
-   292     (A12,6A20)   
-   293     elem = 0 
-   294     *DO,jj,1,nElem,1 
-   295         ELEM = ELNEXT(ELEM)  
-   296         *GET,NF,ELEM,ELEM,SMISC,1
-   297         *GET,MY,ELEM,ELEM,SMISC,2
-   298         *GET,MZ,ELEM,ELEM,SMISC,3
-   299         *GET,VY,ELEM,ELEM,SMISC,4
-   300         *GET,VZ,ELEM,ELEM,SMISC,5
-   301         *GET,TQ,ELEM,ELEM,SMISC,6
-   302         *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ   
-   303         (F12.0,6E20.8)   
-   304     *ENDDO   
-   305  *ENDDO  
-   306  *CFCLOS 
-   307  ALLSEL  
-   308  *GET,ecnt,ELEM,0,COUNT  
-   309  *GET,enum,ELEM,0,NUM,MIN
-   310  totvol = 0  
-   311  *DO,i,1,ecnt
-   312     *GET,ev,ELEM,enum,VOLU   
-   313     totvol = totvol + ev 
-   314     enum = ELNEXT(enum)  
-   315  *ENDDO  
-   316  dens = 7.85E-6 ! kg/mm^3
-   317  Comp_mass = dens*totvol 
-   318  *CFOPEN,MASS_assembly,txt   
-   319  *VWRITE,Comp_mass   
-   320  (F12.5) 
-   321  *CFCLOS 
-   322  FINISH  
-   323  ALLSEL,ALL  
-   324  ! Eigenbuckling Solution!   
-   325  /SOLU   
-   326  ANTYPE,BUCKLE   
-   327  BUCOPT,LANB,10  
-   328  MXPAND,ALL  
-   329  OUTRES,ALL,ALL  
-   330  SOLVE   
-   331  FINISH  
-   332  /POST1  
-   333  *CFOPEN,Eigenvalue1,txt 
-   334  *DO,jj,1,10,1   
-   335     *GET,MS%jj%,MODE,jj,FREQ 
-   336     *VWRITE,MS%jj%   
-   337     (F10.5)  
-   338  *ENDDO  
-   339  *CFCLOS 
-   340      
+     5  /UNITS,MPa ! Set units [mm,Mg,s,C]  
+     6      
+     7  ! Static Structural Analysis !  
+     8  /PREP7  
+     9  ET,1,BEAM189 ! Use BEAM189 Elements 
+    10      
+    11  ! CROSS SECTION !   
+    12  ! Corner Type (SECTYPE = 1) 
+    13  SECTYPE,1,BEAM,CTUBE
+    14  SECDATA,35.05,38.05,8   
+    15  ! Brace Section Type (SECTYPE = 2)  
+    16  SECTYPE,2,BEAM,CTUBE
+    17  SECDATA,11.15,13.45,8   
+    18      
+    19  ! MATERIAL DATA 
+    20  MP,EX,1,200000.0 ! [MPa]
+    21  MP,PRXY,1,0.3   
+    22  MP,DENS,1.7850E-6 ! [kg/mm^3]   
+    23      
+    24  ! KEYPOINT AND LINES !  
+    25  K,1, 0.000, 0.000, 0.000
+    26  K,2, 0.000, 2000.000, 0.000 
+    27  L,1,2   
+    28  LSEL,S,LINE,,1  
+    29  CM,COLUMN_1,LINE
+    30  LSEL,ALL
+    31  K,3, 0.000, 50.000, 0.000   
+    32  K,4, 250.000, 50.000, 0.000 
+    33  L,3,4   
+    34  LSEL,S,LINE,,2  
+    35  CM,BRACE_1,LINE 
+    36  LSEL,ALL
+    37  K,5, 250.000, 50.000, 250.000   
+    38  L,4,5   
+    39  LSEL,S,LINE,,3  
+    40  CM,BRACE_2,LINE 
+    41  LSEL,ALL
+    42  K,6, 0.000, 50.000, 250.000 
+    43  L,5,6   
+    44  LSEL,S,LINE,,4  
+    45  CM,BRACE_3,LINE 
+    46  LSEL,ALL
+    47  L,6,3   
+    48  LSEL,S,LINE,,5  
+    49  CM,BRACE_4,LINE 
+    50  LSEL,ALL
+    51  K,7, 250.000, 0.000, 250.000
+    52  K,8, 250.000, 2000.000, 250.000 
+    53  L,7,8   
+    54  LSEL,S,LINE,,6  
+    55  CM,COLUMN_2,LINE
+    56  LSEL,ALL
+    57  K,9, 0.000, 0.000, 250.000  
+    58  K,10, 0.000, 2000.000, 250.000  
+    59  L,9,10  
+    60  LSEL,S,LINE,,7  
+    61  CM,COLUMN_3,LINE
+    62  LSEL,ALL
+    63  K,11, 250.000, 0.000, 0.000 
+    64  K,12, 250.000, 2000.000, 0.000  
+    65  L,11,12 
+    66  LSEL,S,LINE,,8  
+    67  CM,COLUMN_4,LINE
+    68  LSEL,ALL
+    69  L,12,8  
+    70  LSEL,S,LINE,,9  
+    71  CM,BRACE_5,LINE 
+    72  LSEL,ALL
+    73  L,10,8  
+    74  LSEL,S,LINE,,10 
+    75  CM,BRACE_6,LINE 
+    76  LSEL,ALL
+    77  L,12,2  
+    78  LSEL,S,LINE,,11 
+    79  CM,BRACE_7,LINE 
+    80  LSEL,ALL
+    81  L,2,10  
+    82  LSEL,S,LINE,,12 
+    83  CM,BRACE_8,LINE 
+    84  LSEL,ALL
+    85  K,13, 117.500, 2212.000, 125.000
+    86  L,10,13 
+    87  LSEL,S,LINE,,13 
+    88  CM,BRACE_9,LINE 
+    89  LSEL,ALL
+    90  L,13,2  
+    91  LSEL,S,LINE,,14 
+    92  CM,BRACE_10,LINE
+    93  LSEL,ALL
+    94  L,13,8  
+    95  LSEL,S,LINE,,15 
+    96  CM,BRACE_11,LINE
+    97  LSEL,ALL
+    98  L,13,12 
+    99  LSEL,S,LINE,,16 
+   100  CM,BRACE_12,LINE
+   101  LSEL,ALL
+   102  K,14, 0.000, 1050.000, 250.000  
+   103  L,3,14  
+   104  LSEL,S,LINE,,17 
+   105  CM,BRACE_13,LINE
+   106  LSEL,ALL
+   107  L,14,2  
+   108  LSEL,S,LINE,,18 
+   109  CM,BRACE_14,LINE
+   110  LSEL,ALL
+   111  K,15, 0.000, 1050.000, 0.000
+   112  L,14,15 
+   113  LSEL,S,LINE,,19 
+   114  CM,BRACE_15,LINE
+   115  LSEL,ALL
+   116  K,16, 250.000, 1050.000, 250.000
+   117  L,6,16  
+   118  LSEL,S,LINE,,20 
+   119  CM,BRACE_16,LINE
+   120  LSEL,ALL
+   121  L,16,14 
+   122  LSEL,S,LINE,,21 
+   123  CM,BRACE_17,LINE
+   124  LSEL,ALL
+   125  K,17, 250.000, 1050.000, 0.000  
+   126  L,16,17 
+   127  LSEL,S,LINE,,22 
+   128  CM,BRACE_18,LINE
+   129  LSEL,ALL
+   130  L,5,17  
+   131  LSEL,S,LINE,,23 
+   132  CM,BRACE_19,LINE
+   133  LSEL,ALL
+   134  L,4,15  
+   135  LSEL,S,LINE,,24 
+   136  CM,BRACE_20,LINE
+   137  LSEL,ALL
+   138  L,15,17 
+   139  LSEL,S,LINE,,25 
+   140  CM,BRACE_21,LINE
+   141  LSEL,ALL
+   142  L,15,12 
+   143  LSEL,S,LINE,,26 
+   144  CM,BRACE_22,LINE
+   145  LSEL,ALL
+   146  L,17,8  
+   147  LSEL,S,LINE,,27 
+   148  CM,BRACE_23,LINE
+   149  LSEL,ALL
+   150  L,16,10 
+   151  LSEL,S,LINE,,28 
+   152  CM,BRACE_24,LINE
+   153  LSEL,ALL
+   154      
+   155  ! ELEMENT SIZE !
+   156  ESIZE,10
+   157      
+   158  ! Meshing CORNER Beams (SECNUM=1) ! 
+   159  SECNUM,1
+   160  LSEL,ALL
+   161  LSEL,NONE   
+   162  LSEL,S,LINE,,1  
+   163  LSEL,A,LINE,,6  
+   164  LSEL,A,LINE,,7  
+   165  LSEL,A,LINE,,8  
+   166  LMESH,ALL   
+   167      
+   168  ! Meshing BRACE beam (SECNUM=2) !   
+   169  SECNUM,2
+   170  LSEL,ALL
+   171  LSEL,NONE   
+   172  LSEL,S,LINE,,2  
+   173  LSEL,A,LINE,,3  
+   174  LSEL,A,LINE,,4  
+   175  LSEL,A,LINE,,5  
+   176  LSEL,A,LINE,,9  
+   177  LSEL,A,LINE,,10 
+   178  LSEL,A,LINE,,11 
+   179  LSEL,A,LINE,,12 
+   180  LSEL,A,LINE,,13 
+   181  LSEL,A,LINE,,14 
+   182  LSEL,A,LINE,,15 
+   183  LSEL,A,LINE,,16 
+   184  LSEL,A,LINE,,17 
+   185  LSEL,A,LINE,,18 
+   186  LSEL,A,LINE,,19 
+   187  LSEL,A,LINE,,20 
+   188  LSEL,A,LINE,,21 
+   189  LSEL,A,LINE,,22 
+   190  LSEL,A,LINE,,23 
+   191  LSEL,A,LINE,,24 
+   192  LSEL,A,LINE,,25 
+   193  LSEL,A,LINE,,26 
+   194  LSEL,A,LINE,,27 
+   195  LSEL,A,LINE,,28 
+   196  LMESH,ALL   
+   197      
+   198  /ESHAPE,1 ! Display Cross Section   
+   199  /SHOW,PNG,,0
+   200  /RGB,INDEX,100,100,100,0
+   201  /RGB,INDEX,80,80,80,13  
+   202  /RGB,INDEX,60,60,60,14  
+   203  /RGB,INDEX,0,0,0,15 
+   204  /TYPE,,4
+   205  /VIEW,,0,0,1
+   206  /ANGLE,,30,YM   
+   207  EPLOT   
+   208  /SHOW,close 
+   209  /SHOW,TERM  
+   210  ! SOLUTION !
+   211  /SOLU   
+   212  ANTYPE, STATIC  
+   213  EQSLV,SPARSE
+   214  PSTRES,ON   
+   215      
+   216  ! -- BOUNDARY CONDITIONS -- !   
+   217      
+   218  ! Force 
+   219  ALLSEL,ALL  
+   220  SELTOL,1.0E-6   
+   221  *GET, NodeXMax, NODE, 0, MXLOC, X   
+   222  *GET, NodeXMin, NODE, 0, MNLOC, X   
+   223  *GET, NodeYMax, NODE, 0, MXLOC, Y   
+   224  *GET, NodeYMin, NODE, 0, MNLOC, Y   
+   225  NSEL,S,LOC,Y,NodeYMax   
+   226  F,ALL,FY,-10000 
+   227  F,ALL,FX,0  
+   228  ALLSEL,ALL  
+   229  ! Displacement !
+   230  ALLSEL,ALL  
+   231  NSEL,S,LOC,Y,NodeYMin   
+   232  D,ALL,ALL,0 
+   233  ALLSEL,ALL  
+   234      
+   235  SOLVE   
+   236      
+   237  FINISH  
+   238  ! ===== APDL OUTPUT FILE ===== !
+   239      
+   240  /POST1  
+   241  SET,LAST
+   242      
+   243  ALLSEL,ALL  
+   244  *GET,E_COUNT,ELEM,0,COUNT   
+   245      
+   246  ! Number of Columns: 4  
+   247  ! Number of Braces : 24 
+   248      
+   249  *CFOPEN, APDL_Eigen_Internal,txt
+   250      
+   251  ! Loop over Columns 
+   252  *DO,ii,1,4,1
+   253     CMSEL,S,COLUMN_%ii%  
+   254  ESLL,S  
+   255  ESEL,R,ENAME,,189   
+   256     *IF,ii,LT,10,THEN
+   257         *VWRITE,ii   
+   258         ("NS ColMember_",F2.0)   
+   259     *ELSE
+   260         *VWRITE,ii   
+   261         ("NS ColMember_",F3.0)   
+   262     *ENDIF   
+   263  *GET,nElem,ELEM,0,COUNT 
+   264     *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]' 
+   265     (A12,A20,A20,A20,A20,A20,A20)
+   266     ELEM = 0 
+   267     *DO,jj,1,nElem,1 
+   268         ELEM = ELNEXT(ELEM)  
+   269         *GET,NF,ELEM,ELEM,SMISC,1
+   270         *GET,MY,ELEM,ELEM,SMISC,2
+   271         *GET,MZ,ELEM,ELEM,SMISC,3
+   272         *GET,VY,ELEM,ELEM,SMISC,4
+   273         *GET,VZ,ELEM,ELEM,SMISC,5
+   274         *GET,TQ,ELEM,ELEM,SMISC,6
+   275         *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ   
+   276         (F12.0,6E20.8)   
+   277     *ENDDO   
+   278      
+   279  *ENDDO! Loop over Braces
+   280  *DO,ii,1,24,1   
+   281     CMSEL,S,BRACE_%ii%,LINE  
+   282     ESLL,S   
+   283     ESEL,R,ENAME,,189
+   284     *IF,ii,LT,10,THEN
+   285         *VWRITE,ii   
+   286         ("NS BraceMember_",F2.0) 
+   287     *ELSE
+   288         *VWRITE,ii   
+   289         ("NS BraceMember_",F3.0) 
+   290     *ENDIF   
+   291  *GET,nElem,ELEM,0,COUNT 
+   292     *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]' 
+   293     (A12,6A20)   
+   294     elem = 0 
+   295     *DO,jj,1,nElem,1 
+   296         ELEM = ELNEXT(ELEM)  
+   297         *GET,NF,ELEM,ELEM,SMISC,1
+   298         *GET,MY,ELEM,ELEM,SMISC,2
+   299         *GET,MZ,ELEM,ELEM,SMISC,3
+   300         *GET,VY,ELEM,ELEM,SMISC,4
+   301         *GET,VZ,ELEM,ELEM,SMISC,5
+   302         *GET,TQ,ELEM,ELEM,SMISC,6
+   303         *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ   
+   304         (F12.0,6E20.8)   
+   305     *ENDDO   
+   306  *ENDDO  
+   307  *CFCLOS 
+   308  ALLSEL  
+   309  *GET,ecnt,ELEM,0,COUNT  
+   310  *GET,enum,ELEM,0,NUM,MIN
+   311  totvol = 0  
+   312  *DO,i,1,ecnt
+   313     *GET,ev,ELEM,enum,VOLU   
+   314     totvol = totvol + ev 
+   315     enum = ELNEXT(enum)  
+   316  *ENDDO  
+   317  dens = 7.85E-6 ! kg/mm^3
+   318  Comp_mass = dens*totvol 
+   319  *CFOPEN,MASS_assembly,txt   
+   320  *VWRITE,Comp_mass   
+   321  (F12.5) 
+   322  *CFCLOS 
+   323  FINISH  
+   324  ALLSEL,ALL  
+   325  ! Eigenbuckling Solution!   
+   326  /SOLU   
+   327  ANTYPE,BUCKLE   
+   328  BUCOPT,LANB,10  
+   329  MXPAND,ALL  
+   330  OUTRES,ALL,ALL  
+   331  SOLVE   
+   332  FINISH  
+   333  /POST1  
+   334  *CFOPEN,Eigenvalue1,txt 
+   335  *DO,jj,1,10,1   
+   336     *GET,MS%jj%,MODE,jj,FREQ 
+   337     *VWRITE,MS%jj%   
+   338     (F10.5)  
+   339  *ENDDO  
+   340  *CFCLOS 
    341      
+   342      
 
  RUN SETUP PROCEDURE FROM FILE= C:\Program Files\ANSYS Inc\v251\ANSYS\apdl\start.ans
 
@@ -462,7 +463,7 @@
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   14:57:25  MAR 23, 2026 CP=      0.188
+ 00254321  VERSION=WINDOWS x64   09:36:45  MAR 24, 2026 CP=      0.172
 
                                                                                
 
@@ -1232,7 +1233,7 @@
  ZLIB Version 1.2.13 Copyright (C) 1995-1998 Jean-loup Gailly and Mark Adler
 
 
- ***** ROUTINE COMPLETED *****  CP =         2.062
+ ***** ROUTINE COMPLETED *****  CP =         1.844
 
 
 
@@ -1287,7 +1288,7 @@
 
  *****  MAPDL SOLVE    COMMAND  *****
 
- *** NOTE ***                            CP =       2.156   TIME= 14:57:25
+ *** NOTE ***                            CP =       1.859   TIME= 09:36:46
  There is no title defined for this analysis.                            
 
  *** SELECTION OF ELEMENT TECHNOLOGIES FOR APPLICABLE ELEMENTS ***
@@ -1302,7 +1303,7 @@
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   14:57:25  MAR 23, 2026 CP=      2.188
+ 00254321  VERSION=WINDOWS x64   09:36:46  MAR 24, 2026 CP=      1.859
 
                                                                                
 
@@ -1317,11 +1318,11 @@
    EQUATION SOLVER OPTION. . . . . . . . . . . . .SPARSE             
    GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
 
- *** NOTE ***                            CP =       2.188   TIME= 14:57:25
+ *** NOTE ***                            CP =       1.859   TIME= 09:36:46
  Present time 0 is less than or equal to the previous time.  Time will   
  default to 1.                                                           
 
- *** NOTE ***                            CP =       2.188   TIME= 14:57:25
+ *** NOTE ***                            CP =       1.859   TIME= 09:36:46
  The conditions for direct assembly have been met.  No .emat or .erot    
  files will be produced.                                                 
 
@@ -1338,21 +1339,21 @@
 
  SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
 
- *** NOTE ***                            CP =       2.438   TIME= 14:57:25
+ *** NOTE ***                            CP =       2.109   TIME= 09:36:46
  Predictor is ON by default for structural elements with rotational      
  degrees of freedom.  Use the PRED,OFF command to turn the predictor     
  OFF if it adversely affects the convergence.                            
 
 
  Range of element maximum matrix coefficients in global coordinates
- Maximum = 4.918552305E+10 at element 400.                               
+ Maximum = 4.918552305E+10 at element 600.                               
  Minimum = 1.404146883E+09 at element 1103.                              
 
    *** ELEMENT MATRIX FORMULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
         1      2024  BEAM189       0.969   0.000479
- Time at end of element matrix formulation CP = 2.5625.                  
+ Time at end of element matrix formulation CP = 2.328125.                
 
  SPARSE MATRIX DIRECT SOLVER.
   Number of equations =       24198,    Maximum wavefront =     54
@@ -1363,9 +1364,9 @@
   Equation solver memory allocated                     =    23.877 MB
   Equation solver memory required for in-core mode     =    23.093 MB
   Equation solver memory required for out-of-core mode =    17.977 MB
-  Total (solver and non-solver) memory allocated       =   409.569 MB
+  Total (solver and non-solver) memory allocated       =   417.104 MB
 
- *** NOTE ***                            CP =       2.812   TIME= 14:57:25
+ *** NOTE ***                            CP =       2.609   TIME= 09:36:46
  The Sparse Matrix Solver is currently running in the in-core memory     
  mode.  This memory mode uses the most amount of memory in order to      
  avoid using the hard drive as much as possible, which most often        
@@ -1380,12 +1381,12 @@
    *** ELEMENT RESULT CALCULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1      2024  BEAM189       2.156   0.001065
+        1      2024  BEAM189       1.656   0.000818
 
    *** NODAL LOAD CALCULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1      2024  BEAM189       0.094   0.000046
+        1      2024  BEAM189       0.234   0.000116
  *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      1
  *** TIME =   1.00000         TIME INC =   1.00000      NEW TRIANG MATRIX
 
@@ -1398,13 +1399,13 @@
  FINISH SOLUTION PROCESSING
 
 
- ***** ROUTINE COMPLETED *****  CP =         3.922
+ ***** ROUTINE COMPLETED *****  CP =         3.469
 
 
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   14:57:25  MAR 23, 2026 CP=      3.922
+ 00254321  VERSION=WINDOWS x64   09:36:46  MAR 24, 2026 CP=      3.594
 
                                                                                
 
@@ -1412,7 +1413,7 @@
 
           ***** MAPDL RESULTS INTERPRETATION (POST1) *****
 
- *** NOTE ***                            CP =       3.922   TIME= 14:57:25
+ *** NOTE ***                            CP =       3.594   TIME= 09:36:46
  Reading results into the database (SET command) will update the current 
  displacement and force boundary conditions in the database with the     
  values from the results file for that load set.  Note that any          
@@ -1557,7 +1558,7 @@
  EXIT THE MAPDL POST1 DATABASE PROCESSOR
 
 
- ***** ROUTINE COMPLETED *****  CP =         7.391
+ ***** ROUTINE COMPLETED *****  CP =         7.078
 
 
 
@@ -1569,7 +1570,7 @@
  PERFORM A BUCKLING ANALYSIS
   THIS WILL BE A NEW ANALYSIS
 
- *** NOTE ***                            CP =       7.422   TIME= 14:57:26
+ *** NOTE ***                            CP =       7.078   TIME= 09:36:47
  Some analysis options have been reset to their defaults.  Please verify 
  current settings or respecify as required.                              
 
@@ -1581,7 +1582,7 @@
  EXPAND ALL EXTRACTED MODES
   DO NOT CALCULATE ELEMENT RESULTS
 
- *** NOTE ***                            CP =       7.422   TIME= 14:57:26
+ *** NOTE ***                            CP =       7.078   TIME= 09:36:47
  To view 3-D mode shapes of beam or pipe elements, expand the modes with 
  element results calculation active via Elcalc=YES.                      
 
@@ -1590,10 +1591,10 @@
 
  *****  MAPDL SOLVE    COMMAND  *****
 
- *** NOTE ***                            CP =       7.516   TIME= 14:57:26
+ *** NOTE ***                            CP =       7.078   TIME= 09:36:47
  There is no title defined for this analysis.                            
 
- *** NOTE ***                            CP =       7.516   TIME= 14:57:26
+ *** NOTE ***                            CP =       7.078   TIME= 09:36:47
  To view 3-D mode shapes of beam or pipe elements, expand the modes with 
  element results calculation active via the MXPAND command's             
  Elcalc=YES.                                                             
@@ -1610,7 +1611,7 @@
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   14:57:26  MAR 23, 2026 CP=      7.516
+ 00254321  VERSION=WINDOWS x64   09:36:47  MAR 24, 2026 CP=      7.078
 
                                                                                
 
@@ -1625,7 +1626,7 @@
    PRESTRESS EFFECTS INCLUDED IF AVAILABLE . . . .YES
    GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
 
- *** NOTE ***                            CP =       7.516   TIME= 14:57:26
+ *** NOTE ***                            CP =       7.078   TIME= 09:36:47
  The conditions for direct assembly have been met.  No .emat or .erot    
  files will be produced.                                                 
 
@@ -1653,9 +1654,9 @@
   Equation solver memory allocated                     =    20.035 MB
   Equation solver memory required for in-core mode     =    19.177 MB
   Equation solver memory required for out-of-core mode =    11.859 MB
-  Total (solver and non-solver) memory allocated       =   472.918 MB
+  Total (solver and non-solver) memory allocated       =   485.824 MB
 
- *** NOTE ***                            CP =       9.078   TIME= 14:57:26
+ *** NOTE ***                            CP =       8.688   TIME= 09:36:47
  The Sparse Matrix Solver is currently running in the in-core memory     
  mode.  This memory mode uses the most amount of memory in order to      
  avoid using the hard drive as much as possible, which most often        
@@ -1679,7 +1680,7 @@
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   14:57:27  MAR 23, 2026 CP=     12.375
+ 00254321  VERSION=WINDOWS x64   09:36:47  MAR 24, 2026 CP=     12.000
 
                                                                                
 
@@ -1690,16 +1691,16 @@
 
       SHAPE NUMBER   LOAD MULTIPLIER
 
-            1            45.329103    
+            1            45.329104    
             2            45.334242    
-            3            177.75879    
-            4            178.06713    
+            3            177.75874    
+            4            178.06706    
             5            186.74980    
             6            198.04671    
-            7            203.88425    
+            7            203.88424    
             8            211.65182    
             9            222.35772    
-           10            222.50289    
+           10            222.50291    
 
 
 
@@ -1713,13 +1714,13 @@
  FINISH SOLUTION PROCESSING
 
 
- ***** ROUTINE COMPLETED *****  CP =        12.609
+ ***** ROUTINE COMPLETED *****  CP =        12.344
 
 
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   14:57:27  MAR 23, 2026 CP=     12.734
+ 00254321  VERSION=WINDOWS x64   09:36:47  MAR 24, 2026 CP=     12.359
 
                                                                                
 
@@ -1732,7 +1733,7 @@
 
  *DO LOOP ON PARAMETER= JJ FROM  1.0000     TO  10.000     BY  1.0000    
 
- *GET  MS1       FROM  MODE      1  ITEM=FREQ       VALUE=  45.3291034    
+ *GET  MS1       FROM  MODE      1  ITEM=FREQ       VALUE=  45.3291035    
 
  *ENDDO  INDEX= JJ                              
 
@@ -1752,7 +1753,7 @@
 +--------------------- M A P D L   S T A T I S T I C S ------------------------+
 
 Release: 2025 R1            Build: 25.1       Update: UP20241202   Platform: WINDOWS x64 
-Date Run: 03/23/2026   Time: 14:57     Process ID: 14520
+Date Run: 03/24/2026   Time: 09:36     Process ID: 32296
 Operating System: Windows 11  (Build: 26200)
 
 Processor Model: AMD Ryzen 7 5800H with Radeon Graphics
@@ -1772,13 +1773,13 @@ GPU Acceleration: Not Requested
 
 Job Name: file
 Input File: AnsoutEigen\APDL_Eigen.txt
-Working Directory: C:\Users\atbys\Desktop\DMS4 Local\DMS4\04_EURO_APDL
+Working Directory: C:\Users\atbys\Desktop\DMS4 Local\DMS4\05_OPTI
 
-Total CPU time for main thread                    :        2.0 seconds
-Total CPU time summed for all threads             :       14.0 seconds
+Total CPU time for main thread                    :        1.9 seconds
+Total CPU time summed for all threads             :       13.6 seconds
 
-Elapsed time spent obtaining a license            :        5.5 seconds
-Elapsed time spent pre-processing model (/PREP7)  :        0.5 seconds
+Elapsed time spent obtaining a license            :        5.4 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.4 seconds
 Elapsed time spent solution - preprocessing       :        0.0 seconds
 Elapsed time spent computing solution             :        0.8 seconds
 Elapsed time spent solution - postprocessing      :        0.0 seconds
@@ -1789,7 +1790,7 @@ Equation solver computational rate                :        0.7 Gflops
 
 Sum of disk space used on all processes           :       15.8 MB
 
-Sum of memory used on all processes               :       99.0 MB
+Sum of memory used on all processes               :      106.0 MB
 Sum of memory allocated on all processes          :     2304.0 MB
 Physical memory available                         :         14 GB
 Total amount of I/O written to disk               :        0.0 GB
@@ -1809,11 +1810,11 @@ Total amount of I/O read from disk                :        0.0 GB
  |-----------------------------------------------------------------------------|
  |                                                                             |
  |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
- |  Maximum Database Used      16 MB     Maximum Scratch Memory Used     83 MB |
+ |  Maximum Database Used      16 MB     Maximum Scratch Memory Used     90 MB |
  |                                                                             |
  |-----------------------------------------------------------------------------|
  |                                                                             |
- |        CP Time      (sec) =         13.953       Time  =  14:57:28          |
- |        Elapsed Time (sec) =         10.000       Date  =  03/23/2026        |
+ |        CP Time      (sec) =         13.594       Time  =  09:36:48          |
+ |        Elapsed Time (sec) =          9.000       Date  =  03/24/2026        |
  |                                                                             |
  *-----------------------------------------------------------------------------*

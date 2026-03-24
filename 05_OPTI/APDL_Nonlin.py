@@ -1,4 +1,4 @@
-### GeoCreate.py ###
+### APDL ###
 # -> INPUT:
 #       - SW_coor (Coordinates from Soldiworks)
 # -> OUTPUT:
@@ -285,13 +285,7 @@ def Nonlin_Fun(SWcoor, var, Misc, imp_force, out_dir = "AnsoutNonlin"):
         f.write("*CFCLOS \n")
         
 
-
-        
-        
-            
-    
-
-        return CM_dict, Nonlin_file
+        return Nonlin_file
 
 
 

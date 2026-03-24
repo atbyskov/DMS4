@@ -23,7 +23,7 @@ def RunAPDL(SWcoor,var,Misc):
             shutil.rmtree(folder)
         os.makedirs(folder, exist_ok=True) # Create folder again
 
-    CM_dict, eigen_file = Eigen_Fun(SWcoor,var,Misc, out_dir = eigen_dir)
+    eigen_file = Eigen_Fun(SWcoor,var,Misc, out_dir = eigen_dir)
 
     # Filename for running APDL
     FileNameEigen = os.path.join(eigen_dir,"APDLRunFileEigen.bat")
@@ -72,7 +72,7 @@ def RunAPDL(SWcoor,var,Misc):
 
     #####  Nonlinear Analysis
 
-    CM_dict, Nonlin_file = Nonlin_Fun(SWcoor,var,Misc,imp_force,out_dir=nonlin_dir)            # Create .txt file for APDL
+    Nonlin_file = Nonlin_Fun(SWcoor,var,Misc,imp_force,out_dir=nonlin_dir)            # Create .txt file for APDL
 
     # Filename for running APDL
     FileNameNonlin = os.path.join(nonlin_dir,"APDLRunFileNonlin.bat")
