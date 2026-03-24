@@ -8,9 +8,7 @@ import shutil
 from APDL_Eigen import Eigen_Fun
 from APDL_Nonlin import Nonlin_Fun
 
-def RunAPDL(SWcoor,var,Misc):
-
-    
+def RunAPDL(SWcoor,var,Misc):  
 
     esize, Hor_Force, Ver_Force, f_y, E_mod = Misc
 
@@ -99,5 +97,4 @@ def RunAPDL(SWcoor,var,Misc):
     with open("AnsoutEigen/Mass_Assembly.txt","r") as f:
         Mass = [float(line.strip()) for line in f if line.strip()]
 
-
-    return Mass
+    return sum(Mass)
