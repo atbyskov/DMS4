@@ -1,1 +1,20 @@
-/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       15:24:06
+/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       14:21:38
+
+ *** WARNING ***                         CP =       0.766   TIME= 14:21:41
+ ET is not a recognized SOLUTION command, abbreviation, or macro.        
+  This command will be ignored.                                          
+
+ *** WARNING ***                         CP =       0.766   TIME= 14:21:41
+ KEYOPT is not a recognized SOLUTION command, abbreviation, or macro.    
+  This command will be ignored.                                          
+
+ *** WARNING ***                         CP =       0.766   TIME= 14:21:41
+ N is not a recognized SOLUTION command, abbreviation, or macro.         
+  This command will be ignored.                                          
+
+ *** WARNING ***                         CP =       0.766   TIME= 14:21:41
+ Entity 9999 is undefined.  The D command is ignored.                    
+
+ *** WARNING ***                         CP =       0.766   TIME= 14:21:41
+ E is not a recognized SOLUTION command, abbreviation, or macro.         
+  This command will be ignored.                                          

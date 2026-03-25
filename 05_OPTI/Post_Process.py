@@ -17,6 +17,7 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 import re
+import math
 from io import StringIO
 
 # Function to read and parse forces 
@@ -69,6 +70,35 @@ def read_forces(filepath: str) -> pd.DataFrame:
 
     return pd.concat(blocks, ignore_index=True)
 
+# Local Buckling 
+def Util_LC(var, Misc):
+    # Import Radii
+    R0, R1, R2, R3 = var
+
+    # Import Misc
+    esize, Hor_Force, Ver_Force, Mom, f_y, E_mod = Misc
+
+    # Poissons Ratio
+    v = 0.3
+
+    Util_LC = np.zeros(2)
+
+
+    NonlinData = "AnsoutNonlin/APDL_Nonlin_Internal.txt"
+
+    # Read Data and split into Columns and Braces
+    df = read_forces(NonlinData)
+    df_col = df[df["Member"].str.startswith("ColMember")].copy()
+    df_brace = df[df["Member"].str.startswith("BraceMember")].copy()
+
+    # Critical Force 
+    P_cr_col = (2*math.pi*E_mod*(R1-R0)**2)/(math.sqrt(3*(1-v**2)))
+    P_cr_brace = (2*math.pi*E_mod*(R3-R2)**2)/(math.sqrt(3*(1-v**2)))
+
+    Util_LC[0] = df_col["NF"].abs().max()/P_cr_col
+    Util_LC[1] = df_brace["NF"].abs().max()/P_cr_brace
+
+    return Util_LC
 
 # Function to calcualte Utilization ratios                
 def Util_NF(var, Misc):
@@ -78,7 +108,7 @@ def Util_NF(var, Misc):
     alpha_crit = next(v for v in eigenvalues if v > 0)
 
     # Initialize
-    Util_list = np.zeros(2)
+    Util_NF = np.zeros(2)
     # Import Radii
     R0, R1, R2, R3 = var 
 
@@ -107,8 +137,8 @@ def Util_NF(var, Misc):
     df_col["Util_NF"] = df_col["NF"].abs() / N_Rd_Col
     df_brace["Util_NF"] = df_brace["NF"].abs() / N_Rd_Brace
 
-    Util_list[0] = df_col["Util_NF"].max()
-    Util_list[1] = df_brace["Util_NF"].max()
+    Util_NF[0] = df_col["Util_NF"].max()
+    Util_NF[1] = df_brace["Util_NF"].max()
 
     # Normal force Utilization
     print(f"Alpha_Crit Value: {alpha_crit}")
@@ -124,4 +154,10 @@ def Util_NF(var, Misc):
             f.write(f"{col_val:20.6f} {brace_val:20.6f}\n")
 
     
-    return Util_list
+    return Util_NF
+
+def Util_ST(var, Misc):
+
+    
+
+    return 0

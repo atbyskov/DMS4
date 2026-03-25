@@ -1217,7 +1217,7 @@ LSEL,A,LINE,,108
 LSEL,A,LINE,,109
 LMESH,ALL 
 
-!/ESHAPE,1 ! Display Cross Section
+/ESHAPE,1 ! Display Cross Section
 ! SOLUTION ! 
 /SOLU 
 ANTYPE, STATIC 

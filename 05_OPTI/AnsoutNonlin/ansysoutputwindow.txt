@@ -101,7 +101,7 @@
   INITIAL DIRECTORY = C:\Users\atbys\Desktop\DMS4 Local\DMS4\05_OPTI\AnsoutNonlin
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
- CURRENT JOBNAME=file  15:24:22  MAR 24, 2026 CP=      0.094
+ CURRENT JOBNAME=file  14:21:45  MAR 25, 2026 CP=      0.047
 
      1  ! ===== APDL INPUT FILE ====== !
      2  !     Nonlinear Analysis       !
@@ -1446,7 +1446,7 @@
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   15:24:22  MAR 24, 2026 CP=      0.172
+ 00254321  VERSION=WINDOWS x64   14:21:45  MAR 25, 2026 CP=      0.125
 
                                                                                
 
@@ -6243,7 +6243,7 @@
  ELEMENT DISPLAYS USING REAL CONSTANT OR SECTION DATA WITH FACTOR     1.00
 
 
- ***** ROUTINE COMPLETED *****  CP =         0.469
+ ***** ROUTINE COMPLETED *****  CP =         0.422
 
 
 
@@ -6315,7 +6315,7 @@
 
  *****  MAPDL SOLVE    COMMAND  *****
 
- *** NOTE ***                            CP =       0.469   TIME= 15:24:22
+ *** NOTE ***                            CP =       0.422   TIME= 14:21:45
  There is no title defined for this analysis.                            
 
  *** SELECTION OF ELEMENT TECHNOLOGIES FOR APPLICABLE ELEMENTS ***
@@ -6330,7 +6330,7 @@
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   15:24:22  MAR 24, 2026 CP=      0.469
+ 00254321  VERSION=WINDOWS x64   14:21:45  MAR 25, 2026 CP=      0.422
 
                                                                                
 
@@ -6345,15 +6345,15 @@
    NEWTON-RAPHSON OPTION . . . . . . . . . . . . .PROGRAM CHOSEN   
    GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
 
- *** NOTE ***                            CP =       0.469   TIME= 15:24:22
+ *** NOTE ***                            CP =       0.422   TIME= 14:21:45
  Present time 0 is less than or equal to the previous time.  Time will   
  default to 1.                                                           
 
- *** NOTE ***                            CP =       0.469   TIME= 15:24:22
+ *** NOTE ***                            CP =       0.422   TIME= 14:21:45
  This nonlinear analysis defaults to using the full Newton-Raphson       
  solution procedure.  This can be modified using the NROPT command.      
 
- *** NOTE ***                            CP =       0.469   TIME= 15:24:22
+ *** NOTE ***                            CP =       0.422   TIME= 14:21:45
  The conditions for direct assembly have been met.  No .emat or .erot    
  files will be produced.                                                 
 
@@ -6375,7 +6375,7 @@
 
  SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
 
- *** NOTE ***                            CP =       1.078   TIME= 15:24:22
+ *** NOTE ***                            CP =       1.031   TIME= 14:21:45
  Predictor is ON by default for structural elements with rotational      
  degrees of freedom.  Use the PRED,OFF command to turn the predictor     
  OFF if it adversely affects the convergence.                            
@@ -6388,8 +6388,8 @@
    *** ELEMENT MATRIX FORMULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1      1093  BEAM189       1.000   0.000915
- Time at end of element matrix formulation CP = 1.328125.                
+        1      1093  BEAM189       0.984   0.000901
+ Time at end of element matrix formulation CP = 1.171875.                
 
  ALL CURRENT MAPDL DATA WRITTEN TO FILE NAME= file.rdb
   FOR POSSIBLE RESUME FROM THIS POINT
@@ -6405,9 +6405,9 @@
   Equation solver memory allocated                     =    12.358 MB
   Equation solver memory required for in-core mode     =    11.953 MB
   Equation solver memory required for out-of-core mode =     9.230 MB
-  Total (solver and non-solver) memory allocated       =   389.768 MB
+  Total (solver and non-solver) memory allocated       =   393.081 MB
 
- *** NOTE ***                            CP =       1.688   TIME= 15:24:22
+ *** NOTE ***                            CP =       1.406   TIME= 14:21:45
  The Sparse Matrix Solver is currently running in the in-core memory     
  mode.  This memory mode uses the most amount of memory in order to      
  avoid using the hard drive as much as possible, which most often        
@@ -6431,12 +6431,12 @@
    *** ELEMENT RESULT CALCULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1      1093  BEAM189       0.906   0.000829
+        1      1093  BEAM189       1.828   0.001673
 
    *** NODAL LOAD CALCULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1      1093  BEAM189       0.016   0.000014
+        1      1093  BEAM189       0.141   0.000129
  *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      2
  *** TIME =  0.997882E-01  TIME INC =  0.100000      MAX DISPLACEMENT =    -10.70    
 
@@ -6502,7 +6502,7 @@
  *** LOAD STEP     1   SUBSTEP     6  COMPLETED.    CUM ITER =     10
  *** TIME =   1.00000      TIME INC =   0.00000      MAX DISPLACEMENT =    -110.2    
 
- *** NOTE ***                            CP =      12.766   TIME= 15:24:24
+ *** NOTE ***                            CP =      11.750   TIME= 14:21:47
  Maximum load for load step 1 was reached.                               
 
 
@@ -6515,13 +6515,13 @@
  FINISH SOLUTION PROCESSING
 
 
- ***** ROUTINE COMPLETED *****  CP =        12.891
+ ***** ROUTINE COMPLETED *****  CP =        11.875
 
 
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   15:24:24  MAR 24, 2026 CP=     12.891
+ 00254321  VERSION=WINDOWS x64   14:21:47  MAR 25, 2026 CP=     11.875
 
                                                                                
 
@@ -6529,7 +6529,7 @@
 
           ***** MAPDL RESULTS INTERPRETATION (POST1) *****
 
- *** NOTE ***                            CP =      12.891   TIME= 15:24:24
+ *** NOTE ***                            CP =      11.875   TIME= 14:21:47
  Reading results into the database (SET command) will update the current 
  displacement and force boundary conditions in the database with the     
  values from the results file for that load set.  Note that any          
@@ -6656,7 +6656,7 @@
 +--------------------- M A P D L   S T A T I S T I C S ------------------------+
 
 Release: 2025 R1            Build: 25.1       Update: UP20241202   Platform: WINDOWS x64 
-Date Run: 03/24/2026   Time: 15:24     Process ID: 38468
+Date Run: 03/25/2026   Time: 14:21     Process ID: 28624
 Operating System: Windows 11  (Build: 26200)
 
 Processor Model: AMD Ryzen 7 5800H with Radeon Graphics
@@ -6679,21 +6679,21 @@ Input File: AnsoutNonlin\APDL_Nonlin_Input.txt
 Working Directory: C:\Users\atbys\Desktop\DMS4 Local\DMS4\05_OPTI
 
 Total CPU time for main thread                    :        2.3 seconds
-Total CPU time summed for all threads             :       16.7 seconds
+Total CPU time summed for all threads             :       15.7 seconds
 
-Elapsed time spent obtaining a license            :        7.0 seconds
+Elapsed time spent obtaining a license            :        1.9 seconds
 Elapsed time spent pre-processing model (/PREP7)  :        0.3 seconds
 Elapsed time spent solution - preprocessing       :        0.0 seconds
-Elapsed time spent computing solution             :        1.5 seconds
+Elapsed time spent computing solution             :        1.4 seconds
 Elapsed time spent solution - postprocessing      :        0.0 seconds
 Elapsed time spent post-processing model (/POST1) :        0.0 seconds
  
 Equation solver used                              :            Sparse (symmetric)
-Equation solver computational rate                :        1.0 Gflops
+Equation solver computational rate                :        0.8 Gflops
 
 Sum of disk space used on all processes           :       31.8 MB
 
-Sum of memory used on all processes               :       64.0 MB
+Sum of memory used on all processes               :       66.0 MB
 Sum of memory allocated on all processes          :     2304.0 MB
 Physical memory available                         :         14 GB
 Total amount of I/O written to disk               :        0.5 GB
@@ -6713,11 +6713,11 @@ Total amount of I/O read from disk                :        0.7 GB
  |-----------------------------------------------------------------------------|
  |                                                                             |
  |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
- |  Maximum Database Used      12 MB     Maximum Scratch Memory Used     52 MB |
+ |  Maximum Database Used      12 MB     Maximum Scratch Memory Used     54 MB |
  |                                                                             |
  |-----------------------------------------------------------------------------|
  |                                                                             |
- |        CP Time      (sec) =         16.703       Time  =  15:24:25          |
- |        Elapsed Time (sec) =         11.000       Date  =  03/24/2026        |
+ |        CP Time      (sec) =         15.719       Time  =  14:21:48          |
+ |        Elapsed Time (sec) =          6.000       Date  =  03/25/2026        |
  |                                                                             |
  *-----------------------------------------------------------------------------*

@@ -189,6 +189,7 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
         f.write("\n! -- BOUNDARY CONDITIONS -- ! \n")
         f.write("ALLSEL,ALL \n")
         f.write("SELTOL,1.0E-6 \n") # Important for node selection
+
         # Get top and bottom nodes
         f.write("*GET, NodeXMax, NODE, 0, MXLOC, X \n")
         f.write("*GET, NodeXMin, NODE, 0, MNLOC, X \n")
@@ -205,8 +206,20 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
         f.write("! Displacement ! \n")
         f.write("ALLSEL,ALL \n")
         f.write("NSEL,S,LOC,Y,NodeYMin \n")
-        f.write("D,ALL,ALL,0 \n")
-        f.write("ALLSEL,ALL\n\n")
+        f.write("NSEL,R,LOC,X,202.07 \n")
+        f.write("D,ALL,UY,0 \n")
+
+        f.write("ALLSEL,ALL \n")
+        f.write("NSEL,S,LOC,Y,NodeYMin \n")
+        f.write("NSEL,R,LOC,Z,-175 \n")
+        f.write("NSEL,R,LOC,X,-101.04 \n")
+
+        f.write("ALLSEL,ALL \n")
+        f.write("NSEL,S,LOC,Y,NodeYMin \n")
+        f.write("NSEL,R,LOC,Z,175 \n")
+        f.write("NSEL,R,LOC,X,-101.04 \n")
+
+        
 
         # SOLVE
         f.write("! Solve the System \n")

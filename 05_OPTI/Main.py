@@ -12,6 +12,7 @@ import time
 # Import Functions
 import SW_Import as SW
 from Post_Process import Util_NF
+from Post_Process import Util_LC
 from MyAPDLCall import RunAPDL
 
 tic = time.time()
@@ -47,8 +48,11 @@ print(f"Mass of Assembly: {f} kg")
 
 
 # Run Post_Process.py
-Util_worst = Util_NF(var,Misc)
-print(Util_worst)
+Util_LC = Util_LC(var,Misc)
+Util_NF = Util_NF(var,Misc)
+
+print(f"Util_LC: {Util_LC}")
+print(f"Util_NF: {Util_NF}")
 
 toc = time.time()
 
