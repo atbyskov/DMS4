@@ -1,8 +1,13 @@
-### APDL ###
+### ADPL_Nonlin.py ###
 # -> INPUT:
-#       - SW_coor (Coordinates from Soldiworks)
+#       - [SW_coor]   -> Coordinates from Soldiworks
+#       - [var]       -> Radius variables
+#       - [Misc]      -> Miscellaneous Data (force, mesh etc.) 
+#       - [imp_force] -> Imperfection force based on static analysis
 # -> OUTPUT:
-#       - .txt Input file for APDL
+#       - .txt Input file for APDL Nonlinear Analysis
+
+# NOTE: This code is almost identical to APDL_Eigen.py
 
 # Pseudo Code
     # Input is coordinate list with format [(x1,y1,z1),(x2,y2,z3)]
@@ -20,41 +25,44 @@
     # Apply SECTYPE,1 to vertical beams
     # Apply SECTYPE,2 to brace beams
     # Apply same material and element type to all lines
+    # Set up Nonlinear solver settings and SOLVE system
 
 import os
 
-
 def Nonlin_Fun(SWcoor, var, Misc, imp_force, out_dir = "AnsoutNonlin"):
     
-
     # Import Radii
     R0, R1, R2, R3 = var 
 
     # Import Misc
-    esize, Hor_Force, Ver_Force, f_y, E_mod = Misc
+    esize, Hor_Force, Ver_Force, Mom, f_y, E_mod = Misc
 
     # Function to group lines
     def beam_class(p1, p2):
-        # Corner beam if x2 == x1 AND z2 == z1, i.e. these are unchanged. 
         (x1, y1, z1) = p1
         (x2, y2, z2) = p2
 
+        # Corner beam if x2 == x1 AND z2 == z1, i.e. these are unchanged. 
         if x1 == x2 and z1 == z2:
             return "corner"
         else:
             return "brace"
     
-
+    # Create Nonlinear .txt file
     Nonlin_file = os.path.join(out_dir,"APDL_Nonlin_Input.txt")
 
+    # Open and Edit .txt file
     with open(Nonlin_file, "w") as f:
-    # SETUP
-        f.write("! ===== APDL INPUT FILE ====== ! \n \n")
-        f.write("/UNITS,MPa \n \n")
+        # SETUP
+        f.write("! ===== APDL INPUT FILE ====== ! \n")
+        f.write("!     Nonlinear Analysis       ! \n")
+        f.write("! ============================ ! \n \n")
+        f.write("/UNITS,MPa ! Set units [mm,Mg,s,C] \n \n")
 
-        f.write("! Nonlinear Analysis ! \n")
-        f.write("/PREP7 \n \n")
+        f.write("! Nonlinear Analysis Setup ! \n")
+        f.write("/PREP7 \n")
         f.write("ET,1,BEAM189 ! Use BEAM189 \n \n")
+
         # CROSS SECTION
         f.write("! CROSS SECTION !\n")
         f.write("! Corner Type (SECTYPE = 1) \n")
@@ -68,25 +76,21 @@ def Nonlin_Fun(SWcoor, var, Misc, imp_force, out_dir = "AnsoutNonlin"):
         f.write(f"MP,EX,1,{E_mod} ! [MPa]\n")
         f.write("MP,PRXY,1,0.3 \n")
         f.write("MP,DENS,1.7850E-6 ! [kg/mm^3] \n \n")
-
         # NODES
         f.write("! KEYPOINT AND LINES ! \n")
-        
+        # Initialize 
         key_id = 1
         line_id = 1
         corner_lines = []
         brace_lines = []
         corner_id = 1
         brace_id = 1
-
         kp_dict = {}
         CM_Brace_dict = 0
         CM_Column_dict = 0
-
+        # Loop through each point and create lines
         for x1, y1, z1, x2, y2, z2 in SWcoor:
             
-            
-
             # First point
             p1 = (x1, y1, z1)
             if p1 in kp_dict:
@@ -98,7 +102,6 @@ def Nonlin_Fun(SWcoor, var, Misc, imp_force, out_dir = "AnsoutNonlin"):
                 key_id += 1
 
             # Second Point
-            
             p2 = (x2, y2, z2)
             if p2 in kp_dict:
                 kp2 = kp_dict[p2]
@@ -124,7 +127,6 @@ def Nonlin_Fun(SWcoor, var, Misc, imp_force, out_dir = "AnsoutNonlin"):
                 brace_id += 1
                 CM_Brace_dict += 1
             
-
             f.write("LSEL,ALL \n")   # Reset
 
             line_id += 1
@@ -139,8 +141,6 @@ def Nonlin_Fun(SWcoor, var, Misc, imp_force, out_dir = "AnsoutNonlin"):
             f.write(f"! {block_name} ! \n")
             f.write(f"SECNUM,{secnum} \n")
             f.write("LSEL,ALL\n")
-            f.write("LSEL,NONE\n")
-
 
             first = True
             for lid in line_ids:
@@ -153,7 +153,6 @@ def Nonlin_Fun(SWcoor, var, Misc, imp_force, out_dir = "AnsoutNonlin"):
             f.write("LMESH,ALL \n\n")
         
         group_mesh("Meshing CORNER Beams (SECNUM=1)",1,corner_lines)
-
         group_mesh("Meshing BRACE beam (SECNUM=2)",2, brace_lines)
 
         f.write("/ESHAPE,1 ! Display Cross Section\n")
@@ -182,7 +181,8 @@ def Nonlin_Fun(SWcoor, var, Misc, imp_force, out_dir = "AnsoutNonlin"):
         f.write("NSEL,S,LOC,Y,NodeYMax \n")
         f.write(f"F,ALL,FY,{-Ver_Force} \n")
         f.write(f"F,ALL,FX,{Hor_Force} \n")
-        f.write(f"F,ALL,FX,{imp_force} \n")                     # Added Imperfection Force
+        f.write(f"F,ALL,MZ,{Mom} \n")
+        f.write(f"F,ALL,FX,{imp_force} \n")             # Added Imperfection Force
         f.write("ALLSEL,ALL \n")
 
         # FIXED DISPLACEMENT
@@ -193,21 +193,15 @@ def Nonlin_Fun(SWcoor, var, Misc, imp_force, out_dir = "AnsoutNonlin"):
         f.write("ALLSEL,ALL\n\n")
 
         # SOLVE
-        f.write("SOLVE \n \n")
+        f.write("! Solve the system \n")
+        f.write("SOLVE \n")
         f.write("FINISH \n \n \n")
-
-
         CM_dict = [CM_Column_dict, CM_Brace_dict]
-
-
-
-
-
 
         f.write("! ===== APDL OUTPUT FILE ===== ! \n \n")
 
         f.write("/POST1 \n")
-        f.write("SET,LAST \n \n")
+        f.write("SET,LAST \n")
         f.write("ALLSEL,ALL \n")
 
         # ONLY SELECT BEAM189 ELEMENTS
@@ -283,8 +277,7 @@ def Nonlin_Fun(SWcoor, var, Misc, imp_force, out_dir = "AnsoutNonlin"):
         f.write("*ENDDO \n")
 
         f.write("*CFCLOS \n")
-        
-
+    
         return Nonlin_file
 
 

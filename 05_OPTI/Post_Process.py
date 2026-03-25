@@ -1,15 +1,18 @@
 # Post_Process.py
     # Takes [var], [Misc], "APDL_Eigen_Internal.txt", "APDL_Nonlin_Internal" as input
-    # Calculates Utilization Ratios for
-        # 1. Local Buckling
-        # 2. Normal Force
-        # 3. Shear and Torsion
-        # 4. Bending, Normal and Shear
-        # 5. Flexural and Torsional
-        # 6. Interaction
+    # 6 Functions for calculating:
+        # 1. Local Buckling                 [LC]
+        # 2. Normal Force                   [NF]
+        # 3. Shear and Torsion              [ST]
+        # 4. Bending, Normal and Shear      [BNS]
+        # 5. Flexural and Torsional         [FT]
+        # 6. Interaction                    [IN]
     # Outputs this as a .txt file for evaluation
-    # Output highest utilization, place and type
+    # Output highest utilization factor as list
+    #   FORMAT:
+    #   [Column NF, Brace NF]
 
+# Import tools
 from pathlib import Path
 import pandas as pd
 import numpy as np
@@ -17,6 +20,7 @@ import re
 from io import StringIO
 
 # Function to read and parse forces 
+# NOTE: I have used Copilot for most of this function, so understanding is low ...
 def read_forces(filepath: str) -> pd.DataFrame:
     blocks = []
     current_member = None
@@ -64,13 +68,13 @@ def read_forces(filepath: str) -> pd.DataFrame:
         blocks.append(df)
 
     return pd.concat(blocks, ignore_index=True)
-             
-            
-def Util_ratio(var, Misc):
 
+
+# Function to calcualte Utilization ratios                
+def Util_NF(var, Misc):
+    # Open and Read Eigenvalue
     with open("AnsoutEigen/Eigenvalue1.txt") as f:
         eigenvalues = [float(line.strip()) for line in f if line.strip()]
-
     alpha_crit = next(v for v in eigenvalues if v > 0)
 
     # Initialize
@@ -83,20 +87,23 @@ def Util_ratio(var, Misc):
     A_Brace = np.pi * ((R3**2) - (R2**2)) 
 
     # Import Misc
-    esize, Hor_Force, Ver_Force, f_y, E_mod = Misc
+    esize, Hor_Force, Ver_Force, Mom, f_y, E_mod = Misc
     
     # Read Internal Force Data from APDL
     EigenData = "AnsoutEigen/APDL_Eigen_Internal.txt"
     NonlinData = "AnsoutNonlin/APDL_Nonlin_Internal.txt"
 
+    # Read Data and split into Columns and Braces
     df = read_forces(NonlinData)
     df_col = df[df["Member"].str.startswith("ColMember")].copy()
     df_brace = df[df["Member"].str.startswith("BraceMember")].copy()
 
-
+    # Design Resistance
+    # N = mm^2 * N/mm^2
     N_Rd_Col = A_Column*f_y 
     N_Rd_Brace = A_Brace*f_y
 
+    # Compression/Tension Utilization [1993-1-1 "6.2.4"]
     df_col["Util_NF"] = df_col["NF"].abs() / N_Rd_Col
     df_brace["Util_NF"] = df_brace["NF"].abs() / N_Rd_Brace
 

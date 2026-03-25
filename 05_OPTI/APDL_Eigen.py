@@ -31,7 +31,7 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
     R0, R1, R2, R3 = var 
 
     # Import Misc
-    esize, Hor_Force, Ver_Force, f_y, E_mod = Misc
+    esize, Hor_Force, Ver_Force, Mom, f_y, E_mod = Misc
 
     # Function to group lines
     def beam_class(p1, p2):
@@ -198,6 +198,7 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
         f.write("NSEL,S,LOC,Y,NodeYMax \n")
         f.write(f"F,ALL,FY,{-Ver_Force} \n")
         f.write(f"F,ALL,FX,{Hor_Force} \n")
+        f.write(f"F,ALL,MZ,{Mom} \n")
         f.write("ALLSEL,ALL \n")
 
         # Fixed displacement at bottom nodes
@@ -305,42 +306,36 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
         f.write("   totvol = totvol + ev \n")
         f.write("   enum = ELNEXT(enum) \n")
         f.write("*ENDDO \n")
-        # 
+        # Calculate Mass
         f.write("dens = 7.85E-6 ! kg/mm^3 \n") # Desnity
-        f.write("Comp_mass = dens*totvol \n")
-
+        f.write("Comp_mass = dens*totvol \n \n")
+        # Open and write to file
         f.write("*CFOPEN,MASS_assembly,txt \n")
-        f.write("*VWRITE,Comp_mass \n")
-        f.write("(F12.5) \n")
+        f.write("   *VWRITE,Comp_mass \n")
+        f.write("   (F12.5) \n")
         f.write("*CFCLOS \n")
-
-        ######
-
         f.write("FINISH \n")
-        f.write("ALLSEL,ALL \n")
+        f.write("ALLSEL,ALL \n \n")
 
-
+        # EIGENBUCKLING 
         f.write("! Eigenbuckling Solution! \n")
         f.write("/SOLU \n")
         f.write("ANTYPE,BUCKLE \n")
         f.write("BUCOPT,LANB,10 \n")
         f.write("MXPAND,ALL \n")
         f.write("OUTRES,ALL,ALL \n")
-        #f.write("SAVE,BUCKLE \n")
         f.write("SOLVE \n")
-        f.write("FINISH \n")
+        f.write("FINISH \n \n")
         
-
+        f.write("! Retrieve first 10 eigenvalues \n")
         f.write("/POST1 \n")
         f.write("*CFOPEN,Eigenvalue1,txt \n")
-
         f.write("*DO,jj,1,10,1 \n")
         f.write("   *GET,MS%jj%,MODE,jj,FREQ \n")
         f.write("   *VWRITE,MS%jj% \n")
         f.write('   (F10.5) \n')
         f.write("*ENDDO \n")
-
-        f.write("*CFCLOS \n \n \n")
+        f.write("*CFCLOS \n")
 
         
     return eigen_file

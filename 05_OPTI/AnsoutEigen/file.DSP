@@ -5,16 +5,16 @@
  = multifrontal statistics =
  ===========================
 
-     number of equations                     =           24198
-     no. of nonzeroes in lower triangle of a =          275414
-     no. of nonzeroes in the factor l        =          641257
+     number of equations                     =           12126
+     no. of nonzeroes in lower triangle of a =          142468
+     no. of nonzeroes in the factor l        =          353161
      ratio of nonzeroes in factor (min/max)  =          1.0000
-     number of super nodes                   =            1566
-     maximum order of a front matrix         =              66
-     maximum size of a front matrix          =            2211
-     maximum size of a front trapezoid       =            1911
+     number of super nodes                   =             829
+     maximum order of a front matrix         =             102
+     maximum size of a front matrix          =            5253
+     maximum size of a front trapezoid       =            4587
      METIS reordering method used 
-     no. of floating point ops for factor    =      1.1066D+07
+     no. of floating point ops for factor    =      7.4888D+06
      no. of floating point ops for solve     =      0.0000D+00
      ratio of flops for factor (min/max)     =          1.0000
      ratio of allocated memory (max/min)     =          1.0000
@@ -26,14 +26,14 @@
      number of processes used                =               1
      number of threads per process used      =               8
      number of cores used                    =               8
-     time (cpu & wall) for structure input   =        0.000000        0.001000
-     time (cpu & wall) for ordering          =        0.375000        0.048000
+     time (cpu & wall) for structure input   =        0.000000        0.002000
+     time (cpu & wall) for ordering          =        0.250000        0.028000
      time (cpu & wall) for other matrix prep =        0.000000        0.000000
      time (cpu & wall) for value input       =        0.000000        0.000000
-     time (cpu & wall) for matrix distrib.   =        0.125000        0.011000
-     time (cpu & wall) for numeric factor    =        0.093750        0.015000
-     computational rate (gflops) for factor  =        0.118035        0.737717
+     time (cpu & wall) for matrix distrib.   =        0.093750        0.006000
+     time (cpu & wall) for numeric factor    =        0.031250        0.008000
+     computational rate (gflops) for factor  =        0.239640        0.936095
 
      no input or output performed
 
-  Total Solver Memory allocated              =       20.035 MB
+  Total Solver Memory allocated              =       10.504 MB
