@@ -108,7 +108,7 @@ def Util_ratio(var, Misc):
 
     with open("UTIL_Ratio", "w") as f:
         f.write("Utilization Ratios \n")
-        f.write("Util_NF Column \t Util_NF Column \n")
+        f.write("Util_NF Column \t Util_NF Brace \n")
 
         for i in range(len(df_col)):
             col_val = df_col["Util_NF"].iloc[i]

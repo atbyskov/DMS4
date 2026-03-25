@@ -35,16 +35,17 @@ var = [R0, R1, R2, R3] # Assemble variables
 
 # Other specifications
 esize = 10              # Element Size [mm]
-Hor_Force = 0           # Horizontal Force at each selection [N]
-Ver_Force = 10000       # Vertical Force at each selection [N]
+Hor_Force = 4000           # Horizontal Force at each selection [N]
+Ver_Force = 300000       # Vertical Force at each selection [N]
 f_y = 690               # Yield Strength of S690 [MPa]
 E_mod = 200*1E3         # Youngs Modulus [MPa]
 
 Misc = [esize, Hor_Force, Ver_Force, f_y, E_mod]
 
 
-#f = RunAPDL(SWcoor,var,Misc) # Runs APDL and returns MASS
+#RunAPDL(SWcoor,var,Misc) # Runs APDL and returns MASS
 
+#f = RunAPDL(SWcoor,var,Misc) # Runs APDL and returns MASS
 #print(f"Mass of Assembly: {f} kg")
 
 # Run Post_Process.py
@@ -54,24 +55,78 @@ Misc = [esize, Hor_Force, Ver_Force, f_y, E_mod]
 
 x0 = np.array(var, dtype=float)
 
-def objective(x):
-    print(f"\nSciPy tries x = {x}")
-    value = RunAPDL(SWcoor, x, Misc)
-    print(f"Objective = {value}")
-    return float(value)
+alpha_min = 1.5
+eps_geom = 1e-3
+last_x_run = None
 
-# Bounds for each variable
+def read_alpha_crit():
+    with open("AnsoutEigen/Eigenvalue1.txt", "r") as f:
+        eigenvalues = [float(line.strip()) for line in f if line.strip()]
+    return float(next(v for v in eigenvalues if v > 0))
+
+
+def util_constraint_col(x):
+    x = np.array(x, dtype=float)
+
+
+    # Make sure files belong to this exact x
+    RunAPDL(SWcoor, x, Misc)
+
+    util = np.array(Util_ratio(x, Misc), dtype=float)
+    return 1.0 - util[0]
+
+
+def util_constraint_brace(x):
+    x = np.array(x, dtype=float)
+    # Make sure files belong to this exact x
+    RunAPDL(SWcoor, x, Misc)
+
+    util = np.array(Util_ratio(x, Misc), dtype=float)
+    return 1.0 - util[1]
+
+
+def eigen_constraint(x):
+    x = np.array(x, dtype=float)
+
+    # Make sure files belong to this exact x
+    RunAPDL(SWcoor, x, Misc)
+    
+    alpha = read_alpha_crit()
+    return alpha - alpha_min
+
+def objective(x):
+    x = np.array(x, dtype=float)
+
+    print("\n==============================")
+    print(f"SciPy tries x = {x}")
+
+    mass = float(RunAPDL(SWcoor, x, Misc))
+
+    util = np.array(Util_ratio(x, Misc), dtype=float)
+    alpha = read_alpha_crit()
+
+    print(f"Mass        = {mass:.6f}")
+    print(f"Util Column = {util[0]:.6f}")
+    print(f"Util Brace  = {util[1]:.6f}")
+    print(f"Alpha crit  = {alpha:.6f}")
+    print("==============================")
+
+    return mass
+
+
 bounds = [
-    (30.0, 60.0),   # R0
-    (31.0, 70.0),   # R1
-    (8.0,  20.0),   # R2
-    (9.0,  25.0)    # R3
+    (30.0, 60.0),  # R0
+    (31.0, 70.0),  # R1
+    (8.0,  20.0),  # R2
+    (9.0,  25.0)   # R3
 ]
 
-# Geometric constraints: outer radius must exceed inner radius
 cons = [
-    {"type": "ineq", "fun": lambda x: x[1] - x[0] - 1.0},  # column thickness >= 1 mm
-    {"type": "ineq", "fun": lambda x: x[3] - x[2] - 1.0},  # brace thickness >= 1 mm
+    {"type": "ineq", "fun": lambda x: x[1] - x[0] - eps_geom},
+    {"type": "ineq", "fun": lambda x: x[3] - x[2] - eps_geom},
+    {"type": "ineq", "fun": util_constraint_col},
+    {"type": "ineq", "fun": util_constraint_brace},
+    {"type": "ineq", "fun": eigen_constraint},
 ]
 
 result = spo.minimize(
@@ -91,9 +146,5 @@ print("\nOptimal x:", result.x)
 print("Optimal objective:", result.fun)
 print("Message:", result.message)
 
-
 #Optimizing
 #result = spo.minimize(lambda x: RunAPDL(SWcoor, var, Misc), var, options={"disp": True})
-
-
-
