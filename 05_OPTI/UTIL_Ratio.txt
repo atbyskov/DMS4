@@ -1,0 +1,3 @@
+UTILIZATION RATIOS (Normal Force)
+ElementID     MemberType       Util_NF
+-------------------------------------------

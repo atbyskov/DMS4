@@ -205,6 +205,7 @@ def Nonlin_Fun(SWcoor, var, Misc, imp_force, out_dir = "AnsoutNonlin"):
         f.write("NSEL,R,LOC,Z,175 \n")
         f.write("NSEL,R,LOC,X,-101.04 \n")
         f.write("D,ALL,ALL,0 \n")
+        f.write("ALLSEL,ALL \n")
 
         # SOLVE
         f.write("! Solve the system \n")

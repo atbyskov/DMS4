@@ -73,6 +73,11 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
         f.write(f"MP,EX,1,{E_mod} ! [MPa]\n")
         f.write("MP,PRXY,1,0.3 \n")
         f.write("MP,DENS,1.7850E-6 ! [kg/mm^3] \n \n")
+        # STIFF Material
+        f.write("! SPECIAL MATERIAL REGION ABOVE Y=4070\n")
+        f.write("MP,EX,2,2E+09\n")
+        f.write("MP,PRXY,2,0.3\n")
+        f.write("MP,DENS,2,1.7850E-6\n")
 
         # NODES
         f.write("! KEYPOINT AND LINES ! \n")
@@ -172,11 +177,6 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
         group_mesh("Meshing CORNER Beams (SECNUM=1)",1,corner_lines)
         group_mesh("Meshing BRACE beam (SECNUM=2)",2, brace_lines)
 
-        # --- Assign special material to lines above Y = 4070 ---
-        f.write("! SPECIAL MATERIAL REGION ABOVE Y=4070\n")
-        f.write("MP,EX,2,2.0E+15\n")
-        f.write("MP,PRXY,2,0.3\n")
-        f.write("MP,DENS,2,1.7850E-6\n")
 
         f.write("LSEL,ALL\n")
 
@@ -195,20 +195,67 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
 
 
         # Display Cross section
-        f.write("/ESHAPE,1 ! Display Cross Section\n")
+        #f.write("/ESHAPE,1 ! Display Cross Section\n")
+        # GET Highest and lowest node for bond
+        f.write("NSEL,S,LOC,X,0 \n")
+        f.write("NSEL,R,LOC,Y,4080.3 \n")
+        f.write("CM,NODE_LOW,NODE \n")
+        f.write("ALLSEL \n")
+
+        f.write("NSEL,S,LOC,X,0 \n")
+        f.write("NSEL,R,LOC,Y,4250.0 \n")
+        f.write("CM,NODE_HIGH,NODE \n")
+        f.write("ALLSEL \n")
+
+        f.write("N,99999,0,4476,0 \n")
+
+        # REMOTE LOAD SETUP
+        f.write("*SET,tid,52 \n")
+        f.write("*SET,cid,51 \n")
+        f.write("ET,cid,175 \n")
+        f.write("ET,tid,170 \n")
+        f.write("KEYO,tid,2,1 \n")
+        f.write("KEYO,tid,4,0 \n")
+        f.write("KEYO,cid,12,5 \n")
+        f.write("KEYO,cid,4,0 \n")
+        f.write("KEYO,cid,2,2 \n")
+        f.write("MAT,1 \n")
+        f.write("REAL,1 \n")
+        f.write("TYPE,1 \n")
+
+        f.write("EN,600,NODE_LOW \n")
+        f.write("EN,6001,NODE_HIGH \n")
+
+        f.write("*SET,_npilot,1068 \n")
+        f.write("_npilot1331=_npilot \n")
+
+        f.write("TYPE,tid \n")
+        f.write("MAT,cid \n")
+        f.write("REAL,cid \n")
+        f.write("TSHAPE,pilo \n")
+        f.write("en,603,_npilot \n")
+        f.write("tshape \n")
+
+        #f.write("N,99999,0,4476,0 \n")
+
+        f.write("CERIG,99999,ALL,ALL \n")
+
+        
+
+          
 
         # Create and save .png of the mesh
-        f.write("/SHOW,PNG,,0 \n")
-        f.write("/RGB,INDEX,100,100,100,0 \n")
-        f.write("/RGB,INDEX,80,80,80,13 \n")
-        f.write("/RGB,INDEX,60,60,60,14 \n")
-        f.write("/RGB,INDEX,0,0,0,15 \n")
-        f.write("/TYPE,,4 \n")
-        f.write("/VIEW,,0,0,1 \n")
-        f.write("/ANGLE,,30,YM \n")
-        f.write("EPLOT \n")
-        f.write("/SHOW,close \n")
-        f.write("/SHOW,TERM \n")
+        #f.write("/SHOW,PNG,,0 \n")
+        #f.write("/RGB,INDEX,100,100,100,0 \n")
+        #f.write("/RGB,INDEX,80,80,80,13 \n")
+        #f.write("/RGB,INDEX,60,60,60,14 \n")
+        #f.write("/RGB,INDEX,0,0,0,15 \n")
+        #f.write("/TYPE,,4 \n")
+        #f.write("/VIEW,,0,0,1 \n")
+        #f.write("/ANGLE,,30,YM \n")
+        #f.write("EPLOT \n")
+        #f.write("/SHOW,close \n")
+        #f.write("/SHOW,TERM \n")
 
         # RUN STATIC ANALYSIS
         # We use sparse solver with pre-stress on
@@ -224,39 +271,31 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
         f.write("SELTOL,1.0E-6 \n") # Important for node selection
 
         # Get top and bottom nodes
-        f.write("*GET, NodeXMax, NODE, 0, MXLOC, X \n")
-        f.write("*GET, NodeXMin, NODE, 0, MNLOC, X \n")
         f.write("*GET, NodeYMax, NODE, 0, MXLOC, Y \n")
         f.write("*GET, NodeYMin, NODE, 0, MNLOC, Y \n")
-        # Apply force at top node
-        f.write("NSEL,S,LOC,Y,NodeYMax \n")
-        f.write(f"F,ALL,FY,{-Ver_Force} \n")
-        f.write(f"F,ALL,FX,{Hor_Force} \n")
-        f.write(f"F,ALL,MZ,{MomZ} \n")
-        f.write(f"F,ALL,MY,{MomY} \n")
-        f.write("ALLSEL,ALL \n")
+        # Apply Remote Force
+        
+
+        f.write(f"F,99999,FY,{-Ver_Force} \n")
+        f.write(f"F,99999,FX,{Hor_Force} \n")
+        # Apply Moment
+        #f.write("ALLSEL \n")
+        #f.write("NSEL,S,LOC,X,0 \n")
+        #f.write("NSEL,U,NODE,,99999 \n")
+        #f.write("*GET,M_nodes,NODE,0,COUNT \n")
+        #f.write(f"MomZ ={MomZ} \n")
+        #f.write(f"MomY ={MomY} \n")
+        #f.write("F,ALL,MZ,MomZ/M_nodes \n")
+        #f.write("F,ALL,MY,MomY/M_nodes \n")
+        #f.write("ALLSEL,ALL \n")
 
         # Fixed displacement at bottom nodes
         f.write("! Displacement ! \n")
         f.write("ALLSEL,ALL \n")
-        f.write("SELTOL,1.0E-2 \n")
         f.write("NSEL,S,LOC,Y,NodeYMin \n")
-        f.write("NSEL,R,LOC,X,202.07 \n")
         f.write("D,ALL,ALL,0 \n")
+        f.write("ALLSEL \n")
 
-        f.write("ALLSEL,ALL \n")
-        f.write("NSEL,S,LOC,Y,NodeYMin \n")
-        f.write("NSEL,R,LOC,Z,-175 \n")
-        f.write("NSEL,R,LOC,X,-101.04 \n")
-        f.write("D,ALL,ALL,0 \n")
-
-        f.write("ALLSEL,ALL \n")
-        f.write("NSEL,S,LOC,Y,NodeYMin \n")
-        f.write("NSEL,R,LOC,Z,175 \n")
-        f.write("NSEL,R,LOC,X,-101.04 \n")
-        f.write("D,ALL,ALL,0 \n")
-
-        
 
         # SOLVE
         f.write("! Solve the System \n")
