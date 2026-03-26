@@ -35,7 +35,7 @@ def Nonlin_Fun(SWcoor, var, Misc, imp_force, out_dir = "AnsoutNonlin"):
     R0, R1, R2, R3 = var 
 
     # Import Misc
-    esize, Hor_Force, Ver_Force, Mom, f_y, E_mod = Misc
+    esize, Hor_Force, Ver_Force, MomZ, MomY, f_y, E_mod = Misc
 
     # Function to group lines
     def beam_class(p1, p2):
@@ -181,16 +181,30 @@ def Nonlin_Fun(SWcoor, var, Misc, imp_force, out_dir = "AnsoutNonlin"):
         f.write("NSEL,S,LOC,Y,NodeYMax \n")
         f.write(f"F,ALL,FY,{-Ver_Force} \n")
         f.write(f"F,ALL,FX,{Hor_Force} \n")
-        f.write(f"F,ALL,MZ,{Mom} \n")
+        f.write(f"F,ALL,MZ,{MomZ} \n")
+        f.write(f"F,ALL,MY,{MomY} \n")
         f.write(f"F,ALL,FX,{imp_force} \n")             # Added Imperfection Force
         f.write("ALLSEL,ALL \n")
 
-        # FIXED DISPLACEMENT
+        # Fixed displacement at bottom nodes
         f.write("! Displacement ! \n")
         f.write("ALLSEL,ALL \n")
+        f.write("SELTOL,1.0E-2 \n")
         f.write("NSEL,S,LOC,Y,NodeYMin \n")
+        f.write("NSEL,R,LOC,X,202.07 \n")
         f.write("D,ALL,ALL,0 \n")
-        f.write("ALLSEL,ALL\n\n")
+
+        f.write("ALLSEL,ALL \n")
+        f.write("NSEL,S,LOC,Y,NodeYMin \n")
+        f.write("NSEL,R,LOC,Z,-175 \n")
+        f.write("NSEL,R,LOC,X,-101.04 \n")
+        f.write("D,ALL,ALL,0 \n")
+
+        f.write("ALLSEL,ALL \n")
+        f.write("NSEL,S,LOC,Y,NodeYMin \n")
+        f.write("NSEL,R,LOC,Z,175 \n")
+        f.write("NSEL,R,LOC,X,-101.04 \n")
+        f.write("D,ALL,ALL,0 \n")
 
         # SOLVE
         f.write("! Solve the system \n")

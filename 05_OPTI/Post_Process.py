@@ -76,7 +76,7 @@ def Util_LC(var, Misc):
     R0, R1, R2, R3 = var
 
     # Import Misc
-    esize, Hor_Force, Ver_Force, Mom, f_y, E_mod = Misc
+    esize, Hor_Force, Ver_Force, MomZ, MomY, f_y, E_mod = Misc
 
     # Poissons Ratio
     v = 0.3
@@ -117,7 +117,7 @@ def Util_NF(var, Misc):
     A_Brace = np.pi * ((R3**2) - (R2**2)) 
 
     # Import Misc
-    esize, Hor_Force, Ver_Force, Mom, f_y, E_mod = Misc
+    esize, Hor_Force, Ver_Force, MomZ, MomY, f_y, E_mod = Misc
     
     # Read Internal Force Data from APDL
     EigenData = "AnsoutEigen/APDL_Eigen_Internal.txt"

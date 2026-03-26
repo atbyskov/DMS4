@@ -101,7 +101,7 @@
   INITIAL DIRECTORY = C:\Users\atbys\Desktop\DMS4 Local\DMS4\05_OPTI\AnsoutNonlin
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
- CURRENT JOBNAME=file  14:21:45  MAR 25, 2026 CP=      0.047
+ CURRENT JOBNAME=file  09:10:08  MAR 26, 2026 CP=      0.094
 
      1  ! ===== APDL INPUT FILE ====== !
      2  !     Nonlinear Analysis       !
@@ -1344,90 +1344,101 @@
   1239  *GET, NodeYMin, NODE, 0, MNLOC, Y   
   1240  NSEL,S,LOC,Y,NodeYMax   
   1241  F,ALL,FY,-26400 
-  1242  F,ALL,FX,465.8  
-  1243  F,ALL,MZ,66400000   
-  1244  F,ALL,FX,176.0  
-  1245  ALLSEL,ALL  
-  1246  ! Displacement !
-  1247  ALLSEL,ALL  
-  1248  NSEL,S,LOC,Y,NodeYMin   
-  1249  D,ALL,ALL,0 
-  1250  ALLSEL,ALL  
-  1251      
-  1252  ! Solve the system  
-  1253  SOLVE   
-  1254  FINISH  
-  1255      
-  1256      
-  1257  ! ===== APDL OUTPUT FILE ===== !
-  1258      
-  1259  /POST1  
-  1260  SET,LAST
-  1261  ALLSEL,ALL  
-  1262  *GET,E_COUNT,ELEM,0,COUNT   
-  1263      
-  1264  ! Number of Columns: 113
-  1265  ! Number of Braces : 99 
+  1242  F,ALL,FX,502.52 
+  1243  F,ALL,MZ,-70364000  
+  1244  F,ALL,MY,1407140
+  1245  F,ALL,FX,176.0  
+  1246  ALLSEL,ALL  
+  1247  ! Displacement !
+  1248  ALLSEL,ALL  
+  1249  SELTOL,1.0E-2   
+  1250  NSEL,S,LOC,Y,NodeYMin   
+  1251  NSEL,R,LOC,X,202.07 
+  1252  D,ALL,ALL,0 
+  1253  ALLSEL,ALL  
+  1254  NSEL,S,LOC,Y,NodeYMin   
+  1255  NSEL,R,LOC,Z,-175   
+  1256  NSEL,R,LOC,X,-101.04
+  1257  D,ALL,ALL,0 
+  1258  ALLSEL,ALL  
+  1259  NSEL,S,LOC,Y,NodeYMin   
+  1260  NSEL,R,LOC,Z,175
+  1261  NSEL,R,LOC,X,-101.04
+  1262  D,ALL,ALL,0 
+  1263  ! Solve the system  
+  1264  SOLVE   
+  1265  FINISH  
   1266      
-  1267  *CFOPEN, APDL_Nonlin_Internal,txt   
-  1268      
-  1269  ! Loop over Columns 
-  1270  *DO,ii,1,113,1  
-  1271     CMSEL,S,COLUMN_%ii%  
-  1272  ESLL,S  
-  1273  ESEL,R,ENAME,,189   
-  1274     *IF,ii,LT,10,THEN
-  1275         *VWRITE,ii   
-  1276         ("NS ColMember_",F2.0)   
-  1277     *ELSE
-  1278         *VWRITE,ii   
-  1279         ("NS ColMember_",F3.0)   
-  1280     *ENDIF   
-  1281  *GET,nElem,ELEM,0,COUNT 
-  1282     *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]' 
-  1283     (A12,A20,A20,A20,A20,A20,A20)
-  1284     ELEM = 0 
-  1285     *DO,jj,1,nElem,1 
-  1286         ELEM = ELNEXT(ELEM)  
-  1287         *GET,NF,ELEM,ELEM,SMISC,1
-  1288         *GET,MY,ELEM,ELEM,SMISC,2
-  1289         *GET,MZ,ELEM,ELEM,SMISC,3
-  1290         *GET,VY,ELEM,ELEM,SMISC,4
-  1291         *GET,VZ,ELEM,ELEM,SMISC,5
-  1292         *GET,TQ,ELEM,ELEM,SMISC,6
-  1293         *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ   
-  1294         (F12.0,6E20.8)   
-  1295     *ENDDO   
-  1296      
-  1297  *ENDDO! Loop over Braces
-  1298  *DO,ii,1,99,1   
-  1299     CMSEL,S,BRACE_%ii%,LINE  
-  1300     ESLL,S   
-  1301     ESEL,R,ENAME,,189
-  1302     *IF,ii,LT,10,THEN
-  1303         *VWRITE,ii   
-  1304         ("NS BraceMember_",F2.0) 
-  1305     *ELSE
-  1306         *VWRITE,ii   
-  1307         ("NS BraceMember_",F3.0) 
-  1308     *ENDIF   
-  1309  *GET,nElem,ELEM,0,COUNT 
-  1310     *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]' 
-  1311     (A12,6A20)   
-  1312     elem = 0 
-  1313     *DO,jj,1,nElem,1 
-  1314         ELEM = ELNEXT(ELEM)  
-  1315         *GET,NF,ELEM,ELEM,SMISC,1
-  1316         *GET,MY,ELEM,ELEM,SMISC,2
-  1317         *GET,MZ,ELEM,ELEM,SMISC,3
-  1318         *GET,VY,ELEM,ELEM,SMISC,4
-  1319         *GET,VZ,ELEM,ELEM,SMISC,5
-  1320         *GET,TQ,ELEM,ELEM,SMISC,6
-  1321         *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ   
-  1322         (F12.0,6E20.8)   
-  1323     *ENDDO   
-  1324  *ENDDO  
-  1325  *CFCLOS 
+  1267      
+  1268  ! ===== APDL OUTPUT FILE ===== !
+  1269      
+  1270  /POST1  
+  1271  SET,LAST
+  1272  ALLSEL,ALL  
+  1273  *GET,E_COUNT,ELEM,0,COUNT   
+  1274      
+  1275  ! Number of Columns: 113
+  1276  ! Number of Braces : 99 
+  1277      
+  1278  *CFOPEN, APDL_Nonlin_Internal,txt   
+  1279      
+  1280  ! Loop over Columns 
+  1281  *DO,ii,1,113,1  
+  1282     CMSEL,S,COLUMN_%ii%  
+  1283  ESLL,S  
+  1284  ESEL,R,ENAME,,189   
+  1285     *IF,ii,LT,10,THEN
+  1286         *VWRITE,ii   
+  1287         ("NS ColMember_",F2.0)   
+  1288     *ELSE
+  1289         *VWRITE,ii   
+  1290         ("NS ColMember_",F3.0)   
+  1291     *ENDIF   
+  1292  *GET,nElem,ELEM,0,COUNT 
+  1293     *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]' 
+  1294     (A12,A20,A20,A20,A20,A20,A20)
+  1295     ELEM = 0 
+  1296     *DO,jj,1,nElem,1 
+  1297         ELEM = ELNEXT(ELEM)  
+  1298         *GET,NF,ELEM,ELEM,SMISC,1
+  1299         *GET,MY,ELEM,ELEM,SMISC,2
+  1300         *GET,MZ,ELEM,ELEM,SMISC,3
+  1301         *GET,VY,ELEM,ELEM,SMISC,4
+  1302         *GET,VZ,ELEM,ELEM,SMISC,5
+  1303         *GET,TQ,ELEM,ELEM,SMISC,6
+  1304         *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ   
+  1305         (F12.0,6E20.8)   
+  1306     *ENDDO   
+  1307      
+  1308  *ENDDO! Loop over Braces
+  1309  *DO,ii,1,99,1   
+  1310     CMSEL,S,BRACE_%ii%,LINE  
+  1311     ESLL,S   
+  1312     ESEL,R,ENAME,,189
+  1313     *IF,ii,LT,10,THEN
+  1314         *VWRITE,ii   
+  1315         ("NS BraceMember_",F2.0) 
+  1316     *ELSE
+  1317         *VWRITE,ii   
+  1318         ("NS BraceMember_",F3.0) 
+  1319     *ENDIF   
+  1320  *GET,nElem,ELEM,0,COUNT 
+  1321     *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]' 
+  1322     (A12,6A20)   
+  1323     elem = 0 
+  1324     *DO,jj,1,nElem,1 
+  1325         ELEM = ELNEXT(ELEM)  
+  1326         *GET,NF,ELEM,ELEM,SMISC,1
+  1327         *GET,MY,ELEM,ELEM,SMISC,2
+  1328         *GET,MZ,ELEM,ELEM,SMISC,3
+  1329         *GET,VY,ELEM,ELEM,SMISC,4
+  1330         *GET,VZ,ELEM,ELEM,SMISC,5
+  1331         *GET,TQ,ELEM,ELEM,SMISC,6
+  1332         *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ   
+  1333         (F12.0,6E20.8)   
+  1334     *ENDDO   
+  1335  *ENDDO  
+  1336  *CFCLOS 
 
  RUN SETUP PROCEDURE FROM FILE= C:\Program Files\ANSYS Inc\v251\ANSYS\apdl\start.ans
 
@@ -1446,7 +1457,7 @@
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   14:21:45  MAR 25, 2026 CP=      0.125
+ 00254321  VERSION=WINDOWS x64   09:10:08  MAR 26, 2026 CP=      0.188
 
                                                                                
 
@@ -6243,7 +6254,7 @@
  ELEMENT DISPLAYS USING REAL CONSTANT OR SECTION DATA WITH FACTOR     1.00
 
 
- ***** ROUTINE COMPLETED *****  CP =         0.422
+ ***** ROUTINE COMPLETED *****  CP =         0.500
 
 
 
@@ -6290,10 +6301,13 @@
   REAL= -26400.0000       IMAG=  0.00000000    
 
  SPECIFIED NODAL LOAD FX   FOR SELECTED NODES         1 TO     2095 BY        1
-  REAL=  465.800000       IMAG=  0.00000000    
+  REAL=  502.520000       IMAG=  0.00000000    
 
  SPECIFIED NODAL LOAD MZ   FOR SELECTED NODES         1 TO     2095 BY        1
-  REAL=  66400000.0       IMAG=  0.00000000    
+  REAL= -70364000.0       IMAG=  0.00000000    
+
+ SPECIFIED NODAL LOAD MY   FOR SELECTED NODES         1 TO     2095 BY        1
+  REAL=  1407140.00       IMAG=  0.00000000    
 
  SPECIFIED NODAL LOAD FX   FOR SELECTED NODES         1 TO     2095 BY        1
   REAL=  176.000000       IMAG=  0.00000000    
@@ -6302,10 +6316,17 @@
 
  SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
 
+ SELECT TOLERANCE= 0.10000E-01
+
  SELECT       FOR ITEM=LOC  COMPONENT=Y     BETWEEN  0.0000     AND   0.0000    
-   KABS=  0.  TOLERANCE= 0.100000E-05
+   KABS=  0.  TOLERANCE= 0.100000E-01
 
          74  NODES (OF       2095  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ RESELECT     FOR ITEM=LOC  COMPONENT=X     BETWEEN  202.07     AND   202.07    
+   KABS=  0.  TOLERANCE= 0.100000E-01
+
+          1  NODES (OF       2095  DEFINED) SELECTED BY  NSEL  COMMAND.
 
  SPECIFIED CONSTRAINT UX   FOR SELECTED NODES            1 TO        2095 BY           1
  REAL=  0.00000000       IMAG=  0.00000000    
@@ -6313,9 +6334,49 @@
 
  SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
 
+ SELECT       FOR ITEM=LOC  COMPONENT=Y     BETWEEN  0.0000     AND   0.0000    
+   KABS=  0.  TOLERANCE= 0.100000E-01
+
+         74  NODES (OF       2095  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ RESELECT     FOR ITEM=LOC  COMPONENT=Z     BETWEEN -175.00     AND  -175.00    
+   KABS=  0.  TOLERANCE= 0.100000E-01
+
+          1  NODES (OF       2095  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ RESELECT     FOR ITEM=LOC  COMPONENT=X     BETWEEN -101.04     AND  -101.04    
+   KABS=  0.  TOLERANCE= 0.100000E-01
+
+          1  NODES (OF       2095  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ SPECIFIED CONSTRAINT UX   FOR SELECTED NODES            1 TO        2095 BY           1
+ REAL=  0.00000000       IMAG=  0.00000000    
+ ADDITIONAL DOFS=  UY    UZ    ROTX  ROTY  ROTZ
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ SELECT       FOR ITEM=LOC  COMPONENT=Y     BETWEEN  0.0000     AND   0.0000    
+   KABS=  0.  TOLERANCE= 0.100000E-01
+
+         74  NODES (OF       2095  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ RESELECT     FOR ITEM=LOC  COMPONENT=Z     BETWEEN  175.00     AND   175.00    
+   KABS=  0.  TOLERANCE= 0.100000E-01
+
+          1  NODES (OF       2095  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ RESELECT     FOR ITEM=LOC  COMPONENT=X     BETWEEN -101.04     AND  -101.04    
+   KABS=  0.  TOLERANCE= 0.100000E-01
+
+          1  NODES (OF       2095  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ SPECIFIED CONSTRAINT UX   FOR SELECTED NODES            1 TO        2095 BY           1
+ REAL=  0.00000000       IMAG=  0.00000000    
+ ADDITIONAL DOFS=  UY    UZ    ROTX  ROTY  ROTZ
+
  *****  MAPDL SOLVE    COMMAND  *****
 
- *** NOTE ***                            CP =       0.422   TIME= 14:21:45
+ *** NOTE ***                            CP =       0.625   TIME= 09:10:08
  There is no title defined for this analysis.                            
 
  *** SELECTION OF ELEMENT TECHNOLOGIES FOR APPLICABLE ELEMENTS ***
@@ -6330,7 +6391,7 @@
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   14:21:45  MAR 25, 2026 CP=      0.422
+ 00254321  VERSION=WINDOWS x64   09:10:08  MAR 26, 2026 CP=      0.625
 
                                                                                
 
@@ -6345,15 +6406,626 @@
    NEWTON-RAPHSON OPTION . . . . . . . . . . . . .PROGRAM CHOSEN   
    GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
 
- *** NOTE ***                            CP =       0.422   TIME= 14:21:45
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 4 on element 1 is unselected.                                      
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 3 on element 1 is unselected.                                      
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 4 on element 2 is unselected.                                      
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 2 on element 2 is unselected.                                      
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 5 on element 2 is unselected.                                      
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 2 on element 3 is unselected.                                      
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 6 on element 3 is unselected.                                      
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 7 on element 3 is unselected.                                      
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 8 on element 4 is unselected.                                      
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 10 on element 4 is unselected.                                     
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 9 on element 4 is unselected.                                      
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 10 on element 5 is unselected.                                     
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 12 on element 5 is unselected.                                     
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 11 on element 5 is unselected.                                     
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 12 on element 6 is unselected.                                     
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 14 on element 6 is unselected.                                     
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 13 on element 6 is unselected.                                     
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 14 on element 7 is unselected.                                     
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 16 on element 7 is unselected.                                     
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 15 on element 7 is unselected.                                     
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 16 on element 8 is unselected.                                     
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 18 on element 8 is unselected.                                     
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 17 on element 8 is unselected.                                     
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 18 on element 9 is unselected.                                     
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 6 on element 9 is unselected.                                      
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 19 on element 9 is unselected.                                     
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 8 on element 10 is unselected.                                     
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 20 on element 10 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 21 on element 10 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 20 on element 11 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 22 on element 11 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 23 on element 11 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 24 on element 12 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 25 on element 12 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 26 on element 12 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 27 on element 13 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 28 on element 13 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 29 on element 13 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 30 on element 14 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 31 on element 14 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 32 on element 14 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 33 on element 15 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 36 on element 15 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 35 on element 15 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 36 on element 16 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 38 on element 16 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 37 on element 16 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 38 on element 17 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 40 on element 17 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 39 on element 17 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 40 on element 18 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 42 on element 18 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 41 on element 18 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 42 on element 19 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 34 on element 19 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 43 on element 19 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 34 on element 20 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 46 on element 20 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 45 on element 20 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 46 on element 21 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 48 on element 21 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 47 on element 21 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 48 on element 22 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 50 on element 22 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 49 on element 22 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 50 on element 23 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 44 on element 23 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 51 on element 23 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 22 on element 24 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 54 on element 24 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 53 on element 24 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 54 on element 25 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 56 on element 25 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 55 on element 25 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 56 on element 26 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 58 on element 26 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 57 on element 26 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 58 on element 27 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 60 on element 27 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 59 on element 27 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 60 on element 28 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 62 on element 28 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 61 on element 28 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 62 on element 29 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 52 on element 29 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 63 on element 29 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 52 on element 30 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 64 on element 30 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 65 on element 30 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 64 on element 31 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 68 on element 31 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 67 on element 31 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 68 on element 32 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 70 on element 32 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 69 on element 32 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 70 on element 33 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 72 on element 33 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 71 on element 33 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 72 on element 34 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 66 on element 34 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 73 on element 34 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 66 on element 35 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 74 on element 35 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 75 on element 35 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 74 on element 36 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 78 on element 36 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 77 on element 36 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 78 on element 37 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 80 on element 37 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 79 on element 37 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 80 on element 38 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 82 on element 38 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 81 on element 38 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 82 on element 39 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 84 on element 39 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 83 on element 39 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 84 on element 40 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 86 on element 40 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 85 on element 40 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 86 on element 41 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 76 on element 41 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 87 on element 41 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 76 on element 42 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 88 on element 42 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 89 on element 42 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 90 on element 43 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 88 on element 43 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 91 on element 43 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 90 on element 44 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 94 on element 44 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 93 on element 44 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 94 on element 45 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 96 on element 45 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 95 on element 45 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 96 on element 46 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 98 on element 46 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 97 on element 46 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 98 on element 47 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 100 on element 47 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 99 on element 47 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 100 on element 48 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 102 on element 48 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 101 on element 48 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 102 on element 49 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 92 on element 49 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 103 on element 49 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 104 on element 50 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 92 on element 50 is unselected.                                    
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 105 on element 50 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 104 on element 51 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 108 on element 51 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 107 on element 51 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 108 on element 52 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 110 on element 52 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 109 on element 52 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 110 on element 53 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 112 on element 53 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 111 on element 53 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 112 on element 54 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 106 on element 54 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 113 on element 54 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 114 on element 55 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 106 on element 55 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 115 on element 55 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 114 on element 56 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 118 on element 56 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 117 on element 56 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 118 on element 57 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 120 on element 57 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 119 on element 57 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 120 on element 58 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 122 on element 58 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 121 on element 58 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 122 on element 59 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 124 on element 59 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 123 on element 59 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 124 on element 60 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 126 on element 60 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 125 on element 60 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 126 on element 61 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 116 on element 61 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 127 on element 61 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 116 on element 62 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 128 on element 62 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 129 on element 62 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 128 on element 63 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 130 on element 63 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 131 on element 63 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 132 on element 64 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 134 on element 64 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 133 on element 64 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 134 on element 65 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 136 on element 65 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 135 on element 65 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 136 on element 66 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 138 on element 66 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 137 on element 66 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 138 on element 67 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 140 on element 67 is unselected.                                   
+
+ *** WARNING ***                         CP =       0.625   TIME= 09:10:08
+ Node 139 on element 67 is unselected.                                   
+
+ ************************************************************************
+ The number of ERROR and WARNING messages exceeds 200.                   
+ Additional messages suppressed.  See ( C:\Users\atbys\Desktop\DMS4      
+ Local\DMS4\05_OPTI\AnsoutNonlin\file.err ) for suppressed messages.     
+ ************************************************************************
+
+ *** NOTE ***                            CP =       0.875   TIME= 09:10:08
  Present time 0 is less than or equal to the previous time.  Time will   
  default to 1.                                                           
 
- *** NOTE ***                            CP =       0.422   TIME= 14:21:45
+ *** NOTE ***                            CP =       0.875   TIME= 09:10:08
+ The step data was checked and warning messages were found.              
+  Please review output or errors file ( C:\Users\atbys\Desktop\DMS4      
+ Local\DMS4\05_OPTI\AnsoutNonlin\file.err ) for these warning messages.  
+
+ *** NOTE ***                            CP =       0.875   TIME= 09:10:08
  This nonlinear analysis defaults to using the full Newton-Raphson       
  solution procedure.  This can be modified using the NROPT command.      
 
- *** NOTE ***                            CP =       0.422   TIME= 14:21:45
+ *** NOTE ***                            CP =       0.875   TIME= 09:10:08
  The conditions for direct assembly have been met.  No .emat or .erot    
  files will be produced.                                                 
 
@@ -6375,7 +7047,7 @@
 
  SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
 
- *** NOTE ***                            CP =       1.031   TIME= 14:21:45
+ *** NOTE ***                            CP =       1.500   TIME= 09:10:08
  Predictor is ON by default for structural elements with rotational      
  degrees of freedom.  Use the PRED,OFF command to turn the predictor     
  OFF if it adversely affects the convergence.                            
@@ -6388,140 +7060,140 @@
    *** ELEMENT MATRIX FORMULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1      1093  BEAM189       0.984   0.000901
- Time at end of element matrix formulation CP = 1.171875.                
+        1      1093  BEAM189       1.000   0.000915
+ Time at end of element matrix formulation CP = 1.75.                    
 
  ALL CURRENT MAPDL DATA WRITTEN TO FILE NAME= file.rdb
   FOR POSSIBLE RESUME FROM THIS POINT
      FORCE CONVERGENCE VALUE  =   2640.      CRITERION=   13.20    
-     MOMENT CONVERGENCE VALUE =  0.6640E+07  CRITERION=  0.3320E+05
+     MOMENT CONVERGENCE VALUE =  0.7038E+07  CRITERION=  0.3519E+05
 
  SPARSE MATRIX DIRECT SOLVER.
-  Number of equations =       12126,    Maximum wavefront =     72
+  Number of equations =       12552,    Maximum wavefront =     72
 
 
   Memory allocated on this process
   -------------------------------------------------------------------
-  Equation solver memory allocated                     =    12.358 MB
-  Equation solver memory required for in-core mode     =    11.953 MB
-  Equation solver memory required for out-of-core mode =     9.230 MB
-  Total (solver and non-solver) memory allocated       =   393.081 MB
+  Equation solver memory allocated                     =    12.758 MB
+  Equation solver memory required for in-core mode     =    12.341 MB
+  Equation solver memory required for out-of-core mode =     9.543 MB
+  Total (solver and non-solver) memory allocated       =   392.700 MB
 
- *** NOTE ***                            CP =       1.406   TIME= 14:21:45
+ *** NOTE ***                            CP =       2.203   TIME= 09:10:08
  The Sparse Matrix Solver is currently running in the in-core memory     
  mode.  This memory mode uses the most amount of memory in order to      
  avoid using the hard drive as much as possible, which most often        
  results in the fastest solution time.  This mode is recommended if      
  enough physical memory is present to accommodate all of the solver      
  data.                                                                   
- Sparse solver maximum pivot= 3.288858819E+10 at node 607 ROTZ.          
+ Sparse solver maximum pivot= 3.288858819E+10 at node 567 ROTZ.          
  Sparse solver minimum pivot= 1774.08943 at node 335 UZ.                 
  Sparse solver minimum pivot in absolute value= 1774.08943 at node 335   
  UZ.                                                                     
-     ARCLEN NEW TIME =  0.10000     ARC-LENGTH =   152.39    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -10.69    
-     FORCE CONVERGENCE VALUE  =  0.4247E+05  CRITERION=   129.3    
-     MOMENT CONVERGENCE VALUE =   9641.      CRITERION=  0.3321E+05 <<< CONVERGED
-     ARCLEN NEW TIME =  0.99788E-01 ARC-LENGTH =   215.51    
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.4114E-01
-     FORCE CONVERGENCE VALUE  =   5.007      CRITERION=   129.6     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =   2042.      CRITERION=  0.3314E+05 <<< CONVERGED
+     ARCLEN NEW TIME =  0.10000     ARC-LENGTH =   164.59    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   11.47    
+     FORCE CONVERGENCE VALUE  =  0.4793E+05  CRITERION=   140.0    
+     MOMENT CONVERGENCE VALUE =  0.4468E+05  CRITERION=  0.3520E+05
+     ARCLEN NEW TIME =  0.99803E-01 ARC-LENGTH =   232.77    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.4678E-01
+     FORCE CONVERGENCE VALUE  =   6.566      CRITERION=   140.3     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =   2443.      CRITERION=  0.3513E+05 <<< CONVERGED
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
 
    *** ELEMENT RESULT CALCULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1      1093  BEAM189       1.828   0.001673
+        1      1093  BEAM189       1.000   0.000915
 
    *** NODAL LOAD CALCULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1      1093  BEAM189       0.141   0.000129
+        1      1093  BEAM189       0.000   0.000000
  *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      2
- *** TIME =  0.997882E-01  TIME INC =  0.100000      MAX DISPLACEMENT =    -10.70    
+ *** TIME =  0.998035E-01  TIME INC =  0.100000      MAX DISPLACEMENT =     11.48    
 
-     FORCE CONVERGENCE VALUE  =   2644.      CRITERION=   131.6    
-     MOMENT CONVERGENCE VALUE =  0.6638E+07  CRITERION=  0.6633E+05
-     ARCLEN NEW TIME =  0.19979     ARC-LENGTH =   152.39    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -10.76    
-     FORCE CONVERGENCE VALUE  =  0.4270E+05  CRITERION=   259.9    
-     MOMENT CONVERGENCE VALUE =  0.1024E+05  CRITERION=  0.6634E+05 <<< CONVERGED
-     ARCLEN NEW TIME =  0.19957     ARC-LENGTH =   216.41    
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.4129E-01
-     FORCE CONVERGENCE VALUE  =   4.121      CRITERION=   260.2     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =   4105.      CRITERION=  0.6627E+05 <<< CONVERGED
+     FORCE CONVERGENCE VALUE  =   2646.      CRITERION=   142.1    
+     MOMENT CONVERGENCE VALUE =  0.7035E+07  CRITERION=  0.7031E+05
+     ARCLEN NEW TIME =  0.19980     ARC-LENGTH =   164.59    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   11.54    
+     FORCE CONVERGENCE VALUE  =  0.4821E+05  CRITERION=   281.5    
+     MOMENT CONVERGENCE VALUE =  0.4655E+05  CRITERION=  0.7032E+05 <<< CONVERGED
+     ARCLEN NEW TIME =  0.19961     ARC-LENGTH =   233.71    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.4704E-01
+     FORCE CONVERGENCE VALUE  =   5.612      CRITERION=   281.8     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =   4921.      CRITERION=  0.7026E+05 <<< CONVERGED
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
  *** LOAD STEP     1   SUBSTEP     2  COMPLETED.    CUM ITER =      4
- *** TIME =  0.199568      TIME INC =  0.149031      MAX DISPLACEMENT =    -21.47    
+ *** TIME =  0.199615      TIME INC =  0.149123      MAX DISPLACEMENT =     23.03    
 
-     FORCE CONVERGENCE VALUE  =  0.3172E+05  CRITERION=   457.0    
-     MOMENT CONVERGENCE VALUE =  0.2008E+05  CRITERION=  0.1158E+06
-     ARCLEN NEW TIME =  0.34844     ARC-LENGTH =   324.62    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.3115E-01
-     FORCE CONVERGENCE VALUE  =   3.351      CRITERION=   457.2     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =   5324.      CRITERION=  0.1157E+06 <<< CONVERGED
+     FORCE CONVERGENCE VALUE  =  0.3614E+05  CRITERION=   494.9    
+     MOMENT CONVERGENCE VALUE =  0.4030E+05  CRITERION=  0.1227E+06
+     ARCLEN NEW TIME =  0.34859     ARC-LENGTH =   350.57    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.3576E-01
+     FORCE CONVERGENCE VALUE  =   4.625      CRITERION=   495.2     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =   6434.      CRITERION=  0.1227E+06 <<< CONVERGED
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   1
  *** LOAD STEP     1   SUBSTEP     3  COMPLETED.    CUM ITER =      5
- *** TIME =  0.348440      TIME INC =  0.222345      MAX DISPLACEMENT =    -37.66    
+ *** TIME =  0.348591      TIME INC =  0.222573      MAX DISPLACEMENT =     40.40    
 
-     FORCE CONVERGENCE VALUE  =  0.1660E+06  CRITERION=   753.9    
-     MOMENT CONVERGENCE VALUE =  0.5296E+05  CRITERION=  0.1895E+06
-     ARCLEN NEW TIME =  0.56995     ARC-LENGTH =   486.95    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.1626    
-     FORCE CONVERGENCE VALUE  =   68.55      CRITERION=   755.0     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =  0.4561E+05  CRITERION=  0.1893E+06 <<< CONVERGED
+     FORCE CONVERGENCE VALUE  =  0.1885E+06  CRITERION=   816.7    
+     MOMENT CONVERGENCE VALUE =  0.1790E+06  CRITERION=  0.2010E+06
+     ARCLEN NEW TIME =  0.57039     ARC-LENGTH =   525.86    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.1866    
+     FORCE CONVERGENCE VALUE  =   94.07      CRITERION=   817.8     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =  0.5495E+05  CRITERION=  0.2008E+06 <<< CONVERGED
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   1
  *** LOAD STEP     1   SUBSTEP     4  COMPLETED.    CUM ITER =      6
- *** TIME =  0.569947      TIME INC =  0.329565      MAX DISPLACEMENT =    -62.03    
+ *** TIME =  0.570392      TIME INC =  0.330219      MAX DISPLACEMENT =     66.54    
 
-     FORCE CONVERGENCE VALUE  =  0.2678E+06  CRITERION=   1205.    
-     MOMENT CONVERGENCE VALUE =  0.1140E+06  CRITERION=  0.2987E+06
-     ARCLEN NEW TIME =  0.89815     ARC-LENGTH =   730.47    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.2598    
-     FORCE CONVERGENCE VALUE  =   194.9      CRITERION=   1207.     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =  0.1161E+06  CRITERION=  0.2982E+06 <<< CONVERGED
+     FORCE CONVERGENCE VALUE  =  0.3083E+06  CRITERION=   1306.    
+     MOMENT CONVERGENCE VALUE =  0.3124E+06  CRITERION=  0.3170E+06
+     ARCLEN NEW TIME =  0.89934     ARC-LENGTH =   788.84    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.3017    
+     FORCE CONVERGENCE VALUE  =   268.9      CRITERION=   1308.     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =  0.1418E+06  CRITERION=  0.3165E+06 <<< CONVERGED
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   1
  *** LOAD STEP     1   SUBSTEP     5  COMPLETED.    CUM ITER =      7
- *** TIME =  0.898152      TIME INC =  0.101848      MAX DISPLACEMENT =    -98.72    
+ *** TIME =  0.899341      TIME INC =  0.100659      MAX DISPLACEMENT =     105.9    
 
-     FORCE CONVERGENCE VALUE  =  0.5811E+06  CRITERION=   1887.    
-     MOMENT CONVERGENCE VALUE =  0.2531E+08  CRITERION=  0.3321E+06
-     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   316.71    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   36.41    
-     FORCE CONVERGENCE VALUE  =  0.4874E+06  CRITERION=   1440.    
-     MOMENT CONVERGENCE VALUE =  0.2066E+06  CRITERION=  0.3321E+06 <<< CONVERGED
-     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   316.71    
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   6.326    
-     FORCE CONVERGENCE VALUE  =  0.1244E+05  CRITERION=   1362.    
-     MOMENT CONVERGENCE VALUE =  0.2294E+06  CRITERION=  0.3321E+06 <<< CONVERGED
-     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   240.10    
-    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   1.010    
-     FORCE CONVERGENCE VALUE  =   316.7      CRITERION=   1349.     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =   5552.      CRITERION=  0.3321E+06 <<< CONVERGED
+     FORCE CONVERGENCE VALUE  =  0.6697E+06  CRITERION=   2048.    
+     MOMENT CONVERGENCE VALUE =  0.2700E+08  CRITERION=  0.3521E+06
+     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   349.95    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -38.28    
+     FORCE CONVERGENCE VALUE  =  0.5372E+06  CRITERION=   1569.    
+     MOMENT CONVERGENCE VALUE =  0.5865E+06  CRITERION=  0.3520E+06
+     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   349.95    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -7.520    
+     FORCE CONVERGENCE VALUE  =  0.1750E+05  CRITERION=   1477.    
+     MOMENT CONVERGENCE VALUE =  0.2714E+06  CRITERION=  0.3520E+06 <<< CONVERGED
+     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   258.05    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -1.308    
+     FORCE CONVERGENCE VALUE  =   528.6      CRITERION=   1460.     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =  0.1077E+05  CRITERION=  0.3520E+06 <<< CONVERGED
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
  *** LOAD STEP     1   SUBSTEP     6  COMPLETED.    CUM ITER =     10
- *** TIME =   1.00000      TIME INC =   0.00000      MAX DISPLACEMENT =    -110.2    
+ *** TIME =   1.00000      TIME INC =   0.00000      MAX DISPLACEMENT =     118.1    
 
- *** NOTE ***                            CP =      11.750   TIME= 14:21:47
+ *** NOTE ***                            CP =      11.938   TIME= 09:10:10
  Maximum load for load step 1 was reached.                               
 
 
  *** MAPDL BINARY FILE STATISTICS
   BUFFER SIZE USED= 16384
        20.750 MB WRITTEN ON ELEMENT SAVED DATA FILE: file.esav
-        2.438 MB WRITTEN ON ASSEMBLED MATRIX FILE: file.full
-        2.938 MB WRITTEN ON RESULTS FILE: file.rst
+        2.500 MB WRITTEN ON ASSEMBLED MATRIX FILE: file.full
+        3.000 MB WRITTEN ON RESULTS FILE: file.rst
 
  FINISH SOLUTION PROCESSING
 
 
- ***** ROUTINE COMPLETED *****  CP =        11.875
+ ***** ROUTINE COMPLETED *****  CP =        12.047
 
 
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   14:21:47  MAR 25, 2026 CP=     11.875
+ 00254321  VERSION=WINDOWS x64   09:10:10  MAR 26, 2026 CP=     12.109
 
                                                                                
 
@@ -6529,7 +7201,7 @@
 
           ***** MAPDL RESULTS INTERPRETATION (POST1) *****
 
- *** NOTE ***                            CP =      11.875   TIME= 14:21:47
+ *** NOTE ***                            CP =      12.109   TIME= 09:10:10
  Reading results into the database (SET command) will update the current 
  displacement and force boundary conditions in the database with the     
  values from the results file for that load set.  Note that any          
@@ -6579,17 +7251,17 @@
 
  PARAMETER ELEM =     1.000000000    
 
- *GET  NF        FROM  ELEM         1  ITEM=SMIS 1         VALUE= -116695.031    
+ *GET  NF        FROM  ELEM         1  ITEM=SMIS 1         VALUE=  108024.773    
 
- *GET  MY        FROM  ELEM         1  ITEM=SMIS 2         VALUE= -271415.750    
+ *GET  MY        FROM  ELEM         1  ITEM=SMIS 2         VALUE=  168847.344    
 
- *GET  MZ        FROM  ELEM         1  ITEM=SMIS 3         VALUE=  648709.250    
+ *GET  MZ        FROM  ELEM         1  ITEM=SMIS 3         VALUE= -1045499.50    
 
- *GET  VY        FROM  ELEM         1  ITEM=SMIS 4         VALUE=  9408.03027    
+ *GET  VY        FROM  ELEM         1  ITEM=SMIS 4         VALUE=  150096.031    
 
- *GET  VZ        FROM  ELEM         1  ITEM=SMIS 5         VALUE=  535.805481    
+ *GET  VZ        FROM  ELEM         1  ITEM=SMIS 5         VALUE= -306.656769    
 
- *GET  TQ        FROM  ELEM         1  ITEM=SMIS 6         VALUE= -815.339905    
+ *GET  TQ        FROM  ELEM         1  ITEM=SMIS 6         VALUE= -1146.37097    
 
  *ENDDO  INDEX= JJ                              
 
@@ -6626,15 +7298,15 @@
 
  *GET  NF        FROM  ELEM       313  ITEM=SMIS 1         VALUE=  0.00000000    
 
- *GET  MY        FROM  ELEM       313  ITEM=SMIS 2         VALUE=  0.00000000    
+ *GET  MY        FROM  ELEM       313  ITEM=SMIS 2         VALUE=-0.588776750E-22
 
- *GET  MZ        FROM  ELEM       313  ITEM=SMIS 3         VALUE=  0.00000000    
+ *GET  MZ        FROM  ELEM       313  ITEM=SMIS 3         VALUE=-0.941683477E-25
 
- *GET  VY        FROM  ELEM       313  ITEM=SMIS 4         VALUE=  0.00000000    
+ *GET  VY        FROM  ELEM       313  ITEM=SMIS 4         VALUE=-0.116119016E-26
 
- *GET  VZ        FROM  ELEM       313  ITEM=SMIS 5         VALUE=  0.00000000    
+ *GET  VZ        FROM  ELEM       313  ITEM=SMIS 5         VALUE= 0.693875741E-24
 
- *GET  TQ        FROM  ELEM       313  ITEM=SMIS 6         VALUE=  0.00000000    
+ *GET  TQ        FROM  ELEM       313  ITEM=SMIS 6         VALUE=-0.679497792E-27
 
  *ENDDO  INDEX= JJ                              
 
@@ -6646,7 +7318,7 @@
  ***** END OF INPUT ENCOUNTERED *****
 
 
- NUMBER OF WARNING MESSAGES ENCOUNTERED=          0
+ NUMBER OF WARNING MESSAGES ENCOUNTERED=       3291
  NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
 
 
@@ -6656,7 +7328,7 @@
 +--------------------- M A P D L   S T A T I S T I C S ------------------------+
 
 Release: 2025 R1            Build: 25.1       Update: UP20241202   Platform: WINDOWS x64 
-Date Run: 03/25/2026   Time: 14:21     Process ID: 28624
+Date Run: 03/26/2026   Time: 09:10     Process ID: 2840
 Operating System: Windows 11  (Build: 26200)
 
 Processor Model: AMD Ryzen 7 5800H with Radeon Graphics
@@ -6679,19 +7351,19 @@ Input File: AnsoutNonlin\APDL_Nonlin_Input.txt
 Working Directory: C:\Users\atbys\Desktop\DMS4 Local\DMS4\05_OPTI
 
 Total CPU time for main thread                    :        2.3 seconds
-Total CPU time summed for all threads             :       15.7 seconds
+Total CPU time summed for all threads             :       15.9 seconds
 
-Elapsed time spent obtaining a license            :        1.9 seconds
+Elapsed time spent obtaining a license            :        5.2 seconds
 Elapsed time spent pre-processing model (/PREP7)  :        0.3 seconds
-Elapsed time spent solution - preprocessing       :        0.0 seconds
+Elapsed time spent solution - preprocessing       :        0.1 seconds
 Elapsed time spent computing solution             :        1.4 seconds
 Elapsed time spent solution - postprocessing      :        0.0 seconds
 Elapsed time spent post-processing model (/POST1) :        0.0 seconds
  
 Equation solver used                              :            Sparse (symmetric)
-Equation solver computational rate                :        0.8 Gflops
+Equation solver computational rate                :        1.0 Gflops
 
-Sum of disk space used on all processes           :       31.8 MB
+Sum of disk space used on all processes           :       31.9 MB
 
 Sum of memory used on all processes               :       66.0 MB
 Sum of memory allocated on all processes          :     2304.0 MB
@@ -6717,7 +7389,7 @@ Total amount of I/O read from disk                :        0.7 GB
  |                                                                             |
  |-----------------------------------------------------------------------------|
  |                                                                             |
- |        CP Time      (sec) =         15.719       Time  =  14:21:48          |
- |        Elapsed Time (sec) =          6.000       Date  =  03/25/2026        |
+ |        CP Time      (sec) =         15.922       Time  =  09:10:12          |
+ |        Elapsed Time (sec) =         11.000       Date  =  03/26/2026        |
  |                                                                             |
  *-----------------------------------------------------------------------------*

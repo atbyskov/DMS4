@@ -31,13 +31,14 @@ var = [R0, R1, R2, R3] # Assemble variables
 
 # Other specifications
 esize = 50              # Element Size [mm]
-Hor_Force = 465.8       # Horizontal Force [N]
+Hor_Force = 502.52      # Horizontal Force [N]
 Ver_Force = 26400       # Vertical Force   [N]
-Mom = 66400000          # Applied Moment around Z-axis   [Nmm]
+MomZ = -70364000        # Applied Moment around Z-axis [Nmm]
+MomY = 1407140          # Applied Moment around Y-axis [Nmm]
 f_y = 690               # Yield Strength of S690 [MPa]
 E_mod = 200*1E3         # Youngs Modulus [MPa]
 
-Misc = [esize, Hor_Force, Ver_Force, Mom, f_y, E_mod]
+Misc = [esize, Hor_Force, Ver_Force, MomZ, MomY, f_y, E_mod]
 
 
 f = RunAPDL(SWcoor,var,Misc) # Runs APDL and returns MASS

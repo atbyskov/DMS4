@@ -31,7 +31,7 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
     R0, R1, R2, R3 = var 
 
     # Import Misc
-    esize, Hor_Force, Ver_Force, Mom, f_y, E_mod = Misc
+    esize, Hor_Force, Ver_Force, MomZ, MomY, f_y, E_mod = Misc
 
     # Function to group lines
     def beam_class(p1, p2):
@@ -83,6 +83,7 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
         brace_lines = []
         corner_id = 1
         brace_id = 1
+        Top_lines = []        
 
         kp_dict = {}
         CM_Brace_dict = 0
@@ -119,15 +120,25 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
 
             # Split lines into corner or brace 
             if group == "corner":
+                
+                if y1 > 4070 and y2 > 4070:
+                    Top_lines.append(line_id)
+                    f.write(f"CM,TOPMAT,LINE\n")
+
                 corner_lines.append(line_id)
                 f.write(f"CM,COLUMN_{corner_id},LINE \n")
                 corner_id += 1
                 CM_Column_dict += 1
             else:
+                if y1 > 4070 and y2 > 4070:
+                    Top_lines.append(line_id)
+                    f.write(f"CM,TOPMAT,LINE\n")
+
                 brace_lines.append(line_id)
                 f.write(f"CM,BRACE_{brace_id},LINE \n")
                 brace_id += 1
                 CM_Brace_dict += 1
+
             
             # Reset
             f.write("LSEL,ALL \n")   
@@ -160,6 +171,28 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
         # Run the function for Corner and Brace
         group_mesh("Meshing CORNER Beams (SECNUM=1)",1,corner_lines)
         group_mesh("Meshing BRACE beam (SECNUM=2)",2, brace_lines)
+
+        # --- Assign special material to lines above Y = 4070 ---
+        f.write("! SPECIAL MATERIAL REGION ABOVE Y=4070\n")
+        f.write("MP,EX,2,2.0E+15\n")
+        f.write("MP,PRXY,2,0.3\n")
+        f.write("MP,DENS,2,1.7850E-6\n")
+
+        f.write("LSEL,ALL\n")
+
+        # Select all 'top material' lines again
+        first = True
+        for lid in Top_lines:
+            if first:
+                f.write(f"LSEL,S,LINE,,{lid}\n")
+                first = False
+            else:
+                f.write(f"LSEL,A,LINE,,{lid}\n")
+
+        f.write("ESLL,S  ! select elements on these lines\n")
+        f.write("EMODIF,ALL,MAT,2  ! modify selected elements to material 2\n")
+        f.write("ALLSEL,ALL\n\n")
+
 
         # Display Cross section
         f.write("/ESHAPE,1 ! Display Cross Section\n")
@@ -199,25 +232,29 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
         f.write("NSEL,S,LOC,Y,NodeYMax \n")
         f.write(f"F,ALL,FY,{-Ver_Force} \n")
         f.write(f"F,ALL,FX,{Hor_Force} \n")
-        f.write(f"F,ALL,MZ,{Mom} \n")
+        f.write(f"F,ALL,MZ,{MomZ} \n")
+        f.write(f"F,ALL,MY,{MomY} \n")
         f.write("ALLSEL,ALL \n")
 
         # Fixed displacement at bottom nodes
         f.write("! Displacement ! \n")
         f.write("ALLSEL,ALL \n")
+        f.write("SELTOL,1.0E-2 \n")
         f.write("NSEL,S,LOC,Y,NodeYMin \n")
         f.write("NSEL,R,LOC,X,202.07 \n")
-        f.write("D,ALL,UY,0 \n")
+        f.write("D,ALL,ALL,0 \n")
 
         f.write("ALLSEL,ALL \n")
         f.write("NSEL,S,LOC,Y,NodeYMin \n")
         f.write("NSEL,R,LOC,Z,-175 \n")
         f.write("NSEL,R,LOC,X,-101.04 \n")
+        f.write("D,ALL,ALL,0 \n")
 
         f.write("ALLSEL,ALL \n")
         f.write("NSEL,S,LOC,Y,NodeYMin \n")
         f.write("NSEL,R,LOC,Z,175 \n")
         f.write("NSEL,R,LOC,X,-101.04 \n")
+        f.write("D,ALL,ALL,0 \n")
 
         
 

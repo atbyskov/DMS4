@@ -5,20 +5,20 @@
  = multifrontal statistics =
  ===========================
 
-     number of equations                     =           12126
-     no. of nonzeroes in lower triangle of a =          156165
-     no. of nonzeroes in the factor l        =          341955
+     number of equations                     =           12552
+     no. of nonzeroes in lower triangle of a =          161112
+     no. of nonzeroes in the factor l        =          351484
      ratio of nonzeroes in factor (min/max)  =          1.0000
-     number of super nodes                   =             771
-     maximum order of a front matrix         =              72
-     maximum size of a front matrix          =            2628
-     maximum size of a front trapezoid       =            2040
+     number of super nodes                   =             806
+     maximum order of a front matrix         =              78
+     maximum size of a front matrix          =            3081
+     maximum size of a front trapezoid       =            2781
      METIS reordering method used 
-     no. of floating point ops for factor    =      6.6934D+06
+     no. of floating point ops for factor    =      6.8971D+06
      no. of floating point ops for solve     =      0.0000D+00
      ratio of flops for factor (min/max)     =          1.0000
      ratio of allocated memory (max/min)     =          1.0000
-     number of positive pivots               =           12126
+     number of positive pivots               =           12552
      number of negative pivots               =               0
      number of near-zero pivots              =               0
      partial pivoting tolerance used         =      0.0000D+00
@@ -26,22 +26,24 @@
      number of processes used                =               1
      number of threads per process used      =               8
      number of cores used                    =               8
-     time (cpu & wall) for structure input   =        0.000000        0.001131
-     time (cpu & wall) for ordering          =        0.000000        0.004650
-     time (cpu & wall) for other matrix prep =        0.000000        0.001583
-     time (cpu & wall) for value input       =        0.125000        0.002137
-     time (cpu & wall) for matrix distrib.   =        0.000000        0.004562
+     time (cpu & wall) for structure input   =        0.000000        0.001498
+     time (cpu & wall) for ordering          =        0.000000        0.005306
+     time (cpu & wall) for other matrix prep =        0.015625        0.001709
+     time (cpu & wall) for value input       =        0.046875        0.002157
+     time (cpu & wall) for matrix distrib.   =        0.000000        0.004600
+     time (cpu & wall) for numeric factor    =        0.125000        0.009269
+     computational rate (gflops) for factor  =        0.055177        0.744100
 
      i/o stats: unit-Core          file length             amount transferred
                                  words       mbytes          words       mbytes
                    ----     ----------     --------     ----------     --------
-                95-   0        131072.        1. MB        118657.        1. MB
+                95-   0        131072.        1. MB        123578.        1. MB
 
                 -------     ----------     --------     ----------     --------
-                Totals:        131072.        1. MB        118657.        1. MB
+                Totals:        131072.        1. MB        123578.        1. MB
 
 
-  Total Solver Memory allocated              =       12.358 MB
+  Total Solver Memory allocated              =       12.758 MB
 
 
 
@@ -52,20 +54,20 @@
  = multifrontal statistics =
  ===========================
 
-     number of equations                     =           12126
-     no. of nonzeroes in lower triangle of a =          156165
-     no. of nonzeroes in the factor l        =          341955
+     number of equations                     =           12552
+     no. of nonzeroes in lower triangle of a =          161112
+     no. of nonzeroes in the factor l        =          351484
      ratio of nonzeroes in factor (min/max)  =          1.0000
-     number of super nodes                   =             771
-     maximum order of a front matrix         =              72
-     maximum size of a front matrix          =            2628
-     maximum size of a front trapezoid       =            2040
+     number of super nodes                   =             806
+     maximum order of a front matrix         =              78
+     maximum size of a front matrix          =            3081
+     maximum size of a front trapezoid       =            2781
      METIS reordering method used 
-     no. of floating point ops for factor    =      6.6934D+06
+     no. of floating point ops for factor    =      6.8971D+06
      no. of floating point ops for solve     =      0.0000D+00
      ratio of flops for factor (min/max)     =          1.0000
      ratio of allocated memory (max/min)     =          1.0000
-     number of positive pivots               =           12126
+     number of positive pivots               =           12552
      number of negative pivots               =               0
      number of near-zero pivots              =               0
      partial pivoting tolerance used         =      0.0000D+00
@@ -73,22 +75,24 @@
      number of processes used                =               1
      number of threads per process used      =               8
      number of cores used                    =               8
-     time (cpu & wall) for structure input   =        0.000000        0.001028
-     time (cpu & wall) for ordering          =        0.000000        0.004767
-     time (cpu & wall) for other matrix prep =        0.000000        0.001869
-     time (cpu & wall) for value input       =        0.000000        0.003285
-     time (cpu & wall) for matrix distrib.   =        0.125000        0.003760
+     time (cpu & wall) for structure input   =        0.000000        0.001207
+     time (cpu & wall) for ordering          =        0.000000        0.005445
+     time (cpu & wall) for other matrix prep =        0.000000        0.001801
+     time (cpu & wall) for value input       =        0.125000        0.003343
+     time (cpu & wall) for matrix distrib.   =        0.000000        0.004860
+     time (cpu & wall) for numeric factor    =        0.031250        0.008103
+     computational rate (gflops) for factor  =        0.220706        0.851185
 
      i/o stats: unit-Core          file length             amount transferred
                                  words       mbytes          words       mbytes
                    ----     ----------     --------     ----------     --------
-                95-   0        131072.        1. MB        118657.        1. MB
+                95-   0        131072.        1. MB        123578.        1. MB
 
                 -------     ----------     --------     ----------     --------
-                Totals:        131072.        1. MB        118657.        1. MB
+                Totals:        131072.        1. MB        123578.        1. MB
 
 
-  Total Solver Memory allocated              =       12.358 MB
+  Total Solver Memory allocated              =       12.758 MB
 
 
 
@@ -99,16 +103,16 @@
  = multifrontal statistics =
  ===========================
 
-     number of equations                     =           12126
-     no. of nonzeroes in lower triangle of a =          156165
-     no. of nonzeroes in the factor l        =          341955
+     number of equations                     =           12552
+     no. of nonzeroes in lower triangle of a =          161112
+     no. of nonzeroes in the factor l        =          351484
      ratio of nonzeroes in factor (min/max)  =          1.0000
-     number of super nodes                   =             771
-     maximum order of a front matrix         =              72
-     maximum size of a front matrix          =            2628
-     maximum size of a front trapezoid       =            2040
+     number of super nodes                   =             806
+     maximum order of a front matrix         =              78
+     maximum size of a front matrix          =            3081
+     maximum size of a front trapezoid       =            2781
      METIS reordering method used 
-     no. of floating point ops for factor    =      6.6934D+06
+     no. of floating point ops for factor    =      6.8971D+06
      no. of floating point ops for solve     =      0.0000D+00
      ratio of flops for factor (min/max)     =          1.0000
      ratio of allocated memory (max/min)     =          1.0000
@@ -125,17 +129,20 @@
      time (cpu & wall) for other matrix prep =        0.000000        0.000000
      time (cpu & wall) for value input       =        0.000000        0.000000
      time (cpu & wall) for matrix distrib.   =        0.000000        0.000000
+     time (cpu & wall) for numeric solve     =        0.015625        0.000495
+     computational rate (gflops) for solve   =        0.000000        0.000000
+     effective I/O rate (GB/sec) for solve   =        0.000000        0.000000
 
      i/o stats: unit-Core          file length             amount transferred
                                  words       mbytes          words       mbytes
                    ----     ----------     --------     ----------     --------
-                95-   0        131072.        1. MB        118657.        1. MB
+                95-   0        131072.        1. MB        123578.        1. MB
 
                 -------     ----------     --------     ----------     --------
-                Totals:        131072.        1. MB        118657.        1. MB
+                Totals:        131072.        1. MB        123578.        1. MB
 
 
-  Total Solver Memory allocated              =        9.501 MB
+  Total Solver Memory allocated              =        9.808 MB
 
 
 
@@ -146,20 +153,20 @@
  = multifrontal statistics =
  ===========================
 
-     number of equations                     =           12126
-     no. of nonzeroes in lower triangle of a =          156165
-     no. of nonzeroes in the factor l        =          341955
+     number of equations                     =           12552
+     no. of nonzeroes in lower triangle of a =          161112
+     no. of nonzeroes in the factor l        =          351484
      ratio of nonzeroes in factor (min/max)  =          1.0000
-     number of super nodes                   =             771
-     maximum order of a front matrix         =              72
-     maximum size of a front matrix          =            2628
-     maximum size of a front trapezoid       =            2040
+     number of super nodes                   =             806
+     maximum order of a front matrix         =              78
+     maximum size of a front matrix          =            3081
+     maximum size of a front trapezoid       =            2781
      METIS reordering method used 
-     no. of floating point ops for factor    =      6.6934D+06
+     no. of floating point ops for factor    =      6.8971D+06
      no. of floating point ops for solve     =      0.0000D+00
      ratio of flops for factor (min/max)     =          1.0000
      ratio of allocated memory (max/min)     =          1.0000
-     number of positive pivots               =           12126
+     number of positive pivots               =           12552
      number of negative pivots               =               0
      number of near-zero pivots              =               0
      partial pivoting tolerance used         =      0.0000D+00
@@ -167,22 +174,22 @@
      number of processes used                =               1
      number of threads per process used      =               8
      number of cores used                    =               8
-     time (cpu & wall) for structure input   =        0.000000        0.000652
-     time (cpu & wall) for ordering          =        0.000000        0.004216
-     time (cpu & wall) for other matrix prep =        0.000000        0.001501
-     time (cpu & wall) for value input       =        0.125000        0.002005
-     time (cpu & wall) for matrix distrib.   =        0.000000        0.002831
+     time (cpu & wall) for structure input   =        0.000000        0.001099
+     time (cpu & wall) for ordering          =        0.000000        0.005037
+     time (cpu & wall) for other matrix prep =        0.000000        0.001682
+     time (cpu & wall) for value input       =        0.000000        0.002752
+     time (cpu & wall) for matrix distrib.   =        0.125000        0.004967
 
      i/o stats: unit-Core          file length             amount transferred
                                  words       mbytes          words       mbytes
                    ----     ----------     --------     ----------     --------
-                95-   0        131072.        1. MB        118657.        1. MB
+                95-   0        131072.        1. MB        123578.        1. MB
 
                 -------     ----------     --------     ----------     --------
-                Totals:        131072.        1. MB        118657.        1. MB
+                Totals:        131072.        1. MB        123578.        1. MB
 
 
-  Total Solver Memory allocated              =       12.358 MB
+  Total Solver Memory allocated              =       12.758 MB
 
 
 
@@ -193,20 +200,20 @@
  = multifrontal statistics =
  ===========================
 
-     number of equations                     =           12126
-     no. of nonzeroes in lower triangle of a =          156165
-     no. of nonzeroes in the factor l        =          341955
+     number of equations                     =           12552
+     no. of nonzeroes in lower triangle of a =          161112
+     no. of nonzeroes in the factor l        =          351484
      ratio of nonzeroes in factor (min/max)  =          1.0000
-     number of super nodes                   =             771
-     maximum order of a front matrix         =              72
-     maximum size of a front matrix          =            2628
-     maximum size of a front trapezoid       =            2040
+     number of super nodes                   =             806
+     maximum order of a front matrix         =              78
+     maximum size of a front matrix          =            3081
+     maximum size of a front trapezoid       =            2781
      METIS reordering method used 
-     no. of floating point ops for factor    =      6.6934D+06
+     no. of floating point ops for factor    =      6.8971D+06
      no. of floating point ops for solve     =      0.0000D+00
      ratio of flops for factor (min/max)     =          1.0000
      ratio of allocated memory (max/min)     =          1.0000
-     number of positive pivots               =           12126
+     number of positive pivots               =           12552
      number of negative pivots               =               0
      number of near-zero pivots              =               0
      partial pivoting tolerance used         =      0.0000D+00
@@ -214,24 +221,24 @@
      number of processes used                =               1
      number of threads per process used      =               8
      number of cores used                    =               8
-     time (cpu & wall) for structure input   =        0.000000        0.000644
-     time (cpu & wall) for ordering          =        0.125000        0.004771
-     time (cpu & wall) for other matrix prep =        0.000000        0.001683
-     time (cpu & wall) for value input       =        0.000000        0.002547
-     time (cpu & wall) for matrix distrib.   =        0.000000        0.004728
-     time (cpu & wall) for numeric factor    =        0.125000        0.007737
-     computational rate (gflops) for factor  =        0.053547        0.865093
+     time (cpu & wall) for structure input   =        0.000000        0.000668
+     time (cpu & wall) for ordering          =        0.125000        0.004033
+     time (cpu & wall) for other matrix prep =        0.000000        0.001220
+     time (cpu & wall) for value input       =        0.000000        0.001703
+     time (cpu & wall) for matrix distrib.   =        0.000000        0.003030
+     time (cpu & wall) for numeric factor    =        0.093750        0.007615
+     computational rate (gflops) for factor  =        0.073569        0.905709
 
      i/o stats: unit-Core          file length             amount transferred
                                  words       mbytes          words       mbytes
                    ----     ----------     --------     ----------     --------
-                95-   0        131072.        1. MB        118657.        1. MB
+                95-   0        131072.        1. MB        123578.        1. MB
 
                 -------     ----------     --------     ----------     --------
-                Totals:        131072.        1. MB        118657.        1. MB
+                Totals:        131072.        1. MB        123578.        1. MB
 
 
-  Total Solver Memory allocated              =       12.358 MB
+  Total Solver Memory allocated              =       12.758 MB
 
 
 
@@ -242,16 +249,16 @@
  = multifrontal statistics =
  ===========================
 
-     number of equations                     =           12126
-     no. of nonzeroes in lower triangle of a =          156165
-     no. of nonzeroes in the factor l        =          341955
+     number of equations                     =           12552
+     no. of nonzeroes in lower triangle of a =          161112
+     no. of nonzeroes in the factor l        =          351484
      ratio of nonzeroes in factor (min/max)  =          1.0000
-     number of super nodes                   =             771
-     maximum order of a front matrix         =              72
-     maximum size of a front matrix          =            2628
-     maximum size of a front trapezoid       =            2040
+     number of super nodes                   =             806
+     maximum order of a front matrix         =              78
+     maximum size of a front matrix          =            3081
+     maximum size of a front trapezoid       =            2781
      METIS reordering method used 
-     no. of floating point ops for factor    =      6.6934D+06
+     no. of floating point ops for factor    =      6.8971D+06
      no. of floating point ops for solve     =      0.0000D+00
      ratio of flops for factor (min/max)     =          1.0000
      ratio of allocated memory (max/min)     =          1.0000
@@ -272,13 +279,13 @@
      i/o stats: unit-Core          file length             amount transferred
                                  words       mbytes          words       mbytes
                    ----     ----------     --------     ----------     --------
-                95-   0        131072.        1. MB        118657.        1. MB
+                95-   0        131072.        1. MB        123578.        1. MB
 
                 -------     ----------     --------     ----------     --------
-                Totals:        131072.        1. MB        118657.        1. MB
+                Totals:        131072.        1. MB        123578.        1. MB
 
 
-  Total Solver Memory allocated              =        9.501 MB
+  Total Solver Memory allocated              =        9.808 MB
 
 
 
@@ -289,20 +296,20 @@
  = multifrontal statistics =
  ===========================
 
-     number of equations                     =           12126
-     no. of nonzeroes in lower triangle of a =          156165
-     no. of nonzeroes in the factor l        =          341955
+     number of equations                     =           12552
+     no. of nonzeroes in lower triangle of a =          161112
+     no. of nonzeroes in the factor l        =          351484
      ratio of nonzeroes in factor (min/max)  =          1.0000
-     number of super nodes                   =             771
-     maximum order of a front matrix         =              72
-     maximum size of a front matrix          =            2628
-     maximum size of a front trapezoid       =            2040
+     number of super nodes                   =             806
+     maximum order of a front matrix         =              78
+     maximum size of a front matrix          =            3081
+     maximum size of a front trapezoid       =            2781
      METIS reordering method used 
-     no. of floating point ops for factor    =      6.6934D+06
+     no. of floating point ops for factor    =      6.8971D+06
      no. of floating point ops for solve     =      0.0000D+00
      ratio of flops for factor (min/max)     =          1.0000
      ratio of allocated memory (max/min)     =          1.0000
-     number of positive pivots               =           12126
+     number of positive pivots               =           12552
      number of negative pivots               =               0
      number of near-zero pivots              =               0
      partial pivoting tolerance used         =      0.0000D+00
@@ -310,24 +317,24 @@
      number of processes used                =               1
      number of threads per process used      =               8
      number of cores used                    =               8
-     time (cpu & wall) for structure input   =        0.000000        0.001134
-     time (cpu & wall) for ordering          =        0.000000        0.005118
-     time (cpu & wall) for other matrix prep =        0.000000        0.001643
-     time (cpu & wall) for value input       =        0.109375        0.002721
-     time (cpu & wall) for matrix distrib.   =        0.000000        0.004736
-     time (cpu & wall) for numeric factor    =        0.078125        0.007993
-     computational rate (gflops) for factor  =        0.085675        0.837376
+     time (cpu & wall) for structure input   =        0.093750        0.001141
+     time (cpu & wall) for ordering          =        0.031250        0.005443
+     time (cpu & wall) for other matrix prep =        0.000000        0.001695
+     time (cpu & wall) for value input       =        0.000000        0.002681
+     time (cpu & wall) for matrix distrib.   =        0.078125        0.004243
+     time (cpu & wall) for numeric factor    =        0.046875        0.007710
+     computational rate (gflops) for factor  =        0.147137        0.894607
 
      i/o stats: unit-Core          file length             amount transferred
                                  words       mbytes          words       mbytes
                    ----     ----------     --------     ----------     --------
-                95-   0        131072.        1. MB        118657.        1. MB
+                95-   0        131072.        1. MB        123578.        1. MB
 
                 -------     ----------     --------     ----------     --------
-                Totals:        131072.        1. MB        118657.        1. MB
+                Totals:        131072.        1. MB        123578.        1. MB
 
 
-  Total Solver Memory allocated              =       12.358 MB
+  Total Solver Memory allocated              =       12.758 MB
 
 
 
@@ -338,16 +345,16 @@
  = multifrontal statistics =
  ===========================
 
-     number of equations                     =           12126
-     no. of nonzeroes in lower triangle of a =          156165
-     no. of nonzeroes in the factor l        =          341955
+     number of equations                     =           12552
+     no. of nonzeroes in lower triangle of a =          161112
+     no. of nonzeroes in the factor l        =          351484
      ratio of nonzeroes in factor (min/max)  =          1.0000
-     number of super nodes                   =             771
-     maximum order of a front matrix         =              72
-     maximum size of a front matrix          =            2628
-     maximum size of a front trapezoid       =            2040
+     number of super nodes                   =             806
+     maximum order of a front matrix         =              78
+     maximum size of a front matrix          =            3081
+     maximum size of a front trapezoid       =            2781
      METIS reordering method used 
-     no. of floating point ops for factor    =      6.6934D+06
+     no. of floating point ops for factor    =      6.8971D+06
      no. of floating point ops for solve     =      0.0000D+00
      ratio of flops for factor (min/max)     =          1.0000
      ratio of allocated memory (max/min)     =          1.0000
@@ -368,13 +375,13 @@
      i/o stats: unit-Core          file length             amount transferred
                                  words       mbytes          words       mbytes
                    ----     ----------     --------     ----------     --------
-                95-   0        131072.        1. MB        118657.        1. MB
+                95-   0        131072.        1. MB        123578.        1. MB
 
                 -------     ----------     --------     ----------     --------
-                Totals:        131072.        1. MB        118657.        1. MB
+                Totals:        131072.        1. MB        123578.        1. MB
 
 
-  Total Solver Memory allocated              =        9.501 MB
+  Total Solver Memory allocated              =        9.808 MB
 
 
 
@@ -385,20 +392,20 @@
  = multifrontal statistics =
  ===========================
 
-     number of equations                     =           12126
-     no. of nonzeroes in lower triangle of a =          156165
-     no. of nonzeroes in the factor l        =          341955
+     number of equations                     =           12552
+     no. of nonzeroes in lower triangle of a =          161112
+     no. of nonzeroes in the factor l        =          351484
      ratio of nonzeroes in factor (min/max)  =          1.0000
-     number of super nodes                   =             771
-     maximum order of a front matrix         =              72
-     maximum size of a front matrix          =            2628
-     maximum size of a front trapezoid       =            2040
+     number of super nodes                   =             806
+     maximum order of a front matrix         =              78
+     maximum size of a front matrix          =            3081
+     maximum size of a front trapezoid       =            2781
      METIS reordering method used 
-     no. of floating point ops for factor    =      6.6934D+06
+     no. of floating point ops for factor    =      6.8971D+06
      no. of floating point ops for solve     =      0.0000D+00
      ratio of flops for factor (min/max)     =          1.0000
      ratio of allocated memory (max/min)     =          1.0000
-     number of positive pivots               =           12126
+     number of positive pivots               =           12552
      number of negative pivots               =               0
      number of near-zero pivots              =               0
      partial pivoting tolerance used         =      0.0000D+00
@@ -406,22 +413,24 @@
      number of processes used                =               1
      number of threads per process used      =               8
      number of cores used                    =               8
-     time (cpu & wall) for structure input   =        0.062500        0.001233
-     time (cpu & wall) for ordering          =        0.000000        0.004996
-     time (cpu & wall) for other matrix prep =        0.000000        0.001794
-     time (cpu & wall) for value input       =        0.000000        0.002910
-     time (cpu & wall) for matrix distrib.   =        0.109375        0.004204
+     time (cpu & wall) for structure input   =        0.000000        0.001101
+     time (cpu & wall) for ordering          =        0.125000        0.004967
+     time (cpu & wall) for other matrix prep =        0.000000        0.001632
+     time (cpu & wall) for value input       =        0.000000        0.002533
+     time (cpu & wall) for matrix distrib.   =        0.000000        0.004101
+     time (cpu & wall) for numeric factor    =        0.125000        0.006925
+     computational rate (gflops) for factor  =        0.055177        0.996023
 
      i/o stats: unit-Core          file length             amount transferred
                                  words       mbytes          words       mbytes
                    ----     ----------     --------     ----------     --------
-                95-   0        131072.        1. MB        118657.        1. MB
+                95-   0        131072.        1. MB        123578.        1. MB
 
                 -------     ----------     --------     ----------     --------
-                Totals:        131072.        1. MB        118657.        1. MB
+                Totals:        131072.        1. MB        123578.        1. MB
 
 
-  Total Solver Memory allocated              =       12.358 MB
+  Total Solver Memory allocated              =       12.758 MB
 
 
 
@@ -432,16 +441,16 @@
  = multifrontal statistics =
  ===========================
 
-     number of equations                     =           12126
-     no. of nonzeroes in lower triangle of a =          156165
-     no. of nonzeroes in the factor l        =          341955
+     number of equations                     =           12552
+     no. of nonzeroes in lower triangle of a =          161112
+     no. of nonzeroes in the factor l        =          351484
      ratio of nonzeroes in factor (min/max)  =          1.0000
-     number of super nodes                   =             771
-     maximum order of a front matrix         =              72
-     maximum size of a front matrix          =            2628
-     maximum size of a front trapezoid       =            2040
+     number of super nodes                   =             806
+     maximum order of a front matrix         =              78
+     maximum size of a front matrix          =            3081
+     maximum size of a front trapezoid       =            2781
      METIS reordering method used 
-     no. of floating point ops for factor    =      6.6934D+06
+     no. of floating point ops for factor    =      6.8971D+06
      no. of floating point ops for solve     =      0.0000D+00
      ratio of flops for factor (min/max)     =          1.0000
      ratio of allocated memory (max/min)     =          1.0000
@@ -458,17 +467,20 @@
      time (cpu & wall) for other matrix prep =        0.000000        0.000000
      time (cpu & wall) for value input       =        0.000000        0.000000
      time (cpu & wall) for matrix distrib.   =        0.000000        0.000000
+     time (cpu & wall) for numeric solve     =        0.031250        0.000444
+     computational rate (gflops) for solve   =        0.000000        0.000000
+     effective I/O rate (GB/sec) for solve   =        0.000000        0.000000
 
      i/o stats: unit-Core          file length             amount transferred
                                  words       mbytes          words       mbytes
                    ----     ----------     --------     ----------     --------
-                95-   0        131072.        1. MB        118657.        1. MB
+                95-   0        131072.        1. MB        123578.        1. MB
 
                 -------     ----------     --------     ----------     --------
-                Totals:        131072.        1. MB        118657.        1. MB
+                Totals:        131072.        1. MB        123578.        1. MB
 
 
-  Total Solver Memory allocated              =        9.501 MB
+  Total Solver Memory allocated              =        9.808 MB
 
 
 
@@ -479,20 +491,20 @@
  = multifrontal statistics =
  ===========================
 
-     number of equations                     =           12126
-     no. of nonzeroes in lower triangle of a =          156165
-     no. of nonzeroes in the factor l        =          341955
+     number of equations                     =           12552
+     no. of nonzeroes in lower triangle of a =          161112
+     no. of nonzeroes in the factor l        =          351484
      ratio of nonzeroes in factor (min/max)  =          1.0000
-     number of super nodes                   =             771
-     maximum order of a front matrix         =              72
-     maximum size of a front matrix          =            2628
-     maximum size of a front trapezoid       =            2040
+     number of super nodes                   =             806
+     maximum order of a front matrix         =              78
+     maximum size of a front matrix          =            3081
+     maximum size of a front trapezoid       =            2781
      METIS reordering method used 
-     no. of floating point ops for factor    =      6.6934D+06
+     no. of floating point ops for factor    =      6.8971D+06
      no. of floating point ops for solve     =      0.0000D+00
      ratio of flops for factor (min/max)     =          1.0000
      ratio of allocated memory (max/min)     =          1.0000
-     number of positive pivots               =           12126
+     number of positive pivots               =           12552
      number of negative pivots               =               0
      number of near-zero pivots              =               0
      partial pivoting tolerance used         =      0.0000D+00
@@ -500,22 +512,22 @@
      number of processes used                =               1
      number of threads per process used      =               8
      number of cores used                    =               8
-     time (cpu & wall) for structure input   =        0.000000        0.001071
-     time (cpu & wall) for ordering          =        0.000000        0.004862
-     time (cpu & wall) for other matrix prep =        0.000000        0.001745
-     time (cpu & wall) for value input       =        0.125000        0.002627
-     time (cpu & wall) for matrix distrib.   =        0.000000        0.004783
+     time (cpu & wall) for structure input   =        0.062500        0.001214
+     time (cpu & wall) for ordering          =        0.000000        0.005487
+     time (cpu & wall) for other matrix prep =        0.000000        0.001768
+     time (cpu & wall) for value input       =        0.000000        0.002687
+     time (cpu & wall) for matrix distrib.   =        0.125000        0.005489
 
      i/o stats: unit-Core          file length             amount transferred
                                  words       mbytes          words       mbytes
                    ----     ----------     --------     ----------     --------
-                95-   0        131072.        1. MB        118657.        1. MB
+                95-   0        131072.        1. MB        123578.        1. MB
 
                 -------     ----------     --------     ----------     --------
-                Totals:        131072.        1. MB        118657.        1. MB
+                Totals:        131072.        1. MB        123578.        1. MB
 
 
-  Total Solver Memory allocated              =       12.358 MB
+  Total Solver Memory allocated              =       12.758 MB
 
 
 
@@ -526,16 +538,16 @@
  = multifrontal statistics =
  ===========================
 
-     number of equations                     =           12126
-     no. of nonzeroes in lower triangle of a =          156165
-     no. of nonzeroes in the factor l        =          341955
+     number of equations                     =           12552
+     no. of nonzeroes in lower triangle of a =          161112
+     no. of nonzeroes in the factor l        =          351484
      ratio of nonzeroes in factor (min/max)  =          1.0000
-     number of super nodes                   =             771
-     maximum order of a front matrix         =              72
-     maximum size of a front matrix          =            2628
-     maximum size of a front trapezoid       =            2040
+     number of super nodes                   =             806
+     maximum order of a front matrix         =              78
+     maximum size of a front matrix          =            3081
+     maximum size of a front trapezoid       =            2781
      METIS reordering method used 
-     no. of floating point ops for factor    =      6.6934D+06
+     no. of floating point ops for factor    =      6.8971D+06
      no. of floating point ops for solve     =      0.0000D+00
      ratio of flops for factor (min/max)     =          1.0000
      ratio of allocated memory (max/min)     =          1.0000
@@ -556,13 +568,13 @@
      i/o stats: unit-Core          file length             amount transferred
                                  words       mbytes          words       mbytes
                    ----     ----------     --------     ----------     --------
-                95-   0        131072.        1. MB        118657.        1. MB
+                95-   0        131072.        1. MB        123578.        1. MB
 
                 -------     ----------     --------     ----------     --------
-                Totals:        131072.        1. MB        118657.        1. MB
+                Totals:        131072.        1. MB        123578.        1. MB
 
 
-  Total Solver Memory allocated              =        9.501 MB
+  Total Solver Memory allocated              =        9.808 MB
 
 
 
@@ -573,20 +585,20 @@
  = multifrontal statistics =
  ===========================
 
-     number of equations                     =           12126
-     no. of nonzeroes in lower triangle of a =          156165
-     no. of nonzeroes in the factor l        =          341955
+     number of equations                     =           12552
+     no. of nonzeroes in lower triangle of a =          161112
+     no. of nonzeroes in the factor l        =          351484
      ratio of nonzeroes in factor (min/max)  =          1.0000
-     number of super nodes                   =             771
-     maximum order of a front matrix         =              72
-     maximum size of a front matrix          =            2628
-     maximum size of a front trapezoid       =            2040
+     number of super nodes                   =             806
+     maximum order of a front matrix         =              78
+     maximum size of a front matrix          =            3081
+     maximum size of a front trapezoid       =            2781
      METIS reordering method used 
-     no. of floating point ops for factor    =      6.6934D+06
+     no. of floating point ops for factor    =      6.8971D+06
      no. of floating point ops for solve     =      0.0000D+00
      ratio of flops for factor (min/max)     =          1.0000
      ratio of allocated memory (max/min)     =          1.0000
-     number of positive pivots               =           12126
+     number of positive pivots               =           12552
      number of negative pivots               =               0
      number of near-zero pivots              =               0
      partial pivoting tolerance used         =      0.0000D+00
@@ -594,24 +606,24 @@
      number of processes used                =               1
      number of threads per process used      =               8
      number of cores used                    =               8
-     time (cpu & wall) for structure input   =        0.000000        0.000908
-     time (cpu & wall) for ordering          =        0.000000        0.005002
-     time (cpu & wall) for other matrix prep =        0.125000        0.001904
-     time (cpu & wall) for value input       =        0.000000        0.002721
-     time (cpu & wall) for matrix distrib.   =        0.000000        0.005131
-     time (cpu & wall) for numeric factor    =        0.125000        0.008611
-     computational rate (gflops) for factor  =        0.053547        0.777298
+     time (cpu & wall) for structure input   =        0.000000        0.001060
+     time (cpu & wall) for ordering          =        0.031250        0.004828
+     time (cpu & wall) for other matrix prep =        0.000000        0.001541
+     time (cpu & wall) for value input       =        0.000000        0.001706
+     time (cpu & wall) for matrix distrib.   =        0.000000        0.002978
+     time (cpu & wall) for numeric factor    =        0.125000        0.006658
+     computational rate (gflops) for factor  =        0.055177        1.035937
 
      i/o stats: unit-Core          file length             amount transferred
                                  words       mbytes          words       mbytes
                    ----     ----------     --------     ----------     --------
-                95-   0        131072.        1. MB        118657.        1. MB
+                95-   0        131072.        1. MB        123578.        1. MB
 
                 -------     ----------     --------     ----------     --------
-                Totals:        131072.        1. MB        118657.        1. MB
+                Totals:        131072.        1. MB        123578.        1. MB
 
 
-  Total Solver Memory allocated              =       12.358 MB
+  Total Solver Memory allocated              =       12.758 MB
 
 
 
@@ -622,16 +634,16 @@
  = multifrontal statistics =
  ===========================
 
-     number of equations                     =           12126
-     no. of nonzeroes in lower triangle of a =          156165
-     no. of nonzeroes in the factor l        =          341955
+     number of equations                     =           12552
+     no. of nonzeroes in lower triangle of a =          161112
+     no. of nonzeroes in the factor l        =          351484
      ratio of nonzeroes in factor (min/max)  =          1.0000
-     number of super nodes                   =             771
-     maximum order of a front matrix         =              72
-     maximum size of a front matrix          =            2628
-     maximum size of a front trapezoid       =            2040
+     number of super nodes                   =             806
+     maximum order of a front matrix         =              78
+     maximum size of a front matrix          =            3081
+     maximum size of a front trapezoid       =            2781
      METIS reordering method used 
-     no. of floating point ops for factor    =      6.6934D+06
+     no. of floating point ops for factor    =      6.8971D+06
      no. of floating point ops for solve     =      0.0000D+00
      ratio of flops for factor (min/max)     =          1.0000
      ratio of allocated memory (max/min)     =          1.0000
@@ -652,13 +664,13 @@
      i/o stats: unit-Core          file length             amount transferred
                                  words       mbytes          words       mbytes
                    ----     ----------     --------     ----------     --------
-                95-   0        131072.        1. MB        118657.        1. MB
+                95-   0        131072.        1. MB        123578.        1. MB
 
                 -------     ----------     --------     ----------     --------
-                Totals:        131072.        1. MB        118657.        1. MB
+                Totals:        131072.        1. MB        123578.        1. MB
 
 
-  Total Solver Memory allocated              =        9.501 MB
+  Total Solver Memory allocated              =        9.808 MB
 
 
 
@@ -669,20 +681,20 @@
  = multifrontal statistics =
  ===========================
 
-     number of equations                     =           12126
-     no. of nonzeroes in lower triangle of a =          156165
-     no. of nonzeroes in the factor l        =          341955
+     number of equations                     =           12552
+     no. of nonzeroes in lower triangle of a =          161112
+     no. of nonzeroes in the factor l        =          351484
      ratio of nonzeroes in factor (min/max)  =          1.0000
-     number of super nodes                   =             771
-     maximum order of a front matrix         =              72
-     maximum size of a front matrix          =            2628
-     maximum size of a front trapezoid       =            2040
+     number of super nodes                   =             806
+     maximum order of a front matrix         =              78
+     maximum size of a front matrix          =            3081
+     maximum size of a front trapezoid       =            2781
      METIS reordering method used 
-     no. of floating point ops for factor    =      6.6934D+06
+     no. of floating point ops for factor    =      6.8971D+06
      no. of floating point ops for solve     =      0.0000D+00
      ratio of flops for factor (min/max)     =          1.0000
      ratio of allocated memory (max/min)     =          1.0000
-     number of positive pivots               =           12126
+     number of positive pivots               =           12552
      number of negative pivots               =               0
      number of near-zero pivots              =               0
      partial pivoting tolerance used         =      0.0000D+00
@@ -690,24 +702,22 @@
      number of processes used                =               1
      number of threads per process used      =               8
      number of cores used                    =               8
-     time (cpu & wall) for structure input   =        0.000000        0.005651
-     time (cpu & wall) for ordering          =        0.078125        0.007472
-     time (cpu & wall) for other matrix prep =        0.000000        0.002636
-     time (cpu & wall) for value input       =        0.000000        0.002670
-     time (cpu & wall) for matrix distrib.   =        0.046875        0.007911
-     time (cpu & wall) for numeric factor    =        0.125000        0.012460
-     computational rate (gflops) for factor  =        0.053547        0.537173
+     time (cpu & wall) for structure input   =        0.000000        0.000631
+     time (cpu & wall) for ordering          =        0.000000        0.004256
+     time (cpu & wall) for other matrix prep =        0.000000        0.001674
+     time (cpu & wall) for value input       =        0.000000        0.002520
+     time (cpu & wall) for matrix distrib.   =        0.062500        0.004514
 
      i/o stats: unit-Core          file length             amount transferred
                                  words       mbytes          words       mbytes
                    ----     ----------     --------     ----------     --------
-                95-   0        131072.        1. MB        118657.        1. MB
+                95-   0        131072.        1. MB        123578.        1. MB
 
                 -------     ----------     --------     ----------     --------
-                Totals:        131072.        1. MB        118657.        1. MB
+                Totals:        131072.        1. MB        123578.        1. MB
 
 
-  Total Solver Memory allocated              =       12.358 MB
+  Total Solver Memory allocated              =       12.758 MB
 
 
 
@@ -718,20 +728,20 @@
  = multifrontal statistics =
  ===========================
 
-     number of equations                     =           12126
-     no. of nonzeroes in lower triangle of a =          156165
-     no. of nonzeroes in the factor l        =          341955
+     number of equations                     =           12552
+     no. of nonzeroes in lower triangle of a =          161112
+     no. of nonzeroes in the factor l        =          351484
      ratio of nonzeroes in factor (min/max)  =          1.0000
-     number of super nodes                   =             771
-     maximum order of a front matrix         =              72
-     maximum size of a front matrix          =            2628
-     maximum size of a front trapezoid       =            2040
+     number of super nodes                   =             806
+     maximum order of a front matrix         =              78
+     maximum size of a front matrix          =            3081
+     maximum size of a front trapezoid       =            2781
      METIS reordering method used 
-     no. of floating point ops for factor    =      6.6934D+06
+     no. of floating point ops for factor    =      6.8971D+06
      no. of floating point ops for solve     =      0.0000D+00
      ratio of flops for factor (min/max)     =          1.0000
      ratio of allocated memory (max/min)     =          1.0000
-     number of positive pivots               =           12126
+     number of positive pivots               =           12552
      number of negative pivots               =               0
      number of near-zero pivots              =               0
      partial pivoting tolerance used         =      0.0000D+00
@@ -739,21 +749,21 @@
      number of processes used                =               1
      number of threads per process used      =               8
      number of cores used                    =               8
-     time (cpu & wall) for structure input   =        0.000000        0.000645
-     time (cpu & wall) for ordering          =        0.125000        0.004913
-     time (cpu & wall) for other matrix prep =        0.000000        0.001788
-     time (cpu & wall) for value input       =        0.000000        0.002477
-     time (cpu & wall) for matrix distrib.   =        0.000000        0.004398
-     time (cpu & wall) for numeric factor    =        0.125000        0.008601
-     computational rate (gflops) for factor  =        0.053547        0.778247
+     time (cpu & wall) for structure input   =        0.000000        0.000633
+     time (cpu & wall) for ordering          =        0.000000        0.003975
+     time (cpu & wall) for other matrix prep =        0.000000        0.001201
+     time (cpu & wall) for value input       =        0.000000        0.001699
+     time (cpu & wall) for matrix distrib.   =        0.000000        0.003169
+     time (cpu & wall) for numeric factor    =        0.125000        0.007104
+     computational rate (gflops) for factor  =        0.055177        0.970829
 
      i/o stats: unit-Core          file length             amount transferred
                                  words       mbytes          words       mbytes
                    ----     ----------     --------     ----------     --------
-                95-   0        131072.        1. MB        118657.        1. MB
+                95-   0        131072.        1. MB        123578.        1. MB
 
                 -------     ----------     --------     ----------     --------
-                Totals:        131072.        1. MB        118657.        1. MB
+                Totals:        131072.        1. MB        123578.        1. MB
 
 
-  Total Solver Memory allocated              =       12.358 MB
+  Total Solver Memory allocated              =       12.758 MB
