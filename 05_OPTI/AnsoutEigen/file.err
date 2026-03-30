@@ -1,9 +1,1 @@
-/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       15:40:15
-
- *** ERROR ***                           CP =       0.500   TIME= 15:40:21
- Element 600 does not have all of its required nodes defined.  The EN    
- command is aborted.                                                     
-
- *** ERROR ***                           CP =       0.500   TIME= 15:40:21
- The EN command cannot store element 600, possibly because one or more   
- nodes is not defined.                                                   
+/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       09:37:22

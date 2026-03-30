@@ -1,0 +1,2 @@
+    E_ID      Y_LOC     UTIL_LC0     UTIL_LC1     UTIL_NF0     UTIL_NF1
+     166      43.50      0.03593      0.04845      0.50462      0.03493

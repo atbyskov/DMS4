@@ -74,7 +74,7 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
         f.write("MP,PRXY,1,0.3 \n")
         f.write("MP,DENS,1.7850E-6 ! [kg/mm^3] \n \n")
         # STIFF Material
-        f.write("! SPECIAL MATERIAL REGION ABOVE Y=4070\n")
+        f.write("! INF STIFNESS MATERIAL REGION ABOVE Y=4070\n")
         f.write("MP,EX,2,2E+09\n")
         f.write("MP,PRXY,2,0.3\n")
         f.write("MP,DENS,2,1.7850E-6\n")
@@ -195,67 +195,24 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
 
 
         # Display Cross section
-        #f.write("/ESHAPE,1 ! Display Cross Section\n")
-        # GET Highest and lowest node for bond
-        f.write("NSEL,S,LOC,X,0 \n")
-        f.write("NSEL,R,LOC,Y,4080.3 \n")
-        f.write("CM,NODE_LOW,NODE \n")
-        f.write("ALLSEL \n")
-
-        f.write("NSEL,S,LOC,X,0 \n")
-        f.write("NSEL,R,LOC,Y,4250.0 \n")
-        f.write("CM,NODE_HIGH,NODE \n")
-        f.write("ALLSEL \n")
-
-        f.write("N,99999,0,4476,0 \n")
-
-        # REMOTE LOAD SETUP
-        f.write("*SET,tid,52 \n")
-        f.write("*SET,cid,51 \n")
-        f.write("ET,cid,175 \n")
-        f.write("ET,tid,170 \n")
-        f.write("KEYO,tid,2,1 \n")
-        f.write("KEYO,tid,4,0 \n")
-        f.write("KEYO,cid,12,5 \n")
-        f.write("KEYO,cid,4,0 \n")
-        f.write("KEYO,cid,2,2 \n")
-        f.write("MAT,1 \n")
-        f.write("REAL,1 \n")
-        f.write("TYPE,1 \n")
-
-        f.write("EN,600,NODE_LOW \n")
-        f.write("EN,6001,NODE_HIGH \n")
-
-        f.write("*SET,_npilot,1068 \n")
-        f.write("_npilot1331=_npilot \n")
-
-        f.write("TYPE,tid \n")
-        f.write("MAT,cid \n")
-        f.write("REAL,cid \n")
-        f.write("TSHAPE,pilo \n")
-        f.write("en,603,_npilot \n")
-        f.write("tshape \n")
-
-        #f.write("N,99999,0,4476,0 \n")
-
-        f.write("CERIG,99999,ALL,ALL \n")
-
+        f.write("/ESHAPE,1 ! Display Cross Section\n")
         
 
-          
+        # REMOTE LOAD SETUP
 
-        # Create and save .png of the mesh
-        #f.write("/SHOW,PNG,,0 \n")
-        #f.write("/RGB,INDEX,100,100,100,0 \n")
-        #f.write("/RGB,INDEX,80,80,80,13 \n")
-        #f.write("/RGB,INDEX,60,60,60,14 \n")
-        #f.write("/RGB,INDEX,0,0,0,15 \n")
-        #f.write("/TYPE,,4 \n")
-        #f.write("/VIEW,,0,0,1 \n")
-        #f.write("/ANGLE,,30,YM \n")
-        #f.write("EPLOT \n")
-        #f.write("/SHOW,close \n")
-        #f.write("/SHOW,TERM \n")
+            
+        #Create and save .png of the mesh
+        f.write("/SHOW,PNG,,0 \n")
+        f.write("/RGB,INDEX,100,100,100,0 \n")
+        f.write("/RGB,INDEX,80,80,80,13 \n")
+        f.write("/RGB,INDEX,60,60,60,14 \n")
+        f.write("/RGB,INDEX,0,0,0,15 \n")
+        f.write("/TYPE,,4 \n")
+        f.write("/VIEW,,0,0,1 \n")
+        f.write("/ANGLE,,30,YM \n")
+        f.write("EPLOT \n")
+        f.write("/SHOW,close \n")
+        f.write("/SHOW,TERM \n")
 
         # RUN STATIC ANALYSIS
         # We use sparse solver with pre-stress on
@@ -273,21 +230,22 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
         # Get top and bottom nodes
         f.write("*GET, NodeYMax, NODE, 0, MXLOC, Y \n")
         f.write("*GET, NodeYMin, NODE, 0, MNLOC, Y \n")
-        # Apply Remote Force
-        
 
-        f.write(f"F,99999,FY,{-Ver_Force} \n")
-        f.write(f"F,99999,FX,{Hor_Force} \n")
+        # Apply Remote Force
+        f.write("NSEL,S,LOC,X,0 \n ")
+        f.write("*GET,N_LOW,NODE,,MNLOC,Y \n")
+        f.write("NSEL,R,LOC,Y,N_LOW \n")
+        f.write("N_C = 1 \n")
+        f.write(f"MOMZ = {MomZ}/N_C \n")
+        f.write(f"MOMY = {MomY}/N_C \n")
+        f.write(f"F_HOR = {Hor_Force}/N_C \n")
+        f.write(f"F_VER = {-Ver_Force}/N_C \n")
+        f.write(f"F,ALL,FY,F_VER \n")
+        f.write(f"F,ALL,FX,F_HOR \n")
+        f.write(f"F,ALL,MY,MOMY \n")
+        f.write(f"F,ALL,MZ,MOMZ \n")
         # Apply Moment
-        #f.write("ALLSEL \n")
-        #f.write("NSEL,S,LOC,X,0 \n")
-        #f.write("NSEL,U,NODE,,99999 \n")
-        #f.write("*GET,M_nodes,NODE,0,COUNT \n")
-        #f.write(f"MomZ ={MomZ} \n")
-        #f.write(f"MomY ={MomY} \n")
-        #f.write("F,ALL,MZ,MomZ/M_nodes \n")
-        #f.write("F,ALL,MY,MomY/M_nodes \n")
-        #f.write("ALLSEL,ALL \n")
+  
 
         # Fixed displacement at bottom nodes
         f.write("! Displacement ! \n")
@@ -334,19 +292,20 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
         f.write("   *ENDIF \n")
         # RESULT 
         f.write("*GET,nElem,ELEM,0,COUNT \n")
-        f.write("   *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]' \n")
-        f.write("   (A12,A20,A20,A20,A20,A20,A20) \n")
+        f.write("   *VWRITE,'ElemID','Y_LOC','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]' \n")
+        f.write("   (A12,A20,A20,A20,A20,A20,A20,A20) \n")
         f.write("   ELEM = 0 \n")
         f.write("   *DO,jj,1,nElem,1 \n")
         f.write("       ELEM = ELNEXT(ELEM) \n")
+        f.write("       *GET,Y_LOC,ELEM,ELEM,CENT,Y \n")
         f.write("       *GET,NF,ELEM,ELEM,SMISC,1 \n")
         f.write("       *GET,MY,ELEM,ELEM,SMISC,2 \n")
         f.write("       *GET,MZ,ELEM,ELEM,SMISC,3 \n")
         f.write("       *GET,VY,ELEM,ELEM,SMISC,4 \n")
         f.write("       *GET,VZ,ELEM,ELEM,SMISC,5 \n")
         f.write("       *GET,TQ,ELEM,ELEM,SMISC,6 \n")
-        f.write("       *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ \n")
-        f.write("       (F12.0,6E20.8) \n")
+        f.write("       *VWRITE,ELEM,Y_LOC,NF,MY,MZ,VY,VZ,TQ \n")
+        f.write("       (F12.0,7E20.8) \n")
         f.write("   *ENDDO \n \n")
         f.write("*ENDDO")
 
@@ -366,19 +325,20 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
         f.write("   *ENDIF \n")
         # RESULT 
         f.write("   *GET,nElem,ELEM,0,COUNT \n")
-        f.write("   *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]' \n")
-        f.write("   (A12,6A20) \n")
+        f.write("   *VWRITE,'ElemID','Y_LOC','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]' \n")
+        f.write("   (A12,7A20) \n")
         f.write("   elem = 0 \n")
         f.write("   *DO,jj,1,nElem,1 \n")
         f.write("       ELEM = ELNEXT(ELEM) \n")
+        f.write("       *GET,Y_LOC,ELEM,ELEM,CENT,Y \n")
         f.write("       *GET,NF,ELEM,ELEM,SMISC,1 \n")
         f.write("       *GET,MY,ELEM,ELEM,SMISC,2 \n")
         f.write("       *GET,MZ,ELEM,ELEM,SMISC,3 \n")
         f.write("       *GET,VY,ELEM,ELEM,SMISC,4 \n")
         f.write("       *GET,VZ,ELEM,ELEM,SMISC,5 \n")
         f.write("       *GET,TQ,ELEM,ELEM,SMISC,6 \n")
-        f.write("       *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ \n")
-        f.write("       (F12.0,6E20.8) \n")
+        f.write("       *VWRITE,ELEM,NF,Y_LOC,MY,MZ,VY,VZ,TQ \n")
+        f.write("       (F12.0,7E20.8) \n")
         f.write("   *ENDDO \n")
         f.write("*ENDDO \n")
         f.write("*CFCLOS \n \n")

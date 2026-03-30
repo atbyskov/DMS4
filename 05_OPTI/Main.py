@@ -13,11 +13,12 @@ import time
 import SW_Import as SW
 from Post_Process import Util_NF
 from Post_Process import Util_LC
+from Post_Process import print_info
 from MyAPDLCall import RunAPDL
 
 tic = time.time()
 # Import SW coordinates as list
-SW_filename = "LWC1.IGS"   # Specify IGES File Name
+SW_filename = "LWC.IGS"   # Specify IGES File Name
 SW_folder = "IGS"
 SWcoor = SW.import_SW(os.path.join(SW_folder,SW_filename))
 
@@ -59,3 +60,5 @@ toc = time.time()
 
 runtime = toc-tic
 print(f"Sim Time: {runtime} s")
+
+print = print_info(var,Misc)

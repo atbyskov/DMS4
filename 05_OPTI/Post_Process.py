@@ -43,6 +43,9 @@ def read_forces(filepath: str) -> pd.DataFrame:
                     engine="python",
                     names=colnames
                 )
+                if "Y_LOC" in df.columns:
+                    df = df[df["Y_LOC"] <= 4080]
+
                 df["Member"] = current_member
                 blocks.append(df)
             
@@ -124,7 +127,7 @@ def Util_NF(var, Misc):
     NonlinData = "AnsoutNonlin/APDL_Nonlin_Internal.txt"
 
     # Read Data and split into Columns and Braces
-    df = read_forces(NonlinData)
+    df = read_forces(EigenData)
     df_col = df[df["Member"].str.startswith("ColMember")].copy()
     df_brace = df[df["Member"].str.startswith("BraceMember")].copy()
 
@@ -143,16 +146,6 @@ def Util_NF(var, Misc):
     # Normal force Utilization
     print(f"Alpha_Crit Value: {alpha_crit}")
 
-    with open("UTIL_Ratio", "w") as f:
-        f.write("Utilization Ratios \n")
-        f.write("Util_NF Column \t Util_NF Column \n")
-
-        for i in range(len(df_col)):
-            col_val = df_col["Util_NF"].iloc[i]
-            brace_val = df_brace["Util_NF"].iloc[i]
-
-            f.write(f"{col_val:20.6f} {brace_val:20.6f}\n")
-
     
     return Util_NF
 
@@ -161,3 +154,37 @@ def Util_ST(var, Misc):
     
 
     return 0
+
+
+
+
+def print_info(var, Misc):
+    """
+    Writes the following line to Post_Util.txt:
+
+    E_ID   Y_LOC   UTIL_LC[0]   UTIL_LC[1]   UTIL_NF[0]   UTIL_NF[1]
+    """
+
+    # Read nonlinear internal APDL output
+    df = read_forces("AnsoutEigen/APDL_Eigen_Internal.txt")
+
+    # Compute utilizations
+    util_lc = Util_LC(var, Misc)   # returns [for columns, for braces]
+    util_nf = Util_NF(var, Misc)   # same structure
+
+    # Choose representative element: maximum |NF|
+    idx = df["NF"].abs().idxmax()
+    e_id = int(df.loc[idx, "ElemID"])
+    y_loc = float(df.loc[idx, "Y_LOC"])
+
+    # Write results to Post_Util.txt
+    with open("Post_Util.txt", "w") as f:
+        # Header
+        f.write(f"{'E_ID':>8} {'Y_LOC':>10} {'UTIL_LC0':>12} {'UTIL_LC1':>12} "
+                f"{'UTIL_NF0':>12} {'UTIL_NF1':>12}\n")
+
+        # Values
+        f.write(f"{e_id:8d} {y_loc:10.2f} "
+                f"{util_lc[0]:12.5f} {util_lc[1]:12.5f} "
+                f"{util_nf[0]:12.5f} {util_nf[1]:12.5f}\n")
+
