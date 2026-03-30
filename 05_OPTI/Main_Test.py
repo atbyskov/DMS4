@@ -48,10 +48,28 @@ E_mod = 200*1E3         # Youngs Modulus [MPa]
 Misc = [esize, Hor_Force, Ver_Force, MomZ, MomY, f_y, E_mod]
 
 
+f = RunAPDL(SWcoor,var,Misc) # Runs APDL and returns MASS
 
-result, history, txt_path = run_optimization(var, SWcoor, Misc)
 
-print("\nOptimal x:", result.x)
-print("Optimal objective:", result.fun)
-print("Message:", result.message)
-print("TXT log file:", txt_path)
+print(f"Mass of Assembly: {f} kg")
+
+
+
+# Run Post_Process.py
+Util_LC = Util_LC(var,Misc)
+Util_NF = Util_NF(var,Misc)
+
+print(f"Util_LC: {Util_LC}")
+print(f"Util_NF: {Util_NF}")
+
+toc = time.time()
+
+runtime = toc-tic
+print(f"Sim Time: {runtime} s")
+
+print = print_info(var,Misc)
+
+#Hello
+
+#Test1
+
