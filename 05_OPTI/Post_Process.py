@@ -3,10 +3,11 @@
     # 6 Functions for calculating:
         # 1. Local Buckling                 [LC]
         # 2. Normal Force                   [NF]
-        # 3. Shear and Torsion              [ST]
-        # 4. Bending, Normal and Shear      [BNS]
-        # 5. Flexural and Torsional         [FT]
-        # 6. Interaction                    [IN]
+        # 3. Shear                          [S]
+        # 4. Torsion                        [T]
+        # 5. Bending, Normal and Shear      [BNS]
+        # 6. Flexural and Torsional         [FT]
+        # 7. Interaction                    [IN]
     # Outputs this as a .txt file for evaluation
     # Output highest utilization factor as list
     #   FORMAT:
@@ -86,11 +87,11 @@ def Util_LC(var, Misc):
 
     Util_LC = np.zeros(2)
 
-
+    EigenData = "AnsoutEigen/APDL_Eigen_Internal.txt"
     NonlinData = "AnsoutNonlin/APDL_Nonlin_Internal.txt"
 
     # Read Data and split into Columns and Braces
-    df = read_forces(NonlinData)
+    df = read_forces(EigenData)
     df_col = df[df["Member"].str.startswith("ColMember")].copy()
     df_brace = df[df["Member"].str.startswith("BraceMember")].copy()
 
@@ -103,7 +104,7 @@ def Util_LC(var, Misc):
 
     return Util_LC
 
-# Function to calcualte Utilization ratios                
+# Normal Force                
 def Util_NF(var, Misc):
     # Open and Read Eigenvalue
     with open("AnsoutEigen/Eigenvalue1.txt") as f:
@@ -143,20 +144,155 @@ def Util_NF(var, Misc):
     Util_NF[0] = df_col["Util_NF"].max()
     Util_NF[1] = df_brace["Util_NF"].max()
 
-    # Normal force Utilization
-    print(f"Alpha_Crit Value: {alpha_crit}")
-
     
     return Util_NF
 
-def Util_ST(var, Misc):
+# Shear Force
+def Util_S(var, Misc):
 
+    Util_S = np.zeros(2)
+
+    # Import Radii
+    R0, R1, R2, R3 = var
+
+    # Areas
+    A_Column = np.pi * ((R1**2) - (R0**2)) 
+    A_Brace = np.pi * ((R3**2) - (R2**2)) 
+
+    # Import Misc
+    esize, Hor_Force, Ver_Force, MomZ, MomY, f_y, E_mod = Misc
+
+    EigenData = "AnsoutEigen/APDL_Eigen_Internal.txt"
+    NonlinData = "AnsoutNonlin/APDL_Nonlin_Internal.txt"
+
+    # Read Data and split into Columns and Braces
+    df = read_forces(EigenData)
+    df_col = df[df["Member"].str.startswith("ColMember")].copy()
+    df_brace = df[df["Member"].str.startswith("BraceMember")].copy()
     
+    D0_col = R1*2 # Column Outer Diameter
+    Di_col = R0*2 # Column Inner Diameter
+    D0_brace = R3*2 # Brace Outer Diameter
+    Di_brace = R2*2 # Brace Inner Diamter
 
-    return 0
+    # Av
+    Av_col = 2/math.pi * A_Column
+    Av_brace = 2/math.pi * A_Brace
 
-# Update
+    # Design Plastic Shear Resistance
+    # N = mm^2 * N/mm^2 
+    V_cRd_col = Av_col*(f_y/math.sqrt(3))
+    V_cRd_brace = Av_brace*(f_y/math.sqrt(3))
 
+    #V_cRd_col = 1/2*(D0_col**2 - Di_col**2)*f_y/math.sqrt(3)
+    #V_cRd_brace = 1/2*(D0_brace**2 - Di_brace**2)*f_y/math.sqrt(3)
+
+    df_col["Util_S"] = df_col[["Vy","Vz"]].abs().max(axis=1) / V_cRd_col
+    df_brace["Util_S"] = df_brace[["Vy","Vz"]].abs().max(axis=1) / V_cRd_brace
+
+    Util_S[0] = df_col["Util_S"].max()
+    Util_S[1] = df_brace["Util_S"].max()
+
+
+    return Util_S
+
+# Torsion
+def Util_T(var, Misc):
+
+    Util_T = np.zeros(2)
+
+    # Import Radii
+    R0, R1, R2, R3 = var
+
+    # Import Misc
+    esize, Hor_Force, Ver_Force, MomZ, MomY, f_y, E_mod = Misc
+
+    EigenData = "AnsoutEigen/APDL_Eigen_Internal.txt"
+    NonlinData = "AnsoutNonlin/APDL_Nonlin_Internal.txt"
+
+    # Read Data and split into Columns and Braces
+    df = read_forces(EigenData)
+    df_col = df[df["Member"].str.startswith("ColMember")].copy()
+    df_brace = df[df["Member"].str.startswith("BraceMember")].copy()
+    
+    D0_col = R1*2 # Column Outer Diameter
+    Di_col = R0*2 # Column Inner Diameter
+    D0_brace = R3*2 # Brace Outer Diameter
+    Di_brace = R2*2 # Brace Inner Diamter
+
+    # Torsion Design Resistance
+    # N = mm^2 * N/mm^2 
+    T_Rd_col = (math.pi/16 * (D0_col**4 - Di_col**4)/D0_col)*f_y/math.sqrt(3)
+    T_Rd_brace = (math.pi/16 * (D0_brace**4 - Di_brace**4)/D0_brace)*f_y/math.sqrt(3)
+
+
+    df_col["Util_T"] = df_col["T"].abs() / T_Rd_col
+    df_brace["Util_T"] = df_brace["T"].abs() / T_Rd_brace
+
+    Util_T[0] = df_col["Util_T"].max()
+    Util_T[1] = df_brace["Util_T"].max()
+
+
+    return Util_T
+
+def Util_BNS(var, Misc):
+
+    Util_BNS = np.zeros(2)
+
+    # Import Radii
+    R0, R1, R2, R3 = var
+
+    # Import Misc
+    esize, Hor_Force, Ver_Force, MomZ, MomY, f_y, E_mod = Misc
+
+    EigenData = "AnsoutEigen/APDL_Eigen_Internal.txt"
+    NonlinData = "AnsoutNonlin/APDL_Nonlin_Internal.txt"
+
+    # Read Data and split into Columns and Braces
+    df = read_forces(EigenData)
+    df_col = df[df["Member"].str.startswith("ColMember")].copy()
+    df_brace = df[df["Member"].str.startswith("BraceMember")].copy()
+    
+    D0_col = R1*2 # Column Outer Diameter
+    Di_col = R0*2 # Column Inner Diameter
+    D0_brace = R3*2 # Brace Outer Diameter
+    Di_brace = R2*2 # Brace Inner Diamter
+
+    # Areas
+    A_Column = np.pi * ((R1**2) - (R0**2)) 
+    A_Brace = np.pi * ((R3**2) - (R2**2)) 
+
+    M_Rd_col = (D0_col**3 - Di_col**3)/6 * f_y
+    M_Rd_brace = (D0_brace**3 - Di_brace**3)/6 * f_y
+
+    N_Rd_col = A_Column * f_y
+    N_Rd_brace = A_Brace * f_y
+
+    # Utilization
+    N_col = df_col["NF"]
+    My_col = df_col["My"].abs()
+    Mz_col = df_col["Mz"].abs()
+
+    red_col = 1 - N_col / N_Rd_col
+
+    df_col["Util_BNS"] = (My_col / (M_Rd_col * red_col))**2 + \
+                         (Mz_col / (M_Rd_col * red_col))**2
+
+    # Brace BNS utilisation
+    N_br = df_brace["NF"]
+    My_br = df_brace["My"].abs()
+    Mz_br = df_brace["Mz"].abs()
+
+    red_br = 1 - N_br / N_Rd_brace
+
+    df_brace["Util_BNS"] = (My_br / (M_Rd_brace * red_br))**2 + \
+                           (Mz_br / (M_Rd_brace * red_br))**2
+
+    Util_BNS[0] = df_col["Util_BNS"].max()
+    Util_BNS[1] = df_brace["Util_BNS"].max()
+
+
+    return Util_BNS
 
 def print_info(var, Misc):
     """

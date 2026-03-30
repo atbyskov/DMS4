@@ -11,10 +11,16 @@ import time
 
 # Import Functions
 import SW_Import as SW
+from MyAPDLCall import RunAPDL
+
 from Post_Process import Util_NF
 from Post_Process import Util_LC
+from Post_Process import Util_S
+from Post_Process import Util_T
+from Post_Process import Util_BNS
+
 from Post_Process import print_info
-from MyAPDLCall import RunAPDL
+
 
 tic = time.time()
 # Import SW coordinates as list
@@ -54,15 +60,19 @@ print(f"Mass of Assembly: {f} kg")
 # Run Post_Process.py
 Util_LC = Util_LC(var,Misc)
 Util_NF = Util_NF(var,Misc)
+Util_S = Util_S(var,Misc)
+Util_T = Util_T(var,Misc)
+Util_BNS = Util_BNS(var,Misc)
 
 print(f"Util_LC: {Util_LC}")
 print(f"Util_NF: {Util_NF}")
+print(f"Util_S: {Util_S}")
+print(f"Util_T: {Util_T}")
+print(f"Util_BNS: {Util_BNS}")
 
 toc = time.time()
 
 runtime = toc-tic
 print(f"Sim Time: {runtime} s")
-
-print = print_info(var,Misc)
 
 #Hello
