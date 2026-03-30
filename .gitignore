@@ -1,8 +1,14 @@
 # Ingore the following folders
-05_OPTI/__pycache__/
-05_OPTI/AnsoutEigen/
-05_OPTI/AnsoutNonlin/
-05_OPTI/IGS/
+05_OPTI/__pycache__/*
+05_OPTI/AnsoutEigen/*
+05_OPTI/AnsoutNonlin/*
+05_OPTI/IGS/*
+
+# Keep Folders
+!05_OPTI/__pycache__/.gitkeep
+!05_OPTI/AnsoutEigen/.gitkeep
+!05_OPTI/AnsoutNonlin/.gitkeep
+!05_OPTI/IGS/.gitkeep
 
 # Ignore the following files
 Post_Util.txt
