@@ -1,39 +1,77 @@
-# Function for importing Solidworks coordinates
-
 import os
-import pandas as pd
 
-def read_iges(SW_filename):
 
-    lines110 = []
-    data = []
+# -------------------------------
+# STEP 1: Read full P-section data
+# -------------------------------
+def read_parameter_data(filename):
+    param_data = []
 
-    with open(SW_filename) as f:
-        raw = f.readlines()
+    with open(filename, "r") as f:
+        for line in f:
+            section = line[72:73]
 
-        for line in raw:
-            filter_line = line.strip()
+            if section == "P":
+                data = line[:64]  # only IGES data field
+                param_data.append(data)
 
-            if filter_line.startswith("110") and "P" in filter_line:
-                lines110.append(filter_line)
-        return lines110
-    
-def create_data(lines110):
+    return param_data
+
+
+# -------------------------------
+# STEP 2: Reconstruct full records
+# -------------------------------
+def build_records(param_data):
+    records = []
+    current = ""
+
+    for chunk in param_data:
+        current += chunk.strip()
+
+        if ";" in chunk:
+            records.append(current)
+            current = ""
+
+    return records
+
+
+# -------------------------------
+# STEP 3: Parse type 110 entities
+# -------------------------------
+def parse_type110(records):
     coordinates = []
 
-    for line in lines110:
-        line = line.replace(";", ",")
-        parts = line.split(",")
-        coor_only = parts[1:7]
+    for rec in records:
+        rec = rec.replace(";", "")
+        parts = rec.split(",")
 
-        nums = [float(x.strip()) for x in coor_only]
+        # Skip invalid or short records
+        if len(parts) < 7:
+            continue
 
-        coordinates.append(nums)
+        try:
+            entity_type = int(parts[0])
+        except:
+            continue
+
+        if entity_type == 110:
+            try:
+                nums = [float(x) for x in parts[1:7]]
+                coordinates.append(nums)
+            except ValueError:
+                # Skip malformed entries safely
+                continue
+
 
     return coordinates
 
 
-def import_SW(SW_filename):
-    lines110 = read_iges(SW_filename)
-    coords = create_data(lines110)
+# -------------------------------
+# MAIN IMPORT FUNCTION
+# -------------------------------
+def import_SW(filename):
+    param_data = read_parameter_data(filename)
+    records = build_records(param_data)
+    coords = parse_type110(records)
+
     return coords

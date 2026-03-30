@@ -7,18 +7,18 @@
 
 # Import packages
 import os
-import shutil
-import math
+import time 
 
 # Import Functions
 import SW_Import as SW
-from APDL_Eigen import Eigen_Fun
-from APDL_Nonlin import Nonlin_Fun
-from Post_Process import Util_ratio
+from Post_Process import Util_NF
+from Post_Process import Util_LC
+from Post_Process import print_info
 from MyAPDLCall import RunAPDL
 
+tic = time.time()
 # Import SW coordinates as list
-SW_filename = "story.IGS"   # Specify IGES File Name
+SW_filename = "LWC.IGS"   # Specify IGES File Name
 SW_folder = "IGS"
 SWcoor = SW.import_SW(os.path.join(SW_folder,SW_filename))
 
@@ -31,22 +31,34 @@ R3 = 26.9/2 # Brace Tube outer diameter  [mm]
 var = [R0, R1, R2, R3] # Assemble variables
 
 # Other specifications
-esize = 10              # Element Size [mm]
-Hor_Force = 0           # Horizontal Force at each selection [N]
-Ver_Force = 10000       # Vertical Force at each selection [N]
+esize = 100              # Element Size [mm]
+Hor_Force = 502.52      # Horizontal Force [N]
+Ver_Force = 26400       # Vertical Force   [N]
+MomZ = -70364000        # Applied Moment around Z-axis [Nmm]
+MomY = 1407140          # Applied Moment around Y-axis [Nmm]
 f_y = 690               # Yield Strength of S690 [MPa]
 E_mod = 200*1E3         # Youngs Modulus [MPa]
 
-Misc = [esize, Hor_Force, Ver_Force, f_y, E_mod]
+Misc = [esize, Hor_Force, Ver_Force, MomZ, MomY, f_y, E_mod]
 
 
 f = RunAPDL(SWcoor,var,Misc) # Runs APDL and returns MASS
+
 
 print(f"Mass of Assembly: {f} kg")
 
 
 
 # Run Post_Process.py
-Util_worst = Util_ratio(var,Misc)
-print(Util_worst)
+Util_LC = Util_LC(var,Misc)
+Util_NF = Util_NF(var,Misc)
 
+print(f"Util_LC: {Util_LC}")
+print(f"Util_NF: {Util_NF}")
+
+toc = time.time()
+
+runtime = toc-tic
+print(f"Sim Time: {runtime} s")
+
+print = print_info(var,Misc)
