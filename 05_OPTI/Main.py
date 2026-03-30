@@ -28,10 +28,12 @@ R1 = 76.1/2 # Column Tube outer diameter [mm]
 R2 = 22.3/2 # Brace Tube inner diameter  [mm]
 R3 = 26.9/2 # Brace Tube outer diameter  [mm]
 
+# Added something here
+
 var = [R0, R1, R2, R3] # Assemble variables
 
 # Other specifications
-esize = 100              # Element Size [mm]
+esize = 150              # Element Size [mm]
 Hor_Force = 502.52      # Horizontal Force [N]
 Ver_Force = 26400       # Vertical Force   [N]
 MomZ = -70364000        # Applied Moment around Z-axis [Nmm]

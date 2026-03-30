@@ -1,0 +1,8 @@
+# Ingore the following folders
+05_OPTI/__pycache__
+05_OPTI/AnsoutEigen/
+05_OPTI/AnsoutNonlin/
+05_OPTI/IGS/
+
+# Ignore the following files
+Post_Util.txt

@@ -101,7 +101,7 @@
   INITIAL DIRECTORY = C:\Users\atbys\Desktop\DMS4 Local\DMS4\05_OPTI\AnsoutNonlin
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
- CURRENT JOBNAME=file  09:37:36  MAR 30, 2026 CP=      0.094
+ CURRENT JOBNAME=file  10:15:22  MAR 30, 2026 CP=      0.109
 
      1  ! ===== APDL INPUT FILE ====== !
      2  !     Nonlinear Analysis       !
@@ -1073,7 +1073,7 @@
    968  LSEL,ALL
    969      
    970  ! ELEMENT SIZE !
-   971  ESIZE,100   
+   971  ESIZE,150   
    972      
    973  ! Meshing CORNER Beams (SECNUM=1) ! 
    974  SECNUM,1
@@ -1427,7 +1427,7 @@
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   09:37:36  MAR 30, 2026 CP=      0.188
+ 00254321  VERSION=WINDOWS x64   10:15:22  MAR 30, 2026 CP=      0.234
 
                                                                                
 
@@ -5035,7 +5035,7 @@
 
       206  LINES (OF      206  DEFINED) SELECTED BY LSEL COMMAND.
 
- DEFAULT ELEMENT DIVISIONS PER LINE BASED ON ELEMENT SIZE =   100.    
+ DEFAULT ELEMENT DIVISIONS PER LINE BASED ON ELEMENT SIZE =   150.    
 
  SECTION ID NUMBER=        1
 
@@ -5612,8 +5612,8 @@
  GENERATE NODES AND ELEMENTS   ON  ALL  SELECTED LINES    
 
  NUMBER OF LINES MESHED     =       113
- MAXIMUM NODE NUMBER        =       380
- MAXIMUM ELEMENT NUMBER     =       188
+ MAXIMUM NODE NUMBER        =       318
+ MAXIMUM ELEMENT NUMBER     =       157
 
  SECTION ID NUMBER=        2
 
@@ -6090,13 +6090,13 @@
  GENERATE NODES AND ELEMENTS   ON  ALL  SELECTED LINES    
 
  NUMBER OF LINES MESHED     =        93
- MAXIMUM NODE NUMBER        =      1064
- MAXIMUM ELEMENT NUMBER     =       575
+ MAXIMUM NODE NUMBER        =       816
+ MAXIMUM ELEMENT NUMBER     =       451
 
  ELEMENT DISPLAYS USING REAL CONSTANT OR SECTION DATA WITH FACTOR     1.00
 
 
- ***** ROUTINE COMPLETED *****  CP =         0.453
+ ***** ROUTINE COMPLETED *****  CP =         0.594
 
 
 
@@ -6137,21 +6137,21 @@
  SELECT       FOR ITEM=LOC  COMPONENT=Y     BETWEEN  4484.0     AND   4484.0    
    KABS=  0.  TOLERANCE= 0.100000E-05
 
-          1  NODES (OF       1064  DEFINED) SELECTED BY  NSEL  COMMAND.
+          1  NODES (OF        816  DEFINED) SELECTED BY  NSEL  COMMAND.
 
- SPECIFIED NODAL LOAD FY   FOR SELECTED NODES         1 TO     1064 BY        1
+ SPECIFIED NODAL LOAD FY   FOR SELECTED NODES         1 TO      816 BY        1
   REAL= -26400.0000       IMAG=  0.00000000    
 
- SPECIFIED NODAL LOAD FX   FOR SELECTED NODES         1 TO     1064 BY        1
+ SPECIFIED NODAL LOAD FX   FOR SELECTED NODES         1 TO      816 BY        1
   REAL=  502.520000       IMAG=  0.00000000    
 
- SPECIFIED NODAL LOAD MZ   FOR SELECTED NODES         1 TO     1064 BY        1
+ SPECIFIED NODAL LOAD MZ   FOR SELECTED NODES         1 TO      816 BY        1
   REAL= -70364000.0       IMAG=  0.00000000    
 
- SPECIFIED NODAL LOAD MY   FOR SELECTED NODES         1 TO     1064 BY        1
+ SPECIFIED NODAL LOAD MY   FOR SELECTED NODES         1 TO      816 BY        1
   REAL=  1407140.00       IMAG=  0.00000000    
 
- SPECIFIED NODAL LOAD FX   FOR SELECTED NODES         1 TO     1064 BY        1
+ SPECIFIED NODAL LOAD FX   FOR SELECTED NODES         1 TO      816 BY        1
   REAL=  176.000000       IMAG=  0.00000000    
 
  SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
@@ -6163,14 +6163,14 @@
  SELECT       FOR ITEM=LOC  COMPONENT=Y     BETWEEN  0.0000     AND   0.0000    
    KABS=  0.  TOLERANCE= 0.100000E-01
 
-          3  NODES (OF       1064  DEFINED) SELECTED BY  NSEL  COMMAND.
+          3  NODES (OF        816  DEFINED) SELECTED BY  NSEL  COMMAND.
 
  RESELECT     FOR ITEM=LOC  COMPONENT=X     BETWEEN  202.07     AND   202.07    
    KABS=  0.  TOLERANCE= 0.100000E-01
 
-          1  NODES (OF       1064  DEFINED) SELECTED BY  NSEL  COMMAND.
+          1  NODES (OF        816  DEFINED) SELECTED BY  NSEL  COMMAND.
 
- SPECIFIED CONSTRAINT UX   FOR SELECTED NODES            1 TO        1064 BY           1
+ SPECIFIED CONSTRAINT UX   FOR SELECTED NODES            1 TO         816 BY           1
  REAL=  0.00000000       IMAG=  0.00000000    
  ADDITIONAL DOFS=  UY    UZ    ROTX  ROTY  ROTZ
 
@@ -6179,19 +6179,19 @@
  SELECT       FOR ITEM=LOC  COMPONENT=Y     BETWEEN  0.0000     AND   0.0000    
    KABS=  0.  TOLERANCE= 0.100000E-01
 
-          3  NODES (OF       1064  DEFINED) SELECTED BY  NSEL  COMMAND.
+          3  NODES (OF        816  DEFINED) SELECTED BY  NSEL  COMMAND.
 
  RESELECT     FOR ITEM=LOC  COMPONENT=Z     BETWEEN -175.00     AND  -175.00    
    KABS=  0.  TOLERANCE= 0.100000E-01
 
-          1  NODES (OF       1064  DEFINED) SELECTED BY  NSEL  COMMAND.
+          1  NODES (OF        816  DEFINED) SELECTED BY  NSEL  COMMAND.
 
  RESELECT     FOR ITEM=LOC  COMPONENT=X     BETWEEN -101.04     AND  -101.04    
    KABS=  0.  TOLERANCE= 0.100000E-01
 
-          1  NODES (OF       1064  DEFINED) SELECTED BY  NSEL  COMMAND.
+          1  NODES (OF        816  DEFINED) SELECTED BY  NSEL  COMMAND.
 
- SPECIFIED CONSTRAINT UX   FOR SELECTED NODES            1 TO        1064 BY           1
+ SPECIFIED CONSTRAINT UX   FOR SELECTED NODES            1 TO         816 BY           1
  REAL=  0.00000000       IMAG=  0.00000000    
  ADDITIONAL DOFS=  UY    UZ    ROTX  ROTY  ROTZ
 
@@ -6200,19 +6200,19 @@
  SELECT       FOR ITEM=LOC  COMPONENT=Y     BETWEEN  0.0000     AND   0.0000    
    KABS=  0.  TOLERANCE= 0.100000E-01
 
-          3  NODES (OF       1064  DEFINED) SELECTED BY  NSEL  COMMAND.
+          3  NODES (OF        816  DEFINED) SELECTED BY  NSEL  COMMAND.
 
  RESELECT     FOR ITEM=LOC  COMPONENT=Z     BETWEEN  175.00     AND   175.00    
    KABS=  0.  TOLERANCE= 0.100000E-01
 
-          1  NODES (OF       1064  DEFINED) SELECTED BY  NSEL  COMMAND.
+          1  NODES (OF        816  DEFINED) SELECTED BY  NSEL  COMMAND.
 
  RESELECT     FOR ITEM=LOC  COMPONENT=X     BETWEEN -101.04     AND  -101.04    
    KABS=  0.  TOLERANCE= 0.100000E-01
 
-          1  NODES (OF       1064  DEFINED) SELECTED BY  NSEL  COMMAND.
+          1  NODES (OF        816  DEFINED) SELECTED BY  NSEL  COMMAND.
 
- SPECIFIED CONSTRAINT UX   FOR SELECTED NODES            1 TO        1064 BY           1
+ SPECIFIED CONSTRAINT UX   FOR SELECTED NODES            1 TO         816 BY           1
  REAL=  0.00000000       IMAG=  0.00000000    
  ADDITIONAL DOFS=  UY    UZ    ROTX  ROTY  ROTZ
 
@@ -6220,7 +6220,7 @@
 
  *****  MAPDL SOLVE    COMMAND  *****
 
- *** NOTE ***                            CP =       0.469   TIME= 09:37:36
+ *** NOTE ***                            CP =       0.609   TIME= 10:15:22
  There is no title defined for this analysis.                            
 
  *** SELECTION OF ELEMENT TECHNOLOGIES FOR APPLICABLE ELEMENTS ***
@@ -6235,7 +6235,7 @@
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   09:37:36  MAR 30, 2026 CP=      0.578
+ 00254321  VERSION=WINDOWS x64   10:15:22  MAR 30, 2026 CP=      0.609
 
                                                                                
 
@@ -6250,15 +6250,15 @@
    NEWTON-RAPHSON OPTION . . . . . . . . . . . . .PROGRAM CHOSEN   
    GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
 
- *** NOTE ***                            CP =       0.578   TIME= 09:37:36
+ *** NOTE ***                            CP =       0.609   TIME= 10:15:22
  Present time 0 is less than or equal to the previous time.  Time will   
  default to 1.                                                           
 
- *** NOTE ***                            CP =       0.578   TIME= 09:37:36
+ *** NOTE ***                            CP =       0.609   TIME= 10:15:22
  This nonlinear analysis defaults to using the full Newton-Raphson       
  solution procedure.  This can be modified using the NROPT command.      
 
- *** NOTE ***                            CP =       0.578   TIME= 09:37:36
+ *** NOTE ***                            CP =       0.609   TIME= 10:15:22
  The conditions for direct assembly have been met.  No .emat or .erot    
  files will be produced.                                                 
 
@@ -6280,21 +6280,21 @@
 
  SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
 
- *** NOTE ***                            CP =       1.047   TIME= 09:37:36
+ *** NOTE ***                            CP =       0.688   TIME= 10:15:22
  Predictor is ON by default for structural elements with rotational      
  degrees of freedom.  Use the PRED,OFF command to turn the predictor     
  OFF if it adversely affects the convergence.                            
 
 
  Range of element maximum matrix coefficients in global coordinates
- Maximum = 3.288858819E+10 at element 182.                               
- Minimum = 356086513 at element 567.                                     
+ Maximum = 3.288858819E+10 at element 46.                                
+ Minimum = 383540977 at element 445.                                     
 
    *** ELEMENT MATRIX FORMULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1       575  BEAM189       0.922   0.001603
- Time at end of element matrix formulation CP = 1.203125.                
+        1       451  BEAM189       1.000   0.002217
+ Time at end of element matrix formulation CP = 0.8125.                  
 
  ALL CURRENT MAPDL DATA WRITTEN TO FILE NAME= file.rdb
   FOR POSSIBLE RESUME FROM THIS POINT
@@ -6302,131 +6302,131 @@
      MOMENT CONVERGENCE VALUE =  0.7038E+07  CRITERION=  0.3519E+05
 
  SPARSE MATRIX DIRECT SOLVER.
-  Number of equations =        6366,    Maximum wavefront =     72
+  Number of equations =        4878,    Maximum wavefront =     72
 
 
   Memory allocated on this process
   -------------------------------------------------------------------
-  Equation solver memory allocated                     =     6.657 MB
-  Equation solver memory required for in-core mode     =     6.440 MB
-  Equation solver memory required for out-of-core mode =     4.956 MB
-  Total (solver and non-solver) memory allocated       =   377.403 MB
+  Equation solver memory allocated                     =     5.164 MB
+  Equation solver memory required for in-core mode     =     4.996 MB
+  Equation solver memory required for out-of-core mode =     3.832 MB
+  Total (solver and non-solver) memory allocated       =   370.996 MB
 
- *** NOTE ***                            CP =       1.453   TIME= 09:37:36
+ *** NOTE ***                            CP =       1.031   TIME= 10:15:23
  The Sparse Matrix Solver is currently running in the in-core memory     
  mode.  This memory mode uses the most amount of memory in order to      
  avoid using the hard drive as much as possible, which most often        
  results in the fastest solution time.  This mode is recommended if      
  enough physical memory is present to accommodate all of the solver      
  data.                                                                   
- Sparse solver maximum pivot= 3.288858819E+10 at node 206 ROTZ.          
- Sparse solver minimum pivot= 2361.68454 at node 207 UZ.                 
- Sparse solver minimum pivot in absolute value= 2361.68454 at node 207   
+ Sparse solver maximum pivot= 3.288858819E+10 at node 162 ROTZ.          
+ Sparse solver minimum pivot= 2361.68418 at node 175 UZ.                 
+ Sparse solver minimum pivot in absolute value= 2361.68418 at node 175   
  UZ.                                                                     
-     ARCLEN NEW TIME =  0.10000     ARC-LENGTH =   120.87    
+     ARCLEN NEW TIME =  0.10000     ARC-LENGTH =   103.77    
     EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   11.47    
-     FORCE CONVERGENCE VALUE  =  0.4789E+05  CRITERION=   140.0    
-     MOMENT CONVERGENCE VALUE =  0.6126E+05  CRITERION=  0.3520E+05
-     ARCLEN NEW TIME =  0.99804E-01 ARC-LENGTH =   170.94    
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.4677E-01
-     FORCE CONVERGENCE VALUE  =   6.403      CRITERION=   140.3     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =   2441.      CRITERION=  0.3513E+05 <<< CONVERGED
+     FORCE CONVERGENCE VALUE  =  0.4794E+05  CRITERION=   140.0    
+     MOMENT CONVERGENCE VALUE =  0.6329E+05  CRITERION=  0.3520E+05
+     ARCLEN NEW TIME =  0.99804E-01 ARC-LENGTH =   146.75    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.4658E-01
+     FORCE CONVERGENCE VALUE  =   6.358      CRITERION=   140.3     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =   2444.      CRITERION=  0.3513E+05 <<< CONVERGED
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
 
    *** ELEMENT RESULT CALCULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1       575  BEAM189       0.125   0.000217
+        1       451  BEAM189       0.844   0.001871
 
    *** NODAL LOAD CALCULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1       575  BEAM189       0.000   0.000000
+        1       451  BEAM189       0.016   0.000035
  *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      2
- *** TIME =  0.998037E-01  TIME INC =  0.100000      MAX DISPLACEMENT =     11.48    
+ *** TIME =  0.998036E-01  TIME INC =  0.100000      MAX DISPLACEMENT =     11.48    
 
      FORCE CONVERGENCE VALUE  =   2645.      CRITERION=   142.1    
      MOMENT CONVERGENCE VALUE =  0.7036E+07  CRITERION=  0.7031E+05
-     ARCLEN NEW TIME =  0.19980     ARC-LENGTH =   120.87    
+     ARCLEN NEW TIME =  0.19980     ARC-LENGTH =   103.77    
     EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   11.54    
-     FORCE CONVERGENCE VALUE  =  0.4817E+05  CRITERION=   281.5    
-     MOMENT CONVERGENCE VALUE =  0.6312E+05  CRITERION=  0.7033E+05 <<< CONVERGED
-     ARCLEN NEW TIME =  0.19962     ARC-LENGTH =   171.63    
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.4703E-01
-     FORCE CONVERGENCE VALUE  =   5.547      CRITERION=   281.8     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =   4917.      CRITERION=  0.7026E+05 <<< CONVERGED
+     FORCE CONVERGENCE VALUE  =  0.4822E+05  CRITERION=   281.5    
+     MOMENT CONVERGENCE VALUE =  0.6478E+05  CRITERION=  0.7032E+05 <<< CONVERGED
+     ARCLEN NEW TIME =  0.19961     ARC-LENGTH =   147.34    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.4682E-01
+     FORCE CONVERGENCE VALUE  =   5.328      CRITERION=   281.8     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =   4924.      CRITERION=  0.7026E+05 <<< CONVERGED
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
  *** LOAD STEP     1   SUBSTEP     2  COMPLETED.    CUM ITER =      4
  *** TIME =  0.199615      TIME INC =  0.149124      MAX DISPLACEMENT =     23.03    
 
-     FORCE CONVERGENCE VALUE  =  0.3612E+05  CRITERION=   494.9    
-     MOMENT CONVERGENCE VALUE =  0.5508E+05  CRITERION=  0.1227E+06
-     ARCLEN NEW TIME =  0.34859     ARC-LENGTH =   257.44    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.3575E-01
-     FORCE CONVERGENCE VALUE  =   4.761      CRITERION=   495.2     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =   6432.      CRITERION=  0.1227E+06 <<< CONVERGED
+     FORCE CONVERGENCE VALUE  =  0.3614E+05  CRITERION=   494.9    
+     MOMENT CONVERGENCE VALUE =  0.5632E+05  CRITERION=  0.1227E+06
+     ARCLEN NEW TIME =  0.34859     ARC-LENGTH =   221.01    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.3555E-01
+     FORCE CONVERGENCE VALUE  =   4.196      CRITERION=   495.2     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =   6436.      CRITERION=  0.1227E+06 <<< CONVERGED
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   1
  *** LOAD STEP     1   SUBSTEP     3  COMPLETED.    CUM ITER =      5
  *** TIME =  0.348592      TIME INC =  0.222575      MAX DISPLACEMENT =     40.40    
 
-     FORCE CONVERGENCE VALUE  =  0.1884E+06  CRITERION=   816.7    
-     MOMENT CONVERGENCE VALUE =  0.2414E+06  CRITERION=  0.2010E+06
-     ARCLEN NEW TIME =  0.57040     ARC-LENGTH =   386.17    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.1866    
-     FORCE CONVERGENCE VALUE  =   92.18      CRITERION=   817.9     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =  0.5494E+05  CRITERION=  0.2008E+06 <<< CONVERGED
+     FORCE CONVERGENCE VALUE  =  0.1885E+06  CRITERION=   816.7    
+     MOMENT CONVERGENCE VALUE =  0.2492E+06  CRITERION=  0.2010E+06
+     ARCLEN NEW TIME =  0.57040     ARC-LENGTH =   331.53    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.1856    
+     FORCE CONVERGENCE VALUE  =   90.01      CRITERION=   817.9     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =  0.5500E+05  CRITERION=  0.2008E+06 <<< CONVERGED
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   1
  *** LOAD STEP     1   SUBSTEP     4  COMPLETED.    CUM ITER =      6
- *** TIME =  0.570397      TIME INC =  0.330226      MAX DISPLACEMENT =     66.54    
+ *** TIME =  0.570396      TIME INC =  0.330224      MAX DISPLACEMENT =     66.54    
 
-     FORCE CONVERGENCE VALUE  =  0.3082E+06  CRITERION=   1306.    
-     MOMENT CONVERGENCE VALUE =  0.4247E+06  CRITERION=  0.3170E+06
-     ARCLEN NEW TIME =  0.89936     ARC-LENGTH =   579.30    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.3016    
-     FORCE CONVERGENCE VALUE  =   262.8      CRITERION=   1308.     <<< CONVERGED
+     FORCE CONVERGENCE VALUE  =  0.3081E+06  CRITERION=   1306.    
+     MOMENT CONVERGENCE VALUE =  0.4361E+06  CRITERION=  0.3170E+06
+     ARCLEN NEW TIME =  0.89935     ARC-LENGTH =   497.32    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.2996    
+     FORCE CONVERGENCE VALUE  =   257.2      CRITERION=   1308.     <<< CONVERGED
      MOMENT CONVERGENCE VALUE =  0.1418E+06  CRITERION=  0.3166E+06 <<< CONVERGED
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   1
  *** LOAD STEP     1   SUBSTEP     5  COMPLETED.    CUM ITER =      7
- *** TIME =  0.899356      TIME INC =  0.100644      MAX DISPLACEMENT =     105.9    
+ *** TIME =  0.899353      TIME INC =  0.100647      MAX DISPLACEMENT =     105.9    
 
-     FORCE CONVERGENCE VALUE  =  0.6706E+06  CRITERION=   2048.    
+     FORCE CONVERGENCE VALUE  =  0.6705E+06  CRITERION=   2048.    
      MOMENT CONVERGENCE VALUE =  0.2694E+08  CRITERION=  0.3521E+06
-     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   256.95    
+     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   220.36    
     EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -38.29    
-     FORCE CONVERGENCE VALUE  =  0.5355E+06  CRITERION=   1569.    
-     MOMENT CONVERGENCE VALUE =  0.7668E+06  CRITERION=  0.3520E+06
-     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   256.95    
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -7.520    
-     FORCE CONVERGENCE VALUE  =  0.1780E+05  CRITERION=   1477.    
-     MOMENT CONVERGENCE VALUE =  0.2725E+06  CRITERION=  0.3520E+06 <<< CONVERGED
-     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   189.47    
-    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -1.308    
-     FORCE CONVERGENCE VALUE  =   537.1      CRITERION=   1460.     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =  0.1102E+05  CRITERION=  0.3520E+06 <<< CONVERGED
+     FORCE CONVERGENCE VALUE  =  0.5358E+06  CRITERION=   1569.    
+     MOMENT CONVERGENCE VALUE =  0.8183E+06  CRITERION=  0.3520E+06
+     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   220.36    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -7.498    
+     FORCE CONVERGENCE VALUE  =  0.1775E+05  CRITERION=   1477.    
+     MOMENT CONVERGENCE VALUE =  0.2741E+06  CRITERION=  0.3520E+06 <<< CONVERGED
+     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   162.62    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -1.302    
+     FORCE CONVERGENCE VALUE  =   533.8      CRITERION=   1460.     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =  0.1118E+05  CRITERION=  0.3520E+06 <<< CONVERGED
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
  *** LOAD STEP     1   SUBSTEP     6  COMPLETED.    CUM ITER =     10
- *** TIME =   1.00000      TIME INC =   0.00000      MAX DISPLACEMENT =     118.1    
+ *** TIME =   1.00000      TIME INC =   0.00000      MAX DISPLACEMENT =     118.0    
 
- *** NOTE ***                            CP =       6.672   TIME= 09:37:37
+ *** NOTE ***                            CP =       5.219   TIME= 10:15:23
  Maximum load for load step 1 was reached.                               
 
 
  *** MAPDL BINARY FILE STATISTICS
   BUFFER SIZE USED= 16384
-       10.875 MB WRITTEN ON ELEMENT SAVED DATA FILE: file.esav
-        1.312 MB WRITTEN ON ASSEMBLED MATRIX FILE: file.full
-        1.688 MB WRITTEN ON RESULTS FILE: file.rst
+        8.562 MB WRITTEN ON ELEMENT SAVED DATA FILE: file.esav
+        1.000 MB WRITTEN ON ASSEMBLED MATRIX FILE: file.full
+        1.438 MB WRITTEN ON RESULTS FILE: file.rst
 
  FINISH SOLUTION PROCESSING
 
 
- ***** ROUTINE COMPLETED *****  CP =         6.797
+ ***** ROUTINE COMPLETED *****  CP =         5.312
 
 
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   09:37:37  MAR 30, 2026 CP=      6.797
+ 00254321  VERSION=WINDOWS x64   10:15:23  MAR 30, 2026 CP=      5.312
 
                                                                                
 
@@ -6434,7 +6434,7 @@
 
           ***** MAPDL RESULTS INTERPRETATION (POST1) *****
 
- *** NOTE ***                            CP =       6.797   TIME= 09:37:37
+ *** NOTE ***                            CP =       5.312   TIME= 10:15:23
  Reading results into the database (SET command) will update the current 
  displacement and force boundary conditions in the database with the     
  values from the results file for that load set.  Note that any          
@@ -6450,7 +6450,7 @@
 
  SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
 
- *GET  E_COUNT   FROM  ELEM  ITEM=COUN           VALUE=  575.000000    
+ *GET  E_COUNT   FROM  ELEM  ITEM=COUN           VALUE=  451.000000    
 
  OPENED FILE= APDL_Nonlin_Internal.txt FOR COMMAND FILE DATA 
 
@@ -6461,13 +6461,13 @@
 
  SELECT      ELEMENTS CREATED FROM SELECTED LINES.
 
-          1  ELEMENTS (OF        575  DEFINED) SELECTED FROM        1 SELECTED LINES
+          1  ELEMENTS (OF        451  DEFINED) SELECTED FROM        1 SELECTED LINES
          BY  ESLL  COMMAND.
 
  RESELECT     FOR ITEM=ENAM COMPONENT=    
   IN RANGE       189 TO        189 STEP          1
 
-          1  ELEMENTS (OF        575  DEFINED) SELECTED BY  ESEL  COMMAND.
+          1  ELEMENTS (OF        451  DEFINED) SELECTED BY  ESEL  COMMAND.
 
  *IF  ii  ( =   1.00000     )  LT  
       10  ( =   10.0000     )  THEN    
@@ -6484,17 +6484,17 @@
 
  PARAMETER ELEM =     1.000000000    
 
- *GET  NF        FROM  ELEM         1  ITEM=SMIS 1         VALUE=  108024.742    
+ *GET  NF        FROM  ELEM         1  ITEM=SMIS 1         VALUE=  108024.031    
 
- *GET  MY        FROM  ELEM         1  ITEM=SMIS 2         VALUE=  168757.594    
+ *GET  MY        FROM  ELEM         1  ITEM=SMIS 2         VALUE=  168746.844    
 
- *GET  MZ        FROM  ELEM         1  ITEM=SMIS 3         VALUE= -1044950.12    
+ *GET  MZ        FROM  ELEM         1  ITEM=SMIS 3         VALUE= -1044950.56    
 
- *GET  VY        FROM  ELEM         1  ITEM=SMIS 4         VALUE=  150096.375    
+ *GET  VY        FROM  ELEM         1  ITEM=SMIS 4         VALUE=  150102.234    
 
- *GET  VZ        FROM  ELEM         1  ITEM=SMIS 5         VALUE= -306.467865    
+ *GET  VZ        FROM  ELEM         1  ITEM=SMIS 5         VALUE= -306.445831    
 
- *GET  TQ        FROM  ELEM         1  ITEM=SMIS 6         VALUE= -1145.75940    
+ *GET  TQ        FROM  ELEM         1  ITEM=SMIS 6         VALUE= -1145.83154    
 
  *ENDDO  INDEX= JJ                              
 
@@ -6506,13 +6506,13 @@
 
  SELECT      ELEMENTS CREATED FROM SELECTED LINES.
 
-          4  ELEMENTS (OF        575  DEFINED) SELECTED FROM        1 SELECTED LINES
+          3  ELEMENTS (OF        451  DEFINED) SELECTED FROM        1 SELECTED LINES
          BY  ESLL  COMMAND.
 
  RESELECT     FOR ITEM=ENAM COMPONENT=    
   IN RANGE       189 TO        189 STEP          1
 
-          4  ELEMENTS (OF        575  DEFINED) SELECTED BY  ESEL  COMMAND.
+          3  ELEMENTS (OF        451  DEFINED) SELECTED BY  ESEL  COMMAND.
 
  *IF  ii  ( =   1.00000     )  LT  
       10  ( =   10.0000     )  THEN    
@@ -6521,25 +6521,25 @@
 
  *ENDIF
 
- *GET  NELEM     FROM  ELEM  ITEM=COUN           VALUE=  4.00000000    
+ *GET  NELEM     FROM  ELEM  ITEM=COUN           VALUE=  3.00000000    
 
  PARAMETER ELEM =     0.000000000    
 
- *DO LOOP ON PARAMETER= JJ FROM  1.0000     TO  4.0000     BY  1.0000    
+ *DO LOOP ON PARAMETER= JJ FROM  1.0000     TO  3.0000     BY  1.0000    
 
- PARAMETER ELEM =     189.0000000    
+ PARAMETER ELEM =     158.0000000    
 
- *GET  NF        FROM  ELEM       189  ITEM=SMIS 1         VALUE= -435.814941    
+ *GET  NF        FROM  ELEM       158  ITEM=SMIS 1         VALUE= -435.879791    
 
- *GET  MY        FROM  ELEM       189  ITEM=SMIS 2         VALUE=  4084.58594    
+ *GET  MY        FROM  ELEM       158  ITEM=SMIS 2         VALUE=  4084.96924    
 
- *GET  MZ        FROM  ELEM       189  ITEM=SMIS 3         VALUE= -8440.06445    
+ *GET  MZ        FROM  ELEM       158  ITEM=SMIS 3         VALUE= -8440.60742    
 
- *GET  VY        FROM  ELEM       189  ITEM=SMIS 4         VALUE= -2664.29517    
+ *GET  VY        FROM  ELEM       158  ITEM=SMIS 4         VALUE= -2664.44141    
 
- *GET  VZ        FROM  ELEM       189  ITEM=SMIS 5         VALUE= -23.6902561    
+ *GET  VZ        FROM  ELEM       158  ITEM=SMIS 5         VALUE= -23.6929798    
 
- *GET  TQ        FROM  ELEM       189  ITEM=SMIS 6         VALUE= -48.0435371    
+ *GET  TQ        FROM  ELEM       158  ITEM=SMIS 6         VALUE= -48.0479813    
 
  *ENDDO  INDEX= JJ                              
 
@@ -6561,7 +6561,7 @@
 +--------------------- M A P D L   S T A T I S T I C S ------------------------+
 
 Release: 2025 R1            Build: 25.1       Update: UP20241202   Platform: WINDOWS x64 
-Date Run: 03/30/2026   Time: 09:37     Process ID: 28512
+Date Run: 03/30/2026   Time: 10:15     Process ID: 14276
 Operating System: Windows 11  (Build: 26200)
 
 Processor Model: AMD Ryzen 7 5800H with Radeon Graphics
@@ -6584,24 +6584,24 @@ Input File: AnsoutNonlin\APDL_Nonlin_Input.txt
 Working Directory: C:\Users\atbys\Desktop\DMS4 Local\DMS4\05_OPTI
 
 Total CPU time for main thread                    :        1.5 seconds
-Total CPU time summed for all threads             :        8.1 seconds
+Total CPU time summed for all threads             :        6.7 seconds
 
-Elapsed time spent obtaining a license            :        5.1 seconds
-Elapsed time spent pre-processing model (/PREP7)  :        0.3 seconds
+Elapsed time spent obtaining a license            :        5.2 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.4 seconds
 Elapsed time spent solution - preprocessing       :        0.0 seconds
-Elapsed time spent computing solution             :        0.8 seconds
+Elapsed time spent computing solution             :        0.7 seconds
 Elapsed time spent solution - postprocessing      :        0.0 seconds
 Elapsed time spent post-processing model (/POST1) :        0.0 seconds
  
 Equation solver used                              :            Sparse (symmetric)
 
-Sum of disk space used on all processes           :       16.5 MB
+Sum of disk space used on all processes           :       13.1 MB
 
-Sum of memory used on all processes               :       57.0 MB
+Sum of memory used on all processes               :       54.0 MB
 Sum of memory allocated on all processes          :     2304.0 MB
 Physical memory available                         :         14 GB
 Total amount of I/O written to disk               :        0.2 GB
-Total amount of I/O read from disk                :        0.4 GB
+Total amount of I/O read from disk                :        0.3 GB
 
 +------------------ E N D   M A P D L   S T A T I S T I C S -------------------+
 
@@ -6617,11 +6617,11 @@ Total amount of I/O read from disk                :        0.4 GB
  |-----------------------------------------------------------------------------|
  |                                                                             |
  |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
- |  Maximum Database Used       7 MB     Maximum Scratch Memory Used     50 MB |
+ |  Maximum Database Used       6 MB     Maximum Scratch Memory Used     48 MB |
  |                                                                             |
  |-----------------------------------------------------------------------------|
  |                                                                             |
- |        CP Time      (sec) =          8.078       Time  =  09:37:38          |
- |        Elapsed Time (sec) =          9.000       Date  =  03/30/2026        |
+ |        CP Time      (sec) =          6.656       Time  =  10:15:24          |
+ |        Elapsed Time (sec) =          8.000       Date  =  03/30/2026        |
  |                                                                             |
  *-----------------------------------------------------------------------------*

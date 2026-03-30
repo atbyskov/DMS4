@@ -101,7 +101,7 @@
   INITIAL DIRECTORY = C:\Users\atbys\Desktop\DMS4 Local\DMS4\05_OPTI\AnsoutEigen
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
- CURRENT JOBNAME=file  09:37:28  MAR 30, 2026 CP=      0.062
+ CURRENT JOBNAME=file  10:15:14  MAR 30, 2026 CP=      0.078
 
      1  ! ===== APDL INPUT FILE ====== !
      2  !   Eigenbuckling Analysis     !
@@ -1097,7 +1097,7 @@
    992  LSEL,ALL
    993      
    994  ! ELEMENT SIZE !
-   995  ESIZE,100   
+   995  ESIZE,150   
    996      
    997  ! Meshing CORNER Beams (SECNUM=1) ! 
    998  SECNUM,1
@@ -1512,7 +1512,7 @@
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   09:37:28  MAR 30, 2026 CP=      0.156
+ 00254321  VERSION=WINDOWS x64   10:15:14  MAR 30, 2026 CP=      0.172
 
                                                                                
 
@@ -5166,7 +5166,7 @@
 
       206  LINES (OF      206  DEFINED) SELECTED BY LSEL COMMAND.
 
- DEFAULT ELEMENT DIVISIONS PER LINE BASED ON ELEMENT SIZE =   100.    
+ DEFAULT ELEMENT DIVISIONS PER LINE BASED ON ELEMENT SIZE =   150.    
 
  SECTION ID NUMBER=        1
 
@@ -5743,8 +5743,8 @@
  GENERATE NODES AND ELEMENTS   ON  ALL  SELECTED LINES    
 
  NUMBER OF LINES MESHED     =       113
- MAXIMUM NODE NUMBER        =       380
- MAXIMUM ELEMENT NUMBER     =       188
+ MAXIMUM NODE NUMBER        =       318
+ MAXIMUM ELEMENT NUMBER     =       157
 
  SECTION ID NUMBER=        2
 
@@ -6221,8 +6221,8 @@
  GENERATE NODES AND ELEMENTS   ON  ALL  SELECTED LINES    
 
  NUMBER OF LINES MESHED     =        93
- MAXIMUM NODE NUMBER        =      1064
- MAXIMUM ELEMENT NUMBER     =       575
+ MAXIMUM NODE NUMBER        =       816
+ MAXIMUM ELEMENT NUMBER     =       451
 
  ALL SELECT   FOR ITEM=LINE COMPONENT=    
   IN RANGE         1 TO        206 STEP          1
@@ -6331,7 +6331,7 @@
 
  SELECT      ELEMENTS CREATED FROM SELECTED LINES.
 
-         62  ELEMENTS (OF        575  DEFINED) SELECTED FROM       20 SELECTED LINES
+         43  ELEMENTS (OF        451  DEFINED) SELECTED FROM       20 SELECTED LINES
          BY  ESLL  COMMAND.
 
  MODIFY ALL SELECTED ELEMENTS TO HAVE  MAT  =         2
@@ -6376,7 +6376,7 @@
  ZLIB Version 1.2.13 Copyright (C) 1995-1998 Jean-loup Gailly and Mark Adler
 
 
- ***** ROUTINE COMPLETED *****  CP =         0.703
+ ***** ROUTINE COMPLETED *****  CP =         0.672
 
 
 
@@ -6402,14 +6402,14 @@
  SELECT       FOR ITEM=LOC  COMPONENT=X     BETWEEN  0.0000     AND   0.0000    
    KABS=  0.  TOLERANCE= 0.100000E-05
 
-         11  NODES (OF       1064  DEFINED) SELECTED BY  NSEL  COMMAND.
+          9  NODES (OF        816  DEFINED) SELECTED BY  NSEL  COMMAND.
 
  *GET  N_LOW     FROM  NODE  ITEM=MNLO Y     VALUE=  4080.27700     
 
  RESELECT     FOR ITEM=LOC  COMPONENT=Y     BETWEEN  4080.3     AND   4080.3    
    KABS=  0.  TOLERANCE= 0.100000E-05
 
-          1  NODES (OF       1064  DEFINED) SELECTED BY  NSEL  COMMAND.
+          1  NODES (OF        816  DEFINED) SELECTED BY  NSEL  COMMAND.
 
  PARAMETER N_C =     1.000000000    
 
@@ -6421,16 +6421,16 @@
 
  PARAMETER F_VER =    -26400.00000    
 
- SPECIFIED NODAL LOAD FY   FOR SELECTED NODES         1 TO     1064 BY        1
+ SPECIFIED NODAL LOAD FY   FOR SELECTED NODES         1 TO      816 BY        1
   REAL= -26400.0000       IMAG=  0.00000000    
 
- SPECIFIED NODAL LOAD FX   FOR SELECTED NODES         1 TO     1064 BY        1
+ SPECIFIED NODAL LOAD FX   FOR SELECTED NODES         1 TO      816 BY        1
   REAL=  502.520000       IMAG=  0.00000000    
 
- SPECIFIED NODAL LOAD MY   FOR SELECTED NODES         1 TO     1064 BY        1
+ SPECIFIED NODAL LOAD MY   FOR SELECTED NODES         1 TO      816 BY        1
   REAL=  1407140.00       IMAG=  0.00000000    
 
- SPECIFIED NODAL LOAD MZ   FOR SELECTED NODES         1 TO     1064 BY        1
+ SPECIFIED NODAL LOAD MZ   FOR SELECTED NODES         1 TO      816 BY        1
   REAL= -70364000.0       IMAG=  0.00000000    
 
  SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
@@ -6438,9 +6438,9 @@
  SELECT       FOR ITEM=LOC  COMPONENT=Y     BETWEEN  0.0000     AND   0.0000    
    KABS=  0.  TOLERANCE= 0.100000E-05
 
-          3  NODES (OF       1064  DEFINED) SELECTED BY  NSEL  COMMAND.
+          3  NODES (OF        816  DEFINED) SELECTED BY  NSEL  COMMAND.
 
- SPECIFIED CONSTRAINT UX   FOR SELECTED NODES            1 TO        1064 BY           1
+ SPECIFIED CONSTRAINT UX   FOR SELECTED NODES            1 TO         816 BY           1
  REAL=  0.00000000       IMAG=  0.00000000    
  ADDITIONAL DOFS=  UY    UZ    ROTX  ROTY  ROTZ
 
@@ -6448,7 +6448,7 @@
 
  *****  MAPDL SOLVE    COMMAND  *****
 
- *** NOTE ***                            CP =       0.828   TIME= 09:37:28
+ *** NOTE ***                            CP =       0.703   TIME= 10:15:14
  There is no title defined for this analysis.                            
 
  *** SELECTION OF ELEMENT TECHNOLOGIES FOR APPLICABLE ELEMENTS ***
@@ -6463,7 +6463,7 @@
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   09:37:28  MAR 30, 2026 CP=      0.828
+ 00254321  VERSION=WINDOWS x64   10:15:14  MAR 30, 2026 CP=      0.703
 
                                                                                
 
@@ -6478,11 +6478,11 @@
    EQUATION SOLVER OPTION. . . . . . . . . . . . .SPARSE             
    GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
 
- *** NOTE ***                            CP =       0.828   TIME= 09:37:28
+ *** NOTE ***                            CP =       0.703   TIME= 10:15:14
  Present time 0 is less than or equal to the previous time.  Time will   
  default to 1.                                                           
 
- *** NOTE ***                            CP =       0.828   TIME= 09:37:28
+ *** NOTE ***                            CP =       0.703   TIME= 10:15:14
  The conditions for direct assembly have been met.  No .emat or .erot    
  files will be produced.                                                 
 
@@ -6499,7 +6499,7 @@
 
  SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
 
- *** NOTE ***                            CP =       0.953   TIME= 09:37:29
+ *** NOTE ***                            CP =       0.719   TIME= 10:15:14
  Predictor is ON by default for structural elements with rotational      
  degrees of freedom.  Use the PRED,OFF command to turn the predictor     
  OFF if it adversely affects the convergence.                            
@@ -6537,66 +6537,66 @@
      1   1.87206    
 
  Range of element maximum matrix coefficients in global coordinates
- Maximum = 8.026183175E+13 at element 13.                                
- Minimum = 391641627 at element 468.                                     
+ Maximum = 6.085628626E+13 at element 12.                                
+ Minimum = 420517802 at element 303.                                     
 
    *** ELEMENT MATRIX FORMULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1       575  BEAM189       0.000   0.000000
- Time at end of element matrix formulation CP = 0.953125.                
+        1       451  BEAM189       0.000   0.000000
+ Time at end of element matrix formulation CP = 0.734375.                
 
  SPARSE MATRIX DIRECT SOLVER.
-  Number of equations =        6366,    Maximum wavefront =     72
+  Number of equations =        4878,    Maximum wavefront =     72
 
 
   Memory allocated on this process
   -------------------------------------------------------------------
-  Equation solver memory allocated                     =     6.657 MB
-  Equation solver memory required for in-core mode     =     6.440 MB
-  Equation solver memory required for out-of-core mode =     4.956 MB
-  Total (solver and non-solver) memory allocated       =   377.501 MB
+  Equation solver memory allocated                     =     5.164 MB
+  Equation solver memory required for in-core mode     =     4.996 MB
+  Equation solver memory required for out-of-core mode =     3.832 MB
+  Total (solver and non-solver) memory allocated       =   371.465 MB
 
- *** NOTE ***                            CP =       1.078   TIME= 09:37:29
+ *** NOTE ***                            CP =       0.859   TIME= 10:15:14
  The Sparse Matrix Solver is currently running in the in-core memory     
  mode.  This memory mode uses the most amount of memory in order to      
  avoid using the hard drive as much as possible, which most often        
  results in the fastest solution time.  This mode is recommended if      
  enough physical memory is present to accommodate all of the solver      
  data.                                                                   
- Sparse solver maximum pivot= 8.026183175E+13 at node 31 ROTZ.           
- Sparse solver minimum pivot= 2361.70991 at node 207 UZ.                 
- Sparse solver minimum pivot in absolute value= 2361.70991 at node 207   
+ Sparse solver maximum pivot= 6.085628626E+13 at node 29 ROTZ.           
+ Sparse solver minimum pivot= 2361.70967 at node 175 UZ.                 
+ Sparse solver minimum pivot in absolute value= 2361.70967 at node 175   
  UZ.                                                                     
 
    *** ELEMENT RESULT CALCULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1       575  BEAM189       0.109   0.000190
+        1       451  BEAM189       0.000   0.000000
 
    *** NODAL LOAD CALCULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1       575  BEAM189       0.891   0.001549
+        1       451  BEAM189       0.000   0.000000
  *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      1
  *** TIME =   1.00000         TIME INC =   1.00000      NEW TRIANG MATRIX
 
 
  *** MAPDL BINARY FILE STATISTICS
   BUFFER SIZE USED= 16384
-        0.812 MB WRITTEN ON ASSEMBLED MATRIX FILE: file.full
-        1.562 MB WRITTEN ON RESULTS FILE: file.rst
+        0.625 MB WRITTEN ON ASSEMBLED MATRIX FILE: file.full
+        1.312 MB WRITTEN ON RESULTS FILE: file.rst
 
  FINISH SOLUTION PROCESSING
 
 
- ***** ROUTINE COMPLETED *****  CP =         1.453
+ ***** ROUTINE COMPLETED *****  CP =         1.328
 
 
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   09:37:29  MAR 30, 2026 CP=      1.453
+ 00254321  VERSION=WINDOWS x64   10:15:15  MAR 30, 2026 CP=      1.328
 
                                                                                
 
@@ -6604,7 +6604,7 @@
 
           ***** MAPDL RESULTS INTERPRETATION (POST1) *****
 
- *** NOTE ***                            CP =       1.453   TIME= 09:37:29
+ *** NOTE ***                            CP =       1.328   TIME= 10:15:15
  Reading results into the database (SET command) will update the current 
  displacement and force boundary conditions in the database with the     
  values from the results file for that load set.  Note that any          
@@ -6620,7 +6620,7 @@
 
  SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
 
- *GET  E_COUNT   FROM  ELEM  ITEM=COUN           VALUE=  575.000000    
+ *GET  E_COUNT   FROM  ELEM  ITEM=COUN           VALUE=  451.000000    
 
  OPENED FILE= APDL_Eigen_Internal.txt FOR COMMAND FILE DATA 
 
@@ -6631,13 +6631,13 @@
 
  SELECT      ELEMENTS CREATED FROM SELECTED LINES.
 
-          1  ELEMENTS (OF        575  DEFINED) SELECTED FROM        1 SELECTED LINES
+          1  ELEMENTS (OF        451  DEFINED) SELECTED FROM        1 SELECTED LINES
          BY  ESLL  COMMAND.
 
  RESELECT     FOR ITEM=ENAM COMPONENT=    
   IN RANGE       189 TO        189 STEP          1
 
-          1  ELEMENTS (OF        575  DEFINED) SELECTED BY  ESEL  COMMAND.
+          1  ELEMENTS (OF        451  DEFINED) SELECTED BY  ESEL  COMMAND.
 
  *IF  ii  ( =   1.00000     )  LT  
       10  ( =   10.0000     )  THEN    
@@ -6656,15 +6656,15 @@
 
  *GET  Y_LOC     FROM  ELEM         1  ITEM=CENT Y         VALUE=  43.5000000    
 
- *GET  NF        FROM  ELEM         1  ITEM=SMIS 1         VALUE=  105061.719    
+ *GET  NF        FROM  ELEM         1  ITEM=SMIS 1         VALUE=  105061.711    
 
- *GET  MY        FROM  ELEM         1  ITEM=SMIS 2         VALUE=  163280.969    
+ *GET  MY        FROM  ELEM         1  ITEM=SMIS 2         VALUE=  163280.766    
 
- *GET  MZ        FROM  ELEM         1  ITEM=SMIS 3         VALUE= -1027302.12    
+ *GET  MZ        FROM  ELEM         1  ITEM=SMIS 3         VALUE= -1027302.00    
 
- *GET  VY        FROM  ELEM         1  ITEM=SMIS 4         VALUE=  149124.266    
+ *GET  VY        FROM  ELEM         1  ITEM=SMIS 4         VALUE=  149124.328    
 
- *GET  VZ        FROM  ELEM         1  ITEM=SMIS 5         VALUE= -334.793579    
+ *GET  VZ        FROM  ELEM         1  ITEM=SMIS 5         VALUE= -334.793213    
 
  *GET  TQ        FROM  ELEM         1  ITEM=SMIS 6         VALUE= -1132.53381    
 
@@ -6678,13 +6678,13 @@
 
  SELECT      ELEMENTS CREATED FROM SELECTED LINES.
 
-          4  ELEMENTS (OF        575  DEFINED) SELECTED FROM        1 SELECTED LINES
+          3  ELEMENTS (OF        451  DEFINED) SELECTED FROM        1 SELECTED LINES
          BY  ESLL  COMMAND.
 
  RESELECT     FOR ITEM=ENAM COMPONENT=    
   IN RANGE       189 TO        189 STEP          1
 
-          4  ELEMENTS (OF        575  DEFINED) SELECTED BY  ESEL  COMMAND.
+          3  ELEMENTS (OF        451  DEFINED) SELECTED BY  ESEL  COMMAND.
 
  *IF  ii  ( =   1.00000     )  LT  
       10  ( =   10.0000     )  THEN    
@@ -6693,27 +6693,27 @@
 
  *ENDIF
 
- *GET  NELEM     FROM  ELEM  ITEM=COUN           VALUE=  4.00000000    
+ *GET  NELEM     FROM  ELEM  ITEM=COUN           VALUE=  3.00000000    
 
  PARAMETER ELEM =     0.000000000    
 
- *DO LOOP ON PARAMETER= JJ FROM  1.0000     TO  4.0000     BY  1.0000    
+ *DO LOOP ON PARAMETER= JJ FROM  1.0000     TO  3.0000     BY  1.0000    
 
- PARAMETER ELEM =     189.0000000    
+ PARAMETER ELEM =     158.0000000    
 
- *GET  Y_LOC     FROM  ELEM       189  ITEM=CENT Y         VALUE=  87.0000000    
+ *GET  Y_LOC     FROM  ELEM       158  ITEM=CENT Y         VALUE=  87.0000000    
 
- *GET  NF        FROM  ELEM       189  ITEM=SMIS 1         VALUE= -281.885437    
+ *GET  NF        FROM  ELEM       158  ITEM=SMIS 1         VALUE= -281.886383    
 
- *GET  MY        FROM  ELEM       189  ITEM=SMIS 2         VALUE=  3976.90698    
+ *GET  MY        FROM  ELEM       158  ITEM=SMIS 2         VALUE=  3976.90454    
 
- *GET  MZ        FROM  ELEM       189  ITEM=SMIS 3         VALUE= -7553.96094    
+ *GET  MZ        FROM  ELEM       158  ITEM=SMIS 3         VALUE= -7553.94971    
 
- *GET  VY        FROM  ELEM       189  ITEM=SMIS 4         VALUE= -2689.06836    
+ *GET  VY        FROM  ELEM       158  ITEM=SMIS 4         VALUE= -2689.06738    
 
- *GET  VZ        FROM  ELEM       189  ITEM=SMIS 5         VALUE= -23.1225491    
+ *GET  VZ        FROM  ELEM       158  ITEM=SMIS 5         VALUE= -23.1225357    
 
- *GET  TQ        FROM  ELEM       189  ITEM=SMIS 6         VALUE= -43.8490753    
+ *GET  TQ        FROM  ELEM       158  ITEM=SMIS 6         VALUE= -43.8490028    
 
  *ENDDO  INDEX= JJ                              
 
@@ -6724,13 +6724,13 @@
 
  SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
 
- *GET  ECNT      FROM  ELEM  ITEM=COUN           VALUE=  575.000000    
+ *GET  ECNT      FROM  ELEM  ITEM=COUN           VALUE=  451.000000    
 
  *GET  ENUM      FROM  ELEM  ITEM=NUM  MIN       VALUE=  1.00000000    
 
  PARAMETER TOTVOL =     0.000000000    
 
- *DO LOOP ON PARAMETER= I FROM  1.0000     TO  575.00     BY  1.0000    
+ *DO LOOP ON PARAMETER= I FROM  1.0000     TO  451.00     BY  1.0000    
 
  *GET  EV        FROM  ELEM         1  ITEM=VOLU           VALUE=  59892.1094    
 
@@ -6742,7 +6742,7 @@
 
  PARAMETER DENS =    0.7850000000E-05
 
- PARAMETER COMP_MASS =     115.3547869    
+ PARAMETER COMP_MASS =     115.3547904    
 
  OPENED FILE= MASS_assembly.txt FOR COMMAND FILE DATA 
 
@@ -6753,7 +6753,7 @@
  EXIT THE MAPDL POST1 DATABASE PROCESSOR
 
 
- ***** ROUTINE COMPLETED *****  CP =         2.984
+ ***** ROUTINE COMPLETED *****  CP =         2.719
 
 
 
@@ -6765,7 +6765,7 @@
  PERFORM A BUCKLING ANALYSIS
   THIS WILL BE A NEW ANALYSIS
 
- *** NOTE ***                            CP =       2.984   TIME= 09:37:29
+ *** NOTE ***                            CP =       2.719   TIME= 10:15:15
  Some analysis options have been reset to their defaults.  Please verify 
  current settings or respecify as required.                              
 
@@ -6777,7 +6777,7 @@
  EXPAND ALL EXTRACTED MODES
   DO NOT CALCULATE ELEMENT RESULTS
 
- *** NOTE ***                            CP =       2.984   TIME= 09:37:29
+ *** NOTE ***                            CP =       2.719   TIME= 10:15:15
  To view 3-D mode shapes of beam or pipe elements, expand the modes with 
  element results calculation active via Elcalc=YES.                      
 
@@ -6786,10 +6786,10 @@
 
  *****  MAPDL SOLVE    COMMAND  *****
 
- *** NOTE ***                            CP =       2.984   TIME= 09:37:29
+ *** NOTE ***                            CP =       2.719   TIME= 10:15:15
  There is no title defined for this analysis.                            
 
- *** NOTE ***                            CP =       2.984   TIME= 09:37:29
+ *** NOTE ***                            CP =       2.719   TIME= 10:15:15
  To view 3-D mode shapes of beam or pipe elements, expand the modes with 
  element results calculation active via the MXPAND command's             
  Elcalc=YES.                                                             
@@ -6806,7 +6806,7 @@
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   09:37:29  MAR 30, 2026 CP=      2.984
+ 00254321  VERSION=WINDOWS x64   10:15:15  MAR 30, 2026 CP=      2.719
 
                                                                                
 
@@ -6821,7 +6821,7 @@
    PRESTRESS EFFECTS INCLUDED IF AVAILABLE . . . .YES
    GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
 
- *** NOTE ***                            CP =       2.984   TIME= 09:37:29
+ *** NOTE ***                            CP =       2.719   TIME= 10:15:15
  The conditions for direct assembly have been met.  No .emat or .erot    
  files will be produced.                                                 
 
@@ -6835,7 +6835,7 @@
 
 
   BLOCK LANCZOS CALCULATION OF UP TO    10 EIGENVECTORS.
-  NUMBER OF EQUATIONS              =         6366
+  NUMBER OF EQUATIONS              =         4878
   MAXIMUM WAVEFRONT                =           67
   MAXIMUM MODES STORED             =           10
   MINIMUM EIGENVALUE               = -0.10000E+31
@@ -6846,12 +6846,12 @@
 
   Memory allocated on this process
   -------------------------------------------------------------------
-  Equation solver memory allocated                     =     5.710 MB
-  Equation solver memory required for in-core mode     =     5.466 MB
-  Equation solver memory required for out-of-core mode =     3.248 MB
-  Total (solver and non-solver) memory allocated       =   419.585 MB
+  Equation solver memory allocated                     =     4.412 MB
+  Equation solver memory required for in-core mode     =     4.224 MB
+  Equation solver memory required for out-of-core mode =     2.517 MB
+  Total (solver and non-solver) memory allocated       =   410.541 MB
 
- *** NOTE ***                            CP =       3.844   TIME= 09:37:29
+ *** NOTE ***                            CP =       3.922   TIME= 10:15:15
  The Sparse Matrix Solver is currently running in the in-core memory     
  mode.  This memory mode uses the most amount of memory in order to      
  avoid using the hard drive as much as possible, which most often        
@@ -6859,19 +6859,19 @@
  enough physical memory is present to accommodate all of the solver      
  data.                                                                   
 
-  Process memory required for in-core LANCZOS Workspace             =     24.565079 MB
-  Process memory required for out-of-core LANCZOS Workspace         =     884.265625 KB
+  Process memory required for in-core LANCZOS Workspace             =     18.934219 MB
+  Process memory required for out-of-core LANCZOS Workspace         =     791.265625 KB
   Lanczos Memory Mode : INCORE
 
 
-  >> Shift # 1 :                   : 0 Eigenvalues Converged
+  >> Shift # 1 :                                       : 0 Eigenvalues Converged
 
   >> Shift # 2 :  | | |                              : 10 Eigenvalues Converged
 
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   09:37:29  MAR 30, 2026 CP=      4.938
+ 00254321  VERSION=WINDOWS x64   10:15:15  MAR 30, 2026 CP=      5.562
 
                                                                                
 
@@ -6882,36 +6882,36 @@
 
       SHAPE NUMBER   LOAD MULTIPLIER
 
-            1           -27.083389    
-            2           -26.815339    
-            3           -21.620210    
-            4           -18.746371    
-            5            15.145284    
-            6            16.569287    
-            7            19.248360    
-            8            19.712148    
-            9            23.821923    
-           10            24.851216    
+            1           -27.091244    
+            2           -26.822851    
+            3           -21.627204    
+            4           -18.751697    
+            5            15.153585    
+            6            16.578005    
+            7            19.263628    
+            8            19.729205    
+            9            23.876758    
+           10            24.922009    
 
 
 
 
  *** MAPDL BINARY FILE STATISTICS
   BUFFER SIZE USED= 16384
-        1.812 MB WRITTEN ON ASSEMBLED MATRIX FILE: file.full
-        0.500 MB WRITTEN ON MODAL MATRIX FILE: file.mode
-        1.000 MB WRITTEN ON RESULTS FILE: file.rst
+        1.438 MB WRITTEN ON ASSEMBLED MATRIX FILE: file.full
+        0.438 MB WRITTEN ON MODAL MATRIX FILE: file.mode
+        0.812 MB WRITTEN ON RESULTS FILE: file.rst
 
  FINISH SOLUTION PROCESSING
 
 
- ***** ROUTINE COMPLETED *****  CP =         5.094
+ ***** ROUTINE COMPLETED *****  CP =         5.703
 
 
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   09:37:29  MAR 30, 2026 CP=      5.172
+ 00254321  VERSION=WINDOWS x64   10:15:15  MAR 30, 2026 CP=      5.812
 
                                                                                
 
@@ -6924,7 +6924,7 @@
 
  *DO LOOP ON PARAMETER= JJ FROM  1.0000     TO  10.000     BY  1.0000    
 
- *GET  MS1       FROM  MODE      1  ITEM=FREQ       VALUE= -27.0833893    
+ *GET  MS1       FROM  MODE      1  ITEM=FREQ       VALUE= -27.0912441    
 
  *ENDDO  INDEX= JJ                              
 
@@ -6944,7 +6944,7 @@
 +--------------------- M A P D L   S T A T I S T I C S ------------------------+
 
 Release: 2025 R1            Build: 25.1       Update: UP20241202   Platform: WINDOWS x64 
-Date Run: 03/30/2026   Time: 09:37     Process ID: 26588
+Date Run: 03/30/2026   Time: 10:15     Process ID: 30060
 Operating System: Windows 11  (Build: 26200)
 
 Processor Model: AMD Ryzen 7 5800H with Radeon Graphics
@@ -6967,20 +6967,20 @@ Input File: AnsoutEigen\APDL_Eigen.txt
 Working Directory: C:\Users\atbys\Desktop\DMS4 Local\DMS4\05_OPTI
 
 Total CPU time for main thread                    :        1.4 seconds
-Total CPU time summed for all threads             :        6.4 seconds
+Total CPU time summed for all threads             :        7.0 seconds
 
-Elapsed time spent obtaining a license            :        5.6 seconds
+Elapsed time spent obtaining a license            :        5.5 seconds
 Elapsed time spent pre-processing model (/PREP7)  :        0.6 seconds
 Elapsed time spent solution - preprocessing       :        0.0 seconds
-Elapsed time spent computing solution             :        0.3 seconds
+Elapsed time spent computing solution             :        0.6 seconds
 Elapsed time spent solution - postprocessing      :        0.0 seconds
 Elapsed time spent post-processing model (/POST1) :        0.2 seconds
  
 Eigensolver used                                  :            Block Lanczos
 
-Sum of disk space used on all processes           :        4.1 MB
+Sum of disk space used on all processes           :        3.2 MB
 
-Sum of memory used on all processes               :       62.0 MB
+Sum of memory used on all processes               :       58.0 MB
 Sum of memory allocated on all processes          :     2304.0 MB
 Physical memory available                         :         14 GB
 Total amount of I/O written to disk               :        0.0 GB
@@ -7000,11 +7000,11 @@ Total amount of I/O read from disk                :        0.0 GB
  |-----------------------------------------------------------------------------|
  |                                                                             |
  |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
- |  Maximum Database Used       5 MB     Maximum Scratch Memory Used     57 MB |
+ |  Maximum Database Used       4 MB     Maximum Scratch Memory Used     54 MB |
  |                                                                             |
  |-----------------------------------------------------------------------------|
  |                                                                             |
- |        CP Time      (sec) =          6.375       Time  =  09:37:30          |
+ |        CP Time      (sec) =          7.047       Time  =  10:15:16          |
  |        Elapsed Time (sec) =          9.000       Date  =  03/30/2026        |
  |                                                                             |
  *-----------------------------------------------------------------------------*
