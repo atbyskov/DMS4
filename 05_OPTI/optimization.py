@@ -43,14 +43,12 @@ def run_optimization(var, SWcoor, Misc, eps_geom=1, save_folder="Optimization_Lo
         "maxiter": 20
     }
 
-    logger = OptimizationLogger(   # This is the logger object that is used to log the optimization process
+    logger = OptimizationLogger(
         x0=x0,
         bounds=bounds,
-        constraint_func=constraint_values,
-        constraint_names=constraint_names,
         method="SLSQP",
         options=options,
-        save_folder=save_folder
+        save_folder=save_folder,
     )
 
     def objective(x):                # This is the objective function that is used to optimize the design variables
@@ -71,5 +69,5 @@ def run_optimization(var, SWcoor, Misc, eps_geom=1, save_folder="Optimization_Lo
         options=options
     )
 
-    logger.finalize(result)               # This is the function that is used to finalize the optimization process
-    return result, logger.history, logger.txt_path
+    logger.finalize(result)
+    return result, logger.txt_path, logger.csv_path
