@@ -18,6 +18,8 @@ from Post_Process import Util_LC
 from Post_Process import Util_S
 from Post_Process import Util_T
 from Post_Process import Util_BNS
+from Post_Process import Util_BR
+from Post_Process import Util_IN
 
 from Post_Process import print_info
 
@@ -63,12 +65,16 @@ Util_NF = Util_NF(var,Misc)
 Util_S = Util_S(var,Misc)
 Util_T = Util_T(var,Misc)
 Util_BNS = Util_BNS(var,Misc)
+Util_BR = Util_BR(var,Misc)
+Util_IN = Util_IN(var,Misc)
 
 print(f"Util_LC: {Util_LC}")
 print(f"Util_NF: {Util_NF}")
 print(f"Util_S: {Util_S}")
 print(f"Util_T: {Util_T}")
 print(f"Util_BNS: {Util_BNS}")
+print(f"Util_BR: {Util_BR}")
+print(f"Util_In: {Util_IN}")
 
 toc = time.time()
 
