@@ -1,0 +1,306 @@
+================================================================================
+OPTIMIZATION LOG
+================================================================================
+Run start date/time : 2026-03-30 14:22:26
+Log file            : Optimization_Logs\optimization_log_2026-03-30_14-22-26.txt
+
+Initial design variables:
+x0 = [35.05, 38.05, 11.15, 13.45]
+
+Bounds:
+  x[0] in [30.0, 60.0]
+  x[1] in [31.0, 70.0]
+  x[2] in [8.0, 20.0]
+  x[3] in [9.0, 25.0]
+
+Optimizer settings:
+  Method  : SLSQP
+  disp    : True
+  eps     : 0.1
+  ftol    : 0.001
+  maxiter : 20
+
+Constraints detected:
+  thickness_col(x) >= 0
+  thickness_brace(x) >= 0
+
+================================================================================
+
+[EVALUATION 1]
+  Date/time : 2026-03-30 14:22:41
+  x         : [35.05, 38.05, 11.15, 13.45]
+  Objective : 115.354790
+  thickness_col: 2.000000
+  thickness_brace: 1.300000
+
+[EVALUATION 2]
+  Date/time : 2026-03-30 14:22:56
+  x         : [35.15, 38.05, 11.15, 13.45]
+  Objective : 113.167420
+  thickness_col: 1.900000
+  thickness_brace: 1.300000
+
+[EVALUATION 3]
+  Date/time : 2026-03-30 14:23:15
+  x         : [35.05, 38.15, 11.15, 13.45]
+  Objective : 117.729110
+  thickness_col: 2.100000
+  thickness_brace: 1.300000
+
+[EVALUATION 4]
+  Date/time : 2026-03-30 14:23:33
+  x         : [35.05, 38.05, 11.25, 13.45]
+  Objective : 113.493150
+  thickness_col: 2.000000
+  thickness_brace: 1.200000
+
+[EVALUATION 5]
+  Date/time : 2026-03-30 14:23:50
+  x         : [35.05, 38.05, 11.15, 13.55]
+  Objective : 117.598720
+  thickness_col: 2.000000
+  thickness_brace: 1.400000
+
+[EVALUATION 6]
+  Date/time : 2026-03-30 14:24:09
+  x         : [35.11525, 36.11525,  9.88855, 10.88855]
+  Objective : 39.462350
+  thickness_col: -0.000000
+  thickness_brace: -0.000000
+
+[ITERATION 1]
+  Date/time : 2026-03-30 14:24:09
+  x         : [35.11525, 36.11525,  9.88855, 10.88855]
+  Objective : 39.462350
+  Step norm : nan
+  thickness_col: -0.000000
+  thickness_brace: -0.000000
+
+[EVALUATION 7]
+  Date/time : 2026-03-30 14:24:27
+  x         : [35.21525, 36.11525,  9.88855, 10.88855]
+  Objective : 37.270920
+  thickness_col: -0.100000
+  thickness_brace: -0.000000
+
+[EVALUATION 8]
+  Date/time : 2026-03-30 14:24:48
+  x         : [35.11525, 36.21525,  9.88855, 10.88855]
+  Objective : 41.716110
+  thickness_col: 0.100000
+  thickness_brace: -0.000000
+
+[EVALUATION 9]
+  Date/time : 2026-03-30 14:25:06
+  x         : [35.11525, 36.11525,  9.98855, 10.88855]
+  Objective : 37.810390
+  thickness_col: -0.000000
+  thickness_brace: -0.100000
+
+[EVALUATION 10]
+  Date/time : 2026-03-30 14:25:26
+  x         : [35.11525, 36.11525,  9.88855, 10.98855]
+  Objective : 41.280530
+  thickness_col: -0.000000
+  thickness_brace: 0.100000
+
+[EVALUATION 11]
+  Date/time : 2026-03-30 14:25:47
+  x         : [34.489263, 35.489263,  8.339123,  9.339123]
+  Objective : 36.496830
+  thickness_col: -0.000000
+  thickness_brace: -0.000000
+
+[ITERATION 2]
+  Date/time : 2026-03-30 14:25:47
+  x         : [34.489263, 35.489263,  8.339123,  9.339123]
+  Objective : 36.496830
+  Step norm : 2.363296
+  thickness_col: -0.000000
+  thickness_brace: -0.000000
+
+[EVALUATION 12]
+  Date/time : 2026-03-30 14:26:07
+  x         : [34.589263, 35.489263,  8.339123,  9.339123]
+  Objective : 34.344410
+  thickness_col: -0.100000
+  thickness_brace: -0.000000
+
+[EVALUATION 13]
+  Date/time : 2026-03-30 14:26:31
+  x         : [34.489263, 35.589263,  8.339123,  9.339123]
+  Objective : 38.711580
+  thickness_col: 0.100000
+  thickness_brace: -0.000000
+
+[EVALUATION 14]
+  Date/time : 2026-03-30 14:26:51
+  x         : [34.489263, 35.489263,  8.439123,  9.339123]
+  Objective : 35.102420
+  thickness_col: -0.000000
+  thickness_brace: -0.100000
+
+[EVALUATION 15]
+  Date/time : 2026-03-30 14:27:12
+  x         : [34.489263, 35.489263,  8.339123,  9.439123]
+  Objective : 38.057470
+  thickness_col: -0.000000
+  thickness_brace: 0.100000
+
+[EVALUATION 16]
+  Date/time : 2026-03-30 14:27:31
+  x         : [34.011316, 35.011316,  8.      ,  9.      ]
+  Objective : 35.635300
+  thickness_col: 0.000000
+  thickness_brace: -0.000000
+
+[ITERATION 3]
+  Date/time : 2026-03-30 14:27:31
+  x         : [34.011316, 35.011316,  8.      ,  9.      ]
+  Objective : 35.635300
+  Step norm : 0.828780
+  thickness_col: 0.000000
+  thickness_brace: -0.000000
+
+[EVALUATION 17]
+  Date/time : 2026-03-30 14:27:49
+  x         : [34.111316, 35.011316,  8.      ,  9.      ]
+  Objective : 33.512660
+  thickness_col: -0.100000
+  thickness_brace: -0.000000
+
+[EVALUATION 18]
+  Date/time : 2026-03-30 14:28:08
+  x         : [34.011316, 35.111316,  8.      ,  9.      ]
+  Objective : 37.820260
+  thickness_col: 0.100000
+  thickness_brace: -0.000000
+
+[EVALUATION 19]
+  Date/time : 2026-03-30 14:28:30
+  x         : [34.011316, 35.011316,  8.1     ,  9.      ]
+  Objective : 34.297250
+  thickness_col: 0.000000
+  thickness_brace: -0.100000
+
+[EVALUATION 20]
+  Date/time : 2026-03-30 14:28:48
+  x         : [34.011316, 35.011316,  8.      ,  9.1     ]
+  Objective : 37.139570
+  thickness_col: 0.000000
+  thickness_brace: 0.100000
+
+[EVALUATION 21]
+  Date/time : 2026-03-30 14:29:05
+  x         : [32.778819, 33.778819,  8.      ,  9.      ]
+  Objective : 34.867230
+  thickness_col: -0.000000
+  thickness_brace: 0.000000
+
+[ITERATION 4]
+  Date/time : 2026-03-30 14:29:05
+  x         : [32.778819, 33.778819,  8.      ,  9.      ]
+  Objective : 34.867230
+  Step norm : 1.743014
+  thickness_col: -0.000000
+  thickness_brace: 0.000000
+
+[EVALUATION 22]
+  Date/time : 2026-03-30 14:29:24
+  x         : [32.878819, 33.778819,  8.      ,  9.      ]
+  Objective : 32.821400
+  thickness_col: -0.100000
+  thickness_brace: 0.000000
+
+[EVALUATION 23]
+  Date/time : 2026-03-30 14:29:44
+  x         : [32.778819, 33.878819,  8.      ,  9.      ]
+  Objective : 36.975380
+  thickness_col: 0.100000
+  thickness_brace: 0.000000
+
+[EVALUATION 24]
+  Date/time : 2026-03-30 14:30:05
+  x         : [32.778819, 33.778819,  8.1     ,  9.      ]
+  Objective : 33.529180
+  thickness_col: -0.000000
+  thickness_brace: -0.100000
+
+[EVALUATION 25]
+  Date/time : 2026-03-30 14:30:23
+  x         : [32.778819, 33.778819,  8.      ,  9.1     ]
+  Objective : 36.371500
+  thickness_col: -0.000000
+  thickness_brace: 0.100000
+
+[EVALUATION 26]
+  Date/time : 2026-03-30 14:30:44
+  x         : [30., 31.,  8.,  9.]
+  Objective : 33.135520
+  thickness_col: 0.000000
+  thickness_brace: -0.000000
+
+[ITERATION 5]
+  Date/time : 2026-03-30 14:30:44
+  x         : [30., 31.,  8.,  9.]
+  Objective : 33.135520
+  Step norm : 3.929843
+  thickness_col: 0.000000
+  thickness_brace: -0.000000
+
+[EVALUATION 27]
+  Date/time : 2026-03-30 14:31:05
+  x         : [30.1, 31. ,  8. ,  9. ]
+  Objective : 31.262860
+  thickness_col: -0.100000
+  thickness_brace: -0.000000
+
+[EVALUATION 28]
+  Date/time : 2026-03-30 14:31:25
+  x         : [30. , 31.1,  8. ,  9. ]
+  Objective : 35.070500
+  thickness_col: 0.100000
+  thickness_brace: -0.000000
+
+[EVALUATION 29]
+  Date/time : 2026-03-30 14:31:46
+  x         : [30. , 31. ,  8.1,  9. ]
+  Objective : 31.797480
+  thickness_col: 0.000000
+  thickness_brace: -0.100000
+
+[EVALUATION 30]
+  Date/time : 2026-03-30 14:32:04
+  x         : [30. , 31. ,  8. ,  9.1]
+  Objective : 34.639790
+  thickness_col: 0.000000
+  thickness_brace: 0.100000
+
+[ITERATION 6]
+  Date/time : 2026-03-30 14:32:04
+  x         : [30., 31.,  8.,  9.]
+  Objective : nan
+  Step norm : 0.000000
+  thickness_col: 0.000000
+  thickness_brace: -0.000000
+
+================================================================================
+FINAL RESULT
+================================================================================
+Run end date/time   : 2026-03-30 14:32:04
+Total runtime [s]   : 578.394
+Success             : True
+Status              : 0
+Message             : Optimization terminated successfully
+Iterations          : 6
+Function evaluations: 30
+Optimal x           : [30., 31.,  8.,  9.]
+Optimal objective   : 33.135520
+
+Final constraint values:
+  thickness_col= 0.000000
+  thickness_brace= -0.000000
+
+================================================================================
+END OF LOG
+================================================================================
