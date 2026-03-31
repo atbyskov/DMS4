@@ -59,7 +59,7 @@ Misc = {
 f = RunAPDL(SWcoor,var,Misc) # Runs APDL and returns MASS
 
 
-print(f"Mass of Assembly: {f} kg")
+print(f"Mass of Assembly: {f:.2f} kg")
 
 utils = PostProcessor()
 util_list = utils.Util_list(var,Misc)
@@ -68,3 +68,7 @@ util_list = utils.Util_list(var,Misc)
 print("\n--- UTILIZATION REPORT ---")
 for key, val in util_list.items():
     print(f"{key:10s}  Column: {val[0]:8.4f}   Brace: {val[1]:8.4f}")
+print("------------------------")
+toc = time.time()
+
+print(f"Runtime: {toc-tic:.2f} s \n")

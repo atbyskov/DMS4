@@ -74,7 +74,7 @@ def RunAPDL(SWcoor,var,Misc):
     alpha_crit = next(v for v in eigenvalues if v > 0) 
 
     # Print Information
-    print(f"Eigen Analysis Complete\n -> Eigenvalue 1: {alpha_crit}")
+    print(f"Eigen Analysis Complete\n -> Eigenvalue 1: {alpha_crit:.2f}")
 
     # Calculate horizontal equivalent imperfection force
     h = max(point[1] for point in SWcoor)
