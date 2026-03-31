@@ -2,6 +2,7 @@ import numpy as np
 from scipy import optimize as spo
 from MyAPDLCall import RunAPDL
 from opt_logger import OptimizationLogger
+from Post_Process import Util_LC, Util_NF, Util_S, Util_T, Util_BNS, Util_BR, Util_IN
 
 
 def run_optimization(var, SWcoor, Misc, eps_geom=1, save_folder="Optimization_Logs"):
@@ -15,6 +16,13 @@ def run_optimization(var, SWcoor, Misc, eps_geom=1, save_folder="Optimization_Lo
     ]
 
     def constraint_values(x):             # This is the function that is used to calculate the constraint values
+        Util_LC_values = Util_LC(x, Misc)
+        Util_NF_values = Util_NF(x, Misc)
+        Util_S_values = Util_S(x, Misc)
+        Util_T_values = Util_T(x, Misc)
+        Util_BNS_values = Util_BNS(x, Misc)
+        Util_BR_values = Util_BR(x, Misc)
+        Util_IN_values = Util_IN(x, Misc)
         """
         Return all inequality constraints in the form c(x) >= 0.
         Add as many as you want here.
@@ -22,12 +30,40 @@ def run_optimization(var, SWcoor, Misc, eps_geom=1, save_folder="Optimization_Lo
         return np.array([
             x[1] - x[0] - eps_geom,
             x[3] - x[2] - eps_geom,
+            1.0 - Util_LC_values[0],           # local buckling column
+            1.0 - Util_LC_values[1],           # local buckling brace
+            1.0 - Util_NF_values[0],           # normal force column
+            1.0 - Util_NF_values[1],           # normal force brace
+            1.0 - Util_S_values[0],           # shear column
+            1.0 - Util_S_values[1],           # shear brace
+            1.0 - Util_T_values[0],           # Torsion column
+            1.0 - Util_T_values[1],           # Torsion brace
+            1.0 - Util_BNS_values[0],           # bending, normal and shear column
+            1.0 - Util_BNS_values[1],           # bending, normal and shear brace
+            1.0 - Util_BR_values[0],           # Flexural and torsional buckling brace
+            1.0 - Util_BR_values[1],           # Flexural and torsional buckling brace
+            1.0 - Util_IN_values[0],           # Interaction column
+            1.0 - Util_IN_values[1],           # Interaction brace
             # add more constraints here later if needed
         ], dtype=float)
 
     constraint_names = [
         "thickness_col",
         "thickness_brace",
+        "local_buckling_column",
+        "local_buckling_brace",
+        "normal_force_column",
+        "normal_force_brace",
+        "shear_column",
+        "shear_brace",
+        "torsion_column",
+        "torsion_brace",
+        "bending_normal_shear_column",  # Bending, Normal and Shear column
+        "bending_normal_shear_brace",
+        "flexural_torsional_buckling_column",  # Flexural and Torsional buckling column
+        "flexural_torsional_buckling_brace",
+        "interaction_column",  # Interaction column
+        "interaction_brace",  # Interaction brace
         # add more names here if you add more constraints
     ]
 
