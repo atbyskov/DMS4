@@ -21,6 +21,7 @@
     # Define material properties (S690 Nonlinear)
     # Apply SECTYPE,1 to vertical beams
     # Apply SECTYPE,2 to brace beams
+    # Apply SECTYPE,3 to Top (constant)
     # Apply same material and element type to all lines
 
 import os
@@ -31,7 +32,14 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
     R0, R1, R2, R3 = var 
 
     # Import Misc
-    esize, Hor_Force, Ver_Force, MomZ, MomY, f_y, E_mod = Misc
+    esize     = Misc["esize"]
+    Hor_Force = Misc["Hor_Force"]
+    Ver_Force = Misc["Ver_Force"]
+    MomZ      = Misc["MomZ"]
+    MomY      = Misc["MomY"]
+    f_y       = Misc["f_y"]
+    E_mod     = Misc["E_mod"]
+
 
     # Function to group lines
     def beam_class(p1, p2):
@@ -68,6 +76,9 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
         f.write("! Brace Section Type (SECTYPE = 2) \n")
         f.write("SECTYPE,2,BEAM,CTUBE \n")
         f.write(f"SECDATA,{R2},{R3},8 \n \n")
+        f.write("! Top Section Type (SECTYPE= 3 ) \n")
+        f.write("SECTYPE,3,BEAM,CTUBE \n")
+        f.write("SECDATA,35.05,38.05 \n")
         # MATERIAL
         f.write("! MATERIAL DATA\n")
         f.write(f"MP,EX,1,{E_mod} ! [MPa]\n")
@@ -123,26 +134,26 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
             f.write(f"L,{kp1},{kp2} \n")
             f.write(f"LSEL,S,LINE,,{line_id}\n")
 
-            # Split lines into corner or brace 
-            if group == "corner":
-                
-                if y1 > 4070 and y2 > 4070:
-                    Top_lines.append(line_id)
-                    f.write(f"CM,TOPMAT,LINE\n")
+            
+            # Split lines into corner, brace or top section
+            if y1 > 4070 and y2 > 4070:
+                # This is a TOP beam!
+                Top_lines.append(line_id)
+                f.write(f"CM,TOPMAT,LINE\n")
 
-                corner_lines.append(line_id)
-                f.write(f"CM,COLUMN_{corner_id},LINE \n")
-                corner_id += 1
-                CM_Column_dict += 1
             else:
-                if y1 > 4070 and y2 > 4070:
-                    Top_lines.append(line_id)
-                    f.write(f"CM,TOPMAT,LINE\n")
+                # Not a top beam → classify as corner or brace
+                if group == "corner":
+                    corner_lines.append(line_id)
+                    f.write(f"CM,COLUMN_{corner_id},LINE\n")
+                    corner_id += 1
+                    CM_Column_dict += 1
+                else:
+                    brace_lines.append(line_id)
+                    f.write(f"CM,BRACE_{brace_id},LINE\n")
+                    brace_id += 1
+                    CM_Brace_dict += 1
 
-                brace_lines.append(line_id)
-                f.write(f"CM,BRACE_{brace_id},LINE \n")
-                brace_id += 1
-                CM_Brace_dict += 1
 
             
             # Reset
@@ -174,10 +185,11 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
             f.write("LMESH,ALL \n\n")
             
         # Run the function for Corner and Brace
-        group_mesh("Meshing CORNER Beams (SECNUM=1)",1,corner_lines)
-        group_mesh("Meshing BRACE beam (SECNUM=2)",2, brace_lines)
+        group_mesh("Meshing CORNER Beams (SECNUM=1)",1, corner_lines)
+        group_mesh("Meshing BRACE Beams  (SECNUM=2)",2, brace_lines)
+        group_mesh("Meshing TOP Beam     (SECNUM=3)",3, Top_lines)
 
-
+        # Select all lines
         f.write("LSEL,ALL\n")
 
         # Select all 'top material' lines again
@@ -193,12 +205,8 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
         f.write("EMODIF,ALL,MAT,2  ! modify selected elements to material 2\n")
         f.write("ALLSEL,ALL\n\n")
 
-
         # Display Cross section
         f.write("/ESHAPE,1 ! Display Cross Section\n")
-        
-
-        # REMOTE LOAD SETUP
 
             
         #Create and save .png of the mesh

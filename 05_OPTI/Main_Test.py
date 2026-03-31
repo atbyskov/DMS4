@@ -15,10 +15,10 @@ from optimization import run_optimization
 
 # Import Functions
 import SW_Import as SW
-from Post_Process import Util_NF
-from Post_Process import Util_LC
-from Post_Process import print_info
+from Post_Process import PostProcessor
 from MyAPDLCall import RunAPDL
+
+
 
 tic = time.time()
 # Import SW coordinates as list
@@ -45,31 +45,26 @@ MomY = 1407140          # Applied Moment around Y-axis [Nmm]
 f_y = 690               # Yield Strength of S690 [MPa]
 E_mod = 200*1E3         # Youngs Modulus [MPa]
 
-Misc = [esize, Hor_Force, Ver_Force, MomZ, MomY, f_y, E_mod]
-
+# Create Misc as dict
+Misc = {
+    "esize": esize,
+    "Hor_Force": Hor_Force,
+    "Ver_Force": Ver_Force,
+    "MomZ": MomZ,
+    "MomY": MomY,
+    "f_y": f_y,
+    "E_mod": E_mod
+}
 
 f = RunAPDL(SWcoor,var,Misc) # Runs APDL and returns MASS
 
 
 print(f"Mass of Assembly: {f} kg")
 
+utils = PostProcessor()
+util_list = utils.Util_list(var,Misc)
 
-
-# Run Post_Process.py
-Util_LC = Util_LC(var,Misc)
-Util_NF = Util_NF(var,Misc)
-
-print(f"Util_LC: {Util_LC}")
-print(f"Util_NF: {Util_NF}")
-
-toc = time.time()
-
-runtime = toc-tic
-print(f"Sim Time: {runtime} s")
-
-print = print_info(var,Misc)
-
-#Hello
-
-#Test1
-
+# Print the list
+print("\n--- UTILIZATION REPORT ---")
+for key, val in util_list.items():
+    print(f"{key:10s}  Column: {val[0]:8.4f}   Brace: {val[1]:8.4f}")

@@ -32,8 +32,10 @@ from APDL_Nonlin import Nonlin_Fun
 
 
 def RunAPDL(SWcoor,var,Misc):
-    # Unpack Misc Data
-    esize, Hor_Force, Ver_Force, MomZ, MomY, f_y, E_mod = Misc
+
+    # Import Misc
+
+    Ver_Force = Misc["Ver_Force"]
 
     # Clear Ansout folder before running 
     eigen_dir = "AnsoutEigen"

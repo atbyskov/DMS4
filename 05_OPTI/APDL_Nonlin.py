@@ -35,7 +35,13 @@ def Nonlin_Fun(SWcoor, var, Misc, imp_force, out_dir = "AnsoutNonlin"):
     R0, R1, R2, R3 = var 
 
     # Import Misc
-    esize, Hor_Force, Ver_Force, MomZ, MomY, f_y, E_mod = Misc
+    esize     = Misc["esize"]
+    Hor_Force = Misc["Hor_Force"]
+    Ver_Force = Misc["Ver_Force"]
+    MomZ      = Misc["MomZ"]
+    MomY      = Misc["MomY"]
+    f_y       = Misc["f_y"]
+    E_mod     = Misc["E_mod"]
 
     # Function to group lines
     def beam_class(p1, p2):
