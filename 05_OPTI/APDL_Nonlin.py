@@ -365,15 +365,18 @@ def Nonlin_Fun(SWcoor, var, Misc, imp_force, out_dir = "AnsoutNonlin"):
         f.write("*GET,ecnt,ELEM,0,COUNT \n")
         f.write("*GET,enum,ELEM,0,NUM,MIN \n")
         f.write("totvol = 0 \n")
+        
         # Loop over each element and get volume
         f.write("*DO,i,1,ecnt \n")
         f.write("   *GET,ev,ELEM,enum,VOLU \n")
         f.write("   totvol = totvol + ev \n")
         f.write("   enum = ELNEXT(enum) \n")
         f.write("*ENDDO \n")
+
         # Calculate Mass
         f.write("dens = 7.85E-6 ! kg/mm^3 \n") # Desnity
         f.write("Comp_mass = dens*totvol \n \n")
+
         # Open and write to file
         f.write("*CFOPEN,MASS_assembly,txt \n")
         f.write("   *VWRITE,Comp_mass \n")

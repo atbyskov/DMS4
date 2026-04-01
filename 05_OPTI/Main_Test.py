@@ -11,7 +11,6 @@ import time
 
 import builtins
 import numpy as np
-from optimization import run_optimization
 
 # Import Functions
 import SW_Import as SW

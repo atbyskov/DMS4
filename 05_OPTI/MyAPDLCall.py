@@ -27,31 +27,25 @@ import math
 import shutil
 
 # Import Functions
-from APDL_Eigen import Eigen_Fun
-from APDL_Nonlin import Nonlin_Fun
+from APDL_Input import InputFun
 
 
 def RunAPDL(SWcoor,var,Misc):
 
-    # Import Misc
-
-    Ver_Force = Misc["Ver_Force"]
 
     # Clear Ansout folder before running 
-    eigen_dir = "AnsoutEigen"
-    nonlin_dir = "AnsoutNonlin"
-    for folder in (eigen_dir, nonlin_dir):
-        if os.path.exists(folder):
-            shutil.rmtree(folder)
-        os.makedirs(folder, exist_ok=True) # Create folder again
+    Ansout_dir = "Ansout"
+    if os.path.exists(Ansout_dir):
+        shutil.rmtree(Ansout_dir)
+    os.makedirs(Ansout_dir, exist_ok=True) # Create folder again
 
     # Create input file for Eigenvalue Analysis
-    eigen_file = Eigen_Fun(SWcoor,var,Misc, out_dir = eigen_dir)
+    input_file = InputFun(SWcoor,var,Misc, out_dir = Ansout_dir)
 
     # Filename for running APDL .bat file
-    FileNameEigen = os.path.join(eigen_dir,"APDLRunFileEigen.bat")
+    FileName = os.path.join(Ansout_dir,"APDLRunFile.bat")
     # Open and Edit .bat file
-    with open(FileNameEigen, 'w') as FileID:
+    with open(FileName, 'w') as FileID:
         FileID.write('@echo off\n')
         FileID.write('rem This batch file is placed in your working directory\n')
         FileID.write('SET ANSWAIT=1\n')
@@ -60,63 +54,24 @@ def RunAPDL(SWcoor,var,Misc):
         FileID.write(
             f'"C:\\Program files\\ANSYS Inc\\v251\\ANSYS\\bin\\winx64\\ansys251"'
             f' -b -p ansys -smp -np 8' 
-            f' -i {eigen_file}'
-            f' -dir "{eigen_dir}"'
-            f' -o {os.path.join(eigen_dir,"AnsysOutputWindow.txt")} \n')
+            f' -i {input_file}'
+            f' -dir "{Ansout_dir}"'
+            f' -o {os.path.join(Ansout_dir,"AnsysOutputWindow.txt")} \n')
 
     # Run Eigenvalue Analysis Program
-    os.system(f'"{FileNameEigen}"')
+    os.system(f'"{FileName}"')
 
     # Read First eigenvalue:
-    with open("AnsoutEigen/Eigenvalue1.txt") as f:
+    with open("Ansout/Eigenvalue1.txt") as f:
         eigenvalues = [float(line.strip()) for line in f if line.strip()]
     # Retrieve first positive eigenvalue
     alpha_crit = next(v for v in eigenvalues if v > 0) 
 
     # Print Information
-    print(f"Eigen Analysis Complete\n -> Eigenvalue 1: {alpha_crit:.2f}")
-
-    # Calculate horizontal equivalent imperfection force
-    h = max(point[1] for point in SWcoor)
-    alpha_h = 2/math.sqrt(h)
-    # From Eurocode, if values are outside bound values, set alpha to bound value
-    if alpha_h < 2/3:
-        alpha_h = 2/3
-    elif alpha_h > 1:
-        alpha_h = 1
-    
-    # alpha_m is assumed for now
-    alpha_m = 2 
-    # Calcuate imperfection force
-    imp_ang = 1/200 * alpha_h * alpha_m 
-    imp_force = Ver_Force*imp_ang
-    
-    # Create .txt file for nonlinear analysis with added imperfection force as input
-    Nonlin_file = Nonlin_Fun(SWcoor,var,Misc,imp_force,out_dir=nonlin_dir)          
-
-    # Filename for running APDL .bat file
-    FileNameNonlin = os.path.join(nonlin_dir,"APDLRunFileNonlin.bat")
-
-    # Open and Edit .bat file
-    with open(FileNameNonlin, 'w') as FileID:
-        FileID.write('@echo off\n')
-        FileID.write('rem This batch file is placed in your working directory\n')
-        FileID.write('SET ANSWAIT=1\n')
-        FileID.write('set ANSYS_LOCK=OFF\n')
-        FileID.write('rem set ANS_CONSEC=YES\n')
-        FileID.write(
-            f'"C:\\Program files\\ANSYS Inc\\v251\\ANSYS\\bin\\winx64\\ansys251"'
-            f' -b -p ansys -smp -np 8'
-            f' -i {Nonlin_file}'
-            f' -dir "{nonlin_dir}"'
-            f' -o {os.path.join(nonlin_dir,"AnsysOutputWindow.txt")} \n')
-
-    # Run Nonlinear Analysis
-    os.system(f"{FileNameNonlin}")
-    print("Nonlinear Analysis Complete")
+    print(f"Analysis Complete\n -> Eigenvalue 1: {alpha_crit:.2f}")
 
     # Open and Read Mass
-    with open("AnsoutEigen/Mass_Assembly.txt","r") as f:
+    with open("Ansout/Mass_Assembly.txt","r") as f:
         Mass = [float(line.strip()) for line in f if line.strip()]
 
     # Return Mass as float value

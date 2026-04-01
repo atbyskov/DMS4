@@ -25,7 +25,7 @@ class PostProcessor:
 
     def __init__(self):
         # self.df_eigen  = self.read_forces("AnsoutEigen/APDL_Eigen_Internal.txt")
-        self.df_nonlin = self.read_forces("AnsoutNonlin/APDL_Nonlin_Internal.txt")
+        self.df_nonlin = self.read_forces("Ansout/APDL_Nonlin_Internal.txt")
         self.df_col = self.df_nonlin[self.df_nonlin["Member"].str.startswith("ColMember")].copy()
         self.df_brace = self.df_nonlin[self.df_nonlin["Member"].str.startswith("BraceMember")].copy()
 
@@ -296,7 +296,7 @@ class PostProcessor:
     def Util_BR(self, var, Misc):
 
         # Open and Read Eigenvalue
-        with open("AnsoutEigen/Eigenvalue1.txt") as f:
+        with open("Ansout/Eigenvalue1.txt") as f:
             eigenvalues = [float(line.strip()) for line in f if line.strip()]
         a_cr = next(v for v in eigenvalues if v > 0)
 
@@ -367,7 +367,7 @@ class PostProcessor:
         f_y = Misc["f_y"]
 
         # Open and Read Eigenvalue
-        with open("AnsoutEigen/Eigenvalue1.txt") as f:
+        with open("Ansout/Eigenvalue1.txt") as f:
             eigenvalues = [float(line.strip()) for line in f if line.strip()]
         a_cr = next(v for v in eigenvalues if v > 0)
 

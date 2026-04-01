@@ -1,0 +1,14 @@
+/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       13:49:51
+
+ *** WARNING ***                         CP =       6.328   TIME= 13:49:57
+ * no longer valid as comment character - please use !                   
+  *SET,imp_ang, 1/200 * alpha_h * alpha_m                                
+  This warning only issued once.                                         
+
+ *** WARNING ***                         CP =       6.328   TIME= 13:49:57
+ FDELE is not a recognized POST1 command, abbreviation, or macro.        
+  This command will be ignored.                                          
+
+ *** WARNING ***                         CP =       6.328   TIME= 13:49:57
+ DDELE is not a recognized POST1 command, abbreviation, or macro.        
+  This command will be ignored.                                          

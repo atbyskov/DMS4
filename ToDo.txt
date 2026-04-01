@@ -8,7 +8,7 @@
         - Maybe its not nescessary to re-create the geometry in Nonlinear as its the same as linear
 
 [DONE]    - Top section diameters must not change 
-[WORKING]    - Mass must not account for the Top Section
+    - Mass must not account for the Top Section
 
 # Post_Process.py
 [DONE]    - Make sure if only compressive memebers need cheching, so ignore tensile.
@@ -17,3 +17,4 @@
 # General
     - Figure out where T_Rd comes from in Standard (Used in Post_Process)
     - Make outputs consistent, e.g. only 2 decimals etc.
+    - Combine APDL_Eigen and APDL_Nonlin into one
