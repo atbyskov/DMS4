@@ -242,8 +242,9 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
         # Apply Remote Force
         f.write("NSEL,S,LOC,X,0 \n ")
         f.write("*GET,N_LOW,NODE,,MNLOC,Y \n")
-        f.write("NSEL,R,LOC,Y,N_LOW \n")
-        f.write("N_C = 1 \n")
+        f.write("*GET,n_load_c,NODE,0,COUNT \n")
+        #f.write("NSEL,R,LOC,Y,N_LOW \n")
+        f.write("N_C = n_load_c \n")
         f.write(f"MOMZ = {MomZ}/N_C \n")
         f.write(f"MOMY = {MomY}/N_C \n")
         f.write(f"F_HOR = {Hor_Force}/N_C \n")
@@ -261,7 +262,6 @@ def Eigen_Fun(SWcoor, var, Misc, out_dir = "AnsoutEigen"):
         f.write("NSEL,S,LOC,Y,NodeYMin \n")
         f.write("D,ALL,ALL,0 \n")
         f.write("ALLSEL \n")
-
 
         # SOLVE
         f.write("! Solve the System \n")

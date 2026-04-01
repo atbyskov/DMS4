@@ -25,7 +25,7 @@ class PostProcessor:
 
     def __init__(self):
         # self.df_eigen  = self.read_forces("AnsoutEigen/APDL_Eigen_Internal.txt")
-        self.df_nonlin = self.read_forces("AnsoutEigen/APDL_Eigen_Internal.txt")
+        self.df_nonlin = self.read_forces("AnsoutNonlin/APDL_Nonlin_Internal.txt")
         self.df_col = self.df_nonlin[self.df_nonlin["Member"].str.startswith("ColMember")].copy()
         self.df_brace = self.df_nonlin[self.df_nonlin["Member"].str.startswith("BraceMember")].copy()
 
