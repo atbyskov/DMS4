@@ -71,3 +71,5 @@ print("------------------------")
 toc = time.time()
 
 print(f"Runtime: {toc-tic:.2f} s \n")
+
+####### END OF MAIN SCRIPT ###
