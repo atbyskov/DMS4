@@ -6,6 +6,3 @@ You got it!
 
 
 
-Updates
-    18-02-2026
-        Finished VideTracking_Main.py for future comparison 

@@ -1,19 +1,18 @@
 # To Do List
 
-# APDL_Eigen.py and APDL_Nonlin.py
-    - Fix load case
-        - Remote Loading not possible for now, so do second best option, i.e. nodal forces
-[DONE]    - Clean up both files and add relevant comments
+
+[ASK ERIK]          - Make Load to Remote Loading
+[IN PROGRESS]       - Clean up files and add relevant comments
 
 
-[DONE]    - Top section diameters must not change 
-[DONE]    - Mass must not account for the Top Section
+[DONE]              - Top section diameters must not change 
+[DONE]              - Mass must not account for the Top Section
 
 # Post_Process.py
-[DONE]    - Make sure if only compressive memebers need cheching, so ignore tensile.
-[DONE]    - Look into tic toc, i.e. timing, to see if code can be optimized
+[DONE]              - Make sure if only compressive memebers need cheching, so ignore tensile.
+[DONE]              - Look into tic toc, i.e. timing, to see if code can be optimized
 
-# General
+
     - Figure out where T_Rd comes from in Standard (Used in Post_Process)
 [DONE]    - Make outputs consistent, e.g. only 2 decimals etc.
 [DONE, saved 9 sec]    - Combine APDL_Eigen and APDL_Nonlin into one

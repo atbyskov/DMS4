@@ -53,7 +53,7 @@ def RunAPDL(SWcoor,var,Misc):
         FileID.write('rem set ANS_CONSEC=YES\n')
         FileID.write(
             f'"C:\\Program files\\ANSYS Inc\\v251\\ANSYS\\bin\\winx64\\ansys251"'
-            f' -b -p ansys -smp -np 8' 
+            f' -b -p ansys -smp -np 6' 
             f' -i {input_file}'
             f' -dir "{Ansout_dir}"'
             f' -o {os.path.join(Ansout_dir,"AnsysOutputWindow.txt")} \n')

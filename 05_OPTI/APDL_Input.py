@@ -105,6 +105,9 @@ def InputFun(SWcoor, var, Misc, out_dir = "Ansout"):
         kp_dict = {}
         CM_Brace_dict = 0
         CM_Column_dict = 0
+        
+        # For Remote Loading
+        f.write("K,1,0,4179.14,0 \n")
 
         # Loop through and create lines
         for x1, y1, z1, x2, y2, z2 in SWcoor:
@@ -182,6 +185,7 @@ def InputFun(SWcoor, var, Misc, out_dir = "Ansout"):
                     f.write(f"LSEL,A,LINE,,{lid}\n")
             
             f.write("LMESH,ALL \n\n")
+             
             
         # Run the function for Corner and Brace
         group_mesh("Meshing CORNER Beams (SECNUM=1)",1, corner_lines)
@@ -242,17 +246,24 @@ def InputFun(SWcoor, var, Misc, out_dir = "Ansout"):
         f.write("NSEL,S,LOC,X,0 \n ")
         f.write("*GET,N_LOW,NODE,,MNLOC,Y \n")
         f.write("*GET,n_load_c,NODE,0,COUNT \n")
+        
         #f.write("NSEL,R,LOC,Y,N_LOW \n")
         f.write("N_C = n_load_c \n")
-        f.write(f"MOMZ = {MomZ}/N_C \n")
-        f.write(f"MOMY = {MomY}/N_C \n")
         f.write(f"F_HOR = {Hor_Force}/N_C \n")
         f.write(f"F_VER = {-Ver_Force}/N_C \n")
         f.write(f"F,ALL,FY,F_VER \n")
         f.write(f"F,ALL,FX,F_HOR \n")
-        f.write(f"F,ALL,MY,MOMY \n")
-        f.write(f"F,ALL,MZ,MOMZ \n")
+
         # Apply Moment
+        f.write("NSEL,S,LOC,X,0 \n")
+        f.write("NSEL,R,LOC,Y,4179.14 \n")
+        f.write("*GET,nmast,NODE,0,NUM,MIN \n")
+        f.write("NSEL,S,LOC,X,0 \n")
+        f.write("CERIG,nmast,ALL,ALL \n")
+        f.write(f"F,ALL,MY,{MomY} \n")
+        f.write(f"F,ALL,MZ,{MomZ} \n")
+        f.write("ALLSEL \n")
+  
   
 
         # Fixed displacement at bottom nodes
@@ -413,7 +424,7 @@ def InputFun(SWcoor, var, Misc, out_dir = "Ansout"):
         f.write("alpha_m = 2 ! Assumed for now \n")
         f.write("imp_ang = 1/200 * alpha_h * alpha_m \n")
         f.write(f"FORCE_IMP = {Ver_Force}*imp_ang \n")        
-        f.write("ALLSEL,ALL \n FDELE,ALL,ALL \n DDELE,ALL,ALL \n")
+        #f.write("ALLSEL,ALL \n FDELE,ALL,ALL \n DDELE,ALL,ALL \n")
 
 ##################################################################
 ##################### Nonlinear Analysis #########################

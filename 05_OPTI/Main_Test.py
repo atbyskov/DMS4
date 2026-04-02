@@ -35,7 +35,7 @@ R3 = 26.9/2 # Brace Tube outer diameter  [mm]
 
 var = [R0, R1, R2, R3] # Assemble variables
 
-# Other specifications
+# Other specifications``
 esize = 100             # Element Size [mm]
 Hor_Force = 502.52      # Horizontal Force [N]
 Ver_Force = 26400       # Vertical Force   [N]

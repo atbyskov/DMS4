@@ -6,7 +6,7 @@
         # 3. Shear                          [S]
         # 4. Torsion                        [T]
         # 5. Bending, Normal and Shear      [BNS]
-        # 6. Flexural and Torsional         [BR]
+        # 6. Buckling Resistance            [BR]
         # 7. Interaction                    [IN]
     # Outputs this as a .txt file for evaluation
     # Output highest utilization factor as list
