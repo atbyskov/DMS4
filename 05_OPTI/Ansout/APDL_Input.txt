@@ -1336,6 +1336,8 @@ ALLSEL,ALL
  
 ! Get and Print Mass 
 ALLSEL 
+NSEL,S,LOC,Y,,4080 
+ESLN 
 *GET,ecnt,ELEM,0,COUNT 
 *GET,enum,ELEM,0,NUM,MIN 
 totvol = 0 

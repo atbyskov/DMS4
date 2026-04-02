@@ -1,10 +1,10 @@
-### ADPL_Eigen.py ###
+### ADPL_Input.py ###
 # -> INPUT:
 #       - [SW_coor]   -> Coordinates from Soldiworks
 #       - [var]       -> Radius variables
 #       - [Misc]      -> Miscellaneous Data (force, mesh etc.) 
 # -> OUTPUT:
-#       - .txt Input file for APDL Eigenbuckling Analysis
+#       - .txt Input file for APDL Analysis (Eigenbuckling and Nonlinear)
 
 # Pseudo Code
     # Input is coordinate list with format [(x1,y1,z1),(x2,y2,z3)]
@@ -15,14 +15,12 @@
     #   1. Vertical / Corner beams, that only varies in y direction
     #   2. Brace beams, so everyone else
     # Define element type with ET,1,BEAM189
-    # Define cross section with 
-    #   SECTYPE,1,BEAM,CIRC and SECDATA,R1,R0,N
-    #   SECTYPE,2,BEAM,CIRC and SECDATA,R3,R2,N
-    # Define material properties (S690 Nonlinear)
+    # Define Cross Section
+    # Define material properties
     # Apply SECTYPE,1 to vertical beams
     # Apply SECTYPE,2 to brace beams
     # Apply SECTYPE,3 to Top (constant)
-    # Apply same material and element type to all lines
+    # 
 
 import os
 
@@ -53,7 +51,7 @@ def InputFun(SWcoor, var, Misc, out_dir = "Ansout"):
         else:
             return "brace"
         
-    # Create eigen_file    
+    # Create File
     input_file = os.path.join(out_dir, "APDL_Input.txt")
     
     # Open and Edit .txt file
@@ -61,6 +59,9 @@ def InputFun(SWcoor, var, Misc, out_dir = "Ansout"):
 
                             # SETUP
         f.write("! ===== APDL INPUT FILE ====== ! \n")
+##################################################################
+##################### Eigenbuckling Analysis #####################
+##################################################################
         f.write("!   Eigenbuckling Analysis     ! \n")
         f.write("! ============================ ! \n\n")
         f.write("/UNITS,MPa ! Set units [mm,Mg,s,C] \n\n")
@@ -153,8 +154,6 @@ def InputFun(SWcoor, var, Misc, out_dir = "Ansout"):
                     f.write(f"CM,BRACE_{brace_id},LINE\n")
                     brace_id += 1
                     CM_Brace_dict += 1
-
-
             
             # Reset
             f.write("LSEL,ALL \n")   
@@ -356,10 +355,11 @@ def InputFun(SWcoor, var, Misc, out_dir = "Ansout"):
         # MASS OF ASSEMBLY
         f.write("! Get and Print Mass \n")
         f.write("ALLSEL \n")
+        f.write("NSEL,S,LOC,Y,,4080 \n")
+        f.write("ESLN \n")
         f.write("*GET,ecnt,ELEM,0,COUNT \n")
         f.write("*GET,enum,ELEM,0,NUM,MIN \n")
         f.write("totvol = 0 \n")
-
 
         # Loop over each element and get volume
         f.write("*DO,i,1,ecnt \n")
@@ -415,7 +415,10 @@ def InputFun(SWcoor, var, Misc, out_dir = "Ansout"):
         f.write(f"FORCE_IMP = {Ver_Force}*imp_ang \n")        
         f.write("ALLSEL,ALL \n FDELE,ALL,ALL \n DDELE,ALL,ALL \n")
 
-        ################################################################
+##################################################################
+##################### Nonlinear Analysis #########################
+##################################################################
+
         # NONLINEAR ANALYSIS SETTINGS
         f.write("! SOLUTION ! \n")
         f.write("/SOLU \n")
@@ -438,7 +441,7 @@ def InputFun(SWcoor, var, Misc, out_dir = "Ansout"):
         f.write(f"F,ALL,MY,MOMY \n")
         f.write(f"F,ALL,MZ,MOMZ \n")
 
-        # Fixed displacement at bottom nodes
+        # Fixed Displacement at Bottom Nodes
         f.write("! Displacement ! \n")
         f.write("ALLSEL,ALL \n")
         f.write("NSEL,S,LOC,Y,NodeYMin \n")
