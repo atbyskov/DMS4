@@ -1,14 +1,25 @@
-/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       14:43:53
+/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       11:24:02
 
- *** WARNING ***                         CP =       7.875   TIME= 14:44:00
+ *** WARNING ***                         CP =       0.172   TIME= 11:24:06
+ The requested number of CPU cores for shared-memory parallel (8)        
+ exceeds the number of physical CPU cores that are available (6).  As    
+ the use of virtual CPU cores is not recommended, the number of CPU      
+ cores used will be 6.                                                   
+
+ *** WARNING ***                         CP =       0.359   TIME= 11:24:08
+ The requested number of CPU cores for shared-memory parallel (8) cannot 
+ be greater than that specified by the command line option -NP (6).      
+ The number of CPU cores used will be left at 6.                         
+
+ *** WARNING ***                         CP =       9.344   TIME= 11:24:10
  * no longer valid as comment character - please use !                   
   *SET,imp_ang, 1/200 * alpha_h * alpha_m                                
   This warning only issued once.                                         
 
- *** WARNING ***                         CP =       7.891   TIME= 14:44:00
+ *** WARNING ***                         CP =       9.344   TIME= 11:24:10
  FDELE is not a recognized POST1 command, abbreviation, or macro.        
   This command will be ignored.                                          
 
- *** WARNING ***                         CP =       7.891   TIME= 14:44:00
+ *** WARNING ***                         CP =       9.344   TIME= 11:24:10
  DDELE is not a recognized POST1 command, abbreviation, or macro.        
   This command will be ignored.                                          
