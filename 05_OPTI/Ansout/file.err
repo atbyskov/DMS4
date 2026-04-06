@@ -1,10 +1,6 @@
-/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       14:59:12
+/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       08:48:02
 
- *** WARNING ***                         CP =       1.078   TIME= 14:59:19
- The INDEPENDENT node (0) is undefined or unselected.  The CERIG command 
- is ignored.                                                             
-
- *** WARNING ***                         CP =      10.156   TIME= 14:59:20
+ *** WARNING ***                         CP =       3.984   TIME= 08:48:05
  * no longer valid as comment character - please use !                   
   *SET,imp_ang, 1/200 * alpha_h * alpha_m                                
   This warning only issued once.                                         

@@ -249,20 +249,15 @@ def InputFun(SWcoor, var, Misc, out_dir = "Ansout"):
         
         #f.write("NSEL,R,LOC,Y,N_LOW \n")
         f.write("N_C = n_load_c \n")
+        f.write(f"MOMZ = {MomZ}/N_C \n")
+        f.write(f"MOMY = {MomY}/N_C \n")
         f.write(f"F_HOR = {Hor_Force}/N_C \n")
         f.write(f"F_VER = {-Ver_Force}/N_C \n")
         f.write(f"F,ALL,FY,F_VER \n")
         f.write(f"F,ALL,FX,F_HOR \n")
-
-        # Apply Moment
-        f.write("NSEL,S,LOC,X,0 \n")
-        f.write("NSEL,R,LOC,Y,4179.14 \n")
-        f.write("*GET,nmast,NODE,0,NUM,MIN \n")
-        f.write("NSEL,S,LOC,X,0 \n")
-        f.write("CERIG,nmast,ALL,ALL \n")
-        f.write(f"F,ALL,MY,{MomY} \n")
-        f.write(f"F,ALL,MZ,{MomZ} \n")
-        f.write("ALLSEL \n")
+        f.write("F,ALL,FX,FORCE_IMP \n")
+        f.write(f"F,ALL,MY,MOMY \n")
+        f.write(f"F,ALL,MZ,MOMZ \n")
   
   
 
