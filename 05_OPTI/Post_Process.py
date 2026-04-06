@@ -79,7 +79,6 @@ class PostProcessor:
             )
             if "Y_LOC" in df.columns:
                         df = df[df["Y_LOC"] <= 4080]
-                        
             df["Member"] = current_member
             blocks.append(df)
 

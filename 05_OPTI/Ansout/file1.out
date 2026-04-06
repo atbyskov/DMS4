@@ -1,0 +1,342 @@
+
+ Ansys Mechanical Enterprise                       
+
+
+ *------------------------------------------------------------------*
+ |                                                                  |
+ |   W E L C O M E   T O   T H E   A N S Y S (R)  P R O G R A M     |
+ |                                                                  |
+ *------------------------------------------------------------------*
+
+
+
+
+ ***************************************************************
+ *         ANSYS MAPDL 2025 R1          LEGAL NOTICES          *
+ ***************************************************************
+ *                                                             *
+ * Copyright 1971-2025 Ansys, Inc.  All rights reserved.       *
+ * Unauthorized use, distribution or duplication is            *
+ * prohibited.                                                 *
+ *                                                             *
+ * Ansys is a registered trademark of Ansys, Inc. or its       *
+ * subsidiaries in the United States or other countries.       *
+ * See the Ansys, Inc. online documentation or the Ansys, Inc. *
+ * documentation CD or online help for the complete Legal      *
+ * Notice.                                                     *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION       *
+ * INCLUDE TRADE SECRETS AND CONFIDENTIAL AND PROPRIETARY      *
+ * PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR LICENSORS.    *
+ * The software products and documentation are furnished by    *
+ * Ansys, Inc. or its subsidiaries under a software license    *
+ * agreement that contains provisions concerning               *
+ * non-disclosure, copying, length and nature of use,          *
+ * compliance with exporting laws, warranties, disclaimers,    *
+ * limitations of liability, and remedies, and other           *
+ * provisions.  The software products and documentation may be *
+ * used, disclosed, transferred, or copied only in accordance  *
+ * with the terms and conditions of that software license      *
+ * agreement.                                                  *
+ *                                                             *
+ * Ansys, Inc. is a UL registered                              *
+ * ISO 9001:2015 company.                                      *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * This product is subject to U.S. laws governing export and   *
+ * re-export.                                                  *
+ *                                                             *
+ * For U.S. Government users, except as specifically granted   *
+ * by the Ansys, Inc. software license agreement, the use,     *
+ * duplication, or disclosure by the United States Government  *
+ * is subject to restrictions stated in the Ansys, Inc.        *
+ * software license agreement and FAR 12.212 (for non-DOD      *
+ * licenses).                                                  *
+ *                                                             *
+ ***************************************************************
+
+ 2025 R1 
+     
+ Point Releases and Patches installed:   
+     
+ Ansys, Inc. License Manager 2025 R1 
+ Discovery (reduced install) 2025 R1 
+ Core WB Files 2025 R1   
+ CFD-Post only 2025 R1   
+ Fluent (includes CFD-Post) 2025 R1  
+ Polyflow (includes CFD-Post) 2025 R1
+ Remote Solve Manager Standalone Services 2025 R1
+ Additive 2025 R1
+ Autodyn 2025 R1 
+ Customization Files for User Programmable Features 2025 R1  
+ LS-DYNA 2025 R1 
+ Material Designer 2025 R1   
+ Mechanical Products 2025 R1 
+ ACIS Geometry Interface 2025 R1 
+ AutoCAD Geometry Interface 2025 R1  
+ Catia, Version 4 Geometry Interface 2025 R1 
+ Catia, Version 5 Geometry Interface 2025 R1 
+ Catia, Version 6 Geometry Interface 2025 R1 
+ Creo Elements/Direct Modeling Geometry Interface 2025 R1
+ Creo Parametric Geometry Interface 2025 R1  
+ Inventor Geometry Interface 2025 R1 
+ JTOpen Geometry Interface 2025 R1   
+ NX Geometry Interface 2025 R1   
+ Parasolid Geometry Interface  2025 R1   
+ Solid Edge Geometry Interface 2025 R1   
+ SOLIDWORKS Geometry Interface 2025 R1   
+
+
+          *****  MAPDL COMMAND LINE ARGUMENTS  *****
+  INITIAL JOBNAME              = file                                                                                                                                                                                                                                                    
+  BATCH MODE REQUESTED (-b)    = LIST
+  INPUT FILE COPY MODE (-c)    = COPY
+       2 PARALLEL PROCESSES REQUESTED WITH SINGLE THREAD PER PROCESS
+    TOTAL OF     2 CORES REQUESTED
+  INPUT FILE NAME              = CONIN$
+  OUTPUT FILE NAME             = C:\Users\atbys\Desktop\DMS4 Local\DMS4\05_OPTI\Ansout\file1.out
+
+ PARAMETER STATUS-           (   1 PARAMETERS DEFINED)
+
+ NAME                              VALUE                        TYPE
+ PORT                              50052.0000                    SCALAR
+
+ RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
+ CURRENT JOBNAME=file1  15:32:18  APR 06, 2026 CP=      0.109
+
+
+ PRINTOUT RESUMED BY /GOP
+
+ *** VERIFICATION RUN - CASE                                  ***  OPTION=  4
+
+
+ NUMBER OF DISPLAYED ERRORS ALLOWED PER COMMAND=                200
+ NUMBER OF ERRORS ALLOWED PER COMMAND BEFORE ANSYS ABORT=     10000
+ ABORT LEVEL KEY= -1
+ ALL ERRORS WRITTEN TO                                                                                                                                                                                                                                                                     
+ DO NOT TERMINATE /INPUT UPON FIRST ERROR
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  CP =         0.000
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+                      L O A D   S T E P   O P T I O N S
+
+   LOAD STEP NUMBER. . . . . . . . . . . . . . . .     1
+   TIME AT END OF THE LOAD STEP. . . . . . . . . .  1.0000    
+   NUMBER OF SUBSTEPS. . . . . . . . . . . . . . .     1
+   STEP CHANGE BOUNDARY CONDITIONS . . . . . . . .    NO
+   PRINT OUTPUT CONTROLS . . . . . . . . . . . . .NO PRINTOUT
+   DATABASE OUTPUT CONTROLS. . . . . . . . . . . .ALL DATA WRITTEN
+                                                  FOR THE LAST SUBSTEP
+
+
+ *** NOTE ***                            CP =       0.000   TIME= 00:00:00
+ Predictor is ON by default for structural elements with rotational      
+ degrees of freedom.  Use the PRED,OFF command to turn the predictor     
+ OFF if it adversely affects the convergence.                            
+
+
+
+  *** MASS SUMMARY BY ELEMENT TYPE ***
+
+  TYPE      MASS
+     1   18.3044    
+ AN AVERAGE OF THE X-, Y-, AND Z-DIRECTION MASS TERMS ARE USED
+  Memory available (MB) =    0.0    ,  Memory required (MB) =    0.0    
+
+
+   *** ELEMENT RESULT CALCULATION TIMES
+     TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
+
+        1       573  BEAM189       0.000   0.000000
+
+   *** NODAL LOAD CALCULATION TIMES
+     TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
+
+        1       573  BEAM189       0.000   0.000000
+ *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      1
+ *** TIME =   1.00000         TIME INC =   1.00000      NEW TRIANG MATRIX
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  CP =         0.000
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+                      L O A D   S T E P   O P T I O N S
+
+   LOAD STEP NUMBER. . . . . . . . . . . . . . . .     1
+   PRINT OUTPUT CONTROLS . . . . . . . . . . . . .NO PRINTOUT
+   DATABASE OUTPUT CONTROLS
+      ITEM     FREQUENCY   COMPONENT
+       ALL        ALL               
+
+
+  BLOCK LANCZOS CALCULATION OF UP TO    10 EIGENVECTORS.
+  NUMBER OF EQUATIONS              =         6342
+  MAXIMUM WAVEFRONT                =            0
+  MAXIMUM MODES STORED             =           10
+  MINIMUM EIGENVALUE               = -0.10000E+31
+  MAXIMUM EIGENVALUE               =  0.10000E+31
+  CENTER EIGENVALUE                =  0.00000E+00
+
+   *****MAPDL VERIFICATION RUN ONLY*****
+     DO NOT USE RESULTS FOR PRODUCTION
+
+  ***** EIGENVALUES (LOAD MULTIPLIERS FOR BUCKLING) *****
+            *** FROM BLOCK LANCZOS ITERATION ***
+
+      SHAPE NUMBER   LOAD MULTIPLIER
+
+            1           -27.063639    
+            2           -26.795320    
+            3           -21.672366    
+            4           -18.754523    
+            5            15.088763    
+            6            16.529162    
+            7            19.236733    
+            8            19.698863    
+            9            23.761411    
+           10            24.833190    
+
+
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  CP =         0.000
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  CP =         0.000
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+                      L O A D   S T E P   O P T I O N S
+
+   LOAD STEP NUMBER. . . . . . . . . . . . . . . .     1
+   TIME AT END OF THE LOAD STEP. . . . . . . . . .  1.0000    
+   NUMBER OF SUBSTEPS. . . . . . . . . . . . . . .     1
+   MAXIMUM NUMBER OF EQUILIBRIUM ITERATIONS. . . .    15
+   ARC-LENGTH . . . . .  . . . . . . . . . . . . .    ON
+   STEP CHANGE BOUNDARY CONDITIONS . . . . . . . .    NO
+   STRESS-STIFFENING . . . . . . . . . . . . . . .    ON
+   TERMINATE ANALYSIS IF NOT CONVERGED . . . . . .YES (EXIT)  
+   CONVERGENCE CONTROLS. . . . . . . . . . . . . .USE DEFAULTS
+   PRINT OUTPUT CONTROLS . . . . . . . . . . . . .NO PRINTOUT
+   DATABASE OUTPUT CONTROLS
+      ITEM     FREQUENCY   COMPONENT
+       ALL        ALL               
+
+
+ *** NOTE ***                            CP =       0.000   TIME= 00:00:00
+ Predictor is ON by default for structural elements with rotational      
+ degrees of freedom.  Use the PRED,OFF command to turn the predictor     
+ OFF if it adversely affects the convergence.                            
+
+
+
+  *** MASS SUMMARY BY ELEMENT TYPE ***
+
+  TYPE      MASS
+     1   18.3044    
+ AN AVERAGE OF THE X-, Y-, AND Z-DIRECTION MASS TERMS ARE USED
+     FORCE CONVERGENCE VALUE  =   9981.      CRITERION=   49.91    
+     MOMENT CONVERGENCE VALUE =  0.2660E+08  CRITERION=  0.1330E+06
+  Memory available (MB) =    0.0    ,  Memory required (MB) =    0.0    
+
+     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   1211.4    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   76.84    
+     FORCE CONVERGENCE VALUE  =  0.5407E+10  CRITERION=   1432.    
+     MOMENT CONVERGENCE VALUE =  0.2863E+11  CRITERION=  0.1332E+06
+     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   1713.1    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.9062    
+     FORCE CONVERGENCE VALUE  =  0.1851E+07  CRITERION=   1442.    
+     MOMENT CONVERGENCE VALUE =  0.8473E+06  CRITERION=  0.1332E+06
+     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   1718.3    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   1.020    
+     FORCE CONVERGENCE VALUE  =  0.9582E+06  CRITERION=   1462.    
+     MOMENT CONVERGENCE VALUE =  0.4492E+07  CRITERION=  0.1332E+06
+     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   1729.9    
+    EQUIL ITER   4 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2730    
+     FORCE CONVERGENCE VALUE  =  0.6739E+05  CRITERION=   1467.    
+     MOMENT CONVERGENCE VALUE =  0.3427E+06  CRITERION=  0.1332E+06
+     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   1733.0    
+    EQUIL ITER   5 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.4885E-01
+     FORCE CONVERGENCE VALUE  =  0.1610E+05  CRITERION=   1468.    
+     MOMENT CONVERGENCE VALUE =  0.5652E+05  CRITERION=  0.1332E+06 <<< CONVERGED
+     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   1733.5    
+    EQUIL ITER   6 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2354E-02
+     FORCE CONVERGENCE VALUE  =   294.8      CRITERION=   1468.     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =   864.8      CRITERION=  0.1332E+06 <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   6
+
+   *** ELEMENT RESULT CALCULATION TIMES
+     TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
+
+        1       573  BEAM189       0.000   0.000000
+
+   *** NODAL LOAD CALCULATION TIMES
+     TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
+
+        1       573  BEAM189       0.000   0.000000
+ *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      6
+ *** TIME =   1.00000      TIME INC =   1.00000      MAX DISPLACEMENT =     78.57    
+
+ *** NOTE ***                            CP =       0.000   TIME= 00:00:00
+ Maximum load for load step 1 was reached.                               
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  CP =         0.000
+
+
+
+ EXIT MAPDL WHILE IN SERVER MODE
+
+
+ NUMBER OF WARNING MESSAGES ENCOUNTERED=          0
+ NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2025 R1         Build 25.1         UP20241202    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)     1 MB     Scratch Memory Requested       192 MB |
+ |  Maximum Database Used       1 MB     Maximum Scratch Memory Used     47 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =          1.656       Time  =  15:32:22          |
+ |        Elapsed Time (sec) =          7.000       Date  =  04/06/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*

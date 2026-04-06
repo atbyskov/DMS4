@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 from scipy import optimize as spo
 from MyAPDLCall import RunAPDL
@@ -6,8 +8,34 @@ from opt_logger import OptimizationLogger
 from Post_Process import PostProcessor
 
 
-def run_optimization(var, SWcoor, Misc, eps_geom=1, save_folder="Optimization_Logs"):
+def run_optimization(
+    var,
+    SWcoor,
+    Misc,
+    eps_geom=1,
+    save_folder="Optimization_Logs",
+    keep_license_open=True,
+    mapdl_run_location="temp_mapdl",
+):
     x0 = np.array(var, dtype=float)
+    mapdl_session = None
+
+    if keep_license_open:
+        try:
+            # Lazy import so unit tests or environments without MAPDL still run.
+            from ansys.mapdl.core import launch_mapdl
+
+            os.makedirs(mapdl_run_location, exist_ok=True)
+            mapdl_session = launch_mapdl(
+                run_location=mapdl_run_location,
+                override=True,
+            )
+            print("ANSYS MAPDL session started to hold license during optimization.")
+        except Exception as exc:
+            # Continue without a held license if MAPDL is unavailable.
+            print(
+                f"Warning: Unable to launch MAPDL to hold license; proceeding anyway. {exc}"
+            )
 
     bounds = [
         (30.0, 60.0),  # R0
@@ -97,15 +125,23 @@ def run_optimization(var, SWcoor, Misc, eps_geom=1, save_folder="Optimization_Lo
     def callback(xk):               # This is the callback function that is called after each iteration in the optimization process
         logger.log_iteration(xk)
 
-    result = spo.minimize(               # This is the optimization function that is used to optimize the design variables
-        objective,
-        x0,
-        method="SLSQP",
-        bounds=bounds,
-        constraints=constraints,
-        callback=callback,
-        options=options
-    )
+    try:
+        result = spo.minimize(               # This is the optimization function that is used to optimize the design variables
+            objective,
+            x0,
+            method="SLSQP",
+            bounds=bounds,
+            constraints=constraints,
+            callback=callback,
+            options=options
+        )
 
-    logger.finalize(result)
-    return result, logger.txt_path, logger.csv_path
+        logger.finalize(result)
+        return result, logger.txt_path, logger.csv_path
+    finally:
+        if mapdl_session is not None:
+            try:
+                mapdl_session.exit()
+                print("ANSYS MAPDL session closed after optimization.")
+            except Exception as exc:
+                print(f"Warning: Failed to close MAPDL session cleanly. {exc}")

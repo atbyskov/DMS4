@@ -16,7 +16,6 @@ from optimization import run_optimization
 # Import Functions
 import SW_Import as SW
 from Post_Process import PostProcessor
-from Post_Process import print_info
 from MyAPDLCall import RunAPDL
 
 tic = time.time()
@@ -57,8 +56,8 @@ Misc = {
     "E_mod": E_mod
 }
 
-
 result, txt_path, csv_path = run_optimization(var, SWcoor, Misc)
+
 
 print("\nOptimal x:", result.x)
 print("Optimal objective:", result.fun)
