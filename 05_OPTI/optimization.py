@@ -2,7 +2,8 @@ import numpy as np
 from scipy import optimize as spo
 from MyAPDLCall import RunAPDL
 from opt_logger import OptimizationLogger
-from Post_Process import Util_LB, Util_NF, Util_S, Util_T, Util_BNS, Util_BR, Util_IN 
+#from Post_Process import Util_LB, Util_NF, Util_S, Util_T, Util_BNS, Util_BR, Util_IN 
+from Post_Process import PostProcessor
 
 
 def run_optimization(var, SWcoor, Misc, eps_geom=1, save_folder="Optimization_Logs"):
@@ -16,13 +17,14 @@ def run_optimization(var, SWcoor, Misc, eps_geom=1, save_folder="Optimization_Lo
     ]
 
     def constraint_values(x):             # This is the function that is used to calculate the constraint values
-        Util_LB_values = Util_LB(x, Misc)
-        Util_NF_values = Util_NF(x, Misc)
-        Util_S_values = Util_S(x, Misc)
-        Util_T_values = Util_T(x, Misc)
-        Util_BNS_values = Util_BNS(x, Misc)
-        Util_BR_values = Util_BR(x, Misc)
-        Util_IN_values = Util_IN(x, Misc)
+        utils = PostProcessor()
+        Util_LB_values = utils.Util_LB(x, Misc)
+        Util_NF_values = utils.Util_NF(x, Misc)
+        Util_S_values = utils.Util_S(x, Misc)
+        Util_T_values = utils.Util_T(x, Misc)
+        Util_BNS_values = utils.Util_BNS(x, Misc)
+        Util_BR_values = utils.Util_BR(x, Misc)
+        Util_IN_values = utils.Util_IN(x, Misc)
         """
         Return all inequality constraints in the form c(x) >= 0.
         Add as many as you want here.
@@ -69,7 +71,7 @@ def run_optimization(var, SWcoor, Misc, eps_geom=1, save_folder="Optimization_Lo
 
     constraints = [                 # This is the constraints list that is used to set the constraints for the optimization process
         {"type": "ineq", "fun": lambda x, i=i: constraint_values(x)[i]}
-        for i in range(len(constraint_names))
+        for i in range(len(constraint_names)) 
     ]
 
     options = {                   # This is the options dictionary that is used to set the optimization options
