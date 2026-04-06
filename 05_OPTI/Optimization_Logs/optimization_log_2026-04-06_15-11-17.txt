@@ -1,0 +1,403 @@
+================================================================================
+OPTIMIZATION LOG
+================================================================================
+Run start date/time : 2026-04-06 15:11:17
+Log file            : Optimization_Logs\optimization_log_2026-04-06_15-11-17.txt
+Objective CSV       : Optimization_Logs\objective_history_2026-04-06_15-11-17.csv
+
+Initial design variables:
+x0 = [35.05, 38.05, 11.15, 13.45]
+
+Bounds:
+  x[0] in [30.0, 60.0]
+  x[1] in [31.0, 70.0]
+  x[2] in [8.0, 20.0]
+  x[3] in [9.0, 25.0]
+
+Optimizer settings:
+  Method  : SLSQP
+  disp    : True
+  eps     : 0.1
+  ftol    : 0.001
+  maxiter : 20
+
+================================================================================
+
+[EVALUATION 1]
+  Date/time : 2026-04-06 15:11:27
+  x         : [35.05, 38.05, 11.15, 13.45]
+  Objective : 107.122
+
+[EVALUATION 2]
+  Date/time : 2026-04-06 15:11:32
+  x         : [35.15, 38.05, 11.15, 13.45]
+  Objective : 105.004
+
+[EVALUATION 3]
+  Date/time : 2026-04-06 15:11:37
+  x         : [35.05, 38.15, 11.15, 13.45]
+  Objective : 109.420
+
+[EVALUATION 4]
+  Date/time : 2026-04-06 15:11:42
+  x         : [35.05, 38.05, 11.25, 13.45]
+  Objective : 105.500
+
+[EVALUATION 5]
+  Date/time : 2026-04-06 15:11:47
+  x         : [35.05, 38.05, 11.15, 13.55]
+  Objective : 109.077
+
+[EVALUATION 6]
+  Date/time : 2026-04-06 15:12:14
+  x         : [35.181349, 36.874241, 10.1345  , 11.1345  ]
+  Objective : 52.197
+
+[ITERATION 1]
+  Date/time : 2026-04-06 15:12:17
+  x         : [35.181349, 36.874241, 10.1345  , 11.1345  ]
+
+[EVALUATION 7]
+  Date/time : 2026-04-06 15:12:22
+  x         : [35.281349, 36.874241, 10.1345  , 11.1345  ]
+  Objective : 50.071
+
+[EVALUATION 8]
+  Date/time : 2026-04-06 15:12:27
+  x         : [35.181349, 36.974241, 10.1345  , 11.1345  ]
+  Objective : 54.424
+
+[EVALUATION 9]
+  Date/time : 2026-04-06 15:12:32
+  x         : [35.181349, 36.874241, 10.2345  , 11.1345  ]
+  Objective : 50.722
+
+[EVALUATION 10]
+  Date/time : 2026-04-06 15:12:37
+  x         : [35.181349, 36.874241, 10.1345  , 11.2345  ]
+  Objective : 53.817
+
+[EVALUATION 11]
+  Date/time : 2026-04-06 15:13:02
+  x         : [33.434402, 35.516026,  8.      ,  9.      ]
+  Objective : 55.605
+
+[ITERATION 2]
+  Date/time : 2026-04-06 15:13:07
+  x         : [33.434402, 35.516026,  8.      ,  9.      ]
+
+[EVALUATION 12]
+  Date/time : 2026-04-06 15:13:12
+  x         : [33.534402, 35.516026,  8.      ,  9.      ]
+  Objective : 53.585
+
+[EVALUATION 13]
+  Date/time : 2026-04-06 15:13:18
+  x         : [33.434402, 35.616026,  8.      ,  9.      ]
+  Objective : 57.750
+
+[EVALUATION 14]
+  Date/time : 2026-04-06 15:13:23
+  x         : [33.434402, 35.516026,  8.1     ,  9.      ]
+  Objective : 54.439
+
+[EVALUATION 15]
+  Date/time : 2026-04-06 15:13:28
+  x         : [33.434402, 35.516026,  8.      ,  9.1     ]
+  Objective : 56.915
+
+[EVALUATION 16]
+  Date/time : 2026-04-06 15:13:56
+  x         : [32.226196, 34.610485,  8.      ,  9.      ]
+  Objective : 60.379
+
+[ITERATION 3]
+  Date/time : 2026-04-06 15:14:00
+  x         : [32.226196, 34.610485,  8.      ,  9.      ]
+
+[EVALUATION 17]
+  Date/time : 2026-04-06 15:14:07
+  x         : [32.326196, 34.610485,  8.      ,  9.      ]
+  Objective : 58.432
+
+[EVALUATION 18]
+  Date/time : 2026-04-06 15:14:11
+  x         : [32.226196, 34.710485,  8.      ,  9.      ]
+  Objective : 62.470
+
+[EVALUATION 19]
+  Date/time : 2026-04-06 15:14:17
+  x         : [32.226196, 34.610485,  8.1     ,  9.      ]
+  Objective : 59.214
+
+[EVALUATION 20]
+  Date/time : 2026-04-06 15:14:21
+  x         : [32.226196, 34.610485,  8.      ,  9.1     ]
+  Objective : 61.690
+
+[EVALUATION 21]
+  Date/time : 2026-04-06 15:14:48
+  x         : [30.60367 , 33.121011,  8.      ,  9.      ]
+  Objective : 60.699
+
+[ITERATION 4]
+  Date/time : 2026-04-06 15:14:52
+  x         : [30.60367 , 33.121011,  8.      ,  9.      ]
+
+[EVALUATION 22]
+  Date/time : 2026-04-06 15:14:57
+  x         : [31.451739, 33.899536,  8.      ,  9.      ]
+  Objective : 60.563
+
+[EVALUATION 23]
+  Date/time : 2026-04-06 15:15:06
+  x         : [31.851056, 34.266108,  8.      ,  9.      ]
+  Objective : 60.476
+
+[EVALUATION 24]
+  Date/time : 2026-04-06 15:15:16
+  x         : [32.043534, 34.442803,  8.      ,  9.      ]
+  Objective : 60.428
+
+[EVALUATION 25]
+  Date/time : 2026-04-06 15:15:25
+  x         : [32.137012, 34.528615,  8.      ,  9.      ]
+  Objective : 60.404
+
+[EVALUATION 26]
+  Date/time : 2026-04-06 15:15:36
+  x         : [32.182576, 34.570442,  8.      ,  9.      ]
+  Objective : 60.391
+
+[EVALUATION 27]
+  Date/time : 2026-04-06 15:15:45
+  x         : [32.204835, 34.590876,  8.      ,  9.      ]
+  Objective : 60.385
+
+[EVALUATION 28]
+  Date/time : 2026-04-06 15:15:54
+  x         : [32.215697, 34.600848,  8.      ,  9.      ]
+  Objective : 60.382
+
+[EVALUATION 29]
+  Date/time : 2026-04-06 15:16:05
+  x         : [32.221049, 34.605761,  8.      ,  9.      ]
+  Objective : 60.381
+
+[EVALUATION 30]
+  Date/time : 2026-04-06 15:16:14
+  x         : [32.223693, 34.608188,  8.      ,  9.      ]
+  Objective : 60.380
+
+[EVALUATION 31]
+  Date/time : 2026-04-06 15:16:22
+  x         : [32.224985, 34.609374,  8.      ,  9.      ]
+  Objective : 60.380
+
+[EVALUATION 32]
+  Date/time : 2026-04-06 15:16:31
+  x         : [32.324985, 34.609374,  8.      ,  9.      ]
+  Objective : 58.433
+
+[EVALUATION 33]
+  Date/time : 2026-04-06 15:16:36
+  x         : [32.224985, 34.709374,  8.      ,  9.      ]
+  Objective : 62.471
+
+[EVALUATION 34]
+  Date/time : 2026-04-06 15:16:40
+  x         : [32.224985, 34.609374,  8.1     ,  9.      ]
+  Objective : 59.214
+
+[EVALUATION 35]
+  Date/time : 2026-04-06 15:16:45
+  x         : [32.224985, 34.609374,  8.      ,  9.1     ]
+  Objective : 61.691
+
+[EVALUATION 36]
+  Date/time : 2026-04-06 15:17:07
+  x         : [30.      , 32.520827,  8.      ,  9.      ]
+  Objective : 59.850
+
+[ITERATION 5]
+  Date/time : 2026-04-06 15:17:10
+  x         : [30.      , 32.520827,  8.      ,  9.      ]
+
+[EVALUATION 37]
+  Date/time : 2026-04-06 15:17:15
+  x         : [31.247839, 33.692147,  8.      ,  9.      ]
+  Objective : 60.191
+
+[EVALUATION 38]
+  Date/time : 2026-04-06 15:17:23
+  x         : [31.788546, 34.199698,  8.      ,  9.      ]
+  Objective : 60.304
+
+[EVALUATION 39]
+  Date/time : 2026-04-06 15:17:31
+  x         : [32.028987, 34.425395,  8.      ,  9.      ]
+  Objective : 60.347
+
+[EVALUATION 40]
+  Date/time : 2026-04-06 15:17:39
+  x         : [32.136753, 34.526552,  8.      ,  9.      ]
+  Objective : 60.366
+
+[EVALUATION 41]
+  Date/time : 2026-04-06 15:17:48
+  x         : [32.185182, 34.572012,  8.      ,  9.      ]
+  Objective : 60.373
+
+[EVALUATION 42]
+  Date/time : 2026-04-06 15:17:56
+  x         : [32.207018, 34.592509,  8.      ,  9.      ]
+  Objective : 60.377
+
+[EVALUATION 43]
+  Date/time : 2026-04-06 15:18:04
+  x         : [32.216874, 34.601761,  8.      ,  9.      ]
+  Objective : 60.379
+
+[EVALUATION 44]
+  Date/time : 2026-04-06 15:18:13
+  x         : [32.221311, 34.605925,  8.      ,  9.      ]
+  Objective : 60.379
+
+[EVALUATION 45]
+  Date/time : 2026-04-06 15:18:21
+  x         : [32.223282, 34.607775,  8.      ,  9.      ]
+  Objective : 60.380
+
+[EVALUATION 46]
+  Date/time : 2026-04-06 15:18:29
+  x         : [32.224203, 34.60864 ,  8.      ,  9.      ]
+  Objective : 60.380
+
+[EVALUATION 47]
+  Date/time : 2026-04-06 15:18:37
+  x         : [32.324203, 34.60864 ,  8.      ,  9.      ]
+  Objective : 58.433
+
+[EVALUATION 48]
+  Date/time : 2026-04-06 15:18:42
+  x         : [32.224203, 34.70864 ,  8.      ,  9.      ]
+  Objective : 62.471
+
+[EVALUATION 49]
+  Date/time : 2026-04-06 15:18:47
+  x         : [32.224203, 34.60864 ,  8.1     ,  9.      ]
+  Objective : 59.214
+
+[EVALUATION 50]
+  Date/time : 2026-04-06 15:18:51
+  x         : [32.224203, 34.60864 ,  8.      ,  9.1     ]
+  Objective : 61.690
+
+[EVALUATION 51]
+  Date/time : 2026-04-06 15:19:13
+  x         : [30.      , 32.520884,  8.      ,  9.      ]
+  Objective : 59.852
+
+[ITERATION 6]
+  Date/time : 2026-04-06 15:19:16
+  x         : [30.      , 32.520884,  8.      ,  9.      ]
+
+[EVALUATION 52]
+  Date/time : 2026-04-06 15:19:21
+  x         : [31.24128 , 33.686016,  8.      ,  9.      ]
+  Objective : 60.190
+
+[EVALUATION 53]
+  Date/time : 2026-04-06 15:19:30
+  x         : [31.783086, 34.194583,  8.      ,  9.      ]
+  Objective : 60.303
+
+[EVALUATION 54]
+  Date/time : 2026-04-06 15:19:37
+  x         : [32.025381, 34.422015,  8.      ,  9.      ]
+  Objective : 60.347
+
+[EVALUATION 55]
+  Date/time : 2026-04-06 15:19:44
+  x         : [32.134414, 34.524359,  8.      ,  9.      ]
+  Objective : 60.365
+
+[EVALUATION 56]
+  Date/time : 2026-04-06 15:19:51
+  x         : [32.18369 , 34.570613,  8.      ,  9.      ]
+  Objective : 60.373
+
+[EVALUATION 57]
+  Date/time : 2026-04-06 15:20:00
+  x         : [32.205883, 34.591444,  8.      ,  9.      ]
+  Objective : 60.377
+
+[EVALUATION 58]
+  Date/time : 2026-04-06 15:20:09
+  x         : [32.215945, 34.600888,  8.      ,  9.      ]
+  Objective : 60.378
+
+[EVALUATION 59]
+  Date/time : 2026-04-06 15:20:18
+  x         : [32.220491, 34.605155,  8.      ,  9.      ]
+  Objective : 60.379
+
+[EVALUATION 60]
+  Date/time : 2026-04-06 15:20:26
+  x         : [32.222524, 34.607064,  8.      ,  9.      ]
+  Objective : 60.379
+
+[EVALUATION 61]
+  Date/time : 2026-04-06 15:20:34
+  x         : [32.223442, 34.607926,  8.      ,  9.      ]
+  Objective : 60.380
+
+[EVALUATION 62]
+  Date/time : 2026-04-06 15:20:41
+  x         : [32.323442, 34.607926,  8.      ,  9.      ]
+  Objective : 58.433
+
+[EVALUATION 63]
+  Date/time : 2026-04-06 15:20:46
+  x         : [32.223442, 34.707926,  8.      ,  9.      ]
+  Objective : 62.470
+
+[EVALUATION 64]
+  Date/time : 2026-04-06 15:20:51
+  x         : [32.223442, 34.607926,  8.1     ,  9.      ]
+  Objective : 59.214
+
+[EVALUATION 65]
+  Date/time : 2026-04-06 15:20:55
+  x         : [32.223442, 34.607926,  8.      ,  9.1     ]
+  Objective : 61.690
+
+[EVALUATION 66]
+  Date/time : 2026-04-06 15:21:10
+  x         : [30.      , 32.520949,  8.      ,  9.      ]
+  Objective : 59.853
+
+[ITERATION 7]
+  Date/time : 2026-04-06 15:21:12
+  x         : [30.      , 32.520949,  8.      ,  9.      ]
+
+[EVALUATION 67]
+  Date/time : 2026-04-06 15:21:17
+  x         : [31.235492, 33.680611,  8.      ,  9.      ]
+  Objective : 60.189
+
+[EVALUATION 68]
+  Date/time : 2026-04-06 15:21:25
+  x         : [31.778038, 34.189859,  8.      ,  9.      ]
+  Objective : 60.302
+
+[EVALUATION 69]
+  Date/time : 2026-04-06 15:21:32
+  x         : [32.021879, 34.418733,  8.      ,  9.      ]
+  Objective : 60.346
+
+[EVALUATION 70]
+  Date/time : 2026-04-06 15:21:39
+  x         : [32.132001, 34.522097,  8.      ,  9.      ]
+  Objective : 60.365
+

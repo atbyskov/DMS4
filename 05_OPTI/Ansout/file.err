@@ -1,6 +1,6 @@
-/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       14:02:42
+/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       15:33:19
 
- *** WARNING ***                         CP =       8.844   TIME= 14:02:46
+ *** WARNING ***                         CP =       1.625   TIME= 15:33:22
  * no longer valid as comment character - please use !                   
   *SET,imp_ang, 1/200 * alpha_h * alpha_m                                
   This warning only issued once.                                         
