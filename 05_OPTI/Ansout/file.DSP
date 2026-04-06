@@ -27,14 +27,14 @@
      partial pivoting tolerance used         =      0.0000D+00
      factorization panel size                =             128
      number of processes used                =               1
-     number of threads per process used      =               6
-     number of cores used                    =               6
-     time (cpu & wall) for structure input   =        0.000000        0.000593
-     time (cpu & wall) for ordering          =        0.000000        0.002406
-     time (cpu & wall) for other matrix prep =        0.000000        0.000884
-     time (cpu & wall) for value input       =        0.000000        0.001347
-     time (cpu & wall) for matrix distrib.   =        0.093750        0.002512
+     number of threads per process used      =              10
+     number of cores used                    =              10
+     time (cpu & wall) for structure input   =        0.000000        0.000452
+     time (cpu & wall) for ordering          =        0.000000        0.002319
+     time (cpu & wall) for other matrix prep =        0.015625        0.001266
+     time (cpu & wall) for value input       =        0.000000        0.000549
+     time (cpu & wall) for matrix distrib.   =        0.000000        0.002384
 
      no input or output performed
 
-  Total Solver Memory allocated              =        6.638 MB
+  Total Solver Memory allocated              =        6.641 MB

@@ -2,7 +2,7 @@ import numpy as np
 from scipy import optimize as spo
 from MyAPDLCall import RunAPDL
 from opt_logger import OptimizationLogger
-from Post_Process import Util_LC, Util_NF, Util_S, Util_T, Util_BNS, Util_BR, Util_IN
+from Post_Process import Util_LB, Util_NF, Util_S, Util_T, Util_BNS, Util_BR, Util_IN 
 
 
 def run_optimization(var, SWcoor, Misc, eps_geom=1, save_folder="Optimization_Logs"):
@@ -16,7 +16,7 @@ def run_optimization(var, SWcoor, Misc, eps_geom=1, save_folder="Optimization_Lo
     ]
 
     def constraint_values(x):             # This is the function that is used to calculate the constraint values
-        Util_LC_values = Util_LC(x, Misc)
+        Util_LB_values = Util_LB(x, Misc)
         Util_NF_values = Util_NF(x, Misc)
         Util_S_values = Util_S(x, Misc)
         Util_T_values = Util_T(x, Misc)
@@ -30,8 +30,8 @@ def run_optimization(var, SWcoor, Misc, eps_geom=1, save_folder="Optimization_Lo
         return np.array([
             x[1] - x[0] - eps_geom,
             x[3] - x[2] - eps_geom,
-            1.0 - Util_LC_values[0],           # local buckling column
-            1.0 - Util_LC_values[1],           # local buckling brace
+            1.0 - Util_LB_values[0],           # local buckling column
+            1.0 - Util_LB_values[1],           # local buckling brace
             1.0 - Util_NF_values[0],           # normal force column
             1.0 - Util_NF_values[1],           # normal force brace
             1.0 - Util_S_values[0],           # shear column

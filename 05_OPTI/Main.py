@@ -15,8 +15,7 @@ from optimization import run_optimization
 
 # Import Functions
 import SW_Import as SW
-from Post_Process import Util_NF
-from Post_Process import Util_LC
+from Post_Process import PostProcessor
 from Post_Process import print_info
 from MyAPDLCall import RunAPDL
 
@@ -45,8 +44,18 @@ MomY = 1407140          # Applied Moment around Y-axis [Nmm]
 f_y = 690               # Yield Strength of S690 [MPa]
 E_mod = 200*1E3         # Youngs Modulus [MPa]
 
-Misc = [esize, Hor_Force, Ver_Force, MomZ, MomY, f_y, E_mod]
+#Misc = [esize, Hor_Force, Ver_Force, MomZ, MomY, f_y, E_mod]
 
+# Create Misc as dict
+Misc = {
+    "esize": esize,
+    "Hor_Force": Hor_Force,
+    "Ver_Force": Ver_Force,
+    "MomZ": MomZ,
+    "MomY": MomY,
+    "f_y": f_y,
+    "E_mod": E_mod
+}
 
 
 result, txt_path, csv_path = run_optimization(var, SWcoor, Misc)
