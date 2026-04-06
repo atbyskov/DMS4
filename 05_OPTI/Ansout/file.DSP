@@ -2,7 +2,7 @@
 
 
 
-  Performance statistics for DSP solver: icalls =     22
+  Performance statistics for DSP solver: icalls =      7
 
  ===========================
  = multifrontal statistics =
@@ -21,21 +21,19 @@
      no. of floating point ops for solve     =      0.0000D+00
      ratio of flops for factor (min/max)     =          1.0000
      ratio of allocated memory (max/min)     =          1.0000
-     number of positive pivots               =            6339
-     number of negative pivots               =               3
+     number of positive pivots               =            6342
+     number of negative pivots               =               0
      number of near-zero pivots              =               0
      partial pivoting tolerance used         =      0.0000D+00
      factorization panel size                =             128
      number of processes used                =               1
      number of threads per process used      =               8
      number of cores used                    =               8
-     time (cpu & wall) for structure input   =        0.000000        0.000465
-     time (cpu & wall) for ordering          =        0.000000        0.001725
-     time (cpu & wall) for other matrix prep =        0.000000        0.001276
-     time (cpu & wall) for value input       =        0.000000        0.001009
-     time (cpu & wall) for matrix distrib.   =        0.000000        0.002380
-     time (cpu & wall) for numeric factor    =        0.109375        0.005381
-     computational rate (gflops) for factor  =        0.035755        0.726783
+     time (cpu & wall) for structure input   =        0.000000        0.000826
+     time (cpu & wall) for ordering          =        0.109375        0.003367
+     time (cpu & wall) for other matrix prep =        0.015625        0.001240
+     time (cpu & wall) for value input       =        0.000000        0.001931
+     time (cpu & wall) for matrix distrib.   =        0.000000        0.003407
 
      no input or output performed
 

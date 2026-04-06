@@ -1,25 +1,23 @@
 ## MAIN BEAM ELEMENT DOCUMENT ##
 # Main.py               -> Runs the entire script
-# APDL_Eigen.py         -> Outputs .txt for Eigenbuckling Analysis
-# APDL_Nonlin.py        -> Outputs .txt for Nonlinear Analysis
-# Post_Process.py       -> Calculates Utilization Ratios
+# SW_Import.py          -> Reads IGS File and converts it to Keypoints and Lines for APDL
+# MyAPDLCall.py         -> Inputs Swcoor, var and Misc and Runs the APDL Script
+#   APDL_Input.py       -> Writes the .txt input file for APDL
+# Post_Process.py       -> Reads internal forces from analysis and outputs Utilization Ratios
 
 
 # Import packages
 import os
 import time 
 
-import builtins
-import numpy as np
-
 # Import Functions
 import SW_Import as SW
 from Post_Process import PostProcessor
 from MyAPDLCall import RunAPDL
 
-
-
+# Start timing
 tic = time.time()
+
 # Import SW coordinates as list
 SW_filename = "LWC.IGS"   # Specify IGES File Name
 SW_folder = "IGS"
@@ -37,7 +35,7 @@ var = [R0, R1, R2, R3] # Assemble variables
 
 # Other specifications``
 esize = 100             # Element Size [mm]
-Hor_Force = 502.52      # Horizontal Force [N]
+Hor_Force = 502.52      # H`orizontal Force [N]
 Ver_Force = 26400       # Vertical Force   [N]
 MomZ = -70364000        # Applied Moment around Z-axis [Nmm]
 MomY = 1407140          # Applied Moment around Y-axis [Nmm]

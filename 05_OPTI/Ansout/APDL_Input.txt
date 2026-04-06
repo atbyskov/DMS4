@@ -1250,7 +1250,6 @@ F_HOR = 502.52/N_C
 F_VER = -26400/N_C 
 F,ALL,FY,F_VER 
 F,ALL,FX,F_HOR 
-F,ALL,FX,FORCE_IMP 
 F,ALL,MY,MOMY 
 F,ALL,MZ,MOMZ 
 ! Displacement ! 
@@ -1395,15 +1394,18 @@ NLGEOM,ON
 ARCLEN,ON 
 ARCTRM,L 
 AUTOTS,OFF 
-NSUBST,30,100,10 
+NSEL,S,LOC,X,0 
+ *GET,N_LOW,NODE,,MNLOC,Y 
+*GET,n_load_c,NODE,0,COUNT 
+N_C = n_load_c 
 NSEL,S,LOC,X,0 
  MOMZ = -70364000/N_C 
 MOMY = 1407140/N_C 
 F_HOR = 502.52/N_C 
 F_VER = -26400/N_C 
+F_XTOT = F_HOR+(FORCE_IMP/N_C) 
 F,ALL,FY,F_VER 
-F,ALL,FX,F_HOR 
-F,ALL,FX,FORCE_IMP 
+F,ALL,FX,F_XTOT 
 F,ALL,MY,MOMY 
 F,ALL,MZ,MOMZ 
 ! Displacement ! 
@@ -1439,23 +1441,23 @@ ALLSEL,ALL
        *VWRITE,ii 
        ("NS ColMember_",F3.0) 
    *ENDIF 
-*GET,nElem,ELEM,0,COUNT 
-   *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC' 
-   (A12,A20,A20,A20,A20,A20,A20,A20) 
-   ELEM = 0 
-   *DO,jj,1,nElem,1 
-       ELEM = ELNEXT(ELEM) 
-       *GET,NF,ELEM,ELEM,SMISC,1 
-       *GET,MY,ELEM,ELEM,SMISC,2 
-       *GET,MZ,ELEM,ELEM,SMISC,3 
-       *GET,VY,ELEM,ELEM,SMISC,6 
-       *GET,VZ,ELEM,ELEM,SMISC,5 
-       *GET,TQ,ELEM,ELEM,SMISC,4 
-       NSLE 
-       *GET,Y_LOC,NODE,0,MNLOC,Y 
-       *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC 
-       (F12.0,7E20.8) 
-   *ENDDO 
+   *GET,nElem,ELEM,0,COUNT 
+       *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC' 
+       (A12,A20,A20,A20,A20,A20,A20,A20) 
+       ELEM = 0 
+       *DO,jj,1,nElem,1 
+           ELEM = ELNEXT(ELEM) 
+           *GET,NF,ELEM,ELEM,SMISC,1 
+           *GET,MY,ELEM,ELEM,SMISC,2 
+           *GET,MZ,ELEM,ELEM,SMISC,3 
+           *GET,VY,ELEM,ELEM,SMISC,6 
+           *GET,VZ,ELEM,ELEM,SMISC,5 
+           *GET,TQ,ELEM,ELEM,SMISC,4 
+           NSLE 
+           *GET,Y_LOC,NODE,0,MNLOC,Y 
+           *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC 
+           (F12.0,7E20.8) 
+       *ENDDO 
  
 *ENDDO! Loop over Braces 
 *DO,ii,1,75,1 

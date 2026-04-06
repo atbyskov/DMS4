@@ -255,11 +255,8 @@ def InputFun(SWcoor, var, Misc, out_dir = "Ansout"):
         f.write(f"F_VER = {-Ver_Force}/N_C \n")
         f.write(f"F,ALL,FY,F_VER \n")
         f.write(f"F,ALL,FX,F_HOR \n")
-        f.write("F,ALL,FX,FORCE_IMP \n")
         f.write(f"F,ALL,MY,MOMY \n")
         f.write(f"F,ALL,MZ,MOMZ \n")
-  
-  
 
         # Fixed displacement at bottom nodes
         f.write("! Displacement ! \n")
@@ -418,7 +415,8 @@ def InputFun(SWcoor, var, Misc, out_dir = "Ansout"):
         f.write("*ENDIF \n")
         f.write("alpha_m = 2 ! Assumed for now \n")
         f.write("imp_ang = 1/200 * alpha_h * alpha_m \n")
-        f.write(f"FORCE_IMP = {Ver_Force}*imp_ang \n")        
+        f.write(f"FORCE_IMP = {Ver_Force}*imp_ang \n")
+
         #f.write("ALLSEL,ALL \n FDELE,ALL,ALL \n DDELE,ALL,ALL \n")
 
 ##################################################################
@@ -433,17 +431,23 @@ def InputFun(SWcoor, var, Misc, out_dir = "Ansout"):
         f.write("ARCLEN,ON \n")
         f.write("ARCTRM,L \n")
         f.write("AUTOTS,OFF \n")
-        f.write("NSUBST,30,100,10 \n")
+        #f.write("NSUBST,300,1000,100 \n") ######### IMPORTANT HERE ##########
 
         # Apply Force
+        f.write("NSEL,S,LOC,X,0 \n ")
+        f.write("*GET,N_LOW,NODE,,MNLOC,Y \n")
+        f.write("*GET,n_load_c,NODE,0,COUNT \n")
+
+        #f.write("NSEL,R,LOC,Y,N_LOW \n")
+        f.write("N_C = n_load_c \n")
         f.write("NSEL,S,LOC,X,0 \n ")
         f.write(f"MOMZ = {MomZ}/N_C \n")
         f.write(f"MOMY = {MomY}/N_C \n")
         f.write(f"F_HOR = {Hor_Force}/N_C \n")
         f.write(f"F_VER = {-Ver_Force}/N_C \n")
+        f.write("F_XTOT = F_HOR+(FORCE_IMP/N_C) \n")
         f.write(f"F,ALL,FY,F_VER \n")
-        f.write(f"F,ALL,FX,F_HOR \n")
-        f.write("F,ALL,FX,FORCE_IMP \n")
+        f.write(f"F,ALL,FX,F_XTOT \n")
         f.write(f"F,ALL,MY,MOMY \n")
         f.write(f"F,ALL,MZ,MOMZ \n")
 
@@ -487,23 +491,23 @@ def InputFun(SWcoor, var, Misc, out_dir = "Ansout"):
         f.write('       ("NS ColMember_",F3.0) \n')
         f.write("   *ENDIF \n")
         # RESULT 
-        f.write("*GET,nElem,ELEM,0,COUNT \n")
-        f.write("   *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC' \n")
-        f.write("   (A12,A20,A20,A20,A20,A20,A20,A20) \n")
-        f.write("   ELEM = 0 \n")
-        f.write("   *DO,jj,1,nElem,1 \n")
-        f.write("       ELEM = ELNEXT(ELEM) \n")
-        f.write("       *GET,NF,ELEM,ELEM,SMISC,1 \n")
-        f.write("       *GET,MY,ELEM,ELEM,SMISC,2 \n")
-        f.write("       *GET,MZ,ELEM,ELEM,SMISC,3 \n")
-        f.write("       *GET,VY,ELEM,ELEM,SMISC,6 \n")
-        f.write("       *GET,VZ,ELEM,ELEM,SMISC,5 \n")
-        f.write("       *GET,TQ,ELEM,ELEM,SMISC,4 \n")
-        f.write("       NSLE \n")
-        f.write("       *GET,Y_LOC,NODE,0,MNLOC,Y \n")
-        f.write("       *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC \n")
-        f.write("       (F12.0,7E20.8) \n")
-        f.write("   *ENDDO \n \n")
+        f.write("   *GET,nElem,ELEM,0,COUNT \n")
+        f.write("       *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC' \n")
+        f.write("       (A12,A20,A20,A20,A20,A20,A20,A20) \n")
+        f.write("       ELEM = 0 \n")
+        f.write("       *DO,jj,1,nElem,1 \n")
+        f.write("           ELEM = ELNEXT(ELEM) \n")
+        f.write("           *GET,NF,ELEM,ELEM,SMISC,1 \n")
+        f.write("           *GET,MY,ELEM,ELEM,SMISC,2 \n")
+        f.write("           *GET,MZ,ELEM,ELEM,SMISC,3 \n")
+        f.write("           *GET,VY,ELEM,ELEM,SMISC,6 \n")
+        f.write("           *GET,VZ,ELEM,ELEM,SMISC,5 \n")
+        f.write("           *GET,TQ,ELEM,ELEM,SMISC,4 \n")
+        f.write("           NSLE \n")
+        f.write("           *GET,Y_LOC,NODE,0,MNLOC,Y \n")
+        f.write("           *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC \n")
+        f.write("           (F12.0,7E20.8) \n")
+        f.write("       *ENDDO \n \n")
         f.write("*ENDDO")
 
         # LOOP OVER BRACES

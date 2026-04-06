@@ -77,6 +77,9 @@ class PostProcessor:
                 engine="python",
                 names=colnames
             )
+            if "Y_LOC" in df.columns:
+                        df = df[df["Y_LOC"] <= 4080]
+                        
             df["Member"] = current_member
             blocks.append(df)
 
@@ -181,7 +184,7 @@ class PostProcessor:
         R0, R1, R2, R3 = var        
 
         # Import Misc
-        f_y = Misc["E_mod"]
+        f_y = Misc["f_y"]
 
         # Function        
         def shearFun(df_member,Ro,Ri):
@@ -301,7 +304,7 @@ class PostProcessor:
         a_cr = next(v for v in eigenvalues if v > 0)
 
         # Utilize Util_IN
-        Util_IN = np.zeros(2)
+        Util_BR = np.zeros(2)
 
         # Import Radii
         R0, R1, R2, R3 = var
@@ -346,10 +349,10 @@ class PostProcessor:
             # Return Max Value
             return util_max
         
-        Util_IN[0] = bucklingResFun(self.df_col,R1,R0)
-        Util_IN[1] = bucklingResFun(self.df_brace,R3,R2)
+        Util_BR[0] = bucklingResFun(self.df_col,R1,R0)
+        Util_BR[1] = bucklingResFun(self.df_brace,R3,R2)
 
-        return Util_IN
+        return Util_BR
 
     # Interaction Force [6.3.3]
     def Util_IN(self, var, Misc):
@@ -449,35 +452,6 @@ class PostProcessor:
         Util_IN[1] = interaction(self.df_brace,R3,R2)
 
         return Util_IN
-
-        """
-        Writes the following line to Post_Util.txt:
-
-        E_ID   Y_LOC   UTIL_LC[0]   UTIL_LC[1]   UTIL_NF[0]   UTIL_NF[1]
-        """
-
-        # Read nonlinear internal APDL output
-        df = read_forces("AnsoutEigen/APDL_Eigen_Internal.txt")
-
-        # Compute utilizations
-        util_lc = Util_LC(var, Misc)   # returns [for columns, for braces]
-        util_nf = Util_NF(var, Misc)   # same structure
-
-        # Choose representative element: maximum |NF|
-        idx = df["NF"].abs().idxmax()
-        e_id = int(df.loc[idx, "ElemID"])
-        y_loc = float(df.loc[idx, "Y_LOC"])
-
-        # Write results to Post_Util.txt
-        with open("Post_Util.txt", "w") as f:
-            # Header
-            f.write(f"{'E_ID':>8} {'Y_LOC':>10} {'UTIL_LC0':>12} {'UTIL_LC1':>12} "
-                    f"{'UTIL_NF0':>12} {'UTIL_NF1':>12}\n")
-
-            # Values
-            f.write(f"{e_id:8d} {y_loc:10.2f} "
-                    f"{util_lc[0]:12.5f} {util_lc[1]:12.5f} "
-                    f"{util_nf[0]:12.5f} {util_nf[1]:12.5f}\n")
 
 
   

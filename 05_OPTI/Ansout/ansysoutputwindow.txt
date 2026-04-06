@@ -65,6 +65,9 @@
  Ansys, Inc. License Manager 2025 R1 
  Discovery (reduced install) 2025 R1 
  Core WB Files 2025 R1   
+ CFD-Post only 2025 R1   
+ Fluent (includes CFD-Post) 2025 R1  
+ Polyflow (includes CFD-Post) 2025 R1
  Remote Solve Manager Standalone Services 2025 R1
  Additive 2025 R1
  Autodyn 2025 R1 
@@ -93,12 +96,12 @@
   SHARED MEMORY PARALLEL REQUESTED
     SINGLE PROCESS WITH   8 THREADS REQUESTED
     TOTAL OF     8 CORES REQUESTED
-  INPUT FILE NAME              = C:\Users\boggy\OneDrive\Desktop\DMS4\05_OPTI\Ansout\APDL_Input.txt
-  OUTPUT FILE NAME             = C:\Users\boggy\OneDrive\Desktop\DMS4\05_OPTI\Ansout\Ansout\AnsysOutputWindow.txt
-  INITIAL DIRECTORY = C:\Users\boggy\OneDrive\Desktop\DMS4\05_OPTI\Ansout
+  INPUT FILE NAME              = C:\Users\atbys\Desktop\DMS4 Local\DMS4\05_OPTI\Ansout\APDL_Input.txt
+  OUTPUT FILE NAME             = C:\Users\atbys\Desktop\DMS4 Local\DMS4\05_OPTI\Ansout\Ansout\AnsysOutputWindow.txt
+  INITIAL DIRECTORY = C:\Users\atbys\Desktop\DMS4 Local\DMS4\05_OPTI\Ansout
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
- CURRENT JOBNAME=file  09:51:08  APR 06, 2026 CP=      0.094
+ CURRENT JOBNAME=file  14:02:44  APR 06, 2026 CP=      0.141
 
      1  ! ===== APDL INPUT FILE ====== !
      2  !   Eigenbuckling Analysis     !
@@ -1352,245 +1355,247 @@
   1250  F_VER = -26400/N_C  
   1251  F,ALL,FY,F_VER  
   1252  F,ALL,FX,F_HOR  
-  1253  F,ALL,FX,FORCE_IMP  
-  1254  F,ALL,MY,MOMY   
-  1255  F,ALL,MZ,MOMZ   
-  1256  ! Displacement !
-  1257  ALLSEL,ALL  
-  1258  NSEL,S,LOC,Y,NodeYMin   
-  1259  D,ALL,ALL,0 
-  1260  ALLSEL  
-  1261  ! Solve the System  
-  1262  SOLVE   
-  1263  FINISH  
-  1264      
-  1265  ! ===== APDL OUTPUT FILE ===== !
-  1266  /POST1  
-  1267  SET,LAST
-  1268  ALLSEL,ALL  
-  1269      
-  1270  *GET,E_COUNT,ELEM,0,COUNT   
-  1271      
-  1272  ! Number of Columns: 111
-  1273  ! Number of Braces : 75 
-  1274      
-  1275  ! Open file to write
-  1276  *CFOPEN, APDL_Eigen_Internal,txt
-  1277  ! Loop over Columns 
-  1278  *DO,ii,1,111,1  
-  1279     CMSEL,S,COLUMN_%ii%  
-  1280     ESLL,S   
-  1281     ESEL,R,ENAME,,189
-  1282     *IF,ii,LT,10,THEN
-  1283         *VWRITE,ii   
-  1284         ("NS ColMember_",F2.0)   
-  1285     *ELSE
-  1286         *VWRITE,ii   
-  1287         ("NS ColMember_",F3.0)   
-  1288     *ENDIF   
-  1289     *GET,nElem,ELEM,0,COUNT  
-  1290     *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC' 
-  1291     (A12,A20,A20,A20,A20,A20,A20,A20)
-  1292     ELEM = 0 
-  1293     *DO,jj,1,nElem,1 
-  1294         ELEM = ELNEXT(ELEM)  
-  1295         *GET,NF,ELEM,ELEM,SMISC,1
-  1296         *GET,MY,ELEM,ELEM,SMISC,2
-  1297         *GET,MZ,ELEM,ELEM,SMISC,3
-  1298         *GET,VY,ELEM,ELEM,SMISC,6
-  1299         *GET,VZ,ELEM,ELEM,SMISC,5
-  1300         *GET,TQ,ELEM,ELEM,SMISC,4
-  1301         NSLE 
-  1302         *GET,Y_LOC,NODE,0,MNLOC,Y
-  1303         *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC 
-  1304         (F12.0,7E20.8)   
-  1305     *ENDDO   
-  1306      
-  1307  *ENDDO! Loop over Braces
-  1308  *DO,ii,1,75,1   
-  1309     CMSEL,S,BRACE_%ii%,LINE  
-  1310     ESLL,S   
-  1311     ESEL,R,ENAME,,189
-  1312     *IF,ii,LT,10,THEN
-  1313         *VWRITE,ii   
-  1314         ("NS BraceMember_",F2.0) 
-  1315     *ELSE
-  1316         *VWRITE,ii   
-  1317         ("NS BraceMember_",F3.0) 
-  1318     *ENDIF   
-  1319     *GET,nElem,ELEM,0,COUNT  
-  1320     *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC' 
-  1321     (A12,7A20)   
-  1322     elem = 0 
-  1323     *DO,jj,1,nElem,1 
-  1324         ELEM = ELNEXT(ELEM)  
-  1325         *GET,NF,ELEM,ELEM,SMISC,1
-  1326         *GET,MY,ELEM,ELEM,SMISC,2
-  1327         *GET,MZ,ELEM,ELEM,SMISC,3
-  1328         *GET,VY,ELEM,ELEM,SMISC,6
-  1329         *GET,VZ,ELEM,ELEM,SMISC,5
-  1330         *GET,TQ,ELEM,ELEM,SMISC,4
-  1331         NSLE 
-  1332         *GET,Y_LOC,NODE,0,MNLOC,Y
-  1333         *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC 
-  1334         (F12.0,7E20.8)   
-  1335     *ENDDO   
-  1336  *ENDDO  
-  1337  *CFCLOS 
-  1338      
-  1339  ! Get and Print Mass
-  1340  ALLSEL  
-  1341  NSEL,S,LOC,Y,,4080  
-  1342  ESLN
-  1343  *GET,ecnt,ELEM,0,COUNT  
-  1344  *GET,enum,ELEM,0,NUM,MIN
-  1345  totvol = 0  
-  1346  *DO,i,1,ecnt
-  1347     *GET,ev,ELEM,enum,VOLU   
-  1348     totvol = totvol + ev 
-  1349     enum = ELNEXT(enum)  
-  1350  *ENDDO  
-  1351  dens = 7.85E-6 ! kg/mm^3
-  1352  Comp_mass = dens*totvol 
-  1353      
-  1354  *CFOPEN,MASS_assembly,txt   
-  1355     *VWRITE,Comp_mass
-  1356     (F12.5)  
-  1357  *CFCLOS 
-  1358  FINISH  
-  1359  ALLSEL,ALL  
-  1360      
-  1361  ! Eigenbuckling Solution!   
-  1362  /SOLU   
-  1363  ANTYPE,BUCKLE   
-  1364  BUCOPT,LANB,10  
-  1365  MXPAND,ALL  
-  1366  OUTRES,ALL,ALL  
-  1367  SOLVE   
-  1368  FINISH  
-  1369      
-  1370  ! Retrieve first 10 eigenvalues 
-  1371  /POST1  
-  1372  *CFOPEN,Eigenvalue1,txt 
-  1373  *DO,jj,1,10,1   
-  1374     *GET,MS%jj%,MODE,jj,FREQ 
-  1375     *VWRITE,MS%jj%   
-  1376     (F10.5)  
-  1377  *ENDDO  
-  1378  *CFCLOS 
-  1379  ALLSEL  
-  1380  *GET,N_HIGHEST_ret,NODE,0,MXLOC,Y   
-  1381  N_HIGHEST = N_HIGHEST_ret*1E-3  
-  1382  alpha_h = 2/sqrt(N_HIGHEST) 
-  1383  *IF,alpha_h,LT,0.66,THEN
-  1384     alpha_h = 0.66   
-  1385  *ELSEIF,alpha_h,GT,1,THEN   
-  1386     alpha_h = 1  
-  1387  *ENDIF  
-  1388  alpha_m = 2 ! Assumed for now   
-  1389  imp_ang = 1/200 * alpha_h * alpha_m 
-  1390  FORCE_IMP = 26400*imp_ang   
-  1391  ! SOLUTION !
-  1392  /SOLU   
-  1393  ANTYPE, STATIC  
-  1394  NLGEOM,ON   
-  1395  ARCLEN,ON   
-  1396  ARCTRM,L
-  1397  AUTOTS,OFF  
-  1398  NSUBST,30,100,10
-  1399  NSEL,S,LOC,X,0  
-  1400   MOMZ = -70364000/N_C   
-  1401  MOMY = 1407140/N_C  
-  1402  F_HOR = 502.52/N_C  
-  1403  F_VER = -26400/N_C  
-  1404  F,ALL,FY,F_VER  
-  1405  F,ALL,FX,F_HOR  
-  1406  F,ALL,FX,FORCE_IMP  
-  1407  F,ALL,MY,MOMY   
-  1408  F,ALL,MZ,MOMZ   
-  1409  ! Displacement !
-  1410  ALLSEL,ALL  
-  1411  NSEL,S,LOC,Y,NodeYMin   
-  1412  D,ALL,ALL,0 
-  1413  ALLSEL  
-  1414  ! Solve the System  
-  1415  SOLVE   
-  1416  FINISH  
-  1417      
-  1418  ! ===== APDL OUTPUT FILE ===== !
-  1419  /POST1  
-  1420  SET,LAST
-  1421  ALLSEL,ALL  
-  1422      
-  1423  *GET,E_COUNT,ELEM,0,COUNT   
+  1253  F,ALL,MY,MOMY   
+  1254  F,ALL,MZ,MOMZ   
+  1255  ! Displacement !
+  1256  ALLSEL,ALL  
+  1257  NSEL,S,LOC,Y,NodeYMin   
+  1258  D,ALL,ALL,0 
+  1259  ALLSEL  
+  1260  ! Solve the System  
+  1261  SOLVE   
+  1262  FINISH  
+  1263      
+  1264  ! ===== APDL OUTPUT FILE ===== !
+  1265  /POST1  
+  1266  SET,LAST
+  1267  ALLSEL,ALL  
+  1268      
+  1269  *GET,E_COUNT,ELEM,0,COUNT   
+  1270      
+  1271  ! Number of Columns: 111
+  1272  ! Number of Braces : 75 
+  1273      
+  1274  ! Open file to write
+  1275  *CFOPEN, APDL_Eigen_Internal,txt
+  1276  ! Loop over Columns 
+  1277  *DO,ii,1,111,1  
+  1278     CMSEL,S,COLUMN_%ii%  
+  1279     ESLL,S   
+  1280     ESEL,R,ENAME,,189
+  1281     *IF,ii,LT,10,THEN
+  1282         *VWRITE,ii   
+  1283         ("NS ColMember_",F2.0)   
+  1284     *ELSE
+  1285         *VWRITE,ii   
+  1286         ("NS ColMember_",F3.0)   
+  1287     *ENDIF   
+  1288     *GET,nElem,ELEM,0,COUNT  
+  1289     *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC' 
+  1290     (A12,A20,A20,A20,A20,A20,A20,A20)
+  1291     ELEM = 0 
+  1292     *DO,jj,1,nElem,1 
+  1293         ELEM = ELNEXT(ELEM)  
+  1294         *GET,NF,ELEM,ELEM,SMISC,1
+  1295         *GET,MY,ELEM,ELEM,SMISC,2
+  1296         *GET,MZ,ELEM,ELEM,SMISC,3
+  1297         *GET,VY,ELEM,ELEM,SMISC,6
+  1298         *GET,VZ,ELEM,ELEM,SMISC,5
+  1299         *GET,TQ,ELEM,ELEM,SMISC,4
+  1300         NSLE 
+  1301         *GET,Y_LOC,NODE,0,MNLOC,Y
+  1302         *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC 
+  1303         (F12.0,7E20.8)   
+  1304     *ENDDO   
+  1305      
+  1306  *ENDDO! Loop over Braces
+  1307  *DO,ii,1,75,1   
+  1308     CMSEL,S,BRACE_%ii%,LINE  
+  1309     ESLL,S   
+  1310     ESEL,R,ENAME,,189
+  1311     *IF,ii,LT,10,THEN
+  1312         *VWRITE,ii   
+  1313         ("NS BraceMember_",F2.0) 
+  1314     *ELSE
+  1315         *VWRITE,ii   
+  1316         ("NS BraceMember_",F3.0) 
+  1317     *ENDIF   
+  1318     *GET,nElem,ELEM,0,COUNT  
+  1319     *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC' 
+  1320     (A12,7A20)   
+  1321     elem = 0 
+  1322     *DO,jj,1,nElem,1 
+  1323         ELEM = ELNEXT(ELEM)  
+  1324         *GET,NF,ELEM,ELEM,SMISC,1
+  1325         *GET,MY,ELEM,ELEM,SMISC,2
+  1326         *GET,MZ,ELEM,ELEM,SMISC,3
+  1327         *GET,VY,ELEM,ELEM,SMISC,6
+  1328         *GET,VZ,ELEM,ELEM,SMISC,5
+  1329         *GET,TQ,ELEM,ELEM,SMISC,4
+  1330         NSLE 
+  1331         *GET,Y_LOC,NODE,0,MNLOC,Y
+  1332         *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC 
+  1333         (F12.0,7E20.8)   
+  1334     *ENDDO   
+  1335  *ENDDO  
+  1336  *CFCLOS 
+  1337      
+  1338  ! Get and Print Mass
+  1339  ALLSEL  
+  1340  NSEL,S,LOC,Y,,4080  
+  1341  ESLN
+  1342  *GET,ecnt,ELEM,0,COUNT  
+  1343  *GET,enum,ELEM,0,NUM,MIN
+  1344  totvol = 0  
+  1345  *DO,i,1,ecnt
+  1346     *GET,ev,ELEM,enum,VOLU   
+  1347     totvol = totvol + ev 
+  1348     enum = ELNEXT(enum)  
+  1349  *ENDDO  
+  1350  dens = 7.85E-6 ! kg/mm^3
+  1351  Comp_mass = dens*totvol 
+  1352      
+  1353  *CFOPEN,MASS_assembly,txt   
+  1354     *VWRITE,Comp_mass
+  1355     (F12.5)  
+  1356  *CFCLOS 
+  1357  FINISH  
+  1358  ALLSEL,ALL  
+  1359      
+  1360  ! Eigenbuckling Solution!   
+  1361  /SOLU   
+  1362  ANTYPE,BUCKLE   
+  1363  BUCOPT,LANB,10  
+  1364  MXPAND,ALL  
+  1365  OUTRES,ALL,ALL  
+  1366  SOLVE   
+  1367  FINISH  
+  1368      
+  1369  ! Retrieve first 10 eigenvalues 
+  1370  /POST1  
+  1371  *CFOPEN,Eigenvalue1,txt 
+  1372  *DO,jj,1,10,1   
+  1373     *GET,MS%jj%,MODE,jj,FREQ 
+  1374     *VWRITE,MS%jj%   
+  1375     (F10.5)  
+  1376  *ENDDO  
+  1377  *CFCLOS 
+  1378  ALLSEL  
+  1379  *GET,N_HIGHEST_ret,NODE,0,MXLOC,Y   
+  1380  N_HIGHEST = N_HIGHEST_ret*1E-3  
+  1381  alpha_h = 2/sqrt(N_HIGHEST) 
+  1382  *IF,alpha_h,LT,0.66,THEN
+  1383     alpha_h = 0.66   
+  1384  *ELSEIF,alpha_h,GT,1,THEN   
+  1385     alpha_h = 1  
+  1386  *ENDIF  
+  1387  alpha_m = 2 ! Assumed for now   
+  1388  imp_ang = 1/200 * alpha_h * alpha_m 
+  1389  FORCE_IMP = 26400*imp_ang   
+  1390  ! SOLUTION !
+  1391  /SOLU   
+  1392  ANTYPE, STATIC  
+  1393  NLGEOM,ON   
+  1394  ARCLEN,ON   
+  1395  ARCTRM,L
+  1396  AUTOTS,OFF  
+  1397  NSEL,S,LOC,X,0  
+  1398   *GET,N_LOW,NODE,,MNLOC,Y   
+  1399  *GET,n_load_c,NODE,0,COUNT  
+  1400  N_C = n_load_c  
+  1401  NSEL,S,LOC,X,0  
+  1402   MOMZ = -70364000/N_C   
+  1403  MOMY = 1407140/N_C  
+  1404  F_HOR = 502.52/N_C  
+  1405  F_VER = -26400/N_C  
+  1406  F_XTOT = F_HOR+(FORCE_IMP/N_C)  
+  1407  F,ALL,FY,F_VER  
+  1408  F,ALL,FX,F_XTOT 
+  1409  F,ALL,MY,MOMY   
+  1410  F,ALL,MZ,MOMZ   
+  1411  ! Displacement !
+  1412  ALLSEL,ALL  
+  1413  NSEL,S,LOC,Y,NodeYMin   
+  1414  D,ALL,ALL,0 
+  1415  ALLSEL  
+  1416  ! Solve the System  
+  1417  SOLVE   
+  1418  FINISH  
+  1419      
+  1420  ! ===== APDL OUTPUT FILE ===== !
+  1421  /POST1  
+  1422  SET,LAST
+  1423  ALLSEL,ALL  
   1424      
-  1425  ! Number of Columns: 111
-  1426  ! Number of Braces : 75 
-  1427      
-  1428  ! Open file to write
-  1429  *CFOPEN, APDL_Nonlin_Internal,txt   
-  1430  ! Loop over Columns 
-  1431  *DO,ii,1,111,1  
-  1432     CMSEL,S,COLUMN_%ii%  
-  1433     ESLL,S   
-  1434     ESEL,R,ENAME,,189
-  1435     *IF,ii,LT,10,THEN
-  1436         *VWRITE,ii   
-  1437         ("NS ColMember_",F2.0)   
-  1438     *ELSE
-  1439         *VWRITE,ii   
-  1440         ("NS ColMember_",F3.0)   
-  1441     *ENDIF   
-  1442  *GET,nElem,ELEM,0,COUNT 
-  1443     *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC' 
-  1444     (A12,A20,A20,A20,A20,A20,A20,A20)
-  1445     ELEM = 0 
-  1446     *DO,jj,1,nElem,1 
-  1447         ELEM = ELNEXT(ELEM)  
-  1448         *GET,NF,ELEM,ELEM,SMISC,1
-  1449         *GET,MY,ELEM,ELEM,SMISC,2
-  1450         *GET,MZ,ELEM,ELEM,SMISC,3
-  1451         *GET,VY,ELEM,ELEM,SMISC,6
-  1452         *GET,VZ,ELEM,ELEM,SMISC,5
-  1453         *GET,TQ,ELEM,ELEM,SMISC,4
-  1454         NSLE 
-  1455         *GET,Y_LOC,NODE,0,MNLOC,Y
-  1456         *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC 
-  1457         (F12.0,7E20.8)   
-  1458     *ENDDO   
-  1459      
-  1460  *ENDDO! Loop over Braces
-  1461  *DO,ii,1,75,1   
-  1462     CMSEL,S,BRACE_%ii%,LINE  
-  1463     ESLL,S   
-  1464     ESEL,R,ENAME,,189
-  1465     *IF,ii,LT,10,THEN
-  1466         *VWRITE,ii   
-  1467         ("NS BraceMember_",F2.0) 
-  1468     *ELSE
-  1469         *VWRITE,ii   
-  1470         ("NS BraceMember_",F3.0) 
-  1471     *ENDIF   
-  1472     *GET,nElem,ELEM,0,COUNT  
-  1473     *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC' 
-  1474     (A12,7A20)   
-  1475     elem = 0 
-  1476     *DO,jj,1,nElem,1 
-  1477         ELEM = ELNEXT(ELEM)  
-  1478         *GET,NF,ELEM,ELEM,SMISC,1
-  1479         *GET,MY,ELEM,ELEM,SMISC,2
-  1480         *GET,MZ,ELEM,ELEM,SMISC,3
-  1481         *GET,VY,ELEM,ELEM,SMISC,6
-  1482         *GET,VZ,ELEM,ELEM,SMISC,5
-  1483         *GET,TQ,ELEM,ELEM,SMISC,4
-  1484         NSLE 
-  1485         *GET,Y_LOC,NODE,0,MNLOC,Y
-  1486         *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC 
-  1487         (F12.0,7E20.8)   
-  1488     *ENDDO   
-  1489  *ENDDO  
-  1490  *CFCLOS 
-  1491      
+  1425  *GET,E_COUNT,ELEM,0,COUNT   
+  1426      
+  1427  ! Number of Columns: 111
+  1428  ! Number of Braces : 75 
+  1429      
+  1430  ! Open file to write
+  1431  *CFOPEN, APDL_Nonlin_Internal,txt   
+  1432  ! Loop over Columns 
+  1433  *DO,ii,1,111,1  
+  1434     CMSEL,S,COLUMN_%ii%  
+  1435     ESLL,S   
+  1436     ESEL,R,ENAME,,189
+  1437     *IF,ii,LT,10,THEN
+  1438         *VWRITE,ii   
+  1439         ("NS ColMember_",F2.0)   
+  1440     *ELSE
+  1441         *VWRITE,ii   
+  1442         ("NS ColMember_",F3.0)   
+  1443     *ENDIF   
+  1444     *GET,nElem,ELEM,0,COUNT  
+  1445         *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC' 
+  1446         (A12,A20,A20,A20,A20,A20,A20,A20)
+  1447         ELEM = 0 
+  1448         *DO,jj,1,nElem,1 
+  1449             ELEM = ELNEXT(ELEM)  
+  1450             *GET,NF,ELEM,ELEM,SMISC,1
+  1451             *GET,MY,ELEM,ELEM,SMISC,2
+  1452             *GET,MZ,ELEM,ELEM,SMISC,3
+  1453             *GET,VY,ELEM,ELEM,SMISC,6
+  1454             *GET,VZ,ELEM,ELEM,SMISC,5
+  1455             *GET,TQ,ELEM,ELEM,SMISC,4
+  1456             NSLE 
+  1457             *GET,Y_LOC,NODE,0,MNLOC,Y
+  1458             *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC 
+  1459             (F12.0,7E20.8)   
+  1460         *ENDDO   
+  1461      
+  1462  *ENDDO! Loop over Braces
+  1463  *DO,ii,1,75,1   
+  1464     CMSEL,S,BRACE_%ii%,LINE  
+  1465     ESLL,S   
+  1466     ESEL,R,ENAME,,189
+  1467     *IF,ii,LT,10,THEN
+  1468         *VWRITE,ii   
+  1469         ("NS BraceMember_",F2.0) 
+  1470     *ELSE
+  1471         *VWRITE,ii   
+  1472         ("NS BraceMember_",F3.0) 
+  1473     *ENDIF   
+  1474     *GET,nElem,ELEM,0,COUNT  
+  1475     *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC' 
+  1476     (A12,7A20)   
+  1477     elem = 0 
+  1478     *DO,jj,1,nElem,1 
+  1479         ELEM = ELNEXT(ELEM)  
+  1480         *GET,NF,ELEM,ELEM,SMISC,1
+  1481         *GET,MY,ELEM,ELEM,SMISC,2
+  1482         *GET,MZ,ELEM,ELEM,SMISC,3
+  1483         *GET,VY,ELEM,ELEM,SMISC,6
+  1484         *GET,VZ,ELEM,ELEM,SMISC,5
+  1485         *GET,TQ,ELEM,ELEM,SMISC,4
+  1486         NSLE 
+  1487         *GET,Y_LOC,NODE,0,MNLOC,Y
+  1488         *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC 
+  1489         (F12.0,7E20.8)   
+  1490     *ENDDO   
+  1491  *ENDDO  
+  1492  *CFCLOS 
+  1493      
 
  RUN SETUP PROCEDURE FROM FILE= C:\Program Files\ANSYS Inc\v251\ANSYS\apdl\start.ans
 
@@ -1609,7 +1614,7 @@
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   09:51:08  APR 06, 2026 CP=      0.172
+ 00254321  VERSION=WINDOWS x64   14:02:44  APR 06, 2026 CP=      0.281
 
                                                                                
 
@@ -1645,7 +1650,7 @@
     Shear Center Y       = 0.10545E-13
     Shear Center Z       =-0.59903E-15
     Shear Correction-xy  = 0.50089    
-    Shear Correction-yz  = 0.65068E-13
+    Shear Correction-yz  = 0.13712E-13
     Shear Correction-xz  = 0.50089    
                  
     Beam Section is offset to CENTROID of cross section
@@ -1670,7 +1675,7 @@
     Shear Center Y       =-0.10064E-14
     Shear Center Z       = 0.34175E-14
     Shear Correction-xy  = 0.50676    
-    Shear Correction-yz  =-0.46559E-14
+    Shear Correction-yz  =-0.96728E-14
     Shear Correction-xz  = 0.50676    
                  
     Beam Section is offset to CENTROID of cross section
@@ -1695,7 +1700,7 @@
     Shear Center Y       = 0.10545E-13
     Shear Center Z       =-0.59903E-15
     Shear Correction-xy  = 0.50089    
-    Shear Correction-yz  = 0.65068E-13
+    Shear Correction-yz  = 0.13712E-13
     Shear Correction-xz  = 0.50089    
                  
     Beam Section is offset to CENTROID of cross section
@@ -6445,7 +6450,7 @@
  ZLIB Version 1.2.13 Copyright (C) 1995-1998 Jean-loup Gailly and Mark Adler
 
 
- ***** ROUTINE COMPLETED *****  CP =         0.547
+ ***** ROUTINE COMPLETED *****  CP =         1.016
 
 
 
@@ -6493,9 +6498,6 @@
  SPECIFIED NODAL LOAD FX   FOR SELECTED NODES         1 TO     1060 BY        1
   REAL=  71.7885714       IMAG=  0.00000000    
 
- SPECIFIED NODAL LOAD FX   FOR SELECTED NODES         1 TO     1060 BY        1
-  REAL= 7.888609052E-31   IMAG=  0.00000000    
-
  SPECIFIED NODAL LOAD MY   FOR SELECTED NODES         1 TO     1060 BY        1
   REAL=  201020.000       IMAG=  0.00000000    
 
@@ -6517,7 +6519,7 @@
 
  *****  MAPDL SOLVE    COMMAND  *****
 
- *** NOTE ***                            CP =       0.547   TIME= 09:51:08
+ *** NOTE ***                            CP =       1.062   TIME= 14:02:45
  There is no title defined for this analysis.                            
 
  *** SELECTION OF ELEMENT TECHNOLOGIES FOR APPLICABLE ELEMENTS ***
@@ -6532,7 +6534,7 @@
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   09:51:08  APR 06, 2026 CP=      0.547
+ 00254321  VERSION=WINDOWS x64   14:02:45  APR 06, 2026 CP=      1.062
 
                                                                                
 
@@ -6547,11 +6549,11 @@
    EQUATION SOLVER OPTION. . . . . . . . . . . . .SPARSE             
    GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
 
- *** NOTE ***                            CP =       0.547   TIME= 09:51:08
+ *** NOTE ***                            CP =       1.062   TIME= 14:02:45
  Present time 0 is less than or equal to the previous time.  Time will   
  default to 1.                                                           
 
- *** NOTE ***                            CP =       0.547   TIME= 09:51:08
+ *** NOTE ***                            CP =       1.062   TIME= 14:02:45
  The conditions for direct assembly have been met.  No .emat or .erot    
  files will be produced.                                                 
 
@@ -6568,7 +6570,7 @@
 
  SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
 
- *** NOTE ***                            CP =       0.562   TIME= 09:51:08
+ *** NOTE ***                            CP =       1.188   TIME= 14:02:45
  Predictor is ON by default for structural elements with rotational      
  degrees of freedom.  Use the PRED,OFF command to turn the predictor     
  OFF if it adversely affects the convergence.                            
@@ -6607,13 +6609,13 @@
 
  Range of element maximum matrix coefficients in global coordinates
  Maximum = 8.900048276E+13 at element 553.                               
- Minimum = 391641627 at element 473.                                     
+ Minimum = 391641627 at element 463.                                     
 
    *** ELEMENT MATRIX FORMULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1       573  BEAM189       0.000   0.000000
- Time at end of element matrix formulation CP = 0.5625.                  
+        1       573  BEAM189       1.109   0.001936
+ Time at end of element matrix formulation CP = 1.328125.                
 
  SPARSE MATRIX DIRECT SOLVER.
   Number of equations =        6342,    Maximum wavefront =     72
@@ -6624,29 +6626,29 @@
   Equation solver memory allocated                     =     6.639 MB
   Equation solver memory required for in-core mode     =     6.423 MB
   Equation solver memory required for out-of-core mode =     4.932 MB
-  Total (solver and non-solver) memory allocated       =   374.925 MB
+  Total (solver and non-solver) memory allocated       =   378.882 MB
 
- *** NOTE ***                            CP =       0.578   TIME= 09:51:08
+ *** NOTE ***                            CP =       1.359   TIME= 14:02:45
  The Sparse Matrix Solver is currently running in the in-core memory     
  mode.  This memory mode uses the most amount of memory in order to      
  avoid using the hard drive as much as possible, which most often        
  results in the fastest solution time.  This mode is recommended if      
  enough physical memory is present to accommodate all of the solver      
  data.                                                                   
- Sparse solver maximum pivot= 8.900048276E+13 at node 1026 ROTY.         
- Sparse solver minimum pivot= 1564.75157 at node 327 UZ.                 
- Sparse solver minimum pivot in absolute value= 1564.75157 at node 327   
+ Sparse solver maximum pivot= 8.900048276E+13 at node 1028 ROTZ.         
+ Sparse solver minimum pivot= 1564.7514 at node 327 UZ.                  
+ Sparse solver minimum pivot in absolute value= 1564.7514 at node 327    
  UZ.                                                                     
 
    *** ELEMENT RESULT CALCULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1       573  BEAM189       0.812   0.001418
+        1       573  BEAM189       1.406   0.002454
 
    *** NODAL LOAD CALCULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1       573  BEAM189       0.172   0.000300
+        1       573  BEAM189       0.344   0.000600
  *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      1
  *** TIME =   1.00000         TIME INC =   1.00000      NEW TRIANG MATRIX
 
@@ -6659,13 +6661,13 @@
  FINISH SOLUTION PROCESSING
 
 
- ***** ROUTINE COMPLETED *****  CP =         0.719
+ ***** ROUTINE COMPLETED *****  CP =         2.047
 
 
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   09:51:08  APR 06, 2026 CP=      0.719
+ 00254321  VERSION=WINDOWS x64   14:02:45  APR 06, 2026 CP=      2.047
 
                                                                                
 
@@ -6673,7 +6675,7 @@
 
           ***** MAPDL RESULTS INTERPRETATION (POST1) *****
 
- *** NOTE ***                            CP =       0.719   TIME= 09:51:08
+ *** NOTE ***                            CP =       2.078   TIME= 14:02:45
  Reading results into the database (SET command) will update the current 
  displacement and force boundary conditions in the database with the     
  values from the results file for that load set.  Note that any          
@@ -6723,17 +6725,17 @@
 
  PARAMETER ELEM =     1.000000000    
 
- *GET  NF        FROM  ELEM         1  ITEM=SMIS 1         VALUE=  101937.188    
+ *GET  NF        FROM  ELEM         1  ITEM=SMIS 1         VALUE=  105142.281    
 
- *GET  MY        FROM  ELEM         1  ITEM=SMIS 2         VALUE=  151405.453    
+ *GET  MY        FROM  ELEM         1  ITEM=SMIS 2         VALUE=  163468.438    
 
- *GET  MZ        FROM  ELEM         1  ITEM=SMIS 3         VALUE= -982206.562    
+ *GET  MZ        FROM  ELEM         1  ITEM=SMIS 3         VALUE= -1027808.06    
 
- *GET  VY        FROM  ELEM         1  ITEM=SMIS 6         VALUE= -941.395569    
+ *GET  VY        FROM  ELEM         1  ITEM=SMIS 6         VALUE= -1132.00684    
 
- *GET  VZ        FROM  ELEM         1  ITEM=SMIS 5         VALUE= -250.790054    
+ *GET  VZ        FROM  ELEM         1  ITEM=SMIS 5         VALUE= -335.136780    
 
- *GET  TQ        FROM  ELEM         1  ITEM=SMIS 4         VALUE=  149347.266    
+ *GET  TQ        FROM  ELEM         1  ITEM=SMIS 4         VALUE=  149120.438    
 
  SELECT      ALL NODES HAVING ANY ELEMENT IN ELEMENT SET.
 
@@ -6775,17 +6777,17 @@
 
  PARAMETER ELEM =     184.0000000    
 
- *GET  NF        FROM  ELEM       184  ITEM=SMIS 1         VALUE= -362.039093    
+ *GET  NF        FROM  ELEM       184  ITEM=SMIS 1         VALUE= -281.706360    
 
- *GET  MY        FROM  ELEM       184  ITEM=SMIS 2         VALUE=  4001.02441    
+ *GET  MY        FROM  ELEM       184  ITEM=SMIS 2         VALUE=  3976.16309    
 
- *GET  MZ        FROM  ELEM       184  ITEM=SMIS 3         VALUE= -8055.40967    
+ *GET  MZ        FROM  ELEM       184  ITEM=SMIS 3         VALUE= -7556.00244    
 
- *GET  VY        FROM  ELEM       184  ITEM=SMIS 6         VALUE= -46.4889908    
+ *GET  VY        FROM  ELEM       184  ITEM=SMIS 6         VALUE= -43.8623123    
 
- *GET  VZ        FROM  ELEM       184  ITEM=SMIS 5         VALUE= -23.2420959    
+ *GET  VZ        FROM  ELEM       184  ITEM=SMIS 5         VALUE= -23.1185722    
 
- *GET  TQ        FROM  ELEM       184  ITEM=SMIS 4         VALUE= -2679.87842    
+ *GET  TQ        FROM  ELEM       184  ITEM=SMIS 4         VALUE= -2689.35815    
 
  SELECT      ALL NODES HAVING ANY ELEMENT IN ELEMENT SET.
 
@@ -6842,7 +6844,7 @@
  EXIT THE MAPDL POST1 DATABASE PROCESSOR
 
 
- ***** ROUTINE COMPLETED *****  CP =         1.000
+ ***** ROUTINE COMPLETED *****  CP =         5.078
 
 
 
@@ -6854,7 +6856,7 @@
  PERFORM A BUCKLING ANALYSIS
   THIS WILL BE A NEW ANALYSIS
 
- *** NOTE ***                            CP =       1.000   TIME= 09:51:08
+ *** NOTE ***                            CP =       5.078   TIME= 14:02:45
  Some analysis options have been reset to their defaults.  Please verify 
  current settings or respecify as required.                              
 
@@ -6866,7 +6868,7 @@
  EXPAND ALL EXTRACTED MODES
   DO NOT CALCULATE ELEMENT RESULTS
 
- *** NOTE ***                            CP =       1.000   TIME= 09:51:08
+ *** NOTE ***                            CP =       5.078   TIME= 14:02:45
  To view 3-D mode shapes of beam or pipe elements, expand the modes with 
  element results calculation active via Elcalc=YES.                      
 
@@ -6875,10 +6877,10 @@
 
  *****  MAPDL SOLVE    COMMAND  *****
 
- *** NOTE ***                            CP =       1.000   TIME= 09:51:08
+ *** NOTE ***                            CP =       5.078   TIME= 14:02:45
  There is no title defined for this analysis.                            
 
- *** NOTE ***                            CP =       1.000   TIME= 09:51:08
+ *** NOTE ***                            CP =       5.078   TIME= 14:02:45
  To view 3-D mode shapes of beam or pipe elements, expand the modes with 
  element results calculation active via the MXPAND command's             
  Elcalc=YES.                                                             
@@ -6895,7 +6897,7 @@
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   09:51:08  APR 06, 2026 CP=      1.000
+ 00254321  VERSION=WINDOWS x64   14:02:45  APR 06, 2026 CP=      5.078
 
                                                                                
 
@@ -6910,7 +6912,7 @@
    PRESTRESS EFFECTS INCLUDED IF AVAILABLE . . . .YES
    GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
 
- *** NOTE ***                            CP =       1.000   TIME= 09:51:08
+ *** NOTE ***                            CP =       5.125   TIME= 14:02:45
  The conditions for direct assembly have been met.  No .emat or .erot    
  files will be produced.                                                 
 
@@ -6935,12 +6937,12 @@
 
   Memory allocated on this process
   -------------------------------------------------------------------
-  Equation solver memory allocated                     =     5.661 MB
-  Equation solver memory required for in-core mode     =     5.419 MB
-  Equation solver memory required for out-of-core mode =     3.231 MB
-  Total (solver and non-solver) memory allocated       =   416.923 MB
+  Equation solver memory allocated                     =     5.641 MB
+  Equation solver memory required for in-core mode     =     5.400 MB
+  Equation solver memory required for out-of-core mode =     3.226 MB
+  Total (solver and non-solver) memory allocated       =   419.653 MB
 
- *** NOTE ***                            CP =       1.031   TIME= 09:51:09
+ *** NOTE ***                            CP =       6.266   TIME= 14:02:46
  The Sparse Matrix Solver is currently running in the in-core memory     
  mode.  This memory mode uses the most amount of memory in order to      
  avoid using the hard drive as much as possible, which most often        
@@ -6953,18 +6955,18 @@
   Lanczos Memory Mode : INCORE
 
 
-  >> Shift # 1 :                   : 0 Eigenvalues Converged
+  >> Shift # 1 :                                       : 0 Eigenvalues Converged
 
-  >> Shift # 2 :                   : 0 Eigenvalues Converged
+  >> Shift # 2 :                                       : 0 Eigenvalues Converged
 
-  >> Shift # 3 :                   : 0 Eigenvalues Converged
+  >> Shift # 3 :                                       : 0 Eigenvalues Converged
 
   >> Shift # 4 :  | | |                              : 10 Eigenvalues Converged
 
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   09:51:09  APR 06, 2026 CP=      1.453
+ 00254321  VERSION=WINDOWS x64   14:02:46  APR 06, 2026 CP=      8.609
 
                                                                                
 
@@ -6975,16 +6977,16 @@
 
       SHAPE NUMBER   LOAD MULTIPLIER
 
-            1           -27.398058    
-            2           -27.319785    
-            3           -21.951639    
-            4           -18.939871    
-            5            15.148101    
-            6            16.767534    
-            7            19.525028    
-            8            19.973182    
-            9            24.059819    
-           10            25.221411    
+            1           -27.063544    
+            2           -26.795384    
+            3           -21.669106    
+            4           -18.754064    
+            5            15.089723    
+            6            16.528672    
+            7            19.235208    
+            8            19.698678    
+            9            23.762047    
+           10            24.833174    
 
 
 
@@ -6998,13 +7000,13 @@
  FINISH SOLUTION PROCESSING
 
 
- ***** ROUTINE COMPLETED *****  CP =         1.484
+ ***** ROUTINE COMPLETED *****  CP =         8.844
 
 
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   09:51:09  APR 06, 2026 CP=      1.484
+ 00254321  VERSION=WINDOWS x64   14:02:46  APR 06, 2026 CP=      8.844
 
                                                                                
 
@@ -7017,7 +7019,7 @@
 
  *DO LOOP ON PARAMETER= JJ FROM  1.0000     TO  10.000     BY  1.0000    
 
- *GET  MS1       FROM  MODE      1  ITEM=FREQ       VALUE= -27.3980583    
+ *GET  MS1       FROM  MODE      1  ITEM=FREQ       VALUE= -27.0635438    
 
  *ENDDO  INDEX= JJ                              
 
@@ -7042,7 +7044,7 @@
 
  PARAMETER ALPHA_M =     2.000000000    
 
- *** WARNING ***                         CP =       1.500   TIME= 09:51:09
+ *** WARNING ***                         CP =       8.844   TIME= 14:02:46
  * no longer valid as comment character - please use !                   
   *SET,imp_ang, 1/200 * alpha_h * alpha_m                                
   This warning only issued once.                                         
@@ -7054,7 +7056,7 @@
  EXIT THE MAPDL POST1 DATABASE PROCESSOR
 
 
- ***** ROUTINE COMPLETED *****  CP =         1.500
+ ***** ROUTINE COMPLETED *****  CP =         8.844
 
 
 
@@ -7064,7 +7066,7 @@
  PERFORM A STATIC ANALYSIS
   THIS WILL BE A NEW ANALYSIS
 
- *** NOTE ***                            CP =       1.500   TIME= 09:51:09
+ *** NOTE ***                            CP =       8.844   TIME= 14:02:46
  Some analysis options have been reset to their defaults.  Please verify 
  current settings or respecify as required.                              
 
@@ -7077,10 +7079,16 @@
 
  DO NOT USE AUTOMATIC TIME STEPPING THIS LOAD STEP
 
- USE      30 SUBSTEPS INITIALLY THIS LOAD STEP FOR ALL  DEGREES OF FREEDOM
- FOR AUTOMATIC TIME STEPPING:
-   USE    100 SUBSTEPS AS A MAXIMUM
-   USE     10 SUBSTEPS AS A MINIMUM
+ SELECT       FOR ITEM=LOC  COMPONENT=X     BETWEEN  0.0000     AND   0.0000    
+   KABS=  0.  TOLERANCE= 0.100000E-05
+
+          7  NODES (OF       1060  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ *GET  N_LOW     FROM  NODE  ITEM=MNLO Y     VALUE=  4080.27700     
+
+ *GET  N_LOAD_C  FROM  NODE  ITEM=COUN       VALUE=  7.00000000     
+
+ PARAMETER N_C =     7.000000000    
 
  SELECT       FOR ITEM=LOC  COMPONENT=X     BETWEEN  0.0000     AND   0.0000    
    KABS=  0.  TOLERANCE= 0.100000E-05
@@ -7095,14 +7103,13 @@
 
  PARAMETER F_VER =    -3771.428571    
 
+ PARAMETER F_XTOT =     90.64571429    
+
  SPECIFIED NODAL LOAD FY   FOR SELECTED NODES         1 TO     1060 BY        1
   REAL= -3771.42857       IMAG=  0.00000000    
 
  SPECIFIED NODAL LOAD FX   FOR SELECTED NODES         1 TO     1060 BY        1
-  REAL=  71.7885714       IMAG=  0.00000000    
-
- SPECIFIED NODAL LOAD FX   FOR SELECTED NODES         1 TO     1060 BY        1
-  REAL=  132.000000       IMAG=  0.00000000    
+  REAL=  90.6457143       IMAG=  0.00000000    
 
  SPECIFIED NODAL LOAD MY   FOR SELECTED NODES         1 TO     1060 BY        1
   REAL=  201020.000       IMAG=  0.00000000    
@@ -7125,7 +7132,7 @@
 
  *****  MAPDL SOLVE    COMMAND  *****
 
- *** NOTE ***                            CP =       1.500   TIME= 09:51:09
+ *** NOTE ***                            CP =       8.969   TIME= 14:02:46
  There is no title defined for this analysis.                            
 
  *** SELECTION OF ELEMENT TECHNOLOGIES FOR APPLICABLE ELEMENTS ***
@@ -7140,7 +7147,7 @@
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   09:51:09  APR 06, 2026 CP=      1.500
+ 00254321  VERSION=WINDOWS x64   14:02:46  APR 06, 2026 CP=      8.969
 
                                                                                
 
@@ -7155,15 +7162,15 @@
    NEWTON-RAPHSON OPTION . . . . . . . . . . . . .PROGRAM CHOSEN   
    GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
 
- *** NOTE ***                            CP =       1.500   TIME= 09:51:09
+ *** NOTE ***                            CP =       8.969   TIME= 14:02:46
  Present time 0 is less than or equal to the previous time.  Time will   
  default to 1.                                                           
 
- *** NOTE ***                            CP =       1.500   TIME= 09:51:09
+ *** NOTE ***                            CP =       8.969   TIME= 14:02:46
  This nonlinear analysis defaults to using the full Newton-Raphson       
  solution procedure.  This can be modified using the NROPT command.      
 
- *** NOTE ***                            CP =       1.500   TIME= 09:51:09
+ *** NOTE ***                            CP =       8.969   TIME= 14:02:46
  The conditions for direct assembly have been met.  No .emat or .erot    
  files will be produced.                                                 
 
@@ -7171,7 +7178,7 @@
 
    LOAD STEP NUMBER. . . . . . . . . . . . . . . .     1
    TIME AT END OF THE LOAD STEP. . . . . . . . . .  1.0000    
-   NUMBER OF SUBSTEPS. . . . . . . . . . . . . . .    30
+   NUMBER OF SUBSTEPS. . . . . . . . . . . . . . .     1
    MAXIMUM NUMBER OF EQUILIBRIUM ITERATIONS. . . .    15
    ARC-LENGTH . . . . .  . . . . . . . . . . . . .    ON
    STEP CHANGE BOUNDARY CONDITIONS . . . . . . . .    NO
@@ -7186,7 +7193,7 @@
 
  SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
 
- *** NOTE ***                            CP =       1.594   TIME= 09:51:09
+ *** NOTE ***                            CP =       9.672   TIME= 14:02:46
  Predictor is ON by default for structural elements with rotational      
  degrees of freedom.  Use the PRED,OFF command to turn the predictor     
  OFF if it adversely affects the convergence.                            
@@ -7224,19 +7231,19 @@
      1   5.58345    
 
  Range of element maximum matrix coefficients in global coordinates
- Maximum = 8.900048276E+13 at element 553.                               
- Minimum = 391641627 at element 473.                                     
+ Maximum = 8.900048276E+13 at element 554.                               
+ Minimum = 391641627 at element 463.                                     
 
    *** ELEMENT MATRIX FORMULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1       573  BEAM189       0.812   0.001418
- Time at end of element matrix formulation CP = 1.71875.                 
+        1       573  BEAM189       1.000   0.001745
+ Time at end of element matrix formulation CP = 9.828125.                
 
  ALL CURRENT MAPDL DATA WRITTEN TO FILE NAME= file.rdb
   FOR POSSIBLE RESUME FROM THIS POINT
-     FORCE CONVERGENCE VALUE  =   332.8      CRITERION=   1.664    
-     MOMENT CONVERGENCE VALUE =  0.8867E+06  CRITERION=   4433.    
+     FORCE CONVERGENCE VALUE  =   9981.      CRITERION=   49.91    
+     MOMENT CONVERGENCE VALUE =  0.2660E+08  CRITERION=  0.1330E+06
 
  SPARSE MATRIX DIRECT SOLVER.
   Number of equations =        6342,    Maximum wavefront =     72
@@ -7247,154 +7254,77 @@
   Equation solver memory allocated                     =     6.639 MB
   Equation solver memory required for in-core mode     =     6.423 MB
   Equation solver memory required for out-of-core mode =     4.932 MB
-  Total (solver and non-solver) memory allocated       =   427.413 MB
+  Total (solver and non-solver) memory allocated       =   430.495 MB
 
- *** NOTE ***                            CP =       1.766   TIME= 09:51:09
+ *** NOTE ***                            CP =      10.203   TIME= 14:02:46
  The Sparse Matrix Solver is currently running in the in-core memory     
  mode.  This memory mode uses the most amount of memory in order to      
  avoid using the hard drive as much as possible, which most often        
  results in the fastest solution time.  This mode is recommended if      
  enough physical memory is present to accommodate all of the solver      
  data.                                                                   
- Sparse solver maximum pivot= 8.900048276E+13 at node 1026 ROTY.         
- Sparse solver minimum pivot= 1564.75162 at node 327 UZ.                 
- Sparse solver minimum pivot in absolute value= 1564.75162 at node 327   
+ Sparse solver maximum pivot= 8.900048276E+13 at node 1028 ROTZ.         
+ Sparse solver minimum pivot= 1564.75132 at node 327 UZ.                 
+ Sparse solver minimum pivot in absolute value= 1564.75132 at node 327   
  UZ.                                                                     
-     ARCLEN NEW TIME =  0.33333E-01 ARC-LENGTH =   40.914    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   2.592    
-     FORCE CONVERGENCE VALUE  =  0.6107E+07  CRITERION=   48.42    
-     MOMENT CONVERGENCE VALUE =  0.3226E+08  CRITERION=   4441.    
-     ARCLEN NEW TIME =  0.33322E-01 ARC-LENGTH =   57.861    
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.1022E-02
-     FORCE CONVERGENCE VALUE  =   2.567      CRITERION=   48.44     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =   8.703      CRITERION=   4440.     <<< CONVERGED
-    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
+     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   1211.4    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   76.84    
+     FORCE CONVERGENCE VALUE  =  0.5407E+10  CRITERION=   1432.    
+     MOMENT CONVERGENCE VALUE =  0.2863E+11  CRITERION=  0.1332E+06
+     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   1713.1    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.9062    
+     FORCE CONVERGENCE VALUE  =  0.1851E+07  CRITERION=   1442.    
+     MOMENT CONVERGENCE VALUE =  0.8473E+06  CRITERION=  0.1332E+06
+     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   1718.3    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   1.020    
+     FORCE CONVERGENCE VALUE  =  0.9581E+06  CRITERION=   1462.    
+     MOMENT CONVERGENCE VALUE =  0.4492E+07  CRITERION=  0.1332E+06
+     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   1729.9    
+    EQUIL ITER   4 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2730    
+     FORCE CONVERGENCE VALUE  =  0.6739E+05  CRITERION=   1467.    
+     MOMENT CONVERGENCE VALUE =  0.3427E+06  CRITERION=  0.1332E+06
+     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   1733.0    
+    EQUIL ITER   5 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.4885E-01
+     FORCE CONVERGENCE VALUE  =  0.1610E+05  CRITERION=   1468.    
+     MOMENT CONVERGENCE VALUE =  0.5652E+05  CRITERION=  0.1332E+06 <<< CONVERGED
+     ARCLEN NEW TIME =   1.0000     ARC-LENGTH =   1733.5    
+    EQUIL ITER   6 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2355E-02
+     FORCE CONVERGENCE VALUE  =   294.8      CRITERION=   1468.     <<< CONVERGED
+     MOMENT CONVERGENCE VALUE =   864.7      CRITERION=  0.1332E+06 <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   6
 
    *** ELEMENT RESULT CALCULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1       573  BEAM189       0.891   0.001554
+        1       573  BEAM189       1.594   0.002781
 
    *** NODAL LOAD CALCULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
 
-        1       573  BEAM189       0.031   0.000055
- *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      2
- *** TIME =  0.333224E-01  TIME INC =  0.333333E-01  MAX DISPLACEMENT =     2.593    
+        1       573  BEAM189       0.234   0.000409
+ *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      6
+ *** TIME =   1.00000      TIME INC =   1.00000      MAX DISPLACEMENT =     78.57    
 
-     FORCE CONVERGENCE VALUE  =   332.8      CRITERION=   48.52    
-     MOMENT CONVERGENCE VALUE =  0.8867E+06  CRITERION=   8869.    
-     ARCLEN NEW TIME =  0.66656E-01 ARC-LENGTH =   40.914    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   2.596    
-     FORCE CONVERGENCE VALUE  =  0.6121E+07  CRITERION=   96.95    
-     MOMENT CONVERGENCE VALUE =  0.3233E+08  CRITERION=   8881.    
-     ARCLEN NEW TIME =  0.66645E-01 ARC-LENGTH =   57.911    
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.1027E-02
-     FORCE CONVERGENCE VALUE  =   2.702      CRITERION=   96.97     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =   12.84      CRITERION=   8880.     <<< CONVERGED
-    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
- *** LOAD STEP     1   SUBSTEP     2  COMPLETED.    CUM ITER =      4
- *** TIME =  0.666455E-01  TIME INC =  0.499427E-01  MAX DISPLACEMENT =     5.190    
-
-     FORCE CONVERGENCE VALUE  =  0.4616E+07  CRITERION=   169.8    
-     MOMENT CONVERGENCE VALUE =  0.2436E+08  CRITERION=  0.1553E+05
-     ARCLEN NEW TIME =  0.11658     ARC-LENGTH =   86.866    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.8026E-03
-     FORCE CONVERGENCE VALUE  =   1.743      CRITERION=   169.8     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =   11.13      CRITERION=  0.1553E+05 <<< CONVERGED
-    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   1
- *** LOAD STEP     1   SUBSTEP     3  COMPLETED.    CUM ITER =      5
- *** TIME =  0.116581      TIME INC =  0.748501E-01  MAX DISPLACEMENT =     9.089    
-
-     FORCE CONVERGENCE VALUE  =  0.2643E+08  CRITERION=   279.3    
-     MOMENT CONVERGENCE VALUE =  0.1395E+09  CRITERION=  0.2551E+05
-     ARCLEN NEW TIME =  0.19139     ARC-LENGTH =   130.30    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.4441E-02
-     FORCE CONVERGENCE VALUE  =   44.88      CRITERION=   279.3     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =   72.06      CRITERION=  0.2550E+05 <<< CONVERGED
-    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   1
- *** LOAD STEP     1   SUBSTEP     4  COMPLETED.    CUM ITER =      6
- *** TIME =  0.191393      TIME INC =  0.112095      MAX DISPLACEMENT =     14.94    
-
-     FORCE CONVERGENCE VALUE  =  0.4765E+08  CRITERION=   443.8    
-     MOMENT CONVERGENCE VALUE =  0.2515E+09  CRITERION=  0.4044E+05
-     ARCLEN NEW TIME =  0.30341     ARC-LENGTH =   195.45    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.8047E-02
-     FORCE CONVERGENCE VALUE  =   148.9      CRITERION=   444.0     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =   353.0      CRITERION=  0.4043E+05 <<< CONVERGED
-    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   1
- *** LOAD STEP     1   SUBSTEP     5  COMPLETED.    CUM ITER =      7
- *** TIME =  0.303410      TIME INC =  0.167730      MAX DISPLACEMENT =     23.74    
-
-     FORCE CONVERGENCE VALUE  =  0.9007E+08  CRITERION=   691.5    
-     MOMENT CONVERGENCE VALUE =  0.4753E+09  CRITERION=  0.6278E+05
-     ARCLEN NEW TIME =  0.47099     ARC-LENGTH =   293.18    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.1532E-01
-     FORCE CONVERGENCE VALUE  =   531.8      CRITERION=   691.7     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =   1272.      CRITERION=  0.6276E+05 <<< CONVERGED
-    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   1
- *** LOAD STEP     1   SUBSTEP     6  COMPLETED.    CUM ITER =      8
- *** TIME =  0.470995      TIME INC =  0.250716      MAX DISPLACEMENT =     36.97    
-
-     FORCE CONVERGENCE VALUE  =  0.2000E+09  CRITERION=   1065.    
-     MOMENT CONVERGENCE VALUE =  0.1055E+10  CRITERION=  0.9617E+05
-     ARCLEN NEW TIME =  0.72142     ARC-LENGTH =   439.77    
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.3430E-01
-     FORCE CONVERGENCE VALUE  =   2567.      CRITERION=   1065.    
-     MOMENT CONVERGENCE VALUE =   4155.      CRITERION=  0.9613E+05 <<< CONVERGED
-     ARCLEN NEW TIME =  0.72052     ARC-LENGTH =   439.77    
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.7600E-01
-     FORCE CONVERGENCE VALUE  =  0.1037E+05  CRITERION=   1066.    
-     MOMENT CONVERGENCE VALUE =  0.5657E+05  CRITERION=  0.9601E+05 <<< CONVERGED
-     ARCLEN NEW TIME =  0.72052     ARC-LENGTH =   439.77    
-    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.1164E-02
-     FORCE CONVERGENCE VALUE  =   243.2      CRITERION=   1066.     <<< CONVERGED
-     MOMENT CONVERGENCE VALUE =   697.5      CRITERION=  0.9601E+05 <<< CONVERGED
-    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
- *** LOAD STEP     1   SUBSTEP     7  COMPLETED.    CUM ITER =     11
- *** TIME =  0.720521      TIME INC =  0.247006      MAX DISPLACEMENT =     56.93    
-
-     FORCE CONVERGENCE VALUE  =  0.8785E+08  CRITERION=   1445.    
-     MOMENT CONVERGENCE VALUE =  0.4847E+09  CRITERION=  0.1289E+06
-
- *** NOTE ***                            CP =       6.078   TIME= 09:51:10
- First limit point was found at time 0.967527225.  Previous converged    
- time is 0.720520969.  Terminate the analysis as the user requested.     
-
-
-
-
-         R E S T A R T   I N F O R M A T I O N
-
- REASON FOR TERMINATION. . . . . . . . . .LIMIT LOAD WAS FOUND (ARCTRM COMMAND)   
- FILES NEEDED FOR RESTARTING . . . . . . .  file.esav
-                                            file.db
-
- TIME OF LAST SOLUTION . . . . . . . . . . 0.96753    
-    TIME AT START OF THE LOAD STEP . . . .  0.0000    
-    TIME AT END OF THE LOAD STEP . . . . .  1.0000    
-
- ALL CURRENT MAPDL DATA WRITTEN TO FILE NAME= file.db
-  FOR POSSIBLE RESUME FROM THIS POINT
-
-
-
+ *** NOTE ***                            CP =      12.906   TIME= 14:02:46
+ Maximum load for load step 1 was reached.                               
 
 
  *** MAPDL BINARY FILE STATISTICS
   BUFFER SIZE USED= 16384
        10.875 MB WRITTEN ON ELEMENT SAVED DATA FILE: file.esav
         1.312 MB WRITTEN ON ASSEMBLED MATRIX FILE: file.full
-       10.688 MB WRITTEN ON RESULTS FILE: file.rst
+        1.688 MB WRITTEN ON RESULTS FILE: file.rst
+
+ FINISH SOLUTION PROCESSING
 
 
- ***** ROUTINE COMPLETED *****  CP =         6.250
+ ***** ROUTINE COMPLETED *****  CP =        13.000
 
 
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R1          25.1     ***
  Ansys Mechanical Enterprise Academic Research     
- 00254321  VERSION=WINDOWS x64   09:51:10  APR 06, 2026 CP=      6.250
+ 00254321  VERSION=WINDOWS x64   14:02:46  APR 06, 2026 CP=     13.000
 
                                                                                
 
@@ -7405,8 +7335,8 @@
 
  USE LAST SUBSTEP ON RESULT FILE  FOR LOAD CASE 0 
 
- SET COMMAND GOT LOAD STEP=     1  SUBSTEP=     8  CUMULATIVE ITERATION=    12
-   TIME/FREQUENCY= 0.96753    
+ SET COMMAND GOT LOAD STEP=     1  SUBSTEP=     1  CUMULATIVE ITERATION=     6
+   TIME/FREQUENCY=  1.0000    
  TITLE=                                                                         
 
  SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
@@ -7445,17 +7375,17 @@
 
  PARAMETER ELEM =     1.000000000    
 
- *GET  NF        FROM  ELEM         1  ITEM=SMIS 1         VALUE=  107260.555    
+ *GET  NF        FROM  ELEM         1  ITEM=SMIS 1         VALUE=  108997.703    
 
- *GET  MY        FROM  ELEM         1  ITEM=SMIS 2         VALUE=  129215.414    
+ *GET  MY        FROM  ELEM         1  ITEM=SMIS 2         VALUE=  174751.906    
 
- *GET  MZ        FROM  ELEM         1  ITEM=SMIS 3         VALUE= -786837.938    
+ *GET  MZ        FROM  ELEM         1  ITEM=SMIS 3         VALUE= -1076056.50    
 
- *GET  VY        FROM  ELEM         1  ITEM=SMIS 6         VALUE= -1469.65991    
+ *GET  VY        FROM  ELEM         1  ITEM=SMIS 6         VALUE= -1343.47314    
 
- *GET  VZ        FROM  ELEM         1  ITEM=SMIS 5         VALUE= -428.003815    
+ *GET  VZ        FROM  ELEM         1  ITEM=SMIS 5         VALUE= -374.175568    
 
- *GET  TQ        FROM  ELEM         1  ITEM=SMIS 4         VALUE=  107976.805    
+ *GET  TQ        FROM  ELEM         1  ITEM=SMIS 4         VALUE=  150444.734    
 
  SELECT      ALL NODES HAVING ANY ELEMENT IN ELEMENT SET.
 
@@ -7497,17 +7427,17 @@
 
  PARAMETER ELEM =     184.0000000    
 
- *GET  NF        FROM  ELEM       184  ITEM=SMIS 1         VALUE= -317.914307    
+ *GET  NF        FROM  ELEM       184  ITEM=SMIS 1         VALUE= -372.893158    
 
- *GET  MY        FROM  ELEM       184  ITEM=SMIS 2         VALUE=  2924.51245    
+ *GET  MY        FROM  ELEM       184  ITEM=SMIS 2         VALUE=  4112.74268    
 
- *GET  MZ        FROM  ELEM       184  ITEM=SMIS 3         VALUE= -5425.29492    
+ *GET  MZ        FROM  ELEM       184  ITEM=SMIS 3         VALUE= -7965.01855    
 
- *GET  VY        FROM  ELEM       184  ITEM=SMIS 6         VALUE= -909.910095    
+ *GET  VY        FROM  ELEM       184  ITEM=SMIS 6         VALUE= -45.4892807    
 
- *GET  VZ        FROM  ELEM       184  ITEM=SMIS 5         VALUE=  292.760620    
+ *GET  VZ        FROM  ELEM       184  ITEM=SMIS 5         VALUE= -23.8599167    
 
- *GET  TQ        FROM  ELEM       184  ITEM=SMIS 4         VALUE= -1934.41187    
+ *GET  TQ        FROM  ELEM       184  ITEM=SMIS 4         VALUE= -2674.95459    
 
  SELECT      ALL NODES HAVING ANY ELEMENT IN ELEMENT SET.
 
@@ -7536,18 +7466,18 @@
 +--------------------- M A P D L   S T A T I S T I C S ------------------------+
 
 Release: 2025 R1            Build: 25.1       Update: UP20241202   Platform: WINDOWS x64 
-Date Run: 04/06/2026   Time: 09:51     Process ID: 10212
+Date Run: 04/06/2026   Time: 14:02     Process ID: 32268
 Operating System: Windows 11  (Build: 26200)
 
-Processor Model: 13th Gen Intel(R) Core(TM) i7-1355U
+Processor Model: AMD Ryzen 7 5800H with Radeon Graphics
 
 Compiler: Intel(R) Fortran Compiler Classic Version 2021.9  (Build: 20230302)
           Intel(R) C/C++ Compiler Classic Version 2021.9  (Build: 20230302)
-          Intel(R) oneAPI Math Kernel Library Version 2023.1-Product Build 20230303
+          AOCL-BLAS 4.2.1 Build 20240528
 
 Number of machines requested            :    1
-Total number of cores available         :   12
-Number of physical cores available      :   10
+Total number of cores available         :   16
+Number of physical cores available      :    8
 Number of processes requested           :    1
 Number of threads per process requested :    8
 Total number of cores requested         :    8 (Shared Memory Parallel)                    
@@ -7556,28 +7486,27 @@ GPU Acceleration: Not Requested
 
 Job Name: file
 Input File: Ansout\APDL_Input.txt
-Working Directory: C:\Users\boggy\OneDrive\Desktop\DMS4\05_OPTI
+Working Directory: C:\Users\atbys\Desktop\DMS4 Local\DMS4\05_OPTI
 
-Total CPU time for main thread                    :        2.6 seconds
-Total CPU time summed for all threads             :        6.8 seconds
+Total CPU time for main thread                    :        2.9 seconds
+Total CPU time summed for all threads             :       17.3 seconds
 
-Elapsed time spent obtaining a license            :        1.7 seconds
-Elapsed time spent pre-processing model (/PREP7)  :        0.4 seconds
+Elapsed time spent obtaining a license            :        1.8 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.8 seconds
 Elapsed time spent solution - preprocessing       :        0.0 seconds
-Elapsed time spent computing solution             :        1.5 seconds
+Elapsed time spent computing solution             :        1.1 seconds
 Elapsed time spent solution - postprocessing      :        0.0 seconds
-Elapsed time spent post-processing model (/POST1) :        0.2 seconds
+Elapsed time spent post-processing model (/POST1) :        0.4 seconds
  
 Equation solver used                              :            Sparse (symmetric)
-Equation solver computational rate                :        0.7 Gflops
 
-Sum of disk space used on all processes           :       28.8 MB
+Sum of disk space used on all processes           :       18.9 MB
 
-Sum of memory used on all processes               :       69.0 MB
+Sum of memory used on all processes               :       64.0 MB
 Sum of memory allocated on all processes          :     2304.0 MB
-Physical memory available                         :         16 GB
-Total amount of I/O written to disk               :        0.3 GB
-Total amount of I/O read from disk                :        0.5 GB
+Physical memory available                         :         14 GB
+Total amount of I/O written to disk               :        0.1 GB
+Total amount of I/O read from disk                :        0.1 GB
 
 +------------------ E N D   M A P D L   S T A T I S T I C S -------------------+
 
@@ -7593,11 +7522,11 @@ Total amount of I/O read from disk                :        0.5 GB
  |-----------------------------------------------------------------------------|
  |                                                                             |
  |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
- |  Maximum Database Used      12 MB     Maximum Scratch Memory Used     57 MB |
+ |  Maximum Database Used       7 MB     Maximum Scratch Memory Used     57 MB |
  |                                                                             |
  |-----------------------------------------------------------------------------|
  |                                                                             |
- |        CP Time      (sec) =          6.766       Time  =  09:51:12          |
+ |        CP Time      (sec) =         17.344       Time  =  14:02:48          |
  |        Elapsed Time (sec) =          7.000       Date  =  04/06/2026        |
  |                                                                             |
  *-----------------------------------------------------------------------------*
