@@ -49,11 +49,12 @@ Misc = [esize, Hor_Force, Ver_Force, MomZ, MomY, f_y, E_mod]
 
 
 
-result, history, txt_path = run_optimization(var, SWcoor, Misc)
+result, txt_path, csv_path = run_optimization(var, SWcoor, Misc)
 
 print("\nOptimal x:", result.x)
 print("Optimal objective:", result.fun)
 print("Message:", result.message)
 print("TXT log file:", txt_path)
+print("Objective CSV:", csv_path)
 
 #Hello

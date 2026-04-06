@@ -1,0 +1,173 @@
+================================================================================
+OPTIMIZATION LOG
+================================================================================
+Run start date/time : 2026-03-31 13:48:10
+Log file            : Optimization_Logs\optimization_log_2026-03-31_13-48-10.txt
+Objective CSV       : Optimization_Logs\objective_history_2026-03-31_13-48-10.csv
+
+Initial design variables:
+x0 = [35.05, 38.05, 11.15, 13.45]
+
+Bounds:
+  x[0] in [30.0, 60.0]
+  x[1] in [31.0, 70.0]
+  x[2] in [8.0, 20.0]
+  x[3] in [9.0, 25.0]
+
+Optimizer settings:
+  Method  : SLSQP
+  disp    : True
+  eps     : 0.1
+  ftol    : 0.001
+  maxiter : 20
+
+================================================================================
+
+[EVALUATION 1]
+  Date/time : 2026-03-31 13:48:28
+  x         : [35.05, 38.05, 11.15, 13.45]
+  Objective : 115.355
+  Constraints (c(x) >= 0 is feasible):
+    thickness_col                 :  2.000000   [OK]
+    thickness_brace               :  1.300000   [OK]
+    local_buckling_column         :  0.964954   [OK]
+    local_buckling_brace          :  0.997697   [OK]
+
+[EVALUATION 2]
+  Date/time : 2026-03-31 13:48:45
+  x         : [35.15, 38.05, 11.15, 13.45]
+  Objective : 113.167
+  Constraints (c(x) >= 0 is feasible):
+    thickness_col                 :  1.900000   [OK]
+    thickness_brace               :  1.300000   [OK]
+    local_buckling_column         :  0.962499   [OK]
+    local_buckling_brace          :  0.997701   [OK]
+
+[EVALUATION 3]
+  Date/time : 2026-03-31 13:49:04
+  x         : [35.05, 38.15, 11.15, 13.45]
+  Objective : 117.729
+  Constraints (c(x) >= 0 is feasible):
+    thickness_col                 :  2.100000   [OK]
+    thickness_brace               :  1.300000   [OK]
+    local_buckling_column         :  0.967182   [OK]
+    local_buckling_brace          :  0.997692   [OK]
+
+[EVALUATION 4]
+  Date/time : 2026-03-31 13:49:20
+  x         : [35.05, 38.05, 11.25, 13.45]
+  Objective : 113.493
+  Constraints (c(x) >= 0 is feasible):
+    thickness_col                 :  2.000000   [OK]
+    thickness_brace               :  1.200000   [OK]
+    local_buckling_column         :  0.964955   [OK]
+    local_buckling_brace          :  0.997476   [OK]
+
+[EVALUATION 5]
+  Date/time : 2026-03-31 13:49:39
+  x         : [35.05, 38.05, 11.15, 13.55]
+  Objective : 117.599
+  Constraints (c(x) >= 0 is feasible):
+    thickness_col                 :  2.000000   [OK]
+    thickness_brace               :  1.400000   [OK]
+    local_buckling_column         :  0.964954   [OK]
+    local_buckling_brace          :  0.997889   [OK]
+
+[EVALUATION 6]
+  Date/time : 2026-03-31 13:50:01
+  x         : [35.11525, 36.11525,  9.88855, 10.88855]
+  Objective : 39.462
+  Constraints (c(x) >= 0 is feasible):
+    thickness_col                 : -0.000000   [VIOLATED]
+    thickness_brace               : -0.000000   [VIOLATED]
+    local_buckling_column         :  0.684034   [OK]
+    local_buckling_brace          :  0.988306   [OK]
+
+[ITERATION 1]
+  Date/time : 2026-03-31 13:50:02
+  x         : [35.11525, 36.11525,  9.88855, 10.88855]
+  Constraints (c(x) >= 0 is feasible):
+    thickness_col                 : -0.000000   [VIOLATED]
+    thickness_brace               : -0.000000   [VIOLATED]
+    local_buckling_column         :  0.684034   [OK]
+    local_buckling_brace          :  0.988306   [OK]
+
+[EVALUATION 7]
+  Date/time : 2026-03-31 13:50:22
+  x         : [35.21525, 36.11525,  9.88855, 10.88855]
+  Objective : 37.271
+  Constraints (c(x) >= 0 is feasible):
+    thickness_col                 : -0.100000   [VIOLATED]
+    thickness_brace               : -0.000000   [VIOLATED]
+    local_buckling_column         :  0.609968   [OK]
+    local_buckling_brace          :  0.988320   [OK]
+
+[EVALUATION 8]
+  Date/time : 2026-03-31 13:50:43
+  x         : [35.11525, 36.21525,  9.88855, 10.88855]
+  Objective : 41.716
+  Constraints (c(x) >= 0 is feasible):
+    thickness_col                 :  0.100000   [OK]
+    thickness_brace               : -0.000000   [VIOLATED]
+    local_buckling_column         :  0.738894   [OK]
+    local_buckling_brace          :  0.988248   [OK]
+
+[EVALUATION 9]
+  Date/time : 2026-03-31 13:51:04
+  x         : [35.11525, 36.11525,  9.98855, 10.88855]
+  Objective : 37.810
+  Constraints (c(x) >= 0 is feasible):
+    thickness_col                 : -0.000000   [VIOLATED]
+    thickness_brace               : -0.100000   [VIOLATED]
+    local_buckling_column         :  0.684031   [OK]
+    local_buckling_brace          :  0.985483   [OK]
+
+[EVALUATION 10]
+  Date/time : 2026-03-31 13:51:21
+  x         : [35.11525, 36.11525,  9.88855, 10.98855]
+  Objective : 41.281
+  Constraints (c(x) >= 0 is feasible):
+    thickness_col                 : -0.000000   [VIOLATED]
+    thickness_brace               :  0.100000   [OK]
+    local_buckling_column         :  0.684044   [OK]
+    local_buckling_brace          :  0.990363   [OK]
+
+[EVALUATION 11]
+  Date/time : 2026-03-31 13:51:44
+  x         : [34.489263, 35.489263,  8.339123,  9.339123]
+  Objective : 36.497
+  Constraints (c(x) >= 0 is feasible):
+    thickness_col                 : -0.000000   [VIOLATED]
+    thickness_brace               : -0.000000   [VIOLATED]
+    local_buckling_column         :  0.683613   [OK]
+    local_buckling_brace          :  0.988549   [OK]
+
+[ITERATION 2]
+  Date/time : 2026-03-31 13:51:45
+  x         : [34.489263, 35.489263,  8.339123,  9.339123]
+  Constraints (c(x) >= 0 is feasible):
+    thickness_col                 : -0.000000   [VIOLATED]
+    thickness_brace               : -0.000000   [VIOLATED]
+    local_buckling_column         :  0.683613   [OK]
+    local_buckling_brace          :  0.988549   [OK]
+
+[EVALUATION 12]
+  Date/time : 2026-03-31 13:52:04
+  x         : [34.589263, 35.489263,  8.339123,  9.339123]
+  Objective : 34.344
+  Constraints (c(x) >= 0 is feasible):
+    thickness_col                 : -0.100000   [VIOLATED]
+    thickness_brace               : -0.000000   [VIOLATED]
+    local_buckling_column         :  0.609428   [OK]
+    local_buckling_brace          :  0.988587   [OK]
+
+[EVALUATION 13]
+  Date/time : 2026-03-31 13:52:23
+  x         : [34.489263, 35.589263,  8.339123,  9.339123]
+  Objective : 38.712
+  Constraints (c(x) >= 0 is feasible):
+    thickness_col                 :  0.100000   [OK]
+    thickness_brace               : -0.000000   [VIOLATED]
+    local_buckling_column         :  0.738557   [OK]
+    local_buckling_brace          :  0.988512   [OK]
+

@@ -1,0 +1,29 @@
+================================================================================
+OPTIMIZATION LOG
+================================================================================
+Run start date/time : 2026-03-31 13:59:34
+Log file            : Optimization_Logs\optimization_log_2026-03-31_13-59-34.txt
+Objective CSV       : Optimization_Logs\objective_history_2026-03-31_13-59-34.csv
+
+Initial design variables:
+x0 = [35.05, 38.05, 11.15, 13.45]
+
+Bounds:
+  x[0] in [30.0, 60.0]
+  x[1] in [31.0, 70.0]
+  x[2] in [8.0, 20.0]
+  x[3] in [9.0, 25.0]
+
+Optimizer settings:
+  Method  : SLSQP
+  disp    : True
+  eps     : 0.1
+  ftol    : 0.001
+  maxiter : 20
+
+================================================================================
+
+[EVALUATION 1]
+  Date/time : 2026-03-31 14:00:15
+  x         : [35.05, 38.05, 11.15, 13.45]
+  Objective : 115.355

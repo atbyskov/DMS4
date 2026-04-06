@@ -1,0 +1,92 @@
+================================================================================
+OPTIMIZATION LOG
+================================================================================
+Run start date/time : 2026-03-31 10:23:25
+Log file            : Optimization_Logs\optimization_log_2026-03-31_10-23-25.txt
+
+Initial design variables:
+x0 = [35.05, 38.05, 11.15, 13.45]
+
+Bounds:
+  x[0] in [30.0, 60.0]
+  x[1] in [31.0, 70.0]
+  x[2] in [8.0, 20.0]
+  x[3] in [9.0, 25.0]
+
+Optimizer settings:
+  Method  : SLSQP
+  disp    : True
+  eps     : 0.1
+  ftol    : 0.001
+  maxiter : 20
+
+Constraints detected:
+  thickness_col(x) >= 0
+  thickness_brace(x) >= 0
+
+================================================================================
+
+[EVALUATION 1]
+  Date/time : 2026-03-31 10:23:46
+  x         : [35.05, 38.05, 11.15, 13.45]
+  Objective : 115.354790
+  thickness_col: 2.000000
+  thickness_brace: 1.300000
+
+[EVALUATION 2]
+  Date/time : 2026-03-31 10:24:03
+  x         : [35.15, 38.05, 11.15, 13.45]
+  Objective : 113.167420
+  thickness_col: 1.900000
+  thickness_brace: 1.300000
+
+[EVALUATION 3]
+  Date/time : 2026-03-31 10:24:18
+  x         : [35.05, 38.15, 11.15, 13.45]
+  Objective : 117.729110
+  thickness_col: 2.100000
+  thickness_brace: 1.300000
+
+[EVALUATION 4]
+  Date/time : 2026-03-31 10:24:33
+  x         : [35.05, 38.05, 11.25, 13.45]
+  Objective : 113.493150
+  thickness_col: 2.000000
+  thickness_brace: 1.200000
+
+[EVALUATION 5]
+  Date/time : 2026-03-31 10:24:49
+  x         : [35.05, 38.05, 11.15, 13.55]
+  Objective : 117.598720
+  thickness_col: 2.000000
+  thickness_brace: 1.400000
+
+[EVALUATION 6]
+  Date/time : 2026-03-31 10:25:07
+  x         : [35.11525, 36.11525,  9.88855, 10.88855]
+  Objective : 39.462350
+  thickness_col: -0.000000
+  thickness_brace: -0.000000
+
+[ITERATION 1]
+  Date/time : 2026-03-31 10:25:07
+  x         : [35.11525, 36.11525,  9.88855, 10.88855]
+  Objective : 39.462350
+  Step norm : nan
+  thickness_col: -0.000000
+  thickness_brace: -0.000000
+
+[EVALUATION 7]
+  Date/time : 2026-03-31 10:25:22
+  x         : [35.21525, 36.11525,  9.88855, 10.88855]
+  Objective : 37.270920
+  thickness_col: -0.100000
+  thickness_brace: -0.000000
+
+[EVALUATION 8]
+  Date/time : 2026-03-31 10:25:39
+  x         : [35.11525, 36.21525,  9.88855, 10.88855]
+  Objective : 41.716110
+  thickness_col: 0.100000
+  thickness_brace: -0.000000
+
