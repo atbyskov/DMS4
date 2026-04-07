@@ -8,31 +8,30 @@
 # Import packages
 import os
 import time 
-
-import builtins
-import numpy as np
-from optimization import run_optimization
+from ansys.mapdl.core import launch_mapdl
 
 # Import Functions
+from optimization import run_optimization
 import SW_Import as SW
 from Post_Process import PostProcessor
 from MyAPDLCall import RunAPDL
 
+# Start global timing
 tic = time.time()
+
 # Import SW coordinates as list
 SW_filename = "LWC.IGS"   # Specify IGES File Name
 SW_folder = "IGS"
 SWcoor = SW.import_SW(os.path.join(SW_folder,SW_filename))
 
 # Specify tube dimensions
-R0 = 70.1/2 # Column Tube inner diameter [mm]
-R1 = 76.1/2 # Column Tube outer diameter [mm]
-R2 = 22.3/2 # Brace Tube inner diameter  [mm]
-R3 = 26.9/2 # Brace Tube outer diameter  [mm]
+d0 = 76.1       # Column Outer Diameter [mm]
+t0 = 3          # Column Thickness      [mm]
+d1 = 26.9       # Brace Outer Diameter  [mm]
+t1 = 2.3        # Brace Thickness       [mm]
 
-# Added something here
-
-var = [R0, R1, R2, R3] # Assemble variables
+# Collect variables
+var = [d0, t0, d1, t1] # Assemble variables
 
 # Other specifications
 esize = 100              # Element Size [mm]
@@ -42,8 +41,6 @@ MomZ = -70364000        # Applied Moment around Z-axis [Nmm]
 MomY = 1407140          # Applied Moment around Y-axis [Nmm]
 f_y = 690               # Yield Strength of S690 [MPa]
 E_mod = 200*1E3         # Youngs Modulus [MPa]
-
-#Misc = [esize, Hor_Force, Ver_Force, MomZ, MomY, f_y, E_mod]
 
 # Create Misc as dict
 Misc = {
@@ -56,13 +53,27 @@ Misc = {
     "E_mod": E_mod
 }
 
+# Launch MAPDL
+mapdl = launch_mapdl(
+    run_location="Ansout",
+    # Uncomment if you want a complete .txt log of everything written to MAPDL
+    #log_apdl="apdl_log",
+    override=True,
+    nproc=8,
+    additional_switches="-p ansys -smp",
+)
 
-result, txt_path, csv_path = run_optimization(var, SWcoor, Misc)
+# Ensures that MAPDL closes if something chrashes
+try:
+    f1 = RunAPDL(mapdl,SWcoor,var,Misc)
+    result, txt_path, csv_path = run_optimization(mapdl, var, SWcoor, Misc)
+finally:
+    mapdl.exit()
 
+# Print Information
 print("\nOptimal x:", result.x)
 print("Optimal objective:", result.fun)
 print("Message:", result.message)
 print("TXT log file:", txt_path)
 print("Objective CSV:", csv_path)
 
-#Hello

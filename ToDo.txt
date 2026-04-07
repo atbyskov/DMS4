@@ -16,3 +16,5 @@
     - Figure out where T_Rd comes from in Standard (Used in Post_Process)
 [DONE]    - Make outputs consistent, e.g. only 2 decimals etc.
 [DONE, saved 9 sec]    - Combine APDL_Eigen and APDL_Nonlin into one
+
+- Change designvariables to Outer Diameter and thickness

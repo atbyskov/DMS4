@@ -22,44 +22,30 @@
 #   Return Mass
         
 # Import Tools
+import time
 import os
-import math
-import shutil
 
 # Import Functions
 from APDL_Input import InputFun
 
 
-def RunAPDL(SWcoor,var,Misc):
-
-
-    # Clear Ansout folder before running 
-    Ansout_dir = "Ansout"
-    if os.path.exists(Ansout_dir):
-        shutil.rmtree(Ansout_dir)
-    os.makedirs(Ansout_dir, exist_ok=True) # Create folder again
+def RunAPDL(mapdl,SWcoor,var,Misc):
+    ans_time_tic = time.time()
+   
+    mapdl.clear()
 
     # Create input file for Eigenvalue Analysis
-    input_file = InputFun(SWcoor,var,Misc, out_dir = Ansout_dir)
+    apdl_cmds = InputFun(SWcoor,var,Misc)
 
-    # Filename for running APDL .bat file
-    FileName = os.path.join(Ansout_dir,"APDLRunFile.bat")
-    # Open and Edit .bat file
-    with open(FileName, 'w') as FileID:
-        FileID.write('@echo off\n')
-        FileID.write('rem This batch file is placed in your working directory\n')
-        FileID.write('SET ANSWAIT=1\n')
-        FileID.write('set ANSYS_LOCK=OFF\n')
-        FileID.write('rem set ANS_CONSEC=YES\n')
-        FileID.write(
-            f'"C:\\Program files\\ANSYS Inc\\v251\\ANSYS\\bin\\winx64\\ansys251"'
-            f' -b -p ansys -smp -np 8' 
-            f' -i {input_file}'
-            f' -dir "{Ansout_dir}"'
-            f' -o {os.path.join(Ansout_dir,"AnsysOutputWindow.txt")} \n')
+    with mapdl.non_interactive:
+        for cmd in apdl_cmds:
+            cmd = cmd.strip()
+            if cmd:
+                mapdl.run(cmd)
 
-    # Run Eigenvalue Analysis Program
-    os.system(f'"{FileName}"')
+    # Clear APDL
+    mapdl.finish()
+    
 
     # Read First eigenvalue:
     with open("Ansout/Eigenvalue1.txt") as f:
@@ -73,6 +59,10 @@ def RunAPDL(SWcoor,var,Misc):
     # Open and Read Mass
     with open("Ansout/Mass_Assembly.txt","r") as f:
         Mass = [float(line.strip()) for line in f if line.strip()]
+
+    ans_time_toc = time.time()
+
+    print(f"Sim time: {ans_time_toc-ans_time_tic:.2f} s")
 
     # Return Mass as float value
     return sum(Mass)

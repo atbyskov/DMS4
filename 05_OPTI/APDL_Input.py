@@ -22,12 +22,20 @@
     # Apply SECTYPE,3 to Top (constant)
     # 
 
-import os
 
-def InputFun(SWcoor, var, Misc, out_dir = "Ansout"):
+def InputFun(SWcoor, var, Misc):
+
+    # Initialize APDL Command for PyMAPDL
+    ap = []
     
-    # Import Radii
-    R0, R1, R2, R3 = var 
+    # Import variables
+    d0, t0, d1, t1 = var
+
+    # Convert to Radii
+    R0 = d0/2 - t0       # Column Inner Radius [mm]
+    R1 = d0/2            # Column Outer Radius [mm]
+    R2 = d1/2 - t1       # Brace Inner Radius  [mm]
+    R3 = d1/2            # Brace Outer Radius  [mm]
 
     # Import Misc
     esize     = Misc["esize"]
@@ -51,503 +59,498 @@ def InputFun(SWcoor, var, Misc, out_dir = "Ansout"):
         else:
             return "brace"
         
-    # Create File
-    input_file = os.path.join(out_dir, "APDL_Input.txt")
-    
-    # Open and Edit .txt file
-    with open(input_file, "w") as f:
 
-                            # SETUP
-        f.write("! ===== APDL INPUT FILE ====== ! \n")
+                        # SETUP
+    ap.append("! ===== APDL INPUT FILE ====== !  ")
 ##################################################################
 ##################### Eigenbuckling Analysis #####################
 ##################################################################
-        f.write("!   Eigenbuckling Analysis     ! \n")
-        f.write("! ============================ ! \n\n")
-        f.write("/UNITS,MPa ! Set units [mm,Mg,s,C] \n\n")
+    ap.append("!   Eigenbuckling Analysis     !  ")
+    ap.append("! ============================ !   ")
+    ap.append("/UNITS,MPa ! Set units [mm,Mg,s,C]   ")
 
-        f.write("! Static Structural Analysis ! \n")
-        f.write("/PREP7 \n")
-        f.write("ET,1,BEAM189 ! Use BEAM189 Elements \n \n")
-        # CROSS SECTION
-        f.write("! CROSS SECTION !\n")
-        f.write("! Corner Type (SECTYPE = 1) \n")
-        f.write("SECTYPE,1,BEAM,CTUBE \n")
-        f.write(f"SECDATA,{R0},{R1},8 \n")
-        f.write("! Brace Section Type (SECTYPE = 2) \n")
-        f.write("SECTYPE,2,BEAM,CTUBE \n")
-        f.write(f"SECDATA,{R2},{R3},8 \n \n")
-        f.write("! Top Section Type (SECTYPE= 3 ) \n")
-        f.write("SECTYPE,3,BEAM,CTUBE \n")
-        f.write("SECDATA,35.05,38.05 \n")
-        # MATERIAL
-        f.write("! MATERIAL DATA\n")
-        f.write(f"MP,EX,1,{E_mod} ! [MPa]\n")
-        f.write("MP,PRXY,1,0.3 \n")
-        f.write("MP,DENS,1.7850E-6 ! [kg/mm^3] \n \n")
-        # STIFF Material
-        f.write("! INF STIFNESS MATERIAL REGION ABOVE Y=4070\n")
-        f.write("MP,EX,2,2E+09\n")
-        f.write("MP,PRXY,2,0.3\n")
-        f.write("MP,DENS,2,1.7850E-6\n")
+    ap.append("! Static Structural Analysis !  ")
+    ap.append("/PREP7  ")
+    ap.append("ET,1,BEAM189 ! Use BEAM189 Elements    ")
+    # CROSS SECTION
+    ap.append("! CROSS SECTION ! ")
+    ap.append("! Corner Type (SECTYPE = 1)  ")
+    ap.append("SECTYPE,1,BEAM,CTUBE  ")
+    ap.append(f"SECDATA,{R0},{R1},8  ")
+    ap.append("! Brace Section Type (SECTYPE = 2)  ")
+    ap.append("SECTYPE,2,BEAM,CTUBE  ")
+    ap.append(f"SECDATA,{R2},{R3},8    ")
+    ap.append("! Top Section Type (SECTYPE= 3 )  ")
+    ap.append("SECTYPE,3,BEAM,CTUBE  ")
+    ap.append("SECDATA,35.05,38.05  ")
+    # MATERIAL
+    ap.append("! MATERIAL DATA ")
+    ap.append(f"MP,EX,1,{E_mod} ! [MPa] ")
+    ap.append("MP,PRXY,1,0.3  ")
+    ap.append("MP,DENS,1,1.7850E-6 ! [kg/mm^3]    ")
+    # STIFF Material
+    ap.append("! INF STIFNESS MATERIAL REGION ABOVE Y=4070 ")
+    ap.append("MP,EX,2,2E+09 ")
+    ap.append("MP,PRXY,2,0.3 ")
+    ap.append("MP,DENS,2,1.7850E-6 ")
 
-        # NODES
-        f.write("! KEYPOINT AND LINES ! \n")
-        # Initialize values used later        
-        key_id = 1
-        line_id = 1
-        corner_lines = []
-        brace_lines = []
-        corner_id = 1
-        brace_id = 1
-        Top_lines = []        
+    # NODES
+    ap.append("! KEYPOINT AND LINES !  ")
+    # Initialize values used later        
+    key_id = 1
+    line_id = 1
+    corner_lines = []
+    brace_lines = []
+    corner_id = 1
+    brace_id = 1
+    Top_lines = []        
 
-        kp_dict = {}
-        CM_Brace_dict = 0
-        CM_Column_dict = 0
+    kp_dict = {}
+    CM_Brace_dict = 0
+    CM_Column_dict = 0
+    
+    # For Remote Loading
+    ap.append("K,1,0,4179.14,0  ")
+
+    # Loop through and create lines
+    for x1, y1, z1, x2, y2, z2 in SWcoor:
         
-        # For Remote Loading
-        f.write("K,1,0,4179.14,0 \n")
+        # First point 
+        p1 = (x1, y1, z1)
+        if p1 in kp_dict:   # (We check if the point already exists)
+            kp1 = kp_dict[p1]
+        else:
+            kp1 = key_id
+            kp_dict[p1] = kp1
+            ap.append(f"K,{key_id}, {x1:.3f}, {y1:.3f}, {z1:.3f}  ")
+            key_id += 1
 
-        # Loop through and create lines
-        for x1, y1, z1, x2, y2, z2 in SWcoor:
-            
-            # First point 
-            p1 = (x1, y1, z1)
-            if p1 in kp_dict:   # (We check if the point already exists)
-                kp1 = kp_dict[p1]
-            else:
-                kp1 = key_id
-                kp_dict[p1] = kp1
-                f.write(f"K,{key_id}, {x1:.3f}, {y1:.3f}, {z1:.3f} \n")
-                key_id += 1
+        # Second Point
+        p2 = (x2, y2, z2)
+        if p2 in kp_dict:   # (We check if the point already exists)
+            kp2 = kp_dict[p2]
+        else:
+            kp2 = key_id
+            kp_dict[p2] = kp2
+            ap.append(f"K,{kp2}, {x2:.3f}, {y2:.3f}, {z2:.3f} ")
+            key_id += 1
 
-            # Second Point
-            p2 = (x2, y2, z2)
-            if p2 in kp_dict:   # (We check if the point already exists)
-                kp2 = kp_dict[p2]
-            else:
-                kp2 = key_id
-                kp_dict[p2] = kp2
-                f.write(f"K,{kp2}, {x2:.3f}, {y2:.3f}, {z2:.3f}\n")
-                key_id += 1
+        # Group the lines points
+        group = beam_class(p1,p2)
+        # Create line 
+        ap.append(f"L,{kp1},{kp2}  ")
+        ap.append(f"LSEL,S,LINE,,{line_id} ")
 
-            # Group the lines points
-            group = beam_class(p1,p2)
-            # Create line 
-            f.write(f"L,{kp1},{kp2} \n")
-            f.write(f"LSEL,S,LINE,,{line_id}\n")
-
-            
-            # Split lines into corner, brace or top section
-            if y1 > 4070 and y2 > 4070:
-                # This is a TOP beam!
-                Top_lines.append(line_id)
-                f.write(f"CM,TOPMAT,LINE\n")
-
-            else:
-                # Not a top beam → classify as corner or brace
-                if group == "corner":
-                    corner_lines.append(line_id)
-                    f.write(f"CM,COLUMN_{corner_id},LINE\n")
-                    corner_id += 1
-                    CM_Column_dict += 1
-                else:
-                    brace_lines.append(line_id)
-                    f.write(f"CM,BRACE_{brace_id},LINE\n")
-                    brace_id += 1
-                    CM_Brace_dict += 1
-            
-            # Reset
-            f.write("LSEL,ALL \n")   
-
-            line_id += 1
-        f.write("\n")
-
-        # ELEMENT DEFINITION
-        f.write("! ELEMENT SIZE ! \n")
-        f.write(f"ESIZE,{esize} \n\n")
         
-        # Function to mesh each group seperatly
-        # Makes sure each section has the correct cross section
-        def group_mesh(block_name, secnum, line_ids):
-            
-            f.write(f"! {block_name} ! \n")
-            f.write(f"SECNUM,{secnum} \n")
-            f.write("LSEL,ALL\n")
+        # Split lines into corner, brace or top section
+        if y1 > 4070 and y2 > 4070:
+            # This is a TOP beam!
+            Top_lines.append(line_id)
+            ap.append(f"CM,TOPMAT,LINE ")
 
-            first = True
-            for lid in line_ids:
-                if first:
-                    f.write(f"LSEL,S,LINE,,{lid}\n")
-                    first = False
-                else:
-                    f.write(f"LSEL,A,LINE,,{lid}\n")
-            
-            f.write("LMESH,ALL \n\n")
-             
-            
-        # Run the function for Corner and Brace
-        group_mesh("Meshing CORNER Beams (SECNUM=1)",1, corner_lines)
-        group_mesh("Meshing BRACE Beams  (SECNUM=2)",2, brace_lines)
-        group_mesh("Meshing TOP Beam     (SECNUM=3)",3, Top_lines)
+        else:
+            # Not a top beam → classify as corner or brace
+            if group == "corner":
+                corner_lines.append(line_id)
+                ap.append(f"CM,COLUMN_{corner_id},LINE ")
+                corner_id += 1
+                CM_Column_dict += 1
+            else:
+                brace_lines.append(line_id)
+                ap.append(f"CM,BRACE_{brace_id},LINE ")
+                brace_id += 1
+                CM_Brace_dict += 1
+        
+        # Reset
+        ap.append("LSEL,ALL  ")   
 
-        # Select all lines
-        f.write("LSEL,ALL\n")
+        line_id += 1
+    ap.append(" ")
 
-        # Select all 'top material' lines again
+    # ELEMENT DEFINITION
+    ap.append("! ELEMENT SIZE !  ")
+    ap.append(f"ESIZE,{esize}   ")
+    
+    # Function to mesh each group seperatly
+    # Makes sure each section has the correct cross section
+    def group_mesh(block_name, secnum, line_ids):
+        
+        ap.append(f"! {block_name} !  ")
+        ap.append(f"SECNUM,{secnum}  ")
+        ap.append("LSEL,ALL ")
+
         first = True
-        for lid in Top_lines:
+        for lid in line_ids:
             if first:
-                f.write(f"LSEL,S,LINE,,{lid}\n")
+                ap.append(f"LSEL,S,LINE,,{lid} ")
                 first = False
             else:
-                f.write(f"LSEL,A,LINE,,{lid}\n")
-
-        f.write("ESLL,S  ! select elements on these lines\n")
-        f.write("EMODIF,ALL,MAT,2  ! modify selected elements to material 2\n")
-        f.write("ALLSEL,ALL\n\n")
-
-        # Display Cross section
-        f.write("/ESHAPE,1 ! Display Cross Section\n")
-
+                ap.append(f"LSEL,A,LINE,,{lid} ")
+        
+        ap.append("LMESH,ALL   ")
             
-        #Create and save .png of the mesh
-        f.write("/SHOW,PNG,,0 \n")
-        f.write("/RGB,INDEX,100,100,100,0 \n")
-        f.write("/RGB,INDEX,80,80,80,13 \n")
-        f.write("/RGB,INDEX,60,60,60,14 \n")
-        f.write("/RGB,INDEX,0,0,0,15 \n")
-        f.write("/TYPE,,4 \n")
-        f.write("/VIEW,,0,0,1 \n")
-        f.write("/ANGLE,,30,YM \n")
-        f.write("EPLOT \n")
-        f.write("/SHOW,close \n")
-        f.write("/SHOW,TERM \n")
-
-        # RUN STATIC ANALYSIS
-        # We use sparse solver with pre-stress on
-        f.write("! SOLUTION ! \n")
-        f.write("/SOLU \n")
-        f.write("ANTYPE, STATIC \n")
-        f.write("EQSLV,SPARSE \n")
-        f.write("PSTRES,ON \n")
-
-        # BOUNDARY CONDITIONS
-        f.write("\n! -- BOUNDARY CONDITIONS -- ! \n")
-        f.write("ALLSEL,ALL \n")
-        f.write("SELTOL,1.0E-6 \n") # Important for node selection
-
-        # Get top and bottom nodes
-        f.write("*GET, NodeYMax, NODE, 0, MXLOC, Y \n")
-        f.write("*GET, NodeYMin, NODE, 0, MNLOC, Y \n")
-
-        # Apply Remote Force
-        f.write("NSEL,S,LOC,X,0 \n ")
-        f.write("*GET,N_LOW,NODE,,MNLOC,Y \n")
-        f.write("*GET,n_load_c,NODE,0,COUNT \n")
         
-        #f.write("NSEL,R,LOC,Y,N_LOW \n")
-        f.write("N_C = n_load_c \n")
-        f.write(f"MOMZ = {MomZ}/N_C \n")
-        f.write(f"MOMY = {MomY}/N_C \n")
-        f.write(f"F_HOR = {Hor_Force}/N_C \n")
-        f.write(f"F_VER = {-Ver_Force}/N_C \n")
-        f.write(f"F,ALL,FY,F_VER \n")
-        f.write(f"F,ALL,FX,F_HOR \n")
-        f.write(f"F,ALL,MY,MOMY \n")
-        f.write(f"F,ALL,MZ,MOMZ \n")
+    # Run the function for Corner and Brace
+    group_mesh("Meshing CORNER Beams (SECNUM=1)",1, corner_lines)
+    group_mesh("Meshing BRACE Beams  (SECNUM=2)",2, brace_lines)
+    group_mesh("Meshing TOP Beam     (SECNUM=3)",3, Top_lines)
 
-        # Fixed displacement at bottom nodes
-        f.write("! Displacement ! \n")
-        f.write("ALLSEL,ALL \n")
-        f.write("NSEL,S,LOC,Y,NodeYMin \n")
-        f.write("D,ALL,ALL,0 \n")
-        f.write("ALLSEL \n")
+    # Select all lines
+    ap.append("LSEL,ALL ")
 
-        # SOLVE
-        f.write("! Solve the System \n")
-        f.write("SOLVE \n")
-        f.write("FINISH \n\n")
+    # Select all 'top material' lines again
+    first = True
+    for lid in Top_lines:
+        if first:
+            ap.append(f"LSEL,S,LINE,,{lid} ")
+            first = False
+        else:
+            ap.append(f"LSEL,A,LINE,,{lid} ")
+
+    ap.append("ESLL,S  ! select elements on these lines ")
+    ap.append("EMODIF,ALL,MAT,2  ! modify selected elements to material 2 ")
+    ap.append("ALLSEL,ALL  ")
+
+    # Display Cross section
+    ap.append("/ESHAPE,1 ! Display Cross Section ")
+
+        
+    #Create and save .png of the mesh
+    #ap.append("/SHOW,PNG,,0  ")
+    #ap.append("/RGB,INDEX,100,100,100,0  ")
+    #ap.append("/RGB,INDEX,80,80,80,13  ")
+    #ap.append("/RGB,INDEX,60,60,60,14  ")
+    #ap.append("/RGB,INDEX,0,0,0,15  ")
+    #ap.append("/TYPE,,4  ")
+    #ap.append("/VIEW,,0,0,1  ")
+    #ap.append("/ANGLE,,30,YM  ")
+    #ap.append("EPLOT  ")
+    #ap.append("/SHOW,close  ")
+    #ap.append("/SHOW,TERM  ")
+
+    # RUN STATIC ANALYSIS
+    # We use sparse solver with pre-stress on
+    ap.append("! SOLUTION !  ")
+    ap.append("/SOLU  ")
+    ap.append("ANTYPE, STATIC  ")
+    ap.append("EQSLV,SPARSE  ")
+    ap.append("PSTRES,ON  ")
+
+    # BOUNDARY CONDITIONS
+    ap.append(" ! -- BOUNDARY CONDITIONS -- !  ")
+    ap.append("ALLSEL,ALL  ")
+    ap.append("SELTOL,1.0E-6  ") # Important for node selection
+
+    # Get top and bottom nodes
+    ap.append("*GET, NodeYMax, NODE, 0, MXLOC, Y  ")
+    ap.append("*GET, NodeYMin, NODE, 0, MNLOC, Y  ")
+
+    # Apply Remote Force
+    ap.append("NSEL,S,LOC,X,0   ")
+    ap.append("*GET,N_LOW,NODE,,MNLOC,Y  ")
+    ap.append("*GET,n_load_c,NODE,0,COUNT  ")
     
-        # Save column and brace list
-        CM_dict = [CM_Column_dict, CM_Brace_dict]
+    #ap.append("NSEL,R,LOC,Y,N_LOW  ")
+    ap.append("N_C = n_load_c  ")
+    ap.append(f"MOMZ = {MomZ}/N_C  ")
+    ap.append(f"MOMY = {MomY}/N_C  ")
+    ap.append(f"F_HOR = {Hor_Force}/N_C  ")
+    ap.append(f"F_VER = {-Ver_Force}/N_C  ")
+    ap.append(f"F,ALL,FY,F_VER  ")
+    ap.append(f"F,ALL,FX,F_HOR  ")
+    ap.append(f"F,ALL,MY,MOMY  ")
+    ap.append(f"F,ALL,MZ,MOMZ  ")
 
-        f.write("! ===== APDL OUTPUT FILE ===== ! \n")
+    # Fixed displacement at bottom nodes
+    ap.append("! Displacement !  ")
+    ap.append("ALLSEL,ALL  ")
+    ap.append("NSEL,S,LOC,Y,NodeYMin  ")
+    ap.append("D,ALL,ALL,0  ")
+    ap.append("ALLSEL  ")
 
-        f.write("/POST1 \n")
-        f.write("SET,LAST \n")
-        f.write("ALLSEL,ALL \n \n")
+    # SOLVE
+    ap.append("! Solve the System  ")
+    ap.append("SOLVE  ")
+    ap.append("FINISH   ")
 
-        # ONLY SELECT BEAM189 ELEMENTS
-        f.write("*GET,E_COUNT,ELEM,0,COUNT \n \n") 
-        f.write(f"! Number of Columns: {CM_dict[0]} \n")
-        f.write(f"! Number of Braces : {CM_dict[1]} \n \n")
-        # SET OUTPUT FILE
-        f.write("! Open file to write \n")
-        f.write("*CFOPEN, APDL_Eigen_Internal,txt \n")
-        # LOOP OVER COLUMNS
-        f.write("! Loop over Columns \n")
-        f.write(f"*DO,ii,1,{CM_dict[0]},1 \n")
-        f.write("   CMSEL,S,COLUMN_%ii% \n")
-        f.write("   ESLL,S \n") 
-        f.write("   ESEL,R,ENAME,,189 \n")
-        # FORMAT
-        f.write("   *IF,ii,LT,10,THEN \n")
-        f.write("       *VWRITE,ii \n")
-        f.write('       ("NS ColMember_",F2.0) \n')
-        f.write("   *ELSE \n")
-        f.write("       *VWRITE,ii \n")
-        f.write('       ("NS ColMember_",F3.0) \n')
-        f.write("   *ENDIF \n")
-        # RESULT 
-        f.write("   *GET,nElem,ELEM,0,COUNT \n")
-        f.write("   *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC' \n")
-        f.write("   (A12,A20,A20,A20,A20,A20,A20,A20) \n")
-        f.write("   ELEM = 0 \n")
-        f.write("   *DO,jj,1,nElem,1 \n")
-        f.write("       ELEM = ELNEXT(ELEM) \n")
-        f.write("       *GET,NF,ELEM,ELEM,SMISC,1 \n")
-        f.write("       *GET,MY,ELEM,ELEM,SMISC,2 \n")
-        f.write("       *GET,MZ,ELEM,ELEM,SMISC,3 \n")
-        f.write("       *GET,VY,ELEM,ELEM,SMISC,6 \n")
-        f.write("       *GET,VZ,ELEM,ELEM,SMISC,5 \n")
-        f.write("       *GET,TQ,ELEM,ELEM,SMISC,4 \n")
-        f.write("       NSLE \n")
-        f.write("       *GET,Y_LOC,NODE,0,MNLOC,Y \n")
-        f.write("       *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC \n")
-        f.write("       (F12.0,7E20.8) \n")
-        f.write("   *ENDDO \n \n")
-        f.write("*ENDDO")
+    # Save column and brace list
+    CM_dict = [CM_Column_dict, CM_Brace_dict]
 
-        # LOOP OVER BRACES
-        f.write("! Loop over Braces \n")
-        f.write(f"*DO,ii,1,{CM_dict[1]},1 \n")
-        f.write("   CMSEL,S,BRACE_%ii%,LINE \n")
-        f.write("   ESLL,S \n")
-        f.write("   ESEL,R,ENAME,,189 \n")
-        # FORMAT
-        f.write("   *IF,ii,LT,10,THEN \n")
-        f.write("       *VWRITE,ii \n")
-        f.write('       ("NS BraceMember_",F2.0) \n')
-        f.write("   *ELSE \n")
-        f.write("       *VWRITE,ii \n")
-        f.write('       ("NS BraceMember_",F3.0) \n')
-        f.write("   *ENDIF \n")
-        # RESULT 
-        f.write("   *GET,nElem,ELEM,0,COUNT \n")
-        f.write("   *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC' \n")
-        f.write("   (A12,7A20) \n")
-        f.write("   elem = 0 \n")
-        f.write("   *DO,jj,1,nElem,1 \n")
-        f.write("       ELEM = ELNEXT(ELEM) \n")
-        f.write("       *GET,NF,ELEM,ELEM,SMISC,1 \n")
-        f.write("       *GET,MY,ELEM,ELEM,SMISC,2 \n")
-        f.write("       *GET,MZ,ELEM,ELEM,SMISC,3 \n")
-        f.write("       *GET,VY,ELEM,ELEM,SMISC,6 \n")
-        f.write("       *GET,VZ,ELEM,ELEM,SMISC,5 \n")
-        f.write("       *GET,TQ,ELEM,ELEM,SMISC,4 \n")
-        f.write("       NSLE \n")
-        f.write("       *GET,Y_LOC,NODE,0,MNLOC,Y \n")
-        f.write("       *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC \n")
-        f.write("       (F12.0,7E20.8) \n")
-        f.write("   *ENDDO \n")
-        f.write("*ENDDO \n")
-        f.write("*CFCLOS \n \n")
+    ap.append("! ===== APDL OUTPUT FILE ===== !  ")
 
-        # MASS OF ASSEMBLY
-        f.write("! Get and Print Mass \n")
-        f.write("ALLSEL \n")
-        f.write("NSEL,S,LOC,Y,,4080 \n")
-        f.write("ESLN \n")
-        f.write("*GET,ecnt,ELEM,0,COUNT \n")
-        f.write("*GET,enum,ELEM,0,NUM,MIN \n")
-        f.write("totvol = 0 \n")
+    ap.append("/POST1  ")
+    ap.append("SET,LAST  ")
+    ap.append("ALLSEL,ALL    ")
 
-        # Loop over each element and get volume
-        f.write("*DO,i,1,ecnt \n")
-        f.write("   *GET,ev,ELEM,enum,VOLU \n")
-        f.write("   totvol = totvol + ev \n")
-        f.write("   enum = ELNEXT(enum) \n")
-        f.write("*ENDDO \n")
-        
-        # Calculate Mass
-        f.write("dens = 7.85E-6 ! kg/mm^3 \n") # Density
-        f.write("Comp_mass = dens*totvol \n \n")
+    # ONLY SELECT BEAM189 ELEMENTS
+    ap.append("*GET,E_COUNT,ELEM,0,COUNT    ") 
+    ap.append(f"! Number of Columns: {CM_dict[0]}  ")
+    ap.append(f"! Number of Braces : {CM_dict[1]}    ")
+    # SET OUTPUT FILE
+    ap.append("! Open file to write  ")
+    ap.append("*CFOPEN, APDL_Eigen_Internal,txt  ")
+    # LOOP OVER COLUMNS
+    ap.append("! Loop over Columns  ")
+    ap.append(f"*DO,ii,1,{CM_dict[0]},1  ")
+    ap.append("   CMSEL,S,COLUMN_%ii%  ")
+    ap.append("   ESLL,S  ") 
+    ap.append("   ESEL,R,ENAME,,189  ")
+    # FORMAT
+    ap.append("   *IF,ii,LT,10,THEN  ")
+    ap.append("       *VWRITE,ii  ")
+    ap.append('       ("NS ColMember_",F2.0)  ')
+    ap.append("   *ELSE  ")
+    ap.append("       *VWRITE,ii  ")
+    ap.append('       ("NS ColMember_",F3.0)  ')
+    ap.append("   *ENDIF  ")
+    # RESULT 
+    ap.append("   *GET,nElem,ELEM,0,COUNT  ")
+    ap.append("   *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC'  ")
+    ap.append("   (A12,A20,A20,A20,A20,A20,A20,A20)  ")
+    ap.append("   ELEM = 0  ")
+    ap.append("   *DO,jj,1,nElem,1  ")
+    ap.append("       ELEM = ELNEXT(ELEM)  ")
+    ap.append("       *GET,NF,ELEM,ELEM,SMISC,1  ")
+    ap.append("       *GET,MY,ELEM,ELEM,SMISC,2  ")
+    ap.append("       *GET,MZ,ELEM,ELEM,SMISC,3  ")
+    ap.append("       *GET,VY,ELEM,ELEM,SMISC,6  ")
+    ap.append("       *GET,VZ,ELEM,ELEM,SMISC,5  ")
+    ap.append("       *GET,TQ,ELEM,ELEM,SMISC,4  ")
+    ap.append("       NSLE  ")
+    ap.append("       *GET,Y_LOC,NODE,0,MNLOC,Y  ")
+    ap.append("       *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC  ")
+    ap.append("       (F12.0,7E20.8)  ")
+    ap.append("   *ENDDO    ")
+    ap.append("*ENDDO")
 
-        # Open and write to file
-        f.write("*CFOPEN,MASS_assembly,txt \n")
-        f.write("   *VWRITE,Comp_mass \n")
-        f.write("   (F12.5) \n")
-        f.write("*CFCLOS \n")
-        f.write("FINISH \n")
-        f.write("ALLSEL,ALL \n \n")
+    # LOOP OVER BRACES
+    ap.append("! Loop over Braces  ")
+    ap.append(f"*DO,ii,1,{CM_dict[1]},1  ")
+    ap.append("   CMSEL,S,BRACE_%ii%,LINE  ")
+    ap.append("   ESLL,S  ")
+    ap.append("   ESEL,R,ENAME,,189  ")
+    # FORMAT
+    ap.append("   *IF,ii,LT,10,THEN  ")
+    ap.append("       *VWRITE,ii  ")
+    ap.append('       ("NS BraceMember_",F2.0)  ')
+    ap.append("   *ELSE  ")
+    ap.append("       *VWRITE,ii  ")
+    ap.append('       ("NS BraceMember_",F3.0)  ')
+    ap.append("   *ENDIF  ")
+    # RESULT 
+    ap.append("   *GET,nElem,ELEM,0,COUNT  ")
+    ap.append("   *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC'  ")
+    ap.append("   (A12,7A20)  ")
+    ap.append("   elem = 0  ")
+    ap.append("   *DO,jj,1,nElem,1  ")
+    ap.append("       ELEM = ELNEXT(ELEM)  ")
+    ap.append("       *GET,NF,ELEM,ELEM,SMISC,1  ")
+    ap.append("       *GET,MY,ELEM,ELEM,SMISC,2  ")
+    ap.append("       *GET,MZ,ELEM,ELEM,SMISC,3  ")
+    ap.append("       *GET,VY,ELEM,ELEM,SMISC,6  ")
+    ap.append("       *GET,VZ,ELEM,ELEM,SMISC,5  ")
+    ap.append("       *GET,TQ,ELEM,ELEM,SMISC,4  ")
+    ap.append("       NSLE  ")
+    ap.append("       *GET,Y_LOC,NODE,0,MNLOC,Y  ")
+    ap.append("       *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC  ")
+    ap.append("       (F12.0,7E20.8)  ")
+    ap.append("   *ENDDO  ")
+    ap.append("*ENDDO  ")
+    ap.append("*CFCLOS    ")
 
-        # EIGENBUCKLING 
-        f.write("! Eigenbuckling Solution! \n")
-        f.write("/SOLU \n")
-        f.write("ANTYPE,BUCKLE \n")
-        f.write("BUCOPT,LANB,10 \n")
-        f.write("MXPAND,ALL \n")
-        f.write("OUTRES,ALL,ALL \n")
-        f.write("SOLVE \n")
-        f.write("FINISH \n \n")
-        
-        f.write("! Retrieve first 10 eigenvalues \n")      
-        f.write("/POST1 \n")
-        f.write("*CFOPEN,Eigenvalue1,txt \n")
-        f.write("*DO,jj,1,10,1 \n")
-        f.write("   *GET,MS%jj%,MODE,jj,FREQ \n")
-        f.write("   *VWRITE,MS%jj% \n")
-        f.write('   (F10.5) \n')
-        f.write("*ENDDO \n")
-        f.write("*CFCLOS \n")
+    # MASS OF ASSEMBLY
+    ap.append("! Get and Print Mass  ")
+    ap.append("ALLSEL  ")
+    ap.append("NSEL,S,LOC,Y,,4080  ")
+    ap.append("ESLN  ")
+    ap.append("*GET,ecnt,ELEM,0,COUNT  ")
+    ap.append("*GET,enum,ELEM,0,NUM,MIN  ")
+    ap.append("totvol = 0  ")
 
-        # Calculate Imperfection Force
-        f.write("ALLSEL\n")
-        f.write("*GET,N_HIGHEST_ret,NODE,0,MXLOC,Y \n")
-        f.write("N_HIGHEST = N_HIGHEST_ret*1E-3 \n")
-        f.write("alpha_h = 2/sqrt(N_HIGHEST) \n")
-        f.write("*IF,alpha_h,LT,0.66,THEN \n")
-        f.write("   alpha_h = 0.66 \n")
-        f.write("*ELSEIF,alpha_h,GT,1,THEN \n")
-        f.write("   alpha_h = 1 \n")
-        f.write("*ENDIF \n")
-        f.write("alpha_m = 2 ! Assumed for now \n")
-        f.write("imp_ang = 1/200 * alpha_h * alpha_m \n")
-        f.write(f"FORCE_IMP = {Ver_Force}*imp_ang \n")
+    # Loop over each element and get volume
+    ap.append("*DO,i,1,ecnt  ")
+    ap.append("   *GET,ev,ELEM,enum,VOLU  ")
+    ap.append("   totvol = totvol + ev  ")
+    ap.append("   enum = ELNEXT(enum)  ")
+    ap.append("*ENDDO  ")
+    
+    # Calculate Mass
+    ap.append("dens = 7.85E-6 ! kg/mm^3  ") # Density
+    ap.append("Comp_mass = dens*totvol    ")
 
-        #f.write("ALLSEL,ALL \n FDELE,ALL,ALL \n DDELE,ALL,ALL \n")
+    # Open and write to file
+    ap.append("*CFOPEN,MASS_assembly,txt  ")
+    ap.append("   *VWRITE,Comp_mass  ")
+    ap.append("   (F12.5)  ")
+    ap.append("*CFCLOS  ")
+    ap.append("FINISH  ")
+    ap.append("ALLSEL,ALL    ")
+
+    # EIGENBUCKLING 
+    ap.append("! Eigenbuckling Solution!  ")
+    ap.append("/SOLU  ")
+    ap.append("ANTYPE,BUCKLE  ")
+    ap.append("BUCOPT,LANB,10  ")
+    ap.append("MXPAND,ALL  ")
+    ap.append("OUTRES,ALL,ALL  ")
+    ap.append("SOLVE  ")
+    ap.append("FINISH    ")
+    
+    ap.append("! Retrieve first 10 eigenvalues  ")      
+    ap.append("/POST1  ")
+    ap.append("*CFOPEN,Eigenvalue1,txt  ")
+    ap.append("*DO,jj,1,10,1  ")
+    ap.append("   *GET,MS%jj%,MODE,jj,FREQ  ")
+    ap.append("   *VWRITE,MS%jj%  ")
+    ap.append('   (F10.5)  ')
+    ap.append("*ENDDO  ")
+    ap.append("*CFCLOS  ")
+
+    # Calculate Imperfection Force
+    ap.append("ALLSEL ")
+    ap.append("*GET,N_HIGHEST_ret,NODE,0,MXLOC,Y  ")
+    ap.append("N_HIGHEST = N_HIGHEST_ret*1E-3  ")
+    ap.append("alpha_h = 2/sqrt(N_HIGHEST)  ")
+    ap.append("*IF,alpha_h,LT,0.66,THEN  ")
+    ap.append("   alpha_h = 0.66  ")
+    ap.append("*ELSEIF,alpha_h,GT,1,THEN  ")
+    ap.append("   alpha_h = 1  ")
+    ap.append("*ENDIF  ")
+    ap.append("alpha_m = 2 ! Assumed for now  ")
+    ap.append("imp_ang = 1/200 * alpha_h * alpha_m  ")
+    ap.append(f"FORCE_IMP = {Ver_Force}*imp_ang  ")
+
+    #ap.append("ALLSEL,ALL   FDELE,ALL,ALL   DDELE,ALL,ALL  ")
 
 ##################################################################
 ##################### Nonlinear Analysis #########################
 ##################################################################
 
-        # NONLINEAR ANALYSIS SETTINGS
-        f.write("! SOLUTION ! \n")
-        f.write("/SOLU \n")
-        f.write("ANTYPE, STATIC \n")
-        f.write("NLGEOM,ON \n")
-        f.write("ARCLEN,ON \n")
-        f.write("ARCTRM,L \n")
-        f.write("AUTOTS,OFF \n")
-        #f.write("NSUBST,300,1000,100 \n") ######### IMPORTANT HERE ##########
+    # NONLINEAR ANALYSIS SETTINGS
+    ap.append("! SOLUTION !  ")
+    ap.append("/SOLU  ")
+    ap.append("ANTYPE, STATIC  ")
+    ap.append("NLGEOM,ON  ")
+    ap.append("ARCLEN,ON  ")
+    ap.append("ARCTRM,L  ")
+    ap.append("AUTOTS,OFF  ")
+    #ap.append("NSUBST,300,1000,100  ") ######### IMPORTANT HERE ##########
 
-        # Apply Force
-        f.write("NSEL,S,LOC,X,0 \n ")
-        f.write("*GET,N_LOW,NODE,,MNLOC,Y \n")
-        f.write("*GET,n_load_c,NODE,0,COUNT \n")
+    # Apply Force
+    ap.append("NSEL,S,LOC,X,0   ")
+    ap.append("*GET,N_LOW,NODE,,MNLOC,Y  ")
+    ap.append("*GET,n_load_c,NODE,0,COUNT  ")
 
-        #f.write("NSEL,R,LOC,Y,N_LOW \n")
-        f.write("N_C = n_load_c \n")
-        f.write("NSEL,S,LOC,X,0 \n ")
-        f.write(f"MOMZ = {MomZ}/N_C \n")
-        f.write(f"MOMY = {MomY}/N_C \n")
-        f.write(f"F_HOR = {Hor_Force}/N_C \n")
-        f.write(f"F_VER = {-Ver_Force}/N_C \n")
-        f.write("F_XTOT = F_HOR+(FORCE_IMP/N_C) \n")
-        f.write(f"F,ALL,FY,F_VER \n")
-        f.write(f"F,ALL,FX,F_XTOT \n")
-        f.write(f"F,ALL,MY,MOMY \n")
-        f.write(f"F,ALL,MZ,MOMZ \n")
+    #ap.append("NSEL,R,LOC,Y,N_LOW  ")
+    ap.append("N_C = n_load_c  ")
+    ap.append("NSEL,S,LOC,X,0   ")
+    ap.append(f"MOMZ = {MomZ}/N_C  ")
+    ap.append(f"MOMY = {MomY}/N_C  ")
+    ap.append(f"F_HOR = {Hor_Force}/N_C  ")
+    ap.append(f"F_VER = {-Ver_Force}/N_C  ")
+    ap.append("F_XTOT = F_HOR+(FORCE_IMP/N_C)  ")
+    ap.append(f"F,ALL,FY,F_VER  ")
+    ap.append(f"F,ALL,FX,F_XTOT  ")
+    ap.append(f"F,ALL,MY,MOMY  ")
+    ap.append(f"F,ALL,MZ,MOMZ  ")
 
-        # Fixed Displacement at Bottom Nodes
-        f.write("! Displacement ! \n")
-        f.write("ALLSEL,ALL \n")
-        f.write("NSEL,S,LOC,Y,NodeYMin \n")
-        f.write("D,ALL,ALL,0 \n")
-        f.write("ALLSEL \n")
+    # Fixed Displacement at Bottom Nodes
+    ap.append("! Displacement !  ")
+    ap.append("ALLSEL,ALL  ")
+    ap.append("NSEL,S,LOC,Y,NodeYMin  ")
+    ap.append("D,ALL,ALL,0  ")
+    ap.append("ALLSEL  ")
 
-        # SOLVE
-        f.write("! Solve the System \n")
-        f.write("SOLVE \n")
-        f.write("FINISH \n\n")
+    # SOLVE
+    ap.append("! Solve the System  ")
+    ap.append("SOLVE  ")
+    ap.append("FINISH   ")
 
-        f.write("! ===== APDL OUTPUT FILE ===== ! \n")
+    ap.append("! ===== APDL OUTPUT FILE ===== !  ")
 
-        f.write("/POST1 \n")
-        f.write("SET,LAST \n")
-        f.write("ALLSEL,ALL \n \n")
+    ap.append("/POST1  ")
+    ap.append("SET,LAST  ")
+    ap.append("ALLSEL,ALL    ")
 
-        # ONLY SELECT BEAM189 ELEMENTS
-        f.write("*GET,E_COUNT,ELEM,0,COUNT \n \n") 
-        f.write(f"! Number of Columns: {CM_dict[0]} \n")
-        f.write(f"! Number of Braces : {CM_dict[1]} \n \n")
-        # SET OUTPUT FILE
-        f.write("! Open file to write \n")
-        f.write("*CFOPEN, APDL_Nonlin_Internal,txt \n")
-        # LOOP OVER COLUMNS
-        f.write("! Loop over Columns \n")
-        f.write(f"*DO,ii,1,{CM_dict[0]},1 \n")
-        f.write("   CMSEL,S,COLUMN_%ii% \n")
-        f.write("   ESLL,S \n") 
-        f.write("   ESEL,R,ENAME,,189 \n")
-        # FORMAT
-        f.write("   *IF,ii,LT,10,THEN \n")
-        f.write("       *VWRITE,ii \n")
-        f.write('       ("NS ColMember_",F2.0) \n')
-        f.write("   *ELSE \n")
-        f.write("       *VWRITE,ii \n")
-        f.write('       ("NS ColMember_",F3.0) \n')
-        f.write("   *ENDIF \n")
-        # RESULT 
-        f.write("   *GET,nElem,ELEM,0,COUNT \n")
-        f.write("       *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC' \n")
-        f.write("       (A12,A20,A20,A20,A20,A20,A20,A20) \n")
-        f.write("       ELEM = 0 \n")
-        f.write("       *DO,jj,1,nElem,1 \n")
-        f.write("           ELEM = ELNEXT(ELEM) \n")
-        f.write("           *GET,NF,ELEM,ELEM,SMISC,1 \n")
-        f.write("           *GET,MY,ELEM,ELEM,SMISC,2 \n")
-        f.write("           *GET,MZ,ELEM,ELEM,SMISC,3 \n")
-        f.write("           *GET,VY,ELEM,ELEM,SMISC,6 \n")
-        f.write("           *GET,VZ,ELEM,ELEM,SMISC,5 \n")
-        f.write("           *GET,TQ,ELEM,ELEM,SMISC,4 \n")
-        f.write("           NSLE \n")
-        f.write("           *GET,Y_LOC,NODE,0,MNLOC,Y \n")
-        f.write("           *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC \n")
-        f.write("           (F12.0,7E20.8) \n")
-        f.write("       *ENDDO \n \n")
-        f.write("*ENDDO")
+    # ONLY SELECT BEAM189 ELEMENTS
+    ap.append("*GET,E_COUNT,ELEM,0,COUNT    ") 
+    ap.append(f"! Number of Columns: {CM_dict[0]}  ")
+    ap.append(f"! Number of Braces : {CM_dict[1]}    ")
+    # SET OUTPUT FILE
+    ap.append("! Open file to write  ")
+    ap.append("*CFOPEN, APDL_Nonlin_Internal,txt  ")
+    # LOOP OVER COLUMNS
+    ap.append("! Loop over Columns  ")
+    ap.append(f"*DO,ii,1,{CM_dict[0]},1  ")
+    ap.append("   CMSEL,S,COLUMN_%ii%  ")
+    ap.append("   ESLL,S  ") 
+    ap.append("   ESEL,R,ENAME,,189  ")
+    # FORMAT
+    ap.append("   *IF,ii,LT,10,THEN  ")
+    ap.append("       *VWRITE,ii  ")
+    ap.append('       ("NS ColMember_",F2.0)  ')
+    ap.append("   *ELSE  ")
+    ap.append("       *VWRITE,ii  ")
+    ap.append('       ("NS ColMember_",F3.0)  ')
+    ap.append("   *ENDIF  ")
+    # RESULT 
+    ap.append("   *GET,nElem,ELEM,0,COUNT  ")
+    ap.append("       *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC'  ")
+    ap.append("       (A12,A20,A20,A20,A20,A20,A20,A20)  ")
+    ap.append("       ELEM = 0  ")
+    ap.append("       *DO,jj,1,nElem,1  ")
+    ap.append("           ELEM = ELNEXT(ELEM)  ")
+    ap.append("           *GET,NF,ELEM,ELEM,SMISC,1  ")
+    ap.append("           *GET,MY,ELEM,ELEM,SMISC,2  ")
+    ap.append("           *GET,MZ,ELEM,ELEM,SMISC,3  ")
+    ap.append("           *GET,VY,ELEM,ELEM,SMISC,6  ")
+    ap.append("           *GET,VZ,ELEM,ELEM,SMISC,5  ")
+    ap.append("           *GET,TQ,ELEM,ELEM,SMISC,4  ")
+    ap.append("           NSLE  ")
+    ap.append("           *GET,Y_LOC,NODE,0,MNLOC,Y  ")
+    ap.append("           *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC  ")
+    ap.append("           (F12.0,7E20.8)  ")
+    ap.append("       *ENDDO    ")
+    ap.append("*ENDDO")
 
-        # LOOP OVER BRACES
-        f.write("! Loop over Braces \n")
-        f.write(f"*DO,ii,1,{CM_dict[1]},1 \n")
-        f.write("   CMSEL,S,BRACE_%ii%,LINE \n")
-        f.write("   ESLL,S \n")
-        f.write("   ESEL,R,ENAME,,189 \n")
-        # FORMAT
-        f.write("   *IF,ii,LT,10,THEN \n")
-        f.write("       *VWRITE,ii \n")
-        f.write('       ("NS BraceMember_",F2.0) \n')
-        f.write("   *ELSE \n")
-        f.write("       *VWRITE,ii \n")
-        f.write('       ("NS BraceMember_",F3.0) \n')
-        f.write("   *ENDIF \n")
-        # RESULT 
-        f.write("   *GET,nElem,ELEM,0,COUNT \n")
-        f.write("   *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC' \n")
-        f.write("   (A12,7A20) \n")
-        f.write("   elem = 0 \n")
-        f.write("   *DO,jj,1,nElem,1 \n")
-        f.write("       ELEM = ELNEXT(ELEM) \n")
-        f.write("       *GET,NF,ELEM,ELEM,SMISC,1 \n")
-        f.write("       *GET,MY,ELEM,ELEM,SMISC,2 \n")
-        f.write("       *GET,MZ,ELEM,ELEM,SMISC,3 \n")
-        f.write("       *GET,VY,ELEM,ELEM,SMISC,6 \n")
-        f.write("       *GET,VZ,ELEM,ELEM,SMISC,5 \n")
-        f.write("       *GET,TQ,ELEM,ELEM,SMISC,4 \n")
-        f.write("       NSLE \n")
-        f.write("       *GET,Y_LOC,NODE,0,MNLOC,Y \n")
-        f.write("       *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC \n")
-        f.write("       (F12.0,7E20.8) \n")
-        f.write("   *ENDDO \n")
-        f.write("*ENDDO \n")
-        f.write("*CFCLOS \n \n")
+    # LOOP OVER BRACES
+    ap.append("! Loop over Braces  ")
+    ap.append(f"*DO,ii,1,{CM_dict[1]},1  ")
+    ap.append("   CMSEL,S,BRACE_%ii%,LINE  ")
+    ap.append("   ESLL,S  ")
+    ap.append("   ESEL,R,ENAME,,189  ")
+    # FORMAT
+    ap.append("   *IF,ii,LT,10,THEN  ")
+    ap.append("       *VWRITE,ii  ")
+    ap.append('       ("NS BraceMember_",F2.0)  ')
+    ap.append("   *ELSE  ")
+    ap.append("       *VWRITE,ii  ")
+    ap.append('       ("NS BraceMember_",F3.0)  ')
+    ap.append("   *ENDIF  ")
+    # RESULT 
+    ap.append("   *GET,nElem,ELEM,0,COUNT  ")
+    ap.append("   *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC'  ")
+    ap.append("   (A12,7A20)  ")
+    ap.append("   elem = 0  ")
+    ap.append("   *DO,jj,1,nElem,1  ")
+    ap.append("       ELEM = ELNEXT(ELEM)  ")
+    ap.append("       *GET,NF,ELEM,ELEM,SMISC,1  ")
+    ap.append("       *GET,MY,ELEM,ELEM,SMISC,2  ")
+    ap.append("       *GET,MZ,ELEM,ELEM,SMISC,3  ")
+    ap.append("       *GET,VY,ELEM,ELEM,SMISC,6  ")
+    ap.append("       *GET,VZ,ELEM,ELEM,SMISC,5  ")
+    ap.append("       *GET,TQ,ELEM,ELEM,SMISC,4  ")
+    ap.append("       NSLE  ")
+    ap.append("       *GET,Y_LOC,NODE,0,MNLOC,Y  ")
+    ap.append("       *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC  ")
+    ap.append("       (F12.0,7E20.8)  ")
+    ap.append("   *ENDDO  ")
+    ap.append("*ENDDO  ")
+    ap.append("*CFCLOS    ")
 
 
         
-    return input_file
+    return ap
 
 
 

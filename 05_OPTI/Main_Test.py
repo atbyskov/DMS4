@@ -15,6 +15,8 @@ import SW_Import as SW
 from Post_Process import PostProcessor
 from MyAPDLCall import RunAPDL
 
+from ansys.mapdl.core import launch_mapdl
+
 # Start timing
 tic = time.time()
 
@@ -52,8 +54,25 @@ Misc = {
     "f_y": f_y,
     "E_mod": E_mod
 }
+#C:\Program Files\ANSYS Inc\v251\ansys\bin\winx64
+# Start License Server
 
-f = RunAPDL(SWcoor,var,Misc) # Runs APDL and returns MASS
+tic_lic = time.time()
+mapdl = launch_mapdl(
+    run_location="Ansout", 
+    override=True,
+    additional_switches="-p ansys"
+)
+toc_lic = time.time()
+print(f"License opened in: {toc_lic-tic_lic:.2f} s")
+
+
+
+# Run Environment
+try:
+    f = RunAPDL(mapdl, SWcoor, var, Misc) # Runs APDL and returns MASS
+finally:
+    mapdl.exit()
 
 
 print(f"Mass of Assembly: {f:.2f} kg")
