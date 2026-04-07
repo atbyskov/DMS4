@@ -57,7 +57,7 @@ Misc = {
 mapdl = launch_mapdl(
     run_location="Ansout",
     # Uncomment if you want a complete .txt log of everything written to MAPDL
-    #log_apdl="apdl_log",
+    log_apdl="apdl_log",
     override=True,
     nproc=8,
     additional_switches="-p ansys -smp",
@@ -71,9 +71,9 @@ finally:
     mapdl.exit()
 
 # Print Information
-print("\nOptimal x:", result.x)
-print("Optimal objective:", result.fun)
-print("Message:", result.message)
-print("TXT log file:", txt_path)
-print("Objective CSV:", csv_path)
+#print("\nOptimal x:", result.x)
+#print("Optimal objective:", result.fun)
+#print("Message:", result.message)
+#print("TXT log file:", txt_path)
+#print("Objective CSV:", csv_path)
 

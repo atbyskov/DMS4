@@ -19,10 +19,10 @@ def run_optimization(
     x0 = np.array(var, dtype=float)
 
     bounds = [
-        (30.0, 60.0),  # R0
-        (31.0, 70.0),  # R1
-        (8.0,  20.0),  # R2
-        (9.0,  25.0)   # R3
+        (10.0, 100.0),  # R0
+        (1.0, 7.0),  # R1
+        (10.0,  100.0),  # R2
+        (1.0,  6.0)   # R3
     ]
 
     def constraint_values(x):             # This is the function that is used to calculate the constraint values
@@ -34,6 +34,12 @@ def run_optimization(
         Util_BNS_values = utils.Util_BNS(x, Misc)
         Util_BR_values = utils.Util_BR(x, Misc)
         Util_IN_values = utils.Util_IN(x, Misc)
+        Util_list = utils.Util_list(x, Misc)
+
+        print("\n--- UTILIZATION REPORT ---")
+        for key, val in Util_list.items():
+            print(f"{key:10s}  Column: {val[0]:8.4f}   Brace: {val[1]:8.4f}")
+        print("------------------------")
         """
         Return all inequality constraints in the form c(x) >= 0.
         Add as many as you want here.

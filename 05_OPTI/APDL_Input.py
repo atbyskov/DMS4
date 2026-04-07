@@ -37,6 +37,11 @@ def InputFun(SWcoor, var, Misc):
     R2 = d1/2 - t1       # Brace Inner Radius  [mm]
     R3 = d1/2            # Brace Outer Radius  [mm]
 
+    R0 = round(R0,4)
+    R1 = round(R1,4)
+    R2 = round(R2,4)
+    R3 = round(R3,4)
+
     # Import Misc
     esize     = Misc["esize"]
     Hor_Force = Misc["Hor_Force"]
@@ -82,7 +87,7 @@ def InputFun(SWcoor, var, Misc):
     ap.append(f"SECDATA,{R2},{R3},8    ")
     ap.append("! Top Section Type (SECTYPE= 3 )  ")
     ap.append("SECTYPE,3,BEAM,CTUBE  ")
-    ap.append("SECDATA,35.05,38.05  ")
+    ap.append("SECDATA,35.05,38.05,8  ")
     # MATERIAL
     ap.append("! MATERIAL DATA ")
     ap.append(f"MP,EX,1,{E_mod} ! [MPa] ")

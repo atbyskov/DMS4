@@ -1,0 +1,14 @@
+Job:file	at:Tue Apr  7 13:30:19 2026
+
+******PCGLSS Error******
+Status:7
+Element Matrix missing for element 26
+Version:6.0:PCGLSS0109:Source File:..\src\pcgEmatAssm.c:Line:1439
+******PCGLSS Error******
+Job:file	at:Tue Apr  7 13:45:22 2026
+
+******PCGLSS Error******
+Status:7
+Element Matrix missing for element 216
+Version:6.0:PCGLSS0109:Source File:..\src\pcgEmatAssm.c:Line:1439
+******PCGLSS Error******
