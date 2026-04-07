@@ -8,6 +8,7 @@
         # 5. Bending, Normal and Shear      [BNS]
         # 6. Buckling Resistance            [BR]
         # 7. Interaction                    [IN]
+        # 8. Brace-Step                     [BS]
     # Outputs this as a .txt file for evaluation
     # Output highest utilization factor as list
     #   FORMAT:
@@ -94,7 +95,8 @@ class PostProcessor:
                 "Util_T": self.Util_T(var, Misc),
                 "Util_BNS": self.Util_BNS(var, Misc),
                 "Util_BR": self.Util_BR(var, Misc),
-                "Util_IN": self.Util_IN(var, Misc)
+                "Util_IN": self.Util_IN(var, Misc),
+                "Util_BS": self.Util_BS(var, Misc)
             }
 
             return util_data
@@ -294,9 +296,12 @@ class PostProcessor:
         
             D0 = Ro*2 # Outer Diameter
             Di = Ri*2 # Inner Diameter
+            t = (D0-Di)/2   # Thickness
 
             # Area
-            A= np.pi * ((Ro**2) - (Ri**2)) 
+            A = np.pi * ((Ro**2) - (Ri**2)) 
+            Aw = (A-2*D0*t)/A
+            Aw = np.clip(Aw,0,0.5)
 
             # Design Moment Resistance
             M_Rd = (D0**3 - Di**3)/6 * f_y
@@ -310,7 +315,7 @@ class PostProcessor:
             Mz = df_member["Mz"].abs()
 
             # Fraction to be used in Utilization Ratio
-            red_col = 1 - N / N_Rd
+            red_col = (1 - (N / N_Rd)**1.7)
 
             # Utilization Ratio
             df_member["Util_BNS"] = (My / (M_Rd * red_col))**2 + (Mz / (M_Rd * red_col))**2
@@ -377,10 +382,10 @@ class PostProcessor:
             N_bRd = Chi*A*f_y
 
             # Buckling Resistance Check ([6.3.1.1] (6.46))
-            df_member["Util_IN"] = df_member["NF"]/N_bRd
+            df_member["Util_BR"] = df_member["NF"]/N_bRd
 
             # Take maximum value
-            util_max = df_member["Util_IN"].max()
+            util_max = df_member["Util_BR"].max()
 
             # Return Max Value
             return util_max
@@ -496,5 +501,45 @@ class PostProcessor:
         return Util_IN
 
 
-  
+    def Util_BS(self, var, Misc):
+
+        d0, t0, d1, t1 = var    
+
+        # Yield Strength of Braces
+        f_y = 355   # [MPa]
+
+        # Initialize
+        Util_BS = np.zeros(1)
+
+        # Force and Length
+        P = 200 * 9.82      # [N]
+        L = 350             # [mm]
+
+        # Max Moment
+        M = 1/8*P*L         # [Nmm]
+
+        # Moment of Intertia and Area
+        I = np.pi/64*(d1**4-(d1-2*t1)**4)   # [mm^4]
+        A = np.pi/4*(d1**2-(d1-2*t1)**2)    # [mm^2]
+
+        # Sectional Modulus
+        W = I/(d1/2)                        # [mm^3]
+
+        # Bending Stress
+        sig_b = M/W                         # [N/mm^2]
+        
+        # Vertical Force
+        V = P/2                             # [N]
+
+        # Average and Max Shear Stress
+        tau_avg = V/A                       # [N/mm^2]
+        tau_max = 2*tau_avg                 # [N/mm^2]
+
+        # Von Misses
+        sig_vm = np.sqrt(sig_b**2+3*tau_max**2) # [N/mm^2]
+
+        # Write to Utilization Ratio
+        Util_BS[0] = sig_vm/f_y                 # [Na]
+
+        return Util_BS
 

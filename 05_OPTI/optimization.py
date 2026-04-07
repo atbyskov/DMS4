@@ -19,10 +19,10 @@ def run_optimization(
     x0 = np.array(var, dtype=float)
 
     bounds = [
-        (10.0, 100.0),  # R0
-        (1.0, 7.0),  # R1
+        (40.0, 100.0),  # R0
+        (1.0, 4.0),  # R1
         (10.0,  100.0),  # R2
-        (1.0,  6.0)   # R3
+        (2.0,  4.0)   # R3
     ]
 
     def constraint_values(x):             # This is the function that is used to calculate the constraint values
@@ -34,19 +34,16 @@ def run_optimization(
         Util_BNS_values = utils.Util_BNS(x, Misc)
         Util_BR_values = utils.Util_BR(x, Misc)
         Util_IN_values = utils.Util_IN(x, Misc)
-        Util_list = utils.Util_list(x, Misc)
+        Util_BS_values = utils.Util_BS(x, Misc)
 
-        print("\n--- UTILIZATION REPORT ---")
-        for key, val in Util_list.items():
-            print(f"{key:10s}  Column: {val[0]:8.4f}   Brace: {val[1]:8.4f}")
-        print("------------------------")
+    
         """
         Return all inequality constraints in the form c(x) >= 0.
         Add as many as you want here.
         """
         return np.array([
-            x[1] - x[0] - eps_geom,
-            x[3] - x[2] - eps_geom,
+            #x[1] - x[0] - eps_geom,
+            #x[3] - x[2] - eps_geom,
             1.0 - Util_LB_values[0],           # local buckling column
             1.0 - Util_LB_values[1],           # local buckling brace
             1.0 - Util_NF_values[0],           # normal force column
@@ -61,12 +58,13 @@ def run_optimization(
             1.0 - Util_BR_values[1],           # Flexural and torsional buckling brace
             1.0 - Util_IN_values[0],           # Interaction column
             1.0 - Util_IN_values[1],           # Interaction brace
+            1.0 - Util_BS_values[0],
             # add more constraints here later if needed
         ], dtype=float)
 
     constraint_names = [
-        "thickness_col",
-        "thickness_brace",
+        #"thickness_col",
+        #"thickness_brace",
         "local_buckling_column",
         "local_buckling_brace",
         "normal_force_column",
@@ -81,6 +79,7 @@ def run_optimization(
         "flexural_torsional_buckling_brace",
         "interaction_column",  # Interaction column
         "interaction_brace",  # Interaction brace
+        "Brace_Step",
         # add more names here if you add more constraints
     ]
 
@@ -93,7 +92,7 @@ def run_optimization(
         "disp": True,
         "eps": 0.1,
         "ftol": 1e-3,
-        "maxiter": 20
+        "maxiter": 40
     }
 
     logger = OptimizationLogger(
@@ -107,6 +106,28 @@ def run_optimization(
     def objective(x):                # This is the objective function that is used to optimize the design variables
         val = RunAPDL(mapdl, SWcoor, x, Misc)
         logger.log_evaluation(x, val)
+
+        utils = PostProcessor()
+        Util_list = utils.Util_list(x, Misc)  
+
+        print("\n--- UTILIZATION REPORT ---")
+        for key, util in Util_list.items():
+
+            if util is None:
+                print(f"{key:10s}  Column:   N/A    Brace:   N/A")
+                continue
+
+            util = np.atleast_1d(util)
+
+            col_val = util[0] if len(util) > 0 and np.isfinite(util[0]) else np.nan
+            brc_val = util[1] if len(util) > 1 and np.isfinite(util[1]) else np.nan
+
+            print(
+                f"{key:10s}  "
+                f"Column: {col_val:8.4f}   "
+                f"Brace: {brc_val:8.4f}"
+            )
+        print("------------------")
         return val
 
     def callback(xk):               # This is the callback function that is called after each iteration in the optimization process
