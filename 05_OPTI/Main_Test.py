@@ -55,11 +55,15 @@ Misc = {
 }
 #C:\Program Files\ANSYS Inc\v251\ansys\bin\winx64
 # Start License Server
+
+tic_lic = time.time()
 mapdl = launch_mapdl(
     run_location="Ansout",
     override=True,
-    additional_switches="-p ansys"
+    additional_switches="-p ansys -smp -np 8"
 )
+toc_lic = time.time()
+print(f"License opened in: {toc_lic-tic_lic:.2f} s")
 
 
 # This closes License, even if Ansys crashes

@@ -8,10 +8,12 @@
 # Import packages
 import os
 import time 
+import shutil
 
 import builtins
 import numpy as np
 from optimization import run_optimization
+from ansys.mapdl.core import launch_mapdl
 
 # Import Functions
 import SW_Import as SW
@@ -44,6 +46,10 @@ f_y = 690               # Yield Strength of S690 [MPa]
 E_mod = 200*1E3         # Youngs Modulus [MPa]
 
 #Misc = [esize, Hor_Force, Ver_Force, MomZ, MomY, f_y, E_mod]
+Ansout_dir = "Ansout"
+if os.path.exists(Ansout_dir):
+    shutil.rmtree(Ansout_dir)
+os.makedirs(Ansout_dir, exist_ok=True) # Create folder again
 
 # Create Misc as dict
 Misc = {
@@ -55,9 +61,17 @@ Misc = {
     "f_y": f_y,
     "E_mod": E_mod
 }
-
-result, txt_path, csv_path = run_optimization(var, SWcoor, Misc)
-
+mapdl = launch_mapdl(
+    run_location="Ansout",
+    override=True,
+    additional_switches="-p ansys -np 8",
+)
+# mapdl.mute = True
+try:
+    f1 = RunAPDL(mapdl,SWcoor,var,Misc)
+    result, txt_path, csv_path = run_optimization(mapdl, var, SWcoor, Misc)
+finally:
+    mapdl.exit()
 
 print("\nOptimal x:", result.x)
 print("Optimal objective:", result.fun)

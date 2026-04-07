@@ -1,9 +1,9 @@
 ================================================================================
 OPTIMIZATION LOG
 ================================================================================
-Run start date/time : 2026-04-06 14:35:11
-Log file            : Optimization_Logs\optimization_log_2026-04-06_14-35-11.txt
-Objective CSV       : Optimization_Logs\objective_history_2026-04-06_14-35-11.csv
+Run start date/time : 2026-04-07 08:44:45
+Log file            : Optimization_Logs\optimization_log_2026-04-07_08-44-45.txt
+Objective CSV       : Optimization_Logs\objective_history_2026-04-07_08-44-45.csv
 
 Initial design variables:
 x0 = [35.05, 38.05, 11.15, 13.45]
@@ -22,14 +22,4 @@ Optimizer settings:
   maxiter : 20
 
 ================================================================================
-
-[EVALUATION 1]
-  Date/time : 2026-04-06 14:35:18
-  x         : [35.05, 38.05, 11.15, 13.45]
-  Objective : 107.122
-
-[EVALUATION 2]
-  Date/time : 2026-04-06 14:35:22
-  x         : [35.15, 38.05, 11.15, 13.45]
-  Objective : 105.004
 

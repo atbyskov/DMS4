@@ -22,30 +22,20 @@
 #   Return Mass
         
 # Import Tools
+import time
 import os
-import math
-import shutil
 
 # Import Functions
 from APDL_Input import InputFun
 
 
-def RunAPDL(mapdl, SWcoor,var,Misc):
-
-
-    # Clear Ansout folder before running 
-    Ansout_dir = "Ansout"
-    #if os.path.exists(Ansout_dir):
-    #    shutil.rmtree(Ansout_dir)
-    #os.makedirs(Ansout_dir, exist_ok=True) # Create folder again
-
-    # Tell PyMAPDL to use this folder
-    # mapdl.cwd(Ansout_dir)
+def RunAPDL(mapdl,SWcoor,var,Misc):
+    ans_time_tic = time.time()
+   
+    mapdl.clear()
 
     # Create input file for Eigenvalue Analysis
     apdl_cmds = InputFun(SWcoor,var,Misc)
-
-    
 
     with mapdl.non_interactive:
         for cmd in apdl_cmds:
@@ -53,12 +43,9 @@ def RunAPDL(mapdl, SWcoor,var,Misc):
             if cmd:
                 mapdl.run(cmd)
 
-
-
     # Clear APDL
     mapdl.finish()
-
-
+    
 
     # Read First eigenvalue:
     with open("Ansout/Eigenvalue1.txt") as f:
@@ -72,6 +59,10 @@ def RunAPDL(mapdl, SWcoor,var,Misc):
     # Open and Read Mass
     with open("Ansout/Mass_Assembly.txt","r") as f:
         Mass = [float(line.strip()) for line in f if line.strip()]
+
+    ans_time_toc = time.time()
+
+    print(f"Sim time: {ans_time_toc-ans_time_tic:.2f} s")
 
     # Return Mass as float value
     return sum(Mass)
