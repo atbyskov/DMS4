@@ -2,17 +2,17 @@ import numpy as np
 from scipy import optimize as spo
 from MyAPDLCall import RunAPDL
 from opt_logger import OptimizationLogger
-from Post_Process import PostProcessor
+from Post_Process import PostProcessor 
 
 
-def run_optimization(var, SWcoor, Misc, eps_geom=1, save_folder="Optimization_Logs"):
+def run_optimization(var, SWcoor, Misc, eps_geom=0.5, save_folder="Optimization_Logs"):
     x0 = np.array(var, dtype=float)
 
     bounds = [
-        (10.0, 60.0),  # R0
-        (11.0, 70.0),  # R1
-        (1.0,  20.0),  # R2
-        (2.0,  25.0)   # R3
+        (10.0, 60.0),  # R0 column/chord inner radius
+        (11.0, 70.0),  # R1 column/chord outer radius
+        (1.0,  20.0),  # R2 brace inner radius
+        (2.0,  25.0)   # R3 brace outer radius
     ]
 
     def constraint_values(x):
@@ -32,9 +32,26 @@ def run_optimization(var, SWcoor, Misc, eps_geom=1, save_folder="Optimization_Lo
         Util_BR_values  = utils.Util_BR(x, Misc)
         Util_IN_values  = utils.Util_IN(x, Misc)
 
+
+        fy = Misc["f_y"]
+        class2_limit = 70.0 * 235.0 / fy # Table 5.2 EN 1993-1-1 Section 5.5 - Classification of cross-sections
+
+        # Geometry from radii
+        d_col = 2.0 * x[1]
+        t_col = x[1] - x[0]
+
+        d_brace = 2.0 * x[3]
+        t_brace = x[3] - x[2]
+
+        iota_col = d_col / t_col
+        iota_brace = d_brace / t_brace
+
         constraint_list = [
             lambda: x[1] - x[0] - eps_geom,      # thickness column
             lambda: x[3] - x[2] - eps_geom,      # thickness brace
+            # Eurocode Class 2 tubular section constraints
+            lambda: class2_limit - iota_col,     # chord: d/t <= 70 * 235 / fy Table 5.2 EN 1993-1-1 Section 5.5 - Classification of cross-sections
+            lambda: class2_limit - iota_brace,   # brace: d/t <= 70 * 235 / fy Table 5.2 EN 1993-1-1 Section 5.5 - Classification of cross-sections
 
             lambda: 1.0 - Util_LB_values[0],     # local buckling column
             lambda: 1.0 - Util_LB_values[1],     # local buckling brace

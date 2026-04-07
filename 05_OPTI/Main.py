@@ -16,7 +16,6 @@ from optimization import run_optimization
 # Import Functions
 import SW_Import as SW
 from Post_Process import PostProcessor
-from Post_Process import print_info
 from MyAPDLCall import RunAPDL
 
 tic = time.time()
