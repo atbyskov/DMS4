@@ -14,6 +14,7 @@ import time
 import SW_Import as SW
 from Post_Process import PostProcessor
 from MyAPDLCall import RunAPDL
+
 from ansys.mapdl.core import launch_mapdl
 
 # Start timing
@@ -58,15 +59,16 @@ Misc = {
 
 tic_lic = time.time()
 mapdl = launch_mapdl(
-    run_location="Ansout",
+    run_location="Ansout", 
     override=True,
-    additional_switches="-p ansys -smp -np 8"
+    additional_switches="-p ansys"
 )
 toc_lic = time.time()
 print(f"License opened in: {toc_lic-tic_lic:.2f} s")
 
 
-# This closes License, even if Ansys crashes
+
+# Run Environment
 try:
     f = RunAPDL(mapdl, SWcoor, var, Misc) # Runs APDL and returns MASS
 finally:

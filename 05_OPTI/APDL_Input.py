@@ -28,8 +28,14 @@ def InputFun(SWcoor, var, Misc):
     # Initialize APDL Command for PyMAPDL
     ap = []
     
-    # Import Radii
-    R0, R1, R2, R3 = var 
+    # Import variables
+    d0, t0, d1, t1 = var
+
+    # Convert to Radii
+    R0 = d0/2 - t0       # Column Inner Radius [mm]
+    R1 = d0/2            # Column Outer Radius [mm]
+    R2 = d1/2 - t1       # Brace Inner Radius  [mm]
+    R3 = d1/2            # Brace Outer Radius  [mm]
 
     # Import Misc
     esize     = Misc["esize"]
@@ -210,17 +216,17 @@ def InputFun(SWcoor, var, Misc):
 
         
     #Create and save .png of the mesh
-    ap.append("/SHOW,PNG,,0  ")
-    ap.append("/RGB,INDEX,100,100,100,0  ")
-    ap.append("/RGB,INDEX,80,80,80,13  ")
-    ap.append("/RGB,INDEX,60,60,60,14  ")
-    ap.append("/RGB,INDEX,0,0,0,15  ")
-    ap.append("/TYPE,,4  ")
-    ap.append("/VIEW,,0,0,1  ")
-    ap.append("/ANGLE,,30,YM  ")
-    ap.append("EPLOT  ")
-    ap.append("/SHOW,close  ")
-    ap.append("/SHOW,TERM  ")
+    #ap.append("/SHOW,PNG,,0  ")
+    #ap.append("/RGB,INDEX,100,100,100,0  ")
+    #ap.append("/RGB,INDEX,80,80,80,13  ")
+    #ap.append("/RGB,INDEX,60,60,60,14  ")
+    #ap.append("/RGB,INDEX,0,0,0,15  ")
+    #ap.append("/TYPE,,4  ")
+    #ap.append("/VIEW,,0,0,1  ")
+    #ap.append("/ANGLE,,30,YM  ")
+    #ap.append("EPLOT  ")
+    #ap.append("/SHOW,close  ")
+    #ap.append("/SHOW,TERM  ")
 
     # RUN STATIC ANALYSIS
     # We use sparse solver with pre-stress on

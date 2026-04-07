@@ -101,8 +101,15 @@ class PostProcessor:
     
     # Local Buckling  [Timeshenko p. 458]
     def Util_LB(self, var, Misc ):
-        # Import Radii
-        R0, R1, R2, R3 = var
+        
+        # Import variables
+        d0, t0, d1, t1 = var
+
+        # Convert to Radii
+        R0 = d0/2 - t0       # Column Inner Radius [mm]
+        R1 = d0/2            # Column Outer Radius [mm]
+        R2 = d1/2 - t1       # Brace Inner Radius  [mm]
+        R3 = d1/2            # Brace Outer Radius  [mm]
 
         # Import E_mod 
         E_mod = Misc["E_mod"]
@@ -143,8 +150,14 @@ class PostProcessor:
         # Initialize
         Util_NF = np.zeros(2)
 
-        # Import Radii
-        R0, R1, R2, R3 = var 
+        # Import variables
+        d0, t0, d1, t1 = var
+
+        # Convert to Radii
+        R0 = d0/2 - t0       # Column Inner Radius [mm]
+        R1 = d0/2            # Column Outer Radius [mm]
+        R2 = d1/2 - t1       # Brace Inner Radius  [mm]
+        R3 = d1/2            # Brace Outer Radius  [mm]
 
         # Import E-modulus
         f_y = Misc["f_y"]
@@ -179,8 +192,14 @@ class PostProcessor:
         # Initialize
         Util_S = np.zeros(2)
 
-        # Import Radii
-        R0, R1, R2, R3 = var        
+        # Import variables
+        d0, t0, d1, t1 = var
+
+        # Convert to Radii
+        R0 = d0/2 - t0       # Column Inner Radius [mm]
+        R1 = d0/2            # Column Outer Radius [mm]
+        R2 = d1/2 - t1       # Brace Inner Radius  [mm]
+        R3 = d1/2            # Brace Outer Radius  [mm]       
 
         # Import Misc
         f_y = Misc["f_y"]
@@ -217,8 +236,14 @@ class PostProcessor:
         # Initialize Util_T
         Util_T = np.zeros(2)
 
-        # Import Radii
-        R0, R1, R2, R3 = var
+        # Import variables
+        d0, t0, d1, t1 = var
+
+        # Convert to Radii
+        R0 = d0/2 - t0       # Column Inner Radius [mm]
+        R1 = d0/2            # Column Outer Radius [mm]
+        R2 = d1/2 - t1       # Brace Inner Radius  [mm]
+        R3 = d1/2            # Brace Outer Radius  [mm]
 
         # Import Misc
         f_y = Misc["f_y"]
@@ -253,8 +278,14 @@ class PostProcessor:
         # Initialize Util_BNS
         Util_BNS = np.zeros(2)
 
-        # Import Radii
-        R0, R1, R2, R3 = var
+        # Import variables
+        d0, t0, d1, t1 = var
+
+        # Convert to Radii
+        R0 = d0/2 - t0       # Column Inner Radius [mm]
+        R1 = d0/2            # Column Outer Radius [mm]
+        R2 = d1/2 - t1       # Brace Inner Radius  [mm]
+        R3 = d1/2            # Brace Outer Radius  [mm]
 
         # Import f_y
         f_y = Misc["f_y"]
@@ -305,8 +336,14 @@ class PostProcessor:
         # Utilize Util_IN
         Util_BR = np.zeros(2)
 
-        # Import Radii
-        R0, R1, R2, R3 = var
+        # Import variables
+        d0, t0, d1, t1 = var
+
+        # Convert to Radii
+        R0 = d0/2 - t0       # Column Inner Radius [mm]
+        R1 = d0/2            # Column Outer Radius [mm]
+        R2 = d1/2 - t1       # Brace Inner Radius  [mm]
+        R3 = d1/2            # Brace Outer Radius  [mm]
 
         # Import Misc
         f_y = Misc["f_y"]
@@ -359,8 +396,14 @@ class PostProcessor:
         # Initialize Util_IN
         Util_IN = np.zeros(2)
 
-        # Import Radii
-        R0, R1, R2, R3 = var
+        # Import variables
+        d0, t0, d1, t1 = var
+
+        # Convert to Radii
+        R0 = d0/2 - t0       # Column Inner Radius [mm]
+        R1 = d0/2            # Column Outer Radius [mm]
+        R2 = d1/2 - t1       # Brace Inner Radius  [mm]
+        R3 = d1/2            # Brace Outer Radius  [mm]
 
         # Imperfection Factor
         a_imp = 0.49
