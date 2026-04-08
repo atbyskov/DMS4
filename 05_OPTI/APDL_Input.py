@@ -90,9 +90,9 @@ def InputFun(SWcoor, var, Misc):
     ap.append("SECDATA,35.05,38.05,8  ")
     # MATERIAL
     ap.append("! MATERIAL DATA ")
-    ap.append(f"MP,EX,1,{E_mod} ! [MPa] ")
+    ap.append(f"MP,EX,1,{E_mod} ! [MPa]")
     ap.append("MP,PRXY,1,0.3  ")
-    ap.append("MP,DENS,1,1.7850E-6 ! [kg/mm^3]    ")
+    ap.append("MP,DENS,1,1.7850E-6 ! [kg/mm^3]")
     # STIFF Material
     ap.append("! INF STIFNESS MATERIAL REGION ABOVE Y=4070 ")
     ap.append("MP,EX,2,2E+09 ")
@@ -439,7 +439,7 @@ def InputFun(SWcoor, var, Misc):
     ap.append("ARCLEN,ON  ")
     ap.append("ARCTRM,L  ")
     ap.append("AUTOTS,OFF  ")
-    #ap.append("NSUBST,300,1000,100  ") ######### IMPORTANT HERE ##########
+    #ap.append("NSUBST,30,100,10  ") ######### Doesnt work ######## 
 
     # Apply Force
     ap.append("NSEL,S,LOC,X,0   ")
