@@ -33,19 +33,19 @@
    BEAM SECTION TYPE IS:     Circular Tube   
    BEAM SECTION NAME IS:             
    COMPUTED BEAM SECTION DATA SUMMARY:
-    Area                 =  717.59    
-    Iyy                  = 0.45399E+06
-    Iyz                  =-0.27285E-10
-    Izz                  = 0.45399E+06
-    Warping Constant     = 0.55255E-21
-    Torsion Constant     = 0.90798E+06
-    Centroid Y           = 0.33270E-14
-    Centroid Z           =-0.26141E-14
-    Shear Center Y       = 0.17966E-13
-    Shear Center Z       = 0.14712E-13
-    Shear Correction-xy  = 0.50119    
-    Shear Correction-yz  =-0.55986E-13
-    Shear Correction-xz  = 0.50119    
+    Area                 =  696.25    
+    Iyy                  = 0.44167E+06
+    Iyz                  =-0.18190E-11
+    Izz                  = 0.44167E+06
+    Warping Constant     = 0.20193E-21
+    Torsion Constant     = 0.88333E+06
+    Centroid Y           =  0.0000    
+    Centroid Z           =-0.50619E-14
+    Shear Center Y       = 0.21924E-14
+    Shear Center Z       = 0.36351E-14
+    Shear Correction-xy  = 0.50108    
+    Shear Correction-yz  = 0.21330E-13
+    Shear Correction-xz  = 0.50108    
                  
     Beam Section is offset to CENTROID of cross section
                                    
@@ -58,18 +58,18 @@
    BEAM SECTION TYPE IS:     Circular Tube   
    BEAM SECTION NAME IS:             
    COMPUTED BEAM SECTION DATA SUMMARY:
-    Area                 =  7.8901    
-    Iyy                  =  622.28    
-    Iyz                  =-0.19540E-12
-    Izz                  =  622.28    
-    Warping Constant     = 0.47984E-23
-    Torsion Constant     =  1244.6    
-    Centroid Y           = 0.11369E-13
-    Centroid Z           = 0.27861E-13
-    Shear Center Y       = 0.33003E-13
-    Shear Center Z       =-0.52122E-13
+    Area                 =  7.9215    
+    Iyy                  =  629.74    
+    Iyz                  = 0.39435E-12
+    Izz                  =  629.74    
+    Warping Constant     = 0.54703E-23
+    Torsion Constant     =  1259.5    
+    Centroid Y           =-0.13062E-13
+    Centroid Z           = 0.13931E-13
+    Shear Center Y       = 0.56730E-13
+    Shear Center Z       = 0.98534E-13
     Shear Correction-xy  = 0.49950    
-    Shear Correction-yz  = 0.99917E-12
+    Shear Correction-yz  =-0.59723E-11
     Shear Correction-xz  = 0.49950    
                  
     Beam Section is offset to CENTROID of cross section
@@ -4932,35 +4932,35 @@
 
    TOTAL RIGID BODY MASS MATRIX ABOUT ORIGIN
                Translational mass               |   Coupled translational/rotational mass
-         21.677        0.0000        0.0000     |     0.0000      -0.70445E-04   -56093.    
-         0.0000        21.677        0.0000     |    0.70445E-04    0.0000       0.57810E-02
-         0.0000        0.0000        21.677     |     56093.      -0.57810E-02    0.0000    
+         21.212        0.0000        0.0000     |     0.0000      -0.70445E-04   -55145.    
+         0.0000        21.212        0.0000     |    0.70445E-04    0.0000       0.56261E-02
+         0.0000        0.0000        21.212     |     55145.      -0.56261E-02    0.0000    
      ------------------------------------------ | ------------------------------------------
                                                 |         Rotational mass (inertia)
-                                                |    0.18665E+09   -12.551      -0.91707E-03
-                                                |    -12.551       0.75714E+06   0.29518    
-                                                |   -0.91707E-03   0.29518       0.18665E+09
+                                                |    0.18406E+09   -12.234      -0.91707E-03
+                                                |    -12.234       0.73759E+06   0.29518    
+                                                |   -0.91707E-03   0.29518       0.18406E+09
 
-   TOTAL MASS =  21.677    
+   TOTAL MASS =  21.212    
      The mass principal axes coincide with the global Cartesian axes
 
-   CENTER OF MASS (X,Y,Z)=   0.26669E-03    2587.7      -0.32498E-05
+   CENTER OF MASS (X,Y,Z)=   0.26523E-03    2599.7      -0.33210E-05
 
    TOTAL INERTIA ABOUT CENTER OF MASS
-        0.41497E+08    2.4090      -0.91709E-03
-         2.4090       0.75714E+06   0.11289    
-       -0.91709E-03   0.11289       0.41497E+08
+        0.40700E+08    2.3917      -0.91709E-03
+         2.3917       0.73759E+06   0.11204    
+       -0.91709E-03   0.11204       0.40700E+08
      The inertia principal axes coincide with the global Cartesian axes
 
 
   *** MASS SUMMARY BY ELEMENT TYPE ***
 
   TYPE      MASS
-     1   21.6766    
+     1   21.2118    
 
  Range of element maximum matrix coefficients in global coordinates
  Maximum = 8.900048276E+13 at element 0.                                 
- Minimum = 17484311.7 at element 0.                                      
+ Minimum = 17610323.8 at element 0.                                      
 
    *** ELEMENT MATRIX FORMULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
@@ -4989,176 +4989,6 @@
  *** TIME =   1.00000         TIME INC =   1.00000      NEW TRIANG MATRIX
 
  FINISH SOLUTION PROCESSING
-
-
- ***** ROUTINE COMPLETED *****  CP =         0.000
-
-
-   *****MAPDL VERIFICATION RUN ONLY*****
-     DO NOT USE RESULTS FOR PRODUCTION
-
-          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
-
-
- USE LAST SUBSTEP ON RESULT FILE  FOR LOAD CASE 0 
-
- SET COMMAND GOT LOAD STEP=     1  SUBSTEP=     1  CUMULATIVE ITERATION=     1
-   TIME/FREQUENCY=  1.0000    
- TITLE=                                                                         
-
- SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
-
- *GET  E_COUNT   FROM  ELEM  ITEM=COUN           VALUE=  573.000000    
-
- OPENED FILE=                         FOR COMMAND FILE DATA 
-
-
- *DO LOOP ON PARAMETER= II FROM  1.0000     TO  111.00     BY  1.0000    
-
- SELECT      COMPONENT COLUMN_1                                                                                                                                                                                                                                                        
-
- SELECT      ELEMENTS CREATED FROM SELECTED LINES.
-
-          1  ELEMENTS (OF        573  DEFINED) SELECTED FROM        1 SELECTED LINES
-         BY  ESLL  COMMAND.
-
- RESELECT     FOR ITEM=ENAM COMPONENT=    
-  IN RANGE       189 TO        189 STEP          1
-
-          1  ELEMENTS (OF        573  DEFINED) SELECTED BY  ESEL  COMMAND.
-
- *IF  ii  ( =   1.00000     )  LT  
-      10  ( =   10.0000     )  THEN    
-
- *ELSE
-
- *ENDIF
-
- *GET  NELEM     FROM  ELEM  ITEM=COUN           VALUE=  1.00000000    
-
- PARAMETER ELEM =     0.000000000    
-
- *DO LOOP ON PARAMETER= JJ FROM  1.0000     TO  1.0000     BY  1.0000    
-
- PARAMETER ELEM =     1.000000000    
-
- *GET  NF        FROM  ELEM         1  ITEM=SMIS 1         VALUE=  106479.445    
-
- *GET  MY        FROM  ELEM         1  ITEM=SMIS 2         VALUE= -69636.1172    
-
- *GET  MZ        FROM  ELEM         1  ITEM=SMIS 3         VALUE= -1023627.69    
-
- *GET  VY        FROM  ELEM         1  ITEM=SMIS 6         VALUE= -397.512421    
-
- *GET  VZ        FROM  ELEM         1  ITEM=SMIS 5         VALUE= -125.119049    
-
- *GET  TQ        FROM  ELEM         1  ITEM=SMIS 4         VALUE=  392234.094    
-
- SELECT      ALL NODES HAVING ANY ELEMENT IN ELEMENT SET.
-
-          3 NODES (OF       1060  DEFINED) SELECTED FROM
-        1 SELECTED ELEMENTS BY NSLE COMMAND.
-
- *GET  Y_LOC     FROM  NODE  ITEM=MNLO Y     VALUE=  0.00000000     
-
- *ENDDO  INDEX= JJ                              
-
- *ENDDO  INDEX= II                              
-
- *DO LOOP ON PARAMETER= II FROM  1.0000     TO  75.000     BY  1.0000    
-
- SELECT      COMPONENT BRACE_1                                                                                                                                                                                                                                                         
-
- SELECT      ELEMENTS CREATED FROM SELECTED LINES.
-
-          4  ELEMENTS (OF        573  DEFINED) SELECTED FROM        1 SELECTED LINES
-         BY  ESLL  COMMAND.
-
- RESELECT     FOR ITEM=ENAM COMPONENT=    
-  IN RANGE       189 TO        189 STEP          1
-
-          4  ELEMENTS (OF        573  DEFINED) SELECTED BY  ESEL  COMMAND.
-
- *IF  ii  ( =   1.00000     )  LT  
-      10  ( =   10.0000     )  THEN    
-
- *ELSE
-
- *ENDIF
-
- *GET  NELEM     FROM  ELEM  ITEM=COUN           VALUE=  4.00000000    
-
- PARAMETER ELEM =     0.000000000    
-
- *DO LOOP ON PARAMETER= JJ FROM  1.0000     TO  4.0000     BY  1.0000    
-
- PARAMETER ELEM =     184.0000000    
-
- *GET  NF        FROM  ELEM       184  ITEM=SMIS 1         VALUE=  11.5109930    
-
- *GET  MY        FROM  ELEM       184  ITEM=SMIS 2         VALUE=  872.125671    
-
- *GET  MZ        FROM  ELEM       184  ITEM=SMIS 3         VALUE= -53.5799446    
-
- *GET  VY        FROM  ELEM       184  ITEM=SMIS 6         VALUE=-0.399878591    
-
- *GET  VZ        FROM  ELEM       184  ITEM=SMIS 5         VALUE= -4.98844910    
-
- *GET  TQ        FROM  ELEM       184  ITEM=SMIS 4         VALUE= -121.708809    
-
- SELECT      ALL NODES HAVING ANY ELEMENT IN ELEMENT SET.
-
-          9 NODES (OF       1060  DEFINED) SELECTED FROM
-        4 SELECTED ELEMENTS BY NSLE COMMAND.
-
- *GET  Y_LOC     FROM  NODE  ITEM=MNLO Y     VALUE=  87.0000000     
-
- *ENDDO  INDEX= JJ                              
-
- *ENDDO  INDEX= II                              
-
-  COMMAND FILE CLOSED 
-
-
- SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
-
- SELECT       FOR ITEM=LOC  COMPONENT=Y     BETWEEN  0.0000     AND   4080.0    
-   KABS=  0.  TOLERANCE= 0.100000E-05
-
-        951  NODES (OF       1060  DEFINED) SELECTED BY  NSEL  COMMAND.
-
- SELECT      ALL ELEMENTS HAVING ANY NODE IN NODAL SET.
-
-        513 ELEMENTS (OF        573  DEFINED) SELECTED FROM
-      951 SELECTED NODES BY  ESLN COMMAND.
-
- *GET  ECNT      FROM  ELEM  ITEM=COUN           VALUE=  513.000000    
-
- *GET  ENUM      FROM  ELEM  ITEM=NUM  MIN       VALUE=  1.00000000    
-
- PARAMETER TOTVOL =     0.000000000    
-
- *DO LOOP ON PARAMETER= I FROM  1.0000     TO  513.00     BY  1.0000    
-
- *GET  EV        FROM  ELEM         1  ITEM=VOLU           VALUE=  62430.5273    
-
- PARAMETER TOTVOL =     62430.52734    
-
- PARAMETER ENUM =     2.000000000    
-
- *ENDDO  INDEX= I                               
-
- PARAMETER DENS =    0.7850000000E-05
-
- PARAMETER COMP_MASS =     70.77390812    
-
- OPENED FILE=                   FOR COMMAND FILE DATA 
-
-
-  COMMAND FILE CLOSED 
-
-
- EXIT THE MAPDL POST1 DATABASE PROCESSOR
 
 
  ***** ROUTINE COMPLETED *****  CP =         0.000

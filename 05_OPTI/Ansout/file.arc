@@ -454,3 +454,5 @@
        1        1     1.000000e+00     1.000000e+00     0.000000e+00     0.000000e+00     0.000000e+00     0.000000e+00     1.825374e+03     0.000000e+00     0.000000e+00       8       0
   ldstep   isubst           timval      curr timinc      next timinc           gammak      gammak_idof        gamma0kp1           normtk        normt0kp1           damage  ieqitr   ibsec 
        1        1     1.000000e+00     1.000000e+00     0.000000e+00     0.000000e+00     0.000000e+00     0.000000e+00     1.822607e+03     0.000000e+00     0.000000e+00       8       0
+  ldstep   isubst           timval      curr timinc      next timinc           gammak      gammak_idof        gamma0kp1           normtk        normt0kp1           damage  ieqitr   ibsec 
+       1        1     1.000000e+00     1.000000e+00     0.000000e+00     0.000000e+00     0.000000e+00     0.000000e+00     1.772327e+03     0.000000e+00     0.000000e+00       8       0
