@@ -25,7 +25,7 @@ def run_optimization(
     ]
 
     def constraint_values(x):             # This is the function that is used to calculate the constraint values
-        RunAPDL(mapdl, SWcoor, x, Misc)
+        #RunAPDL(mapdl, SWcoor, x, Misc)
         utils = PostProcessor()
         Util_LB_values = utils.Util_LB(x, Misc) 
         Util_NF_values = utils.Util_NF(x, Misc)
@@ -63,7 +63,7 @@ def run_optimization(
             1.0 - Util_BS_values[0],           # Brace-Step c(x) = sigma_vm/f_y >= 0 "Inequality Constraint" 
             Util_Class_2_values[0],            # Class 2 column c(x) = 70*235/f_y-dw/tw >= 0 "Inequality Constraint"
             Util_Class_2_values[1],            # Class 2 brace c(x) = 70*235/f_y-dw/tw >= 0 "Inequality Constraint"
-            Eigenvalue_1_values[0],            # Eigenvalue 1 c(x)=4.0-alpha_cr >= 0 "Inequality Constraint"
+            Eigenvalue_1_values,            # Eigenvalue 1 c(x)=4.0-alpha_cr >= 0 "Inequality Constraint"
             # add more constraints here later if needed
         ], dtype=float)
 

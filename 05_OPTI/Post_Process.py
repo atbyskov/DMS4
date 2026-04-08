@@ -580,6 +580,5 @@ class PostProcessor:
         a_cr = next(v for v in eigenvalues if v > 0)
 
         # Return Constraint Value
-        Eigenvalue_1 = np.zeros(1)
-        Eigenvalue_1[0] = a_cr - 4.0
-        return Eigenvalue_1
+        # SLSQP inequality form: c(x) >= 0
+        return a_cr - 4.0
