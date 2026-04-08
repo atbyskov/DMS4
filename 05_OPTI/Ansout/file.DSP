@@ -1,5 +1,8 @@
 
-  Performance statistics for DSP solver: icalls =      1
+
+
+
+  Performance statistics for DSP solver: icalls =      9
 
  ===========================
  = multifrontal statistics =
