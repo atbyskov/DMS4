@@ -9,13 +9,13 @@
 # Import packages
 import os
 import time 
+from ansys.mapdl.core import launch_mapdl
 
 # Import Functions
 import SW_Import as SW
 from Post_Process import PostProcessor
 from MyAPDLCall import RunAPDL
 
-from ansys.mapdl.core import launch_mapdl
 
 # Start timing
 tic = time.time()
@@ -26,14 +26,13 @@ SW_folder = "IGS"
 SWcoor = SW.import_SW(os.path.join(SW_folder,SW_filename))
 
 # Specify tube dimensions
-R0 = 70.1/2 # Column Tube inner diameter [mm]
-R1 = 76.1/2 # Column Tube outer diameter [mm]
-R2 = 22.3/2 # Brace Tube inner diameter  [mm]
-R3 = 26.9/2 # Brace Tube outer diameter  [mm]
+d0 = 76.1       # Column Outer Diameter [mm]
+t0 = 3          # Column Thickness      [mm]
+d1 = 26.9       # Brace Outer Diameter  [mm]
+t1 = 2.3        # Brace Thickness       [mm]
 
-# Added something here
-
-var = [R0, R1, R2, R3] # Assemble variables
+# Collect variables
+var = [d0, t0, d1, t1] # Assemble variables
 
 # Other specifications``
 esize = 100             # Element Size [mm]
@@ -65,8 +64,6 @@ mapdl = launch_mapdl(
 )
 toc_lic = time.time()
 print(f"License opened in: {toc_lic-tic_lic:.2f} s")
-
-
 
 # Run Environment
 try:
