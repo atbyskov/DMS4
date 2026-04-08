@@ -543,3 +543,43 @@ class PostProcessor:
 
         return Util_BS
 
+    def Class_2(self, var, Misc): 
+
+
+
+        # For this function we use it for a constraint, such that we always have a Class 2 section. or below according to
+        # Eurocode 3 Section Table 5.2
+        # And for the optimization scheme we need to implement the form:
+        # c(x) >= 0 "Inequality Constraint"
+        # Therefore we get:
+        # 70*235/f_y-dw/tw >=0
+        
+        d0, t0, d1, t1 = var
+        #Yield Strength of Columns
+        f_y = Misc["f_y"]
+        # Yield Strength of Braces
+        f_y_brace = 355   # [MPa]
+
+        Util_Class_2 = np.zeros(2)
+        Util_Class_2[0] = 70*(235/f_y)-(d0/t0) #column
+        Util_Class_2[1] = 70*(235/f_y_brace)-(d1/t1) #brace
+        return Util_Class_2
+
+
+    def Eigenvalue_1(self):
+
+        # We implement a constrain, such that the first positive eigenvalue is greater than or equal to 4.0
+        # And for the optimization scheme we need to implement the form:
+        # c(x) >= 0 "Inequality Constraint"
+        # Therefore we get:
+        # a_cr >= 4.0
+
+        # Open and Read Eigenvalue
+        with open("Ansout/Eigenvalue1.txt") as f:
+            eigenvalues = [float(line.strip()) for line in f if line.strip()]
+        a_cr = next(v for v in eigenvalues if v > 0)
+
+        # Return Constraint Value
+        Eigenvalue_1 = np.zeros(1)
+        Eigenvalue_1[0] = a_cr - 4.0
+        return Eigenvalue_1

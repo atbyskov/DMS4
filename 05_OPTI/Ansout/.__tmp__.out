@@ -66,9 +66,6 @@
  Ansys, Inc. License Manager 2025 R1 
  Discovery (reduced install) 2025 R1 
  Core WB Files 2025 R1   
- CFD-Post only 2025 R1   
- Fluent (includes CFD-Post) 2025 R1  
- Polyflow (includes CFD-Post) 2025 R1
  Remote Solve Manager Standalone Services 2025 R1
  Additive 2025 R1
  Autodyn 2025 R1 
@@ -98,8 +95,8 @@
   SHARED MEMORY PARALLEL REQUESTED
     SINGLE PROCESS WITH   8 THREADS REQUESTED
     TOTAL OF     8 CORES REQUESTED
-  INPUT FILE NAME              = C:\Users\atbys\Desktop\DMS4 Local\DMS4\05_OPTI\Ansout\.__tmp__.inp
-  OUTPUT FILE NAME             = C:\Users\atbys\Desktop\DMS4 Local\DMS4\05_OPTI\Ansout\.__tmp__.out
+  INPUT FILE NAME              = C:\Users\boggy\OneDrive\Desktop\DMS4\05_OPTI\Ansout\.__tmp__.inp
+  OUTPUT FILE NAME             = C:\Users\boggy\OneDrive\Desktop\DMS4\05_OPTI\Ansout\.__tmp__.out
 
  PARAMETER STATUS-           (   1 PARAMETERS DEFINED)
 
@@ -107,7 +104,7 @@
  PORT                              50052.0000                    SCALAR
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
- CURRENT JOBNAME=file  15:58:06  APR 07, 2026 CP=      0.047
+ CURRENT JOBNAME=file  09:40:52  APR 08, 2026 CP=      0.047
 
      1  FINISH 
 
@@ -360,6 +357,916 @@
 
  /OUTPUT FILE=         
 
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
  /OUTPUT FILE=         
 
  EXIT MAPDL WHILE IN SERVER MODE
@@ -389,7 +1296,7 @@
  |                                                                             |
  |-----------------------------------------------------------------------------|
  |                                                                             |
- |        CP Time      (sec) =        150.703       Time  =  15:59:06          |
- |        Elapsed Time (sec) =         67.000       Date  =  04/07/2026        |
+ |        CP Time      (sec) =        306.812       Time  =  09:47:39          |
+ |        Elapsed Time (sec) =        410.000       Date  =  04/08/2026        |
  |                                                                             |
  *-----------------------------------------------------------------------------*

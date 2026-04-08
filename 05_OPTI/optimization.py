@@ -4,7 +4,6 @@ import numpy as np
 from scipy import optimize as spo
 from MyAPDLCall import RunAPDL
 from opt_logger import OptimizationLogger
-#from Post_Process import Util_LB, Util_NF, Util_S, Util_T, Util_BNS, Util_BR, Util_IN 
 from Post_Process import PostProcessor
 
 
@@ -13,21 +12,21 @@ def run_optimization(
     var,
     SWcoor,
     Misc,
-    eps_geom=1,
+    eps_geom=0.1,
     save_folder="Optimization_Logs",
 ):
     x0 = np.array(var, dtype=float)
 
     bounds = [
-        (40.0, 100.0),  # R0
-        (1.0, 4.0),  # R1
-        (10.0,  100.0),  # R2
-        (2.0,  4.0)   # R3
+        (40.0, 100.0),  # Column Outer Diameter [mm]
+        (1.0, 7.0),  # Column Thickness [mm]
+        (10.0,  100.0),  # Brace Outer Diameter [mm]
+        (0.1,  7.0)   # Brace Thickness [mm]
     ]
 
     def constraint_values(x):             # This is the function that is used to calculate the constraint values
         utils = PostProcessor()
-        Util_LB_values = utils.Util_LB(x, Misc)
+        Util_LB_values = utils.Util_LB(x, Misc) 
         Util_NF_values = utils.Util_NF(x, Misc)
         Util_S_values = utils.Util_S(x, Misc)
         Util_T_values = utils.Util_T(x, Misc)
@@ -35,6 +34,8 @@ def run_optimization(
         Util_BR_values = utils.Util_BR(x, Misc)
         Util_IN_values = utils.Util_IN(x, Misc)
         Util_BS_values = utils.Util_BS(x, Misc)
+        Util_Class_2_values = utils.Class_2(x, Misc)
+        Eigenvalue_1_values = utils.Eigenvalue_1()
 
     
         """
@@ -42,8 +43,8 @@ def run_optimization(
         Add as many as you want here.
         """
         return np.array([
-            #x[1] - x[0] - eps_geom,
-            #x[3] - x[2] - eps_geom,
+            x[1] - eps_geom, # Column Thickness [mm]
+            x[3] - eps_geom, # Brace Thickness [mm]
             1.0 - Util_LB_values[0],           # local buckling column
             1.0 - Util_LB_values[1],           # local buckling brace
             1.0 - Util_NF_values[0],           # normal force column
@@ -58,13 +59,16 @@ def run_optimization(
             1.0 - Util_BR_values[1],           # Flexural and torsional buckling brace
             1.0 - Util_IN_values[0],           # Interaction column
             1.0 - Util_IN_values[1],           # Interaction brace
-            1.0 - Util_BS_values[0],
+            1.0 - Util_BS_values[0],           # Brace-Step c(x) = sigma_vm/f_y >= 0 "Inequality Constraint" 
+            Util_Class_2_values[0],            # Class 2 column c(x) = 70*235/f_y-dw/tw >= 0 "Inequality Constraint"
+            Util_Class_2_values[1],            # Class 2 brace c(x) = 70*235/f_y-dw/tw >= 0 "Inequality Constraint"
+            Eigenvalue_1_values[0],            # Eigenvalue 1 c(x)=4.0-alpha_cr >= 0 "Inequality Constraint"
             # add more constraints here later if needed
         ], dtype=float)
 
     constraint_names = [
-        #"thickness_col",
-        #"thickness_brace",
+        "thickness_column",
+        "thickness_brace",
         "local_buckling_column",
         "local_buckling_brace",
         "normal_force_column",
@@ -80,6 +84,9 @@ def run_optimization(
         "interaction_column",  # Interaction column
         "interaction_brace",  # Interaction brace
         "Brace_Step",
+        "Class_2_column",
+        "Class_2_brace",
+        "Eigenvalue_1_constraint",
         # add more names here if you add more constraints
     ]
 
