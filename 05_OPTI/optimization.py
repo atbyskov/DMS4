@@ -25,6 +25,7 @@ def run_optimization(
     ]
 
     def constraint_values(x):             # This is the function that is used to calculate the constraint values
+        RunAPDL(mapdl, SWcoor, x, Misc)
         utils = PostProcessor()
         Util_LB_values = utils.Util_LB(x, Misc) 
         Util_NF_values = utils.Util_NF(x, Misc)
