@@ -27,16 +27,16 @@ def run_optimization(
     def constraint_values(x):             # This is the function that is used to calculate the constraint values
         #RunAPDL(mapdl, SWcoor, x, Misc)
         utils = PostProcessor()
-        Util_LB_values = utils.Util_LB(x, Misc) 
-        Util_NF_values = utils.Util_NF(x, Misc)
-        Util_S_values = utils.Util_S(x, Misc)
-        Util_T_values = utils.Util_T(x, Misc)
-        Util_BNS_values = utils.Util_BNS(x, Misc)
-        Util_BR_values = utils.Util_BR(x, Misc)
-        Util_IN_values = utils.Util_IN(x, Misc)
-        Util_BS_values = utils.Util_BS(x, Misc)
-        Util_Class_2_values = utils.Class_2(x, Misc)
-        Eigenvalue_1_values = utils.Eigenvalue_1()
+        Util_LB_values_col, Util_LB_values_brace = utils.Util_LB(x, Misc) 
+        Util_NF_values_col, Util_NF_values_brace = utils.Util_NF(x, Misc)
+        Util_S_values_col, Util_S_values_brace = utils.Util_S(x, Misc) 
+        Util_T_values_col, Util_T_values_brace = utils.Util_T(x, Misc)
+        Util_BNS_values_col, Util_BNS_values_brace = utils.Util_BNS(x, Misc) 
+        Util_BR_values_col, Util_BR_values_brace = utils.Util_BR(x, Misc) 
+        Util_IN_values_col, Util_IN_values_brace = utils.Util_IN(x, Misc)
+        Util_BS_values_brace = utils.Util_BS(x, Misc)
+        Util_Class_2_values_col, Util_Class_2_values_brace = utils.Class_2(x, Misc)
+        Eigenvalue_1_values = utils.Eigenvalue_1() 
 
     
         """
@@ -46,29 +46,28 @@ def run_optimization(
         return np.array([
             x[1] - eps_geom, # Column Thickness [mm]
             x[3] - eps_geom, # Brace Thickness [mm]
-            1.0 - Util_LB_values[0],           # local buckling column
-            1.0 - Util_LB_values[1],           # local buckling brace
-            1.0 - Util_NF_values[0],           # normal force column
-            1.0 - Util_NF_values[1],           # normal force brace
-            1.0 - Util_S_values[0],           # shear column
-            1.0 - Util_S_values[1],           # shear brace
-            1.0 - Util_T_values[0],           # Torsion column
-            1.0 - Util_T_values[1],           # Torsion brace
-            1.0 - Util_BNS_values[0],           # bending, normal and shear column
-            1.0 - Util_BNS_values[1],           # bending, normal and shear brace
-            1.0 - Util_BR_values[0],           # Flexural and torsional buckling brace
-            1.0 - Util_BR_values[1],           # Flexural and torsional buckling brace
-            1.0 - Util_IN_values[0],           # Interaction column
-            1.0 - Util_IN_values[1],           # Interaction brace
-            1.0 - Util_BS_values[0],           # Brace-Step c(x) = sigma_vm/f_y >= 0 "Inequality Constraint" 
-            Util_Class_2_values[0],            # Class 2 column c(x) = 70*235/f_y-dw/tw >= 0 "Inequality Constraint"
-            Util_Class_2_values[1],            # Class 2 brace c(x) = 70*235/f_y-dw/tw >= 0 "Inequality Constraint"
+            1.0 - Util_LB_values_col,           # local buckling column
+            1.0 - Util_LB_values_brace,           # local buckling brace
+            1.0 - Util_NF_values_col,           # normal force column
+            1.0 - Util_NF_values_brace,           # normal force brace
+            1.0 - Util_S_values_col,           # shear column
+            1.0 - Util_S_values_brace,           # shear brace
+            1.0 - Util_T_values_col,           # Torsion column
+            1.0 - Util_T_values_brace,           # Torsion brace 
+            1.0 - Util_BNS_values_col,           # bending, normal and shear column
+            1.0 - Util_BNS_values_brace,           # bending, normal and shear brace
+            1.0 - Util_BR_values_col,           # Flexural and torsional buckling column
+            1.0 - Util_BR_values_brace,           # Flexural and torsional buckling brace
+            1.0 - Util_IN_values_col,           # Interaction column
+            1.0 - Util_IN_values_brace,           # Interaction brace
+            1.0 - Util_BS_values_brace,           # Brace-Step c(x) = sigma_vm/f_y_brace >= 0 "Inequality Constraint" 
+            Util_Class_2_values_col,            # Class 2 column c(x) = 70*235/f_y-d0/t0 >= 0 "Inequality Constraint"
+            Util_Class_2_values_brace,            # Class 2 brace c(x) = 70*235/f_y_brace-d1/t1 >= 0 "Inequality Constraint"
             Eigenvalue_1_values,            # Eigenvalue 1 c(x)=4.0-alpha_cr >= 0 "Inequality Constraint"
             # add more constraints here later if needed
         ], dtype=float)
-
     constraint_names = [
-        "thickness_column",
+        "thickness_column", 
         "thickness_brace",
         "local_buckling_column",
         "local_buckling_brace",
@@ -92,7 +91,7 @@ def run_optimization(
     ]
 
     constraints = [                 # This is the constraints list that is used to set the constraints for the optimization process
-        {"type": "ineq", "fun": lambda x, i=i: constraint_values(x)[i]}
+        {"type": "ineq", "fun": lambda x, i=i: constraint_values(x)[i]} 
         for i in range(len(constraint_names)) 
     ]
 

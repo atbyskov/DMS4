@@ -40,6 +40,7 @@ Ver_Force = 26400       # Vertical Force   [N]
 MomZ = -70364000        # Applied Moment around Z-axis [Nmm]
 MomY = 1407140          # Applied Moment around Y-axis [Nmm]
 f_y = 690               # Yield Strength of S690 [MPa]
+f_y_brace = 355         # Yield Strength of S355 [MPa]
 E_mod = 200*1E3         # Youngs Modulus [MPa]
 
 # Create Misc as dict
@@ -50,6 +51,7 @@ Misc = {
     "MomZ": MomZ,
     "MomY": MomY,
     "f_y": f_y,
+    "f_y_brace": f_y_brace,
     "E_mod": E_mod
 }
 

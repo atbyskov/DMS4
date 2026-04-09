@@ -104,7 +104,7 @@
  PORT                              50052.0000                    SCALAR
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
- CURRENT JOBNAME=file  14:10:03  APR 08, 2026 CP=      0.062
+ CURRENT JOBNAME=file  10:41:08  APR 09, 2026 CP=      0.109
 
      1  FINISH 
 
@@ -373,118 +373,6 @@
 
  /OUTPUT FILE=         
 
- CLEAR MAPDL DATABASE AND RESTART
-
- Ansys Mechanical Enterprise Academic Research     
-
- /OUTPUT FILE=         
-
- /OUTPUT FILE=         
-
- /INPUT FILE=    LINE=       0
-
- /OUTPUT FILE=         
-
- /OUTPUT FILE=         
-
- /OUTPUT FILE=         
-
- CLEAR MAPDL DATABASE AND RESTART
-
- Ansys Mechanical Enterprise Academic Research     
-
- /OUTPUT FILE=         
-
- /OUTPUT FILE=         
-
- /INPUT FILE=    LINE=       0
-
- /OUTPUT FILE=         
-
- /OUTPUT FILE=         
-
- /OUTPUT FILE=         
-
- CLEAR MAPDL DATABASE AND RESTART
-
- Ansys Mechanical Enterprise Academic Research     
-
- /OUTPUT FILE=         
-
- /OUTPUT FILE=         
-
- /INPUT FILE=    LINE=       0
-
- /OUTPUT FILE=         
-
- /OUTPUT FILE=         
-
- /OUTPUT FILE=         
-
- CLEAR MAPDL DATABASE AND RESTART
-
- Ansys Mechanical Enterprise Academic Research     
-
- /OUTPUT FILE=         
-
- /OUTPUT FILE=         
-
- /INPUT FILE=    LINE=       0
-
- /OUTPUT FILE=         
-
- /OUTPUT FILE=         
-
- /OUTPUT FILE=         
-
- CLEAR MAPDL DATABASE AND RESTART
-
- Ansys Mechanical Enterprise Academic Research     
-
- /OUTPUT FILE=         
-
- /OUTPUT FILE=         
-
- /INPUT FILE=    LINE=       0
-
- /OUTPUT FILE=         
-
- /OUTPUT FILE=         
-
- /OUTPUT FILE=         
-
- CLEAR MAPDL DATABASE AND RESTART
-
- Ansys Mechanical Enterprise Academic Research     
-
- /OUTPUT FILE=         
-
- /OUTPUT FILE=         
-
- /INPUT FILE=    LINE=       0
-
- /OUTPUT FILE=         
-
- /OUTPUT FILE=         
-
- /OUTPUT FILE=         
-
- CLEAR MAPDL DATABASE AND RESTART
-
- Ansys Mechanical Enterprise Academic Research     
-
- /OUTPUT FILE=         
-
- /OUTPUT FILE=         
-
- /INPUT FILE=    LINE=       0
-
- /OUTPUT FILE=         
-
- /OUTPUT FILE=         
-
- /OUTPUT FILE=         
-
  /OUTPUT FILE=         
 
  EXIT MAPDL WHILE IN SERVER MODE
@@ -510,11 +398,11 @@
  |-----------------------------------------------------------------------------|
  |                                                                             |
  |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
- |  Maximum Database Used       7 MB     Maximum Scratch Memory Used     53 MB |
+ |  Maximum Database Used       7 MB     Maximum Scratch Memory Used     52 MB |
  |                                                                             |
  |-----------------------------------------------------------------------------|
  |                                                                             |
- |        CP Time      (sec) =         84.203       Time  =  14:11:47          |
- |        Elapsed Time (sec) =        107.000       Date  =  04/08/2026        |
+ |        CP Time      (sec) =         50.734       Time  =  10:41:40          |
+ |        Elapsed Time (sec) =         38.000       Date  =  04/09/2026        |
  |                                                                             |
  *-----------------------------------------------------------------------------*
