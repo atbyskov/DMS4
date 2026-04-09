@@ -60,7 +60,7 @@ tic_lic = time.time()
 mapdl = launch_mapdl(
     run_location="Ansout", 
     override=True,
-    additional_switches="-p ansys"
+    additional_switches="-p ansys -smc"
 )
 toc_lic = time.time()
 print(f"License opened in: {toc_lic-tic_lic:.2f} s")
