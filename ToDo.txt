@@ -1,8 +1,8 @@
 # To Do List
 
 
-[ASK ERIK]          - Make Load to Remote Loading
-[IN PROGRESS]       - Clean up files and add relevant comments
+[DONE]          - Make Load to Remote Loading
+[DONE]          - Clean up files and add relevant comments
 
 
 [DONE]              - Top section diameters must not change 
@@ -17,4 +17,4 @@
 [DONE]    - Make outputs consistent, e.g. only 2 decimals etc.
 [DONE, saved 9 sec]    - Combine APDL_Eigen and APDL_Nonlin into one
 
-- Change designvariables to Outer Diameter and thickness
+[DONE] - Change designvariables to Outer Diameter and thickness

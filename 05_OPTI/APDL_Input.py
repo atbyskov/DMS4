@@ -114,8 +114,6 @@ def InputFun(SWcoor, var, Misc):
     CM_Brace_dict = 0
     CM_Column_dict = 0
     
-    # For Remote Loading
-    ap.append("K,1,0,4179.14,0  ")
 
     # Loop through and create lines
     for x1, y1, z1, x2, y2, z2 in SWcoor:
@@ -217,8 +215,55 @@ def InputFun(SWcoor, var, Misc):
     ap.append("ALLSEL,ALL  ")
 
     # Display Cross section
-    ap.append("/ESHAPE,1 ! Display Cross Section ")
+    #ap.append("/ESHAPE,1 ! Display Cross Section ")
 
+    # Remote Point for Moment Application
+    
+    # Select all nodes with x=0
+    ap.append("NSEL,S,LOC,X,0")
+    ap.append("*GET,SlaveNum,NODE,0,COUNT")
+
+    ap.append("*DIM,SlaveIDs,ARRAY,SlaveNum")
+    ap.append("*VGET,SlaveIDs(1),NODE,,NLIST") # Stores all node IDs
+
+    # Create Master / Independent Node 
+    #ap.append("N,99999,0,4.179140091E+03,0")
+    ap.append("N,99999,0,4182.1384,0 ")
+    ap.append("*SET,tid,11")
+    ap.append("*SET,cid,10")
+    ap.append("ET,cid,175")
+    ap.append("ET,tid,170")
+    ap.append("KEYO,tid,2,1")
+    ap.append("KEYO,tid,4,0")
+    ap.append("KEYO,cid,12,5")
+    ap.append("KEYO,cid,4,0")
+    ap.append("KEYO,cid,2,2")
+    ap.append("MAT,10")
+    ap.append("REAL,10")
+    ap.append("TYPE,10")
+
+    # Create slave elements
+    #ap.append("*CFOPEN,SlaveNodes")
+    #ap.append("*SET,firstnode,SlaveIDs(1)")
+    #ap.append("*VWRITE,firstnode")
+    #ap.append("(F15.0)")
+    #ap.append("*CFCLOSE")
+    
+    ap.append("*DO,ii,1,SlaveNum,1")
+    ap.append("    *SET,elemID,8999+ii")
+    ap.append("    *SET,nodeID,SlaveIDs(ii)")
+    ap.append("    EN,elemID,nodeID")
+    ap.append("*ENDDO")
+
+    # Pilot Node Options
+    ap.append("*SET,_npilot,99999")
+    ap.append("_npilot1=_npilot")
+    ap.append("TYPE,tid")
+    ap.append("MAT,cid")
+    ap.append("REAL,cid")
+    ap.append("TSHAPE,PILO")
+    ap.append("EN,79999,_npilot")
+    ap.append("TSHAPE")
         
     #Create and save .png of the mesh
     #ap.append("/SHOW,PNG,,0  ")
@@ -250,21 +295,19 @@ def InputFun(SWcoor, var, Misc):
     ap.append("*GET, NodeYMax, NODE, 0, MXLOC, Y  ")
     ap.append("*GET, NodeYMin, NODE, 0, MNLOC, Y  ")
 
-    # Apply Remote Force
-    ap.append("NSEL,S,LOC,X,0   ")
-    ap.append("*GET,N_LOW,NODE,,MNLOC,Y  ")
-    ap.append("*GET,n_load_c,NODE,0,COUNT  ")
-    
-    #ap.append("NSEL,R,LOC,Y,N_LOW  ")
-    ap.append("N_C = n_load_c  ")
-    ap.append(f"MOMZ = {MomZ}/N_C  ")
-    ap.append(f"MOMY = {MomY}/N_C  ")
-    ap.append(f"F_HOR = {Hor_Force}/N_C  ")
-    ap.append(f"F_VER = {-Ver_Force}/N_C  ")
-    ap.append(f"F,ALL,FY,F_VER  ")
-    ap.append(f"F,ALL,FX,F_HOR  ")
-    ap.append(f"F,ALL,MY,MOMY  ")
-    ap.append(f"F,ALL,MZ,MOMZ  ")
+
+    ap.append("NSEL,S,LOC,Y,NodeYMax")
+    ap.append(f"F_HOR = {Hor_Force}  ")
+    ap.append(f"F_VER = {-Ver_Force}  ")
+    ap.append("NSEL,ALL")
+
+    # Moment Application
+    ap.append("ALLSEL")
+    ap.append("NSEL,S,NODE,,99999")
+    ap.append(f"F,ALL,MX,0  ")
+    ap.append(f"F,ALL,MY,{MomY}  ")
+    ap.append(f"F,ALL,MZ,{MomZ}  ")
+    ap.append("NSEL,ALL")
 
     # Fixed displacement at bottom nodes
     ap.append("! Displacement !  ")
@@ -407,7 +450,7 @@ def InputFun(SWcoor, var, Misc):
     ap.append("*DO,jj,1,10,1  ")
     ap.append("   *GET,MS%jj%,MODE,jj,FREQ  ")
     ap.append("   *VWRITE,MS%jj%  ")
-    ap.append('   (F10.5)  ')
+    ap.append('   (F15.5)  ')
     ap.append("*ENDDO  ")
     ap.append("*CFCLOS  ")
 

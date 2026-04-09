@@ -21,7 +21,7 @@ from MyAPDLCall import RunAPDL
 tic = time.time()
 
 # Import SW coordinates as list
-SW_filename = "LWC.IGS"   # Specify IGES File Name
+SW_filename = "LWC1.IGS"   # Specify IGES File Name
 SW_folder = "IGS"
 SWcoor = SW.import_SW(os.path.join(SW_folder,SW_filename))
 
@@ -59,8 +59,10 @@ Misc = {
 tic_lic = time.time()
 mapdl = launch_mapdl(
     run_location="Ansout", 
+    log_apdl="apdl_logging",
     override=True,
-    additional_switches="-p ansys -smc"
+    nproc=8,
+    additional_switches="-p ansys -smp"
 )
 toc_lic = time.time()
 print(f"License opened in: {toc_lic-tic_lic:.2f} s")
@@ -77,6 +79,8 @@ print(f"Mass of Assembly: {f:.2f} kg")
 utils = PostProcessor()
 util_list = utils.Util_list(var,Misc)
 
+
+"""
 # Print the list
 print("\n--- UTILIZATION REPORT ---")
 for key, val in util_list.items():
@@ -85,3 +89,4 @@ print("------------------------")
 toc = time.time()
 
 print(f"Runtime: {toc-tic:.2f} s \n")
+"""
