@@ -123,25 +123,19 @@ class PostProcessor:
         Util_LB_col = np.zeros(len(self.df_col))
         Util_LB_brace = np.zeros(len(self.df_brace))
         
-        def LocalBucklingFun(df_member,Ro,Ri):
 
-            # Only compressive members are considered
-            df_member = df_member[df_member["NF"] < 0].copy()
+        def LocalBucklingFun(df_member, Ro, Ri):
+            df = df_member.copy()
 
-            # Switch to positve values (following Eurocode)
-            df_member["NF"] = df_member["NF"].abs()
+            P_cr = (2 * math.pi * E_mod * (Ro - Ri)**2) / math.sqrt(3 * (1 - v**2))
 
-            # Critical Force [Timoshenko p. 460]
-            P_cr = (2*math.pi*E_mod*(Ro-Ri)**2)/(math.sqrt(3*(1-v**2)))
+            N_raw = df["NF"].to_numpy(dtype=float)
+            N_comp = np.maximum(-N_raw, 0.0)   # only compression counts
 
-            # Utilization Ratio
-            Util_local = df_member["NF"]/P_cr
+            util_local = N_comp / P_cr
 
-            # Max Utilization
-            #util_max = Util_local.max()
-
-            return Util_local
-        
+            return pd.Series(util_local, index=df.index, name="Util_LB")
+                
         Util_LB_col = LocalBucklingFun(self.df_col,R1,R0)
         Util_LB_brace = LocalBucklingFun(self.df_brace,R3,R2)
 
@@ -356,41 +350,29 @@ class PostProcessor:
         f_y_brace = Misc["f_y_brace"]
 
         # Function to handle columns and brace
-        def bucklingResFun(df_member,Ro,Ri,f_y):
-            
-            # Only consider compressive members
-            df_member = df_member[df_member["NF"] < 0].copy()
+        def bucklingResFun(df_member, Ro, Ri, f_y):
+            df = df_member.copy()
+            util = np.zeros(len(df), dtype=float)
 
-            # Convert NF to positive values (following Eurocode)
-            df_member["NF"] = df_member["NF"].abs()
+            A = np.pi * (Ro**2 - Ri**2)
 
-            # Area
-            A = np.pi * ((Ro**2) - (Ri**2))
+            N_raw = df["NF"].to_numpy(dtype=float)
+            N_comp = np.maximum(-N_raw, 0.0)
 
-            # N_cr (a_imp taken from Table 6.2 with Hollow Section Cold Formed)
-            a_imp = 0.49
-            N_cr = a_cr * df_member["NF"]
+            active = N_comp > 0.0
 
-            # Slenderness ([6.3.1.2] (6.49))
-            slen = np.sqrt((A*f_y)/N_cr)
+            if np.any(active):
+                a_imp = 0.49
+                N_cr = a_cr * N_comp[active]
 
-            # Phi ([6.3.1.2] (6.49))
-            Phi = 0.5 * (1+a_imp*(slen-0.2)+slen**2)
+                slen = np.sqrt((A * f_y) / N_cr)
+                Phi = 0.5 * (1 + a_imp * (slen - 0.2) + slen**2)
+                Chi = 1.0 / (Phi + np.sqrt(Phi**2 - slen**2))
+                N_bRd = Chi * A * f_y
 
-            # Chi ([6.3.1.2] (6.49))
-            Chi = 1/(Phi+np.sqrt(Phi**2-slen**2))
+                util[active] = N_comp[active] / N_bRd
 
-            # Design Buckling Resistance ([6.3.1.1] (6.47))
-            N_bRd = Chi*A*f_y
-
-            # Buckling Resistance Check ([6.3.1.1] (6.46))
-            df_member["Util_BR"] = df_member["NF"]/N_bRd
-
-            # Take Utilization Ratio
-            Util_BR = df_member["Util_BR"]
-
-            # Return Utilization Ratio
-            return Util_BR
+            return pd.Series(util, index=df.index, name="Util_BR")
         
         Util_BR_col = bucklingResFun(self.df_col,R1,R0,f_y) # Column
         Util_BR_brace = bucklingResFun(self.df_brace,R3,R2,f_y_brace) # Brace
@@ -425,80 +407,58 @@ class PostProcessor:
             eigenvalues = [float(line.strip()) for line in f if line.strip()]
         a_cr = next(v for v in eigenvalues if v > 0)
 
-        def interaction(df_member,Ro,Ri,f_y):
+        def interaction(df_member, Ro, Ri, f_y):
+            df = df_member.copy()
+            util = np.zeros(len(df), dtype=float)
 
-            # Consider only compression members
-            df_member = df_member[df_member["NF"] < 0].copy()
-
-            # Use positive value (following Eurocode)
-            df_member["NF"] = df_member["NF"].abs()
-
-            # Diameters
             Do = 2 * Ro
             Di = 2 * Ri
+            A = math.pi * (Ro**2 - Ri**2)
 
-            # Area
-            A = math.pi * (Ro**2-Ri**2)
+            N_raw = df["NF"].to_numpy(dtype=float)
+            N_comp = np.maximum(-N_raw, 0.0)
+            active = N_comp > 0.0
 
-            # N_cr with eigenvalue 
-            N_cr = a_cr * df_member["NF"]
+            # Psi should come from the full member data, not filtered compression-only data
+            M_start_y = df["My"].iloc[0]
+            M_end_y = df["My"].iloc[-1]
+            M1_y, M2_y = (M_start_y, M_end_y) if abs(M_start_y) >= abs(M_end_y) else (M_end_y, M_start_y)
+            Psi_y = 0.0 if abs(M1_y) < 1e-12 else np.clip(M2_y / M1_y, -1.0, 1.0)
 
-            # Slenderness, Phi and Chi ([6.3.1.2] (6.49))
-            slen = np.sqrt(A*f_y/N_cr)
-            Phi = 0.5 * (1+a_imp*(slen-0.2)+slen**2)
-            Chi = 1/(Phi+np.sqrt(Phi**2-slen**2))
+            M_start_z = df["Mz"].iloc[0]
+            M_end_z = df["Mz"].iloc[-1]
+            M1_z, M2_z = (M_start_z, M_end_z) if abs(M_start_z) >= abs(M_end_z) else (M_end_z, M_start_z)
+            Psi_z = 0.0 if abs(M1_z) < 1e-12 else np.clip(M2_z / M1_z, -1.0, 1.0)
 
-            # mu factor
-            mu = (1-df_member["NF"]/N_cr)/(1-Chi*(df_member["NF"])/N_cr) 
+            if np.any(active):
+                N_cr = a_cr * N_comp[active]
 
+                slen = np.sqrt(A * f_y / N_cr)
+                Phi = 0.5 * (1 + a_imp * (slen - 0.2) + slen**2)
+                Chi = 1.0 / (Phi + np.sqrt(Phi**2 - slen**2))
 
-            # Determining Psi (Table A.2)
-            M_start_y = df_member["My"].iloc[0]
-            M_end_y = df_member["My"].iloc[-1]
+                mu = (1 - N_comp[active] / N_cr) / (1 - Chi * N_comp[active] / N_cr)
 
-            if abs(M_start_y) >= abs(M_end_y):
-                M1_y = M_start_y
-                M2_y = M_end_y
-            else:
-                M1_y = M_end_y
-                M2_y = M_start_y
-            
-            Psi_y = M2_y / M1_y
-            Psi_y = max(min(Psi_y, 1.0),-1.0)
+                Cmy = 0.79 + 0.21 * Psi_y + 0.36 * (Psi_y - 0.33) * N_comp[active] / N_cr
+                CmLT = 1.0
+                Cmz = 0.79 + 0.21 * Psi_z + 0.36 * (Psi_z - 0.33) * N_comp[active] / N_cr
 
-            # Determining Psi (Table A.2)
-            M_start_z = df_member["Mz"].iloc[0]
-            M_end_z = df_member["Mz"].iloc[-1]
+                k_yy = Cmy * CmLT * (mu / (1 - N_comp[active] / N_cr))
+                k_yz = Cmz * CmLT * (mu / (1 - N_comp[active] / N_cr))
 
-            if abs(M_start_z) >= abs(M_end_z):
-                M1_z = M_start_z
-                M2_z = M_end_z
-            else:
-                M1_z = M_end_z
-                M2_z = M_start_z
-            
-            # Psi (Table A.2)
-            Psi_z = M2_z / M1_z
-            Psi_z = max(min(Psi_z, 1.0),-1.0)
+                N_Rk = A * f_y
+                M_Rk = (math.pi * (Do**4 - Di**4)) / (32 * Do) * f_y
 
-            # C values (Table A.1)
-            Cmy = 0.79 + 0.21 * Psi_y + 0.36 * (Psi_y - 0.33)*df_member["NF"]/N_cr
-            CmLT = 1
-            Cmz = 0.79 + 0.21 * Psi_z + 0.36 * (Psi_z - 0.33)*df_member["NF"]/N_cr
+                My = df["My"].abs().to_numpy(dtype=float)
+                Mz = df["Mz"].abs().to_numpy(dtype=float)
 
-            # K values (Table A.1)    
-            k_yy = Cmy*CmLT * (mu/(1-df_member["NF"]/N_cr))
-            k_yz = Cmz*CmLT * (mu/(1-df_member["NF"]/N_cr))
-    
-            # Design Resistance Values
-            N_Rk = A*f_y
-            M_Rk = (math.pi*(Do**4-Di**4))/(32*Do) * f_y
+                util[active] = (
+                    N_comp[active] / (Chi * N_Rk)
+                    + k_yy * My[active] / M_Rk
+                    + k_yz * Mz[active] / M_Rk
+                )
 
-            # Utilization [6.3.3 (6.61)]
-            df_member["Util_IN"] = df_member["NF"]/(Chi*N_Rk) + k_yy * (df_member["My"].abs())/(M_Rk) + k_yz*(df_member["Mz"].abs())/(M_Rk)
-            Util_IN = df_member["Util_IN"]
-
-            return Util_IN
+            return pd.Series(util, index=df.index, name="Util_IN")
 
         Util_IN_col = interaction(self.df_col,R1,R0,f_y) # Column
         Util_IN_brace = interaction(self.df_brace,R3,R2,f_y_brace) # Brace

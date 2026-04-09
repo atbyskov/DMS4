@@ -2,26 +2,26 @@
 
 
 
-  Performance statistics for DSP solver: icalls =      9
+  Performance statistics for DSP solver: icalls =     10
 
  ===========================
  = multifrontal statistics =
  ===========================
 
-     number of equations                     =            6342
-     no. of nonzeroes in lower triangle of a =           83865
-     no. of nonzeroes in the factor l        =          185911
+     number of equations                     =            3258
+     no. of nonzeroes in lower triangle of a =           45315
+     no. of nonzeroes in the factor l        =          100461
      ratio of nonzeroes in factor (min/max)  =          1.0000
-     number of super nodes                   =             437
+     number of super nodes                   =             222
      maximum order of a front matrix         =              78
      maximum size of a front matrix          =            3081
-     maximum size of a front trapezoid       =            2910
+     maximum size of a front trapezoid       =            2415
      METIS reordering method used 
-     no. of floating point ops for factor    =      3.9107D+06
+     no. of floating point ops for factor    =      2.3477D+06
      no. of floating point ops for solve     =      0.0000D+00
      ratio of flops for factor (min/max)     =          1.0000
      ratio of allocated memory (max/min)     =          1.0000
-     number of positive pivots               =            6342
+     number of positive pivots               =            3258
      number of negative pivots               =               0
      number of near-zero pivots              =               0
      partial pivoting tolerance used         =      0.0000D+00
@@ -37,4 +37,4 @@
 
      no input or output performed
 
-  Total Solver Memory allocated              =        6.639 MB
+  Total Solver Memory allocated              =        3.536 MB
