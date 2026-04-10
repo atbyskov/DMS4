@@ -74,9 +74,14 @@ def run_optimization(
     }
 
     def as_1d_float_array(v):
+        #This function is doing defensive programming:
+        #"No matter what weird format I get, I want a clean np.ndarray of shape (n,) with floats."
         """Convert input to a flat 1D float NumPy array."""
-        if hasattr(v, "to_numpy"):
-            return v.to_numpy(dtype=float).ravel()
+        if hasattr(v, "to_numpy"): #CHeck if v has a .to_numpy method, and this is typical for pandas.series and pandas.dataframe
+            return v.to_numpy(dtype=float).ravel() # convert to numpy array of floats and flatten it to 1D
+            # example:
+            #v = pd.Series([1, 2, 3])
+            #v.to_numpy(dtype=float).ravel() -> array([1., 2., 3.])
         return np.asarray(v, dtype=float).ravel()
 
     def evaluate_model(x):
@@ -106,13 +111,13 @@ def run_optimization(
         Util_Class_2_values_col, Util_Class_2_values_brace = utils.Class_2(x, Misc)
         Eigenvalue_1_values = utils.Eigenvalue_1()
 
-        c_val = np.concatenate([
+        c_val = np.concatenate([ #concatenate the arrays into a single array, and return a numpy array of shape (n,) with floats
             # Minimum thickness constraints
-            np.array([x[1] - eps_geom], dtype=float),
-            np.array([x[3] - eps_geom], dtype=float),
+            np.array([x[1] - eps_geom], dtype=float), # create a numpy array of shape (1,) with floats
+            np.array([x[3] - eps_geom], dtype=float), # create a numpy array of shape (1,) with floats
 
             # Utilization constraints: require utilization <= 1  ->  1 - util >= 0
-            1.0 - as_1d_float_array(Util_LB_values_col),
+            1.0 - as_1d_float_array(Util_LB_values_col), 
             1.0 - as_1d_float_array(Util_LB_values_brace),
 
             1.0 - as_1d_float_array(Util_NF_values_col),
@@ -136,62 +141,62 @@ def run_optimization(
             1.0 - as_1d_float_array(Util_BS_values_brace),
 
             # These are assumed already written in c(x) >= 0 form
-            as_1d_float_array(Util_Class_2_values_col),
+            as_1d_float_array(Util_Class_2_values_col), 
             as_1d_float_array(Util_Class_2_values_brace),
             as_1d_float_array(Eigenvalue_1_values),
         ]).astype(float, copy=False)
 
         print(f"Constraint vector length: {len(c_val)}")
 
-        cache["x"] = x.copy()
-        cache["f"] = float(f_val)
-        cache["c"] = c_val
+        cache["x"] = x.copy() # copy the design variables to the cache
+        cache["f"] = float(f_val) # convert the objective function to a float
+        cache["c"] = c_val # assign the constraint vector to the cache
 
-        return cache["f"], cache["c"]
+        return cache["f"], cache["c"] # return the objective function and the constraint vector
 
-    def objective(x):
+    def objective(x): #This is the objective function for PySLSQP.
         """Objective function for PySLSQP."""
-        f_val, _ = evaluate_model(x)
-        return f_val
+        f_val, _ = evaluate_model(x) # evaluate the model and return the objective function and the constraint vector
+        return f_val # return the objective function
 
     def constraints(x):
         """Constraint vector for PySLSQP."""
-        _, c_val = evaluate_model(x)
-        return c_val
+        _, c_val = evaluate_model(x) # evaluate the model and return the objective function and the constraint vector
+        return c_val # return the constraint vector
 
     # PySLSQP writes its own files, so keep them in your log folder
-    os.makedirs(save_folder, exist_ok=True)
-    save_filename = os.path.join(save_folder, "pyslsqp_history.hdf5")
-    summary_filename = os.path.join(save_folder, "slsqp_summary.out")
+    os.makedirs(save_folder, exist_ok=True) # create the save folder if it doesn't exist
+    save_filename = os.path.join(save_folder, "pyslsqp_history.hdf5") # create the save filename
+    summary_filename = os.path.join(save_folder, "slsqp_summary.out") # create the summary filename
 
     # ------------------------------------------------------------------
     # Run PySLSQP
     # ------------------------------------------------------------------
-    result = pyslsqp_optimize(
-        x0=x0,
-        obj=objective,
-        con=constraints,
+    result = pyslsqp_optimize( #This is the optimization function for PySLSQP.
+        x0=x0, # initial guess for the design variables
+        obj=objective, # objective function
+        con=constraints, # constraint function
         meq=0,                         # all constraints are inequalities
-        xl=xl,
-        xu=xu,
-        finite_diff_abs_step=finite_diff_abs_step,
-        maxiter=maxiter,
-        acc=acc,
-        iprint=2,                     # print iteration info
-        save_itr="major",             # save major iterations
+        xl=xl, # lower bound for the design variables
+        xu=xu, # upper bound for the design variables
+        finite_diff_abs_step=finite_diff_abs_step, # finite difference absolute step
+        maxiter=maxiter, # maximum number of iterations
+        acc=acc, # accuracy Equal to the tolerance for the scipy optimization, tolerance in change in objective function value
+        iprint=2, # print iteration info
+        save_itr="major", # save major iterations
         save_vars=[
-            "majiter",
-            "x",
-            "objective",
-            "constraints",
-            "optimality",
-            "feasibility",
-            "step",
+            "majiter", # major iteration
+            "x", # design variables
+            "objective", # objective function
+            "constraints", # constraint vector
+            "optimality", # optimality
+            "feasibility", # feasibility
+            "step", # step
         ],
-        save_filename=save_filename,
-        summary_filename=summary_filename,
-        visualize=True,
-    )
-
-    #logger.finalize(result)
-    return result, logger.txt_path, logger.csv_path
+        save_filename=save_filename, # save the history of the optimization
+        summary_filename=summary_filename, # save the summary of the optimization
+        visualize=True, # visualize the optimization
+        visualize_vars=['objective', 'optimality', 'feasibility', 'x[0]', 'gradient[0]', 'constraints[0]', 'multipliers[0]', 'jacobian[0,0]'], # visualize the optimization variables
+    ) 
+    #logger.finalize(result) # finalize the optimization
+    return result, logger.txt_path, logger.csv_path # return the result, the text path, and the csv path
