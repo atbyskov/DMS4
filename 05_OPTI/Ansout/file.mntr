@@ -8,4 +8,8 @@
   STEP   STEP ATTMP ITER   ITER  TIME/LFACT   TIME/LFACT    MONITOR      MONITOR      MONITOR     MONITOR
                                                              Wall         MxDs         MxPl         MxRe
 
+<<<<<<< HEAD
      1      1    1     6      6     1.0000       1.0000      0.48092       84.127      0.78886E-30   26.070    
+=======
+     1      1    1     6      6     1.0000       1.0000       0.0000       84.127      0.78886E-30   26.081    
+>>>>>>> 60856123f57a297cfbf3227f533de4c7b98b03eb

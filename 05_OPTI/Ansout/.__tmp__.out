@@ -104,7 +104,11 @@
  PORT                              50052.0000                    SCALAR
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
+<<<<<<< HEAD
  CURRENT JOBNAME=file  19:16:55  APR 11, 2026 CP=      0.172
+=======
+ CURRENT JOBNAME=file  19:44:05  APR 11, 2026 CP=      0.047
+>>>>>>> 60856123f57a297cfbf3227f533de4c7b98b03eb
 
      1  FINISH 
 
@@ -209,10 +213,16 @@
 
  /OUTPUT FILE= anstmp
 
+<<<<<<< HEAD
  /OUTPUT FILE= anstmp
+=======
+ NUMBER OF WARNING MESSAGES ENCOUNTERED=          4
+ NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+>>>>>>> 60856123f57a297cfbf3227f533de4c7b98b03eb
 
  /OUTPUT FILE= anstmp
 
+<<<<<<< HEAD
  /OUTPUT FILE= anstmp
 
  /OUTPUT FILE= anstmp
@@ -3206,3 +3216,24 @@
  /OUTPUT FILE= anstmp
 
  /OUTPUT FILE= anstmp
+=======
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2025 R1         Build 25.1         UP20241202    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
+ |  Maximum Database Used      11 MB     Maximum Scratch Memory Used     55 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =         14.969       Time  =  19:44:08          |
+ |        Elapsed Time (sec) =         12.000       Date  =  04/11/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*
+>>>>>>> 60856123f57a297cfbf3227f533de4c7b98b03eb

@@ -39,4 +39,8 @@
 
      no input or output performed
 
+<<<<<<< HEAD
   Total Solver Memory allocated              =        6.611 MB
+=======
+  Total Solver Memory allocated              =        6.612 MB
+>>>>>>> 60856123f57a297cfbf3227f533de4c7b98b03eb
