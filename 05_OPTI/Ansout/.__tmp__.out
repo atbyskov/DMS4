@@ -107,7 +107,7 @@
  PORT                              50052.0000                    SCALAR
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
- CURRENT JOBNAME=file  13:13:04  APR 09, 2026 CP=      0.094
+ CURRENT JOBNAME=file  19:44:05  APR 11, 2026 CP=      0.047
 
      1  FINISH 
 
@@ -194,7 +194,7 @@
   FOR POSSIBLE RESUME FROM THIS POINT
 
 
- NUMBER OF WARNING MESSAGES ENCOUNTERED=          3
+ NUMBER OF WARNING MESSAGES ENCOUNTERED=          4
  NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
 
 
@@ -209,11 +209,11 @@
  |-----------------------------------------------------------------------------|
  |                                                                             |
  |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
- |  Maximum Database Used      54 MB     Maximum Scratch Memory Used    196 MB |
+ |  Maximum Database Used      11 MB     Maximum Scratch Memory Used     55 MB |
  |                                                                             |
  |-----------------------------------------------------------------------------|
  |                                                                             |
- |        CP Time      (sec) =        111.812       Time  =  13:13:19          |
- |        Elapsed Time (sec) =         21.000       Date  =  04/09/2026        |
+ |        CP Time      (sec) =         14.969       Time  =  19:44:08          |
+ |        Elapsed Time (sec) =         12.000       Date  =  04/11/2026        |
  |                                                                             |
  *-----------------------------------------------------------------------------*
