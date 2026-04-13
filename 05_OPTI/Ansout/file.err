@@ -1,4 +1,4 @@
-/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       09:39:54
+/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       11:20:36
 
  *** WARNING ***                         CP =       0.000   TIME= 00:00:00
  The geometry is not available.  Issue the RESUME command to restore the 
@@ -13,9 +13,13 @@
   This warning only issued once.                                         
 
  *** WARNING ***                         CP =       0.000   TIME= 00:00:00
+ The MINREF field of the CNVTOL command has been assigned a default      
+ value of 1.0 for convergence on F.  Check results carefully.            
+
+ *** WARNING ***                         CP =       0.000   TIME= 00:00:00
  A reference moment value times the tolerance is used by the             
  Newton-Raphson method for checking convergence.  The calculated         
- reference MOMENT CONVERGENCE VALUE = 2030610.03 is less than a          
+ reference MOMENT CONVERGENCE VALUE = 1347445.95 is less than a          
  threshold.  This threshold is internally calculated.  You can           
  overwrite it by specifying MINREF on the CNVTOL command.  Check         
  results carefully.                                                      

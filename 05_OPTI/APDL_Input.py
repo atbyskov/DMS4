@@ -50,6 +50,7 @@ def InputFun(SWcoor, var, Misc):
     MomY      = Misc["MomY"]
     f_y       = Misc["f_y"]
     E_mod     = Misc["E_mod"]
+    W_Force   = Misc["W_Force"]
 
 
     # Function to group lines
@@ -216,55 +217,6 @@ def InputFun(SWcoor, var, Misc):
 
     # Display Cross section
     #ap.append("/ESHAPE,1 ! Display Cross Section ")
-
-    # Remote Point for Moment Application
-    
-    # Select all nodes with x=0
-    ap.append("NSEL,S,LOC,X,0")
-    ap.append("NSEL,U,LOC,Y,4286,5000")
-    ap.append("*GET,SlaveNum,NODE,0,COUNT")
-
-    ap.append("*DIM,SlaveIDs,ARRAY,SlaveNum")
-    ap.append("*VGET,SlaveIDs(1),NODE,,NLIST") # Stores all node IDs
-
-    # Create Master / Independent Node 
-    #ap.append("N,99999,0,4.179140091E+03,0")
-    ap.append("N,99999,0,4182.1384,0 ")
-    ap.append("*SET,tid,11")
-    ap.append("*SET,cid,10")
-    ap.append("ET,cid,175")
-    ap.append("ET,tid,170")
-    ap.append("KEYO,tid,2,1")
-    ap.append("KEYO,tid,4,0")
-    ap.append("KEYO,cid,12,5")
-    ap.append("KEYO,cid,4,0")
-    ap.append("KEYO,cid,2,2")
-    ap.append("MAT,10")
-    ap.append("REAL,10")
-    ap.append("TYPE,10")
-
-    # Create slave elements
-    #ap.append("*CFOPEN,SlaveNodes")
-    #ap.append("*SET,firstnode,SlaveIDs(1)")
-    #ap.append("*VWRITE,firstnode")
-    #ap.append("(F15.0)")
-    #ap.append("*CFCLOSE")
-    
-    ap.append("*DO,ii,1,SlaveNum,1")
-    ap.append("    *SET,elemID,8999+ii")
-    ap.append("    *SET,nodeID,SlaveIDs(ii)")
-    ap.append("    EN,elemID,nodeID")
-    ap.append("*ENDDO")
-
-    # Pilot Node Options
-    ap.append("*SET,_npilot,99999")
-    ap.append("_npilot1=_npilot")
-    ap.append("TYPE,tid")
-    ap.append("MAT,cid")
-    ap.append("REAL,cid")
-    ap.append("TSHAPE,PILO")
-    ap.append("EN,79999,_npilot")
-    ap.append("TSHAPE")
         
     #Create and save .png of the mesh
     #ap.append("/SHOW,PNG,,0  ")
@@ -295,19 +247,19 @@ def InputFun(SWcoor, var, Misc):
     # Get top and bottom nodes
     ap.append("*GET, NodeYMax, NODE, 0, MXLOC, Y  ")
     ap.append("*GET, NodeYMin, NODE, 0, MNLOC, Y  ")
+    ap.append("*GET, NodeXMax, NODE, 0, MXLOC, X  ")
 
     ap.append("NSEL,S,LOC,Y,NodeYMax")
-    ap.append(f"F_HOR = {Hor_Force}  ")
-    ap.append(f"F_VER = {-Ver_Force}  ")
+    ap.append("NSEL,R,LOC,X,NodeXMax")
+    ap.append(f"F,ALL,FY,{Ver_Force}")
+    ap.append(f"F,ALL,FX,{Hor_Force}")
     ap.append("NSEL,ALL")
 
-    # Moment Application
-    ap.append("ALLSEL")
-    ap.append("NSEL,S,NODE,,99999")
-    ap.append(f"F,ALL,MX,0  ")
-    ap.append(f"F,ALL,MY,{MomY}  ")
-    ap.append(f"F,ALL,MZ,{MomZ}  ")
-    ap.append("NSEL,ALL")
+    # Force at x = 0 / Weight
+    ap.append("NSEL,S,LOC,X,0")
+    ap.append("*GET,w_force_nodes,NODE,0,COUNT")
+    ap.append(f"W_Force = {W_Force}/w_force_nodes")
+    ap.append("F,ALL,FY,W_Force")
 
     # Fixed displacement at bottom nodes
     ap.append("! Displacement !  ")
@@ -478,29 +430,35 @@ def InputFun(SWcoor, var, Misc):
     ap.append("! SOLUTION !  ")
     ap.append("/SOLU  ")
     ap.append("ANTYPE, STATIC  ")
+    ap.append("NROPT,FULL")
+    ap.append("EQSLV,SPARSE")
     ap.append("NLGEOM,ON  ")
-    ap.append("ARCLEN,ON  ")
+    ap.append("cnvtol,f,,0.005,,0.01")
+    ap.append("ARCLEN,ON,5")
     ap.append("ARCTRM,L  ")
     ap.append("AUTOTS,OFF  ")
-    #ap.append("NSUBST,30,100,10  ") ######### Doesnt work ######## 
+    ap.append("NSUBST,100,100,100") 
+    ap.append("time,1.")
+    ap.append("NEQIT,1000")
 
-    # Apply Force
-    ap.append("NSEL,S,LOC,X,0   ")
-    ap.append("*GET,N_LOW,NODE,,MNLOC,Y  ")
-    ap.append("*GET,n_load_c,NODE,0,COUNT  ")
+    # Get top and bottom nodes
+    ap.append("*GET, NodeYMax, NODE, 0, MXLOC, Y  ")
+    ap.append("*GET, NodeYMin, NODE, 0, MNLOC, Y  ")
+    ap.append("*GET, NodeXMax, NODE, 0, MXLOC, X  ")
 
     ap.append("NSEL,S,LOC,Y,NodeYMax")
-    ap.append(f"F_HOR = {Hor_Force}  ")
-    ap.append(f"F_VER = {-Ver_Force}  ")
+    ap.append("NSEL,R,LOC,X,NodeXMax")
+    ap.append(f"F,ALL,FY,{Ver_Force}")
+    ap.append(f"F,ALL,FX,{Hor_Force}")
     ap.append("NSEL,ALL")
 
-    # Moment Application
-    ap.append("ALLSEL")
-    ap.append("NSEL,S,NODE,,99999")
-    ap.append(f"F,ALL,MX,0  ")
-    ap.append(f"F,ALL,MY,{MomY}  ")
-    ap.append(f"F,ALL,MZ,{MomZ}  ")
-    ap.append("NSEL,ALL")
+    # Force at x = 0 / Weight
+    ap.append("NSEL,S,LOC,X,0")
+    ap.append("*GET,w_force_nodes,NODE,0,COUNT")
+    ap.append(f"W_Force = {W_Force}/w_force_nodes")
+    ap.append("FORCE_IMP_2 = FORCE_IMP/w_force_nodes")
+    ap.append("F,ALL,FY,W_Force")
+    ap.append("F,ALL,FX,Force_IMP_2")
 
     # Fixed Displacement at Bottom Nodes
     ap.append("! Displacement !  ")

@@ -1230,37 +1230,6 @@ LSEL,A,LINE,,104
 ESLL,S  ! select elements on these lines
 EMODIF,ALL,MAT,2  ! modify selected elements to material 2
 ALLSEL,ALL
-NSEL,S,LOC,X,0
-NSEL,U,LOC,Y,4286,5000
-*GET,SlaveNum,NODE,0,COUNT
-*DIM,SlaveIDs,ARRAY,SlaveNum
-*VGET,SlaveIDs(1),NODE,,NLIST
-N,99999,0,4182.1384,0
-*SET,tid,11
-*SET,cid,10
-ET,cid,175
-ET,tid,170
-KEYO,tid,2,1
-KEYO,tid,4,0
-KEYO,cid,12,5
-KEYO,cid,4,0
-KEYO,cid,2,2
-MAT,10
-REAL,10
-TYPE,10
-*DO,ii,1,SlaveNum,1
-*SET,elemID,8999+ii
-*SET,nodeID,SlaveIDs(ii)
-EN,elemID,nodeID
-*ENDDO
-*SET,_npilot,99999
-_npilot1=_npilot
-TYPE,tid
-MAT,cid
-REAL,cid
-TSHAPE,PILO
-EN,79999,_npilot
-TSHAPE
 ! SOLUTION !
 /SOLU
 ANTYPE, STATIC
@@ -1271,16 +1240,16 @@ ALLSEL,ALL
 SELTOL,1.0E-6
 *GET, NodeYMax, NODE, 0, MXLOC, Y
 *GET, NodeYMin, NODE, 0, MNLOC, Y
+*GET, NodeXMax, NODE, 0, MXLOC, X
 NSEL,S,LOC,Y,NodeYMax
-F_HOR = 502.52
-F_VER = -26400
+NSEL,R,LOC,X,NodeXMax
+F,ALL,FY,-2513000.0
+F,ALL,FX,502.52
 NSEL,ALL
-ALLSEL
-NSEL,S,NODE,,99999
-F,ALL,MX,0
-F,ALL,MY,1407140
-F,ALL,MZ,-70364000
-NSEL,ALL
+NSEL,S,LOC,X,0
+*GET,w_force_nodes,NODE,0,COUNT
+W_Force = -3751.0/w_force_nodes
+F,ALL,FY,W_Force
 ! Displacement !
 ALLSEL,ALL
 NSEL,S,LOC,Y,NodeYMin
@@ -1407,27 +1376,33 @@ alpha_h = 1
 *ENDIF
 alpha_m = 2 ! Assumed for now
 imp_ang = 1/200 * alpha_h * alpha_m
-FORCE_IMP = 26400*imp_ang
+FORCE_IMP = -2513000.0*imp_ang
 ! SOLUTION !
 /SOLU
 ANTYPE, STATIC
+NROPT,FULL
+EQSLV,SPARSE
 NLGEOM,ON
-ARCLEN,ON
+CNVTOL,F
+ARCLEN,ON,5
 ARCTRM,L
 AUTOTS,OFF
-NSEL,S,LOC,X,0
-*GET,N_LOW,NODE,,MNLOC,Y
-*GET,n_load_c,NODE,0,COUNT
+NSUBST,100
+NEQIT,1000
+*GET, NodeYMax, NODE, 0, MXLOC, Y
+*GET, NodeYMin, NODE, 0, MNLOC, Y
+*GET, NodeXMax, NODE, 0, MXLOC, X
 NSEL,S,LOC,Y,NodeYMax
-F_HOR = 502.52
-F_VER = -26400
+NSEL,R,LOC,X,NodeXMax
+F,ALL,FY,-2513000.0
+F,ALL,FX,502.52
 NSEL,ALL
-ALLSEL
-NSEL,S,NODE,,99999
-F,ALL,MX,0
-F,ALL,MY,1407140
-F,ALL,MZ,-70364000
-NSEL,ALL
+NSEL,S,LOC,X,0
+*GET,w_force_nodes,NODE,0,COUNT
+W_Force = -3751.0/w_force_nodes
+FORCE_IMP_2 = FORCE_IMP/w_force_nodes
+F,ALL,FY,W_Force
+F,ALL,FX,Force_IMP_2
 ! Displacement !
 ALLSEL,ALL
 NSEL,S,LOC,Y,NodeYMin
