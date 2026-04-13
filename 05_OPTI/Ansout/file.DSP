@@ -2,7 +2,7 @@
 
 
 
-  Performance statistics for DSP solver: icalls =     64
+  Performance statistics for DSP solver: icalls =      9
 
  ===========================
  = multifrontal statistics =
@@ -21,8 +21,8 @@
      no. of floating point ops for solve     =      0.0000D+00
      ratio of flops for factor (min/max)     =          1.0000
      ratio of allocated memory (max/min)     =          1.0000
-     number of positive pivots               =            6699
-     number of negative pivots               =               3
+     number of positive pivots               =            6702
+     number of negative pivots               =               0
      number of near-zero pivots              =               0
      partial pivoting tolerance used         =      0.0000D+00
      factorization panel size                =             128

@@ -46,8 +46,6 @@ def InputFun(SWcoor, var, Misc):
     esize     = Misc["esize"]
     Hor_Force = Misc["Hor_Force"]
     Ver_Force = Misc["Ver_Force"]
-    MomZ      = Misc["MomZ"]
-    MomY      = Misc["MomY"]
     f_y       = Misc["f_y"]
     E_mod     = Misc["E_mod"]
     W_Force   = Misc["W_Force"]
@@ -89,11 +87,13 @@ def InputFun(SWcoor, var, Misc):
     ap.append("! Top Section Type (SECTYPE= 3 )  ")
     ap.append("SECTYPE,3,BEAM,CTUBE  ")
     ap.append("SECDATA,35.05,38.05,8  ")
+
     # MATERIAL
     ap.append("! MATERIAL DATA ")
     ap.append(f"MP,EX,1,{E_mod} ! [MPa]")
     ap.append("MP,PRXY,1,0.3  ")
     ap.append("MP,DENS,1,1.7850E-6 ! [kg/mm^3]")
+
     # STIFF Material
     ap.append("! INF STIFNESS MATERIAL REGION ABOVE Y=4070 ")
     ap.append("MP,EX,2,2E+09 ")
@@ -252,7 +252,7 @@ def InputFun(SWcoor, var, Misc):
     ap.append("NSEL,S,LOC,Y,NodeYMax")
     ap.append("NSEL,R,LOC,X,NodeXMax")
     ap.append(f"F,ALL,FY,{Ver_Force}")
-    ap.append(f"F,ALL,FX,{Hor_Force}")
+    ap.append(f"F,ALL,FZ,{Hor_Force}")
     ap.append("NSEL,ALL")
 
     # Force at x = 0 / Weight
@@ -433,13 +433,13 @@ def InputFun(SWcoor, var, Misc):
     ap.append("NROPT,FULL")
     ap.append("EQSLV,SPARSE")
     ap.append("NLGEOM,ON  ")
-    ap.append("cnvtol,f,,0.005,,0.01")
-    ap.append("ARCLEN,ON,5")
-    ap.append("ARCTRM,L  ")
-    ap.append("AUTOTS,OFF  ")
-    ap.append("NSUBST,100,100,100") 
-    ap.append("time,1.")
-    ap.append("NEQIT,1000")
+    #ap.append("cnvtol,f,,0.005,,0.01")
+    ap.append("ARCLEN,ON")
+    #ap.append("ARCTRM,L")
+    #ap.append("AUTOTS,OFF  ")
+    #ap.append("NSUBST,100,100,100") 
+    #ap.append("time,1.")
+    #ap.append("NEQIT,200")
 
     # Get top and bottom nodes
     ap.append("*GET, NodeYMax, NODE, 0, MXLOC, Y  ")

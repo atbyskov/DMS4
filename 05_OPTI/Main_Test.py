@@ -35,27 +35,22 @@ t1 = 2.3        # Brace Thickness       [mm]
 # Collect variables
 var = [d0, t0, d1, t1] # Assemble variables
 
-# Other specifications
+# Misc
 esize = 100             # Element Size [mm]
-Hor_Force = 502.52      # Horizontal Force [N]
-#Ver_Force = -2.513E+4   # Vertical Force   [N]
-Ver_Force = -2.513E+6   # Modified Vertical Force for ARCTRM,L
-W_Force = -3.751E+3     # Crane Weight load at CoG [N]
-MomZ = -70364000        # Applied Moment around Z-axis [Nmm]
-MomY = 1407140          # Applied Moment around Y-axis [Nmm]
+P_Load_z = 502.52      # Horizontal Force [N]
+P_Load_y = -2.513E+4   # Vertical Force   [N]
+P_COG_y = -3.751E+3     # Crane Weight load at CoG [N]
 f_y = 690               # Yield Strength of S690 [MPa]
 E_mod = 200*1E3         # Youngs Modulus [MPa]
 
 # Create Misc as dict
 Misc = {
     "esize": esize,
-    "Hor_Force": Hor_Force,
-    "Ver_Force": Ver_Force,
-    "MomZ": MomZ,
-    "MomY": MomY,
+    "Hor_Force": P_Load_z,
+    "Ver_Force": P_Load_y,
     "f_y": f_y,
     "E_mod": E_mod,
-    "W_Force": W_Force
+    "W_Force": P_COG_y
 }
 #C:\Program Files\ANSYS Inc\v251\ansys\bin\winx64
 # Start License Server
@@ -101,7 +96,7 @@ for key, util in Util_list.items():
 
     print(
         f"{key:10s}  "
-        f"Column: {col_val:8.4f}   "
-        f"Brace: {brc_val:8.4f}"
+        f"Column: {col_val:8.3f}   "
+        f"Brace: {brc_val:8.3f}"
     )
 print("------------------")
