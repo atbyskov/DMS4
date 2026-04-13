@@ -10,6 +10,7 @@
 import os
 import time 
 from ansys.mapdl.core import launch_mapdl
+import numpy as np
 
 # Import Functions
 import SW_Import as SW
@@ -21,7 +22,7 @@ from MyAPDLCall import RunAPDL
 tic = time.time()
 
 # Import SW coordinates as list
-SW_filename = "LWC1.IGS"   # Specify IGES File Name
+SW_filename = "LWC_Compare.IGS"   # Specify IGES File Name
 SW_folder = "IGS"
 SWcoor = SW.import_SW(os.path.join(SW_folder,SW_filename))
 
@@ -80,13 +81,24 @@ utils = PostProcessor()
 util_list = utils.Util_list(var,Misc)
 
 
-"""
-# Print the list
-print("\n--- UTILIZATION REPORT ---")
-for key, val in util_list.items():
-    print(f"{key:10s}  Column: {val[0]:8.4f}   Brace: {val[1]:8.4f}")
-print("------------------------")
-toc = time.time()
+utils = PostProcessor()
+Util_list = utils.Util_list(var, Misc)  
 
-print(f"Runtime: {toc-tic:.2f} s \n")
-"""
+print("\n--- UTILIZATION REPORT ---")
+for key, util in Util_list.items():
+
+    if util is None:
+        print(f"{key:10s}  Column:   N/A    Brace:   N/A")
+        continue
+
+    util = np.atleast_1d(util)
+
+    col_val = util[0] if len(util) > 0 and np.isfinite(util[0]) else np.nan
+    brc_val = util[1] if len(util) > 1 and np.isfinite(util[1]) else np.nan
+
+    print(
+        f"{key:10s}  "
+        f"Column: {col_val:8.4f}   "
+        f"Brace: {brc_val:8.4f}"
+    )
+print("------------------")

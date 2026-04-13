@@ -221,6 +221,7 @@ def InputFun(SWcoor, var, Misc):
     
     # Select all nodes with x=0
     ap.append("NSEL,S,LOC,X,0")
+    ap.append("NSEL,U,LOC,Y,4286,5000")
     ap.append("*GET,SlaveNum,NODE,0,COUNT")
 
     ap.append("*DIM,SlaveIDs,ARRAY,SlaveNum")
@@ -294,7 +295,6 @@ def InputFun(SWcoor, var, Misc):
     # Get top and bottom nodes
     ap.append("*GET, NodeYMax, NODE, 0, MXLOC, Y  ")
     ap.append("*GET, NodeYMin, NODE, 0, MNLOC, Y  ")
-
 
     ap.append("NSEL,S,LOC,Y,NodeYMax")
     ap.append(f"F_HOR = {Hor_Force}  ")
@@ -489,18 +489,18 @@ def InputFun(SWcoor, var, Misc):
     ap.append("*GET,N_LOW,NODE,,MNLOC,Y  ")
     ap.append("*GET,n_load_c,NODE,0,COUNT  ")
 
-    #ap.append("NSEL,R,LOC,Y,N_LOW  ")
-    ap.append("N_C = n_load_c  ")
-    ap.append("NSEL,S,LOC,X,0   ")
-    ap.append(f"MOMZ = {MomZ}/N_C  ")
-    ap.append(f"MOMY = {MomY}/N_C  ")
-    ap.append(f"F_HOR = {Hor_Force}/N_C  ")
-    ap.append(f"F_VER = {-Ver_Force}/N_C  ")
-    ap.append("F_XTOT = F_HOR+(FORCE_IMP/N_C)  ")
-    ap.append(f"F,ALL,FY,F_VER  ")
-    ap.append(f"F,ALL,FX,F_XTOT  ")
-    ap.append(f"F,ALL,MY,MOMY  ")
-    ap.append(f"F,ALL,MZ,MOMZ  ")
+    ap.append("NSEL,S,LOC,Y,NodeYMax")
+    ap.append(f"F_HOR = {Hor_Force}  ")
+    ap.append(f"F_VER = {-Ver_Force}  ")
+    ap.append("NSEL,ALL")
+
+    # Moment Application
+    ap.append("ALLSEL")
+    ap.append("NSEL,S,NODE,,99999")
+    ap.append(f"F,ALL,MX,0  ")
+    ap.append(f"F,ALL,MY,{MomY}  ")
+    ap.append(f"F,ALL,MZ,{MomZ}  ")
+    ap.append("NSEL,ALL")
 
     # Fixed Displacement at Bottom Nodes
     ap.append("! Displacement !  ")
