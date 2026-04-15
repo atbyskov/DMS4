@@ -22,7 +22,7 @@ from MyAPDLCall import RunAPDL
 tic = time.time()
 
 # Import SW coordinates as list
-SW_filename = "LWC_Compare.IGS"   # Specify IGES File Name
+SW_filename = "LWC_LC1.IGS"   # Specify IGES File Name
 SW_folder = "IGS"
 SWcoor = SW.import_SW(os.path.join(SW_folder,SW_filename))
 
@@ -32,8 +32,10 @@ t0 = 3          # Column Thickness      [mm]
 d1 = 26.9       # Brace Outer Diameter  [mm]
 t1 = 2.3        # Brace Thickness       [mm]
 
+
 # Collect variables
 var = [d0, t0, d1, t1] # Assemble variables
+#var = [d0, t0, d1, t1, rad]
 
 # Misc
 esize = 100             # Element Size [mm]
