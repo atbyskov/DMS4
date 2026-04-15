@@ -24,8 +24,20 @@ from io import StringIO
 
 class PostProcessor:
 
-    def __init__(self):
-        # self.df_eigen  = self.read_forces("AnsoutEigen/APDL_Eigen_Internal.txt")
+    def __init__(self,var,Misc):
+        # Store inputs
+        self.var = var
+        self.Misc = Misc
+
+        # Unpack variables
+        self.d0 = var["d0"]
+        self.t0 = var["t0"]
+        self.d1 = var["d1"]
+        self.t1 = var["t1"]
+        self.E_mod = Misc["E_mod"]
+        self.f_y = Misc["f_y"]
+
+
         self.df_nonlin = self.read_forces("Ansout/APDL_Nonlin_Internal.txt")
         self.df_col = self.df_nonlin[self.df_nonlin["Member"].str.startswith("ColMember")].copy()
         self.df_brace = self.df_nonlin[self.df_nonlin["Member"].str.startswith("BraceMember")].copy()
@@ -86,35 +98,32 @@ class PostProcessor:
         return pd.concat(blocks, ignore_index=True)
 
     # Function to evaluate all constraints at once
-    def Util_list(self, var, Misc):
+    def Util_list(self):
 
             util_data = {
-                "Util_LB": self.Util_LB(var, Misc),
-                "Util_NF": self.Util_NF(var, Misc),
-                "Util_S": self.Util_S(var, Misc),
-                "Util_T": self.Util_T(var, Misc),
-                "Util_BNS": self.Util_BNS(var, Misc),
-                "Util_BR": self.Util_BR(var, Misc),
-                "Util_IN": self.Util_IN(var, Misc),
-                "Util_BS": self.Util_BS(var, Misc)
+                "Util_LB": self.Util_LB(),
+                "Util_NF": self.Util_NF(),
+                "Util_S": self.Util_S(),
+                "Util_T": self.Util_T(),
+                "Util_BNS": self.Util_BNS(),
+                "Util_BR": self.Util_BR(),
+                "Util_IN": self.Util_IN(),
+                "Util_BS": self.Util_BS()
             }
 
             return util_data
     
     # Local Buckling  [Timeshenko p. 458]
-    def Util_LB(self, var, Misc ):
-        
-        # Import variables
-        d0, t0, d1, t1 = var
+    def Util_LB(self):
 
         # Convert to Radii
-        R0 = d0/2 - t0       # Column Inner Radius [mm]
-        R1 = d0/2            # Column Outer Radius [mm]
-        R2 = d1/2 - t1       # Brace Inner Radius  [mm]
-        R3 = d1/2            # Brace Outer Radius  [mm]
+        R0 = self.d0/2 - self.t0       # Column Inner Radius [mm]
+        R1 = self.d0/2            # Column Outer Radius [mm]
+        R2 = self.d1/2 - self.t1       # Brace Inner Radius  [mm]
+        R3 = self.d1/2            # Brace Outer Radius  [mm]
 
         # Import E_mod 
-        E_mod = Misc["E_mod"]
+        E_mod = self.E_mod
 
         # Poissons Ratio
         v = 0.3
@@ -147,22 +156,20 @@ class PostProcessor:
         return Util_LB
 
     # Normal Force [6.2.4]                
-    def Util_NF(self, var, Misc):
+    def Util_NF(self):
 
         # Initialize
         Util_NF = np.zeros(2)
 
-        # Import variables
-        d0, t0, d1, t1 = var
 
         # Convert to Radii
-        R0 = d0/2 - t0       # Column Inner Radius [mm]
-        R1 = d0/2            # Column Outer Radius [mm]
-        R2 = d1/2 - t1       # Brace Inner Radius  [mm]
-        R3 = d1/2            # Brace Outer Radius  [mm]
+        R0 = self.d0/2 - self.t0       # Column Inner Radius [mm]
+        R1 = self.d0/2            # Column Outer Radius [mm]
+        R2 = self.d1/2 - self.t1       # Brace Inner Radius  [mm]
+        R3 = self.d1/2            # Brace Outer Radius  [mm]
 
         # Import E-modulus
-        f_y = Misc["f_y"]
+        f_y = self.f_y
 
         # Function to calculate Util
         def NormalForceFun(df_member,Ro,Ri):
@@ -189,22 +196,19 @@ class PostProcessor:
         return Util_NF
 
     # Shear Force [6.2.6]
-    def Util_S(self, var, Misc):
+    def Util_S(self):
         
         # Initialize
         Util_S = np.zeros(2)
 
-        # Import variables
-        d0, t0, d1, t1 = var
-
         # Convert to Radii
-        R0 = d0/2 - t0       # Column Inner Radius [mm]
-        R1 = d0/2            # Column Outer Radius [mm]
-        R2 = d1/2 - t1       # Brace Inner Radius  [mm]
-        R3 = d1/2            # Brace Outer Radius  [mm]       
+        R0 = self.d0/2 - self.t0       # Column Inner Radius [mm]
+        R1 = self.d0/2            # Column Outer Radius [mm]
+        R2 = self.d1/2 - self.t1       # Brace Inner Radius  [mm]
+        R3 = self.d1/2            # Brace Outer Radius  [mm]      
 
         # Import Misc
-        f_y = Misc["f_y"]
+        f_y = self.f_y
 
         # Function        
         def shearFun(df_member,Ro,Ri):
@@ -233,22 +237,19 @@ class PostProcessor:
         return Util_S
 
     # Torsion [6.2.7]
-    def Util_T(self, var, Misc):
+    def Util_T(self):
 
         # Initialize Util_T
         Util_T = np.zeros(2)
 
-        # Import variables
-        d0, t0, d1, t1 = var
-
         # Convert to Radii
-        R0 = d0/2 - t0       # Column Inner Radius [mm]
-        R1 = d0/2            # Column Outer Radius [mm]
-        R2 = d1/2 - t1       # Brace Inner Radius  [mm]
-        R3 = d1/2            # Brace Outer Radius  [mm]
+        R0 = self.d0/2 - self.t0       # Column Inner Radius [mm]
+        R1 = self.d0/2            # Column Outer Radius [mm]
+        R2 = self.d1/2 - self.t1       # Brace Inner Radius  [mm]
+        R3 = self.d1/2            # Brace Outer Radius  [mm]
 
         # Import Misc
-        f_y = Misc["f_y"]
+        f_y = self.f_y
 
         # Function to handle col and brace
         
@@ -275,22 +276,19 @@ class PostProcessor:
         return Util_T
 
     # Bending, Normal and Shear [6.2.9]
-    def Util_BNS(self, var, Misc):
+    def Util_BNS(self):
 
         # Initialize Util_BNS
         Util_BNS = np.zeros(2)
 
-        # Import variables
-        d0, t0, d1, t1 = var
-
         # Convert to Radii
-        R0 = d0/2 - t0       # Column Inner Radius [mm]
-        R1 = d0/2            # Column Outer Radius [mm]
-        R2 = d1/2 - t1       # Brace Inner Radius  [mm]
-        R3 = d1/2            # Brace Outer Radius  [mm]
+        R0 = self.d0/2 - self.t0       # Column Inner Radius [mm]
+        R1 = self.d0/2            # Column Outer Radius [mm]
+        R2 = self.d1/2 - self.t1       # Brace Inner Radius  [mm]
+        R3 = self.d1/2            # Brace Outer Radius  [mm]]
 
         # Import f_y
-        f_y = Misc["f_y"]
+        f_y = self.f_y
 
         def bnsFun(df_member,Ro,Ri):
         
@@ -331,7 +329,7 @@ class PostProcessor:
         return Util_BNS
 
     # Buckling Resistance [6.3.1]
-    def Util_BR(self, var, Misc):
+    def Util_BR(self):
 
         # Open and Read Eigenvalue
         with open("Ansout/Eigenvalue1.txt") as f:
@@ -341,17 +339,14 @@ class PostProcessor:
         # Utilize Util_IN
         Util_BR = np.zeros(2)
 
-        # Import variables
-        d0, t0, d1, t1 = var
-
         # Convert to Radii
-        R0 = d0/2 - t0       # Column Inner Radius [mm]
-        R1 = d0/2            # Column Outer Radius [mm]
-        R2 = d1/2 - t1       # Brace Inner Radius  [mm]
-        R3 = d1/2            # Brace Outer Radius  [mm]
+        R0 = self.d0/2 - self.t0       # Column Inner Radius [mm]
+        R1 = self.d0/2            # Column Outer Radius [mm]
+        R2 = self.d1/2 - self.t1       # Brace Inner Radius  [mm]
+        R3 = self.d1/2            # Brace Outer Radius  [mm]
 
         # Import Misc
-        f_y = Misc["f_y"]
+        f_y = self.f_y
 
         # Function to handle columns and brace
         def bucklingResFun(df_member,Ro,Ri):
@@ -396,25 +391,22 @@ class PostProcessor:
         return Util_BR
 
     # Interaction Force [6.3.3]
-    def Util_IN(self, var, Misc):
+    def Util_IN(self):
 
         # Initialize Util_IN
         Util_IN = np.zeros(2)
 
-        # Import variables
-        d0, t0, d1, t1 = var
-
         # Convert to Radii
-        R0 = d0/2 - t0       # Column Inner Radius [mm]
-        R1 = d0/2            # Column Outer Radius [mm]
-        R2 = d1/2 - t1       # Brace Inner Radius  [mm]
-        R3 = d1/2            # Brace Outer Radius  [mm]
+        R0 = self.d0/2 - self.t0       # Column Inner Radius [mm]
+        R1 = self.d0/2            # Column Outer Radius [mm]
+        R2 = self.d1/2 - self.t1       # Brace Inner Radius  [mm]
+        R3 = self.d1/2            # Brace Outer Radius  [mm]
 
         # Imperfection Factor
         a_imp = 0.49
 
         # Import Misc
-        f_y = Misc["f_y"]
+        f_y = self.f_y
 
         # Open and Read Eigenvalue
         with open("Ansout/Eigenvalue1.txt") as f:
@@ -499,11 +491,12 @@ class PostProcessor:
         Util_IN[1] = interaction(self.df_brace,R3,R2)
 
         return Util_IN
-
-
-    def Util_BS(self, var, Misc):
-
-        d0, t0, d1, t1 = var    
+    
+    # Brace Step 
+    def Util_BS(self):
+        
+        d1 = self.d1
+        t1 = self.t1
 
         # Yield Strength of Braces
         f_y = 355   # [MPa]
@@ -543,7 +536,7 @@ class PostProcessor:
 
         return Util_BS
 
-    def Class_2(self, var, Misc): 
+    def Class_2(self): 
 
 
 
@@ -554,9 +547,13 @@ class PostProcessor:
         # Therefore we get:
         # 70*235/f_y-dw/tw >=0
         
-        d0, t0, d1, t1 = var
+        d0 = self.d0
+        t0 = self.t0
+        d1 = self.d1
+        t1 = self.t1
+
         #Yield Strength of Columns
-        f_y = Misc["f_y"]
+        f_y = self.f_y
         # Yield Strength of Braces
         f_y_brace = 355   # [MPa]
 
@@ -564,7 +561,6 @@ class PostProcessor:
         Util_Class_2[0] = 70*(235/f_y)-(d0/t0) #column
         Util_Class_2[1] = 70*(235/f_y_brace)-(d1/t1) #brace
         return Util_Class_2
-
 
     def Eigenvalue_1(self):
 

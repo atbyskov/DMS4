@@ -29,7 +29,17 @@ def InputFun(SWcoor, var, Misc):
     ap = []
     
     # Import variables
-    d0, t0, d1, t1 = var
+    d0 = var["d0"]
+    t0 = var["t0"]
+    d1 = var["d1"]
+    t1 = var["t1"]
+
+    # Only use Rad if selected in main
+    rad = var.get("rad",None)
+
+
+    print(rad)
+
 
     # Convert to Radii
     R0 = d0/2 - t0       # Column Inner Radius [mm]
@@ -275,88 +285,6 @@ def InputFun(SWcoor, var, Misc):
 
     # Save column and brace list
     CM_dict = [CM_Column_dict, CM_Brace_dict]
-
-    ap.append("! ===== APDL OUTPUT FILE ===== !  ")
-
-    ap.append("/POST1  ")
-    ap.append("SET,LAST  ")
-    ap.append("ALLSEL,ALL    ")
-
-    # ONLY SELECT BEAM189 ELEMENTS
-    ap.append("*GET,E_COUNT,ELEM,0,COUNT    ") 
-    ap.append(f"! Number of Columns: {CM_dict[0]}  ")
-    ap.append(f"! Number of Braces : {CM_dict[1]}    ")
-    # SET OUTPUT FILE
-    ap.append("! Open file to write  ")
-    ap.append("*CFOPEN, APDL_Eigen_Internal,txt  ")
-    # LOOP OVER COLUMNS
-    ap.append("! Loop over Columns  ")
-    ap.append(f"*DO,ii,1,{CM_dict[0]},1  ")
-    ap.append("   CMSEL,S,COLUMN_%ii%  ")
-    ap.append("   ESLL,S  ") 
-    ap.append("   ESEL,R,ENAME,,189  ")
-    # FORMAT
-    ap.append("   *IF,ii,LT,10,THEN  ")
-    ap.append("       *VWRITE,ii  ")
-    ap.append('       ("NS ColMember_",F2.0)  ')
-    ap.append("   *ELSE  ")
-    ap.append("       *VWRITE,ii  ")
-    ap.append('       ("NS ColMember_",F3.0)  ')
-    ap.append("   *ENDIF  ")
-    # RESULT 
-    ap.append("   *GET,nElem,ELEM,0,COUNT  ")
-    ap.append("   *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC'  ")
-    ap.append("   (A12,A20,A20,A20,A20,A20,A20,A20)  ")
-    ap.append("   ELEM = 0  ")
-    ap.append("   *DO,jj,1,nElem,1  ")
-    ap.append("       ELEM = ELNEXT(ELEM)  ")
-    ap.append("       *GET,NF,ELEM,ELEM,SMISC,1  ")
-    ap.append("       *GET,MY,ELEM,ELEM,SMISC,2  ")
-    ap.append("       *GET,MZ,ELEM,ELEM,SMISC,3  ")
-    ap.append("       *GET,VY,ELEM,ELEM,SMISC,6  ")
-    ap.append("       *GET,VZ,ELEM,ELEM,SMISC,5  ")
-    ap.append("       *GET,TQ,ELEM,ELEM,SMISC,4  ")
-    ap.append("       NSLE  ")
-    ap.append("       *GET,Y_LOC,NODE,0,MNLOC,Y  ")
-    ap.append("       *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC  ")
-    ap.append("       (F12.0,7E20.8)  ")
-    ap.append("   *ENDDO    ")
-    ap.append("*ENDDO")
-
-    # LOOP OVER BRACES
-    ap.append("! Loop over Braces  ")
-    ap.append(f"*DO,ii,1,{CM_dict[1]},1  ")
-    ap.append("   CMSEL,S,BRACE_%ii%,LINE  ")
-    ap.append("   ESLL,S  ")
-    ap.append("   ESEL,R,ENAME,,189  ")
-    # FORMAT
-    ap.append("   *IF,ii,LT,10,THEN  ")
-    ap.append("       *VWRITE,ii  ")
-    ap.append('       ("NS BraceMember_",F2.0)  ')
-    ap.append("   *ELSE  ")
-    ap.append("       *VWRITE,ii  ")
-    ap.append('       ("NS BraceMember_",F3.0)  ')
-    ap.append("   *ENDIF  ")
-    # RESULT 
-    ap.append("   *GET,nElem,ELEM,0,COUNT  ")
-    ap.append("   *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC'  ")
-    ap.append("   (A12,7A20)  ")
-    ap.append("   elem = 0  ")
-    ap.append("   *DO,jj,1,nElem,1  ")
-    ap.append("       ELEM = ELNEXT(ELEM)  ")
-    ap.append("       *GET,NF,ELEM,ELEM,SMISC,1  ")
-    ap.append("       *GET,MY,ELEM,ELEM,SMISC,2  ")
-    ap.append("       *GET,MZ,ELEM,ELEM,SMISC,3  ")
-    ap.append("       *GET,VY,ELEM,ELEM,SMISC,6  ")
-    ap.append("       *GET,VZ,ELEM,ELEM,SMISC,5  ")
-    ap.append("       *GET,TQ,ELEM,ELEM,SMISC,4  ")
-    ap.append("       NSLE  ")
-    ap.append("       *GET,Y_LOC,NODE,0,MNLOC,Y  ")
-    ap.append("       *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC  ")
-    ap.append("       (F12.0,7E20.8)  ")
-    ap.append("   *ENDDO  ")
-    ap.append("*ENDDO  ")
-    ap.append("*CFCLOS    ")
 
     # MASS OF ASSEMBLY
     ap.append("! Get and Print Mass  ")

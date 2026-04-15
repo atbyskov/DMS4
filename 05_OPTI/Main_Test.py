@@ -31,11 +31,17 @@ d0 = 76.1       # Column Outer Diameter [mm]
 t0 = 3          # Column Thickness      [mm]
 d1 = 26.9       # Brace Outer Diameter  [mm]
 t1 = 2.3        # Brace Thickness       [mm]
-
+rad = 220       # Radius Centerline
 
 # Collect variables
-var = [d0, t0, d1, t1] # Assemble variables
-#var = [d0, t0, d1, t1, rad]
+# Uncomment "rad" if its to be included in the analysis
+var = {
+    "d0": d0,
+    "t0": t0,
+    "d1": d1,
+    "t1": t1,
+    "rad": rad
+}
 
 # Misc
 esize = 100             # Element Size [mm]
@@ -77,12 +83,8 @@ finally:
 
 print(f"Mass of Assembly: {f:.2f} kg")
 
-utils = PostProcessor()
-util_list = utils.Util_list(var,Misc)
-
-
-utils = PostProcessor()
-Util_list = utils.Util_list(var, Misc)  
+utils = PostProcessor(var, Misc)
+Util_list = utils.Util_list()  
 
 print("\n--- UTILIZATION REPORT ---")
 for key, util in Util_list.items():
@@ -93,12 +95,17 @@ for key, util in Util_list.items():
 
     util = np.atleast_1d(util)
 
-    col_val = util[0] if len(util) > 0 and np.isfinite(util[0]) else np.nan
-    brc_val = util[1] if len(util) > 1 and np.isfinite(util[1]) else np.nan
+    # Special case for Brace-Step
+    if key == "Util_BS":
+        col_val = np.nan
+        brc_val = util[0] if len(util) > 0 and np.isfinite(util[0]) else np.nan
+
+    else:
+        col_val = util[0] if len(util) > 0 and np.isfinite(util[0]) else np.nan
+        brc_val = util[1] if len(util) > 1 and np.isfinite(util[1]) else np.nan
 
     print(
         f"{key:10s}  "
-        f"Column: {col_val:8.3f}   "
+        f"Column: {col_val:8.3f}  "
         f"Brace: {brc_val:8.3f}"
     )
-print("------------------")
