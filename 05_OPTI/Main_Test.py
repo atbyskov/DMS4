@@ -31,7 +31,7 @@ d0 = 76.1       # Column Outer Diameter [mm]
 t0 = 3          # Column Thickness      [mm]
 d1 = 26.9       # Brace Outer Diameter  [mm]
 t1 = 2.3        # Brace Thickness       [mm]
-rad = 220       # Radius Centerline
+rad = 202.07       # Radius Centerline    [mm] - Default: 202.07
 
 # Collect variables
 # Uncomment "rad" if its to be included in the analysis
@@ -42,7 +42,7 @@ var = {
     "t1": t1,
     "rad": rad
 }
-
+print("Variables included:", list(var.keys()))
 # Misc
 esize = 100             # Element Size [mm]
 P_Load_z = 502.52      # Horizontal Force [N]

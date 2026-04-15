@@ -22,7 +22,6 @@
     # Apply SECTYPE,3 to Top (constant)
     # 
 
-
 def InputFun(SWcoor, var, Misc):
 
     # Initialize APDL Command for PyMAPDL
@@ -36,10 +35,6 @@ def InputFun(SWcoor, var, Misc):
 
     # Only use Rad if selected in main
     rad = var.get("rad",None)
-
-
-    print(rad)
-
 
     # Convert to Radii
     R0 = d0/2 - t0       # Column Inner Radius [mm]
@@ -59,6 +54,39 @@ def InputFun(SWcoor, var, Misc):
     f_y       = Misc["f_y"]
     E_mod     = Misc["E_mod"]
     W_Force   = Misc["W_Force"]
+
+
+    # Change Radius Logic
+    if rad is not None:
+        import math
+        
+        # Check if Column Member
+        def is_column(x1, z1, x2, z2):
+                return (x1 == x2) and (z1 == z2)
+
+        col_loc = {(x1, z1) for x1, y1, z1, x2, y2, z2 in SWcoor if is_column(x1, z1, x2, z2)}
+
+        loc_to_new = {}
+        for (x, z) in col_loc:
+            # r0 = \sqrt(x^2+z^2)
+            r0 = math.hypot(x, z)
+            # Scale radius
+            s = rad / r0
+            # Apply scaling to x and z values 
+            loc_to_new[(x, z)] = (x * s, z * s)
+
+        def adjust_point(x, y, z):
+            if (x, z) in loc_to_new:
+                nx, nz = loc_to_new[(x, z)]
+                return nx, y, nz
+            return x, y, z
+
+        SWcoor = [
+            (*adjust_point(x1, y1, z1), *adjust_point(x2, y2, z2))
+            for x1, y1, z1, x2, y2, z2 in SWcoor
+    ]
+
+
 
 
     # Function to group lines
@@ -226,20 +254,20 @@ def InputFun(SWcoor, var, Misc):
     ap.append("ALLSEL,ALL  ")
 
     # Display Cross section
-    #ap.append("/ESHAPE,1 ! Display Cross Section ")
+    ap.append("/ESHAPE,1 ! Display Cross Section ")
         
     #Create and save .png of the mesh
-    #ap.append("/SHOW,PNG,,0  ")
-    #ap.append("/RGB,INDEX,100,100,100,0  ")
-    #ap.append("/RGB,INDEX,80,80,80,13  ")
-    #ap.append("/RGB,INDEX,60,60,60,14  ")
-    #ap.append("/RGB,INDEX,0,0,0,15  ")
-    #ap.append("/TYPE,,4  ")
-    #ap.append("/VIEW,,0,0,1  ")
-    #ap.append("/ANGLE,,30,YM  ")
-    #ap.append("EPLOT  ")
-    #ap.append("/SHOW,close  ")
-    #ap.append("/SHOW,TERM  ")
+    ap.append("/SHOW,PNG,,0  ")
+    ap.append("/RGB,INDEX,100,100,100,0  ")
+    ap.append("/RGB,INDEX,80,80,80,13  ")
+    ap.append("/RGB,INDEX,60,60,60,14  ")
+    ap.append("/RGB,INDEX,0,0,0,15  ")
+    ap.append("/TYPE,,4  ")
+    ap.append("/VIEW,,0,0,1  ")
+    ap.append("/ANGLE,,30,YM  ")
+    ap.append("EPLOT  ")
+    ap.append("/SHOW,close  ")
+    ap.append("/SHOW,TERM  ")
 
     # RUN STATIC ANALYSIS
     # We use sparse solver with pre-stress on
