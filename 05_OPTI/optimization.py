@@ -137,7 +137,6 @@ def run_optimization(mapdl,var,Misc):
     save_filename = os.path.join(save_folder, "pyslsqp_history.hdf5") # Save File
     summary_filename = os.path.join(save_folder, "slsqp_summary.out") # Summary File
 
-
     # Run PySLSQP
     result = pyslsqp_optimize( 
         x0=x0, 
