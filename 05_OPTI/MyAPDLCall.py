@@ -29,13 +29,27 @@ import os
 from APDL_Input import InputFun
 
 
-def RunAPDL(mapdl,SWcoor,var,Misc):
+def RunAPDL(mapdl,var,Misc):
+    import numpy as np
     ans_time_tic = time.time()
    
+    if isinstance(var, dict):
+        x = np.array([var["d0"], var["t0"], var["d1"], var["t1"]], dtype=float)
+    else:
+        x = np.asarray(var, dtype=float).ravel()
+
+    var_dict = {
+        "d0": x[0],
+        "t0": x[1],
+        "d1": x[2],
+        "t1": x[3],
+    }
+
+
     mapdl.clear()
 
     # Create input file for Eigenvalue Analysis
-    apdl_cmds = InputFun(SWcoor,var,Misc)
+    apdl_cmds = InputFun(var_dict,Misc)
 
     with mapdl.non_interactive:
         for cmd in apdl_cmds:

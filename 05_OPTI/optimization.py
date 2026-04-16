@@ -10,7 +10,6 @@ from Post_Process import PostProcessor
 def run_optimization(
     mapdl,
     var,
-    SWcoor,
     Misc,
     eps_geom=0.1,
     save_folder="Optimization_Logs",
@@ -35,7 +34,7 @@ def run_optimization(
           if they are to be used directly as inequality constraints
     """
 
-    x0 = np.asarray(var, dtype=float)
+    x0 = np.array([var["d0"], var["t0"], var["d1"], var["t1"]])
 
     bounds = [
         (40.0, 100.0),  # Column outer diameter [mm]
@@ -89,26 +88,33 @@ def run_optimization(
         Shared evaluation of objective + constraints at one x.
         Uses caching so repeated calls at the same x do not rerun APDL.
         """
+        
         x = np.asarray(x, dtype=float).ravel()
 
         if cache["x"] is not None and np.array_equal(x, cache["x"]):
             return cache["f"], cache["c"]
-
+        
+        var_dict = {
+            "d0": x[0],
+            "t0": x[1],
+            "d1": x[2],
+            "t1": x[3],
+}
         # Run the expensive model once
         f_val = RunAPDL(mapdl, x, Misc)
         logger.log_evaluation(x, f_val)
 
-        utils = PostProcessor()
+        utils = PostProcessor(var_dict,Misc)
 
-        Util_LB_values_col, Util_LB_values_brace = utils.Util_LB(x, Misc)
-        Util_NF_values_col, Util_NF_values_brace = utils.Util_NF(x, Misc)
-        Util_S_values_col, Util_S_values_brace = utils.Util_S(x, Misc)
-        Util_T_values_col, Util_T_values_brace = utils.Util_T(x, Misc)
-        Util_BNS_values_col, Util_BNS_values_brace = utils.Util_BNS(x, Misc)
-        Util_BR_values_col, Util_BR_values_brace = utils.Util_BR(x, Misc)
-        Util_IN_values_col, Util_IN_values_brace = utils.Util_IN(x, Misc)
-        Util_BS_values_brace = utils.Util_BS(x, Misc)
-        Util_Class_2_values_col, Util_Class_2_values_brace = utils.Class_2(x, Misc)
+        Util_LB_values_col, Util_LB_values_brace = utils.Util_LB()
+        Util_NF_values_col, Util_NF_values_brace = utils.Util_NF()
+        Util_S_values_col, Util_S_values_brace = utils.Util_S()
+        Util_T_values_col, Util_T_values_brace = utils.Util_T()
+        Util_BNS_values_col, Util_BNS_values_brace = utils.Util_BNS()
+        Util_BR_values_col, Util_BR_values_brace = utils.Util_BR()
+        Util_IN_values_col, Util_IN_values_brace = utils.Util_IN()
+        Util_BS_values_brace = utils.Util_BS()
+        Util_Class_2_values_col, Util_Class_2_values_brace = utils.Class_2()
         Eigenvalue_1_values = utils.Eigenvalue_1()
 
         c_val = np.concatenate([ #concatenate the arrays into a single array, and return a numpy array of shape (n,) with floats

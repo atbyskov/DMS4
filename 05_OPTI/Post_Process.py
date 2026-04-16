@@ -244,8 +244,6 @@ class PostProcessor:
         Util_T_col = np.zeros(len(self.df_col))
         Util_T_brace = np.zeros(len(self.df_brace))
 
-        # Import variables
-        d0, t0, d1, t1 = var
 
         # Convert to Radii
         R0 = self.d0/2 - self.t0       # Column Inner Radius [mm]
@@ -287,9 +285,6 @@ class PostProcessor:
         # Initialize Util_BNS
         Util_BNS_col = np.zeros(len(self.df_col))
         Util_BNS_brace = np.zeros(len(self.df_brace))
-
-        # Import variables
-        d0, t0, d1, t1 = var
 
         # Convert to Radii
         R0 = self.d0/2 - self.t0       # Column Inner Radius [mm]
@@ -350,9 +345,6 @@ class PostProcessor:
         Util_BR_col = np.zeros(len(self.df_col))
         Util_BR_brace = np.zeros(len(self.df_brace))
 
-        # Import variables
-        d0, t0, d1, t1 = var
-
         # Convert to Radii
         R0 = self.d0/2 - self.t0       # Column Inner Radius [mm]
         R1 = self.d0/2            # Column Outer Radius [mm]
@@ -400,8 +392,6 @@ class PostProcessor:
         Util_IN_col = np.zeros(len(self.df_col))
         Util_IN_brace = np.zeros(len(self.df_brace))
 
-        # Import variables
-        d0, t0, d1, t1 = var
 
         # Convert to Radii
         R0 = self.d0/2 - self.t0       # Column Inner Radius [mm]

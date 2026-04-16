@@ -22,9 +22,14 @@
     # Apply SECTYPE,3 to Top (constant)
     # 
 
-def InputFun(SWcoor, var, Misc):
+def InputFun(var, Misc):
+    import os
+    import SW_Import as SW
+
+    SW_filename = Misc["SW_filename"]
 
     # Initialize APDL Command for PyMAPDL
+    SWcoor = SW.import_SW(os.path.join("IGS",SW_filename))
     ap = []
     
     # Import variables
