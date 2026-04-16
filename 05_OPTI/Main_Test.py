@@ -31,7 +31,7 @@ d0 = 76.1       # Column Outer Diameter [mm]
 t0 = 3          # Column Thickness      [mm]
 d1 = 26.9       # Brace Outer Diameter  [mm]
 t1 = 2.3        # Brace Thickness       [mm]
-rad = 202.07       # Radius Centerline    [mm] - Default: 202.07
+rad = 202.07    # Radius Centerline    [mm] - Default: 202.07
 
 # Collect variables
 # Uncomment "rad" if its to be included in the analysis
@@ -40,14 +40,14 @@ var = {
     "t0": t0,
     "d1": d1,
     "t1": t1,
-    "rad": rad
+    #"rad": rad
 }
 print(f"{len(var)} variables included:", list(var.keys()))
 
 # Misc
 esize = 100             # Element Size [mm]
-P_Load_z = 502.52      # Horizontal Force [N]
-P_Load_y = -2.513E+4   # Vertical Force   [N]
+P_Load_z =  502.52      # Horizontal Force [N]
+P_Load_y = -25.13E+3    # Vertical Force   [N]
 P_COG_y = -3.751E+3     # Crane Weight load at CoG [N]
 f_y = 690               # Yield Strength of S690 [MPa]
 E_mod = 200*1E3         # Youngs Modulus [MPa]
