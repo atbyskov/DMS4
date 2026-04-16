@@ -60,34 +60,33 @@ def InputFun(SWcoor, var, Misc):
     if rad is not None:
         import math
         
-        # Check if Column Member
-        def is_column(x1, z1, x2, z2):
-                return (x1 == x2) and (z1 == z2)
-
-        col_loc = {(x1, z1) for x1, y1, z1, x2, y2, z2 in SWcoor if is_column(x1, z1, x2, z2)}
+        # Only take Column Members
+        col_loc = {(x1, z1) for x1, _, z1, x2, _, z2 in SWcoor if x1 == x2 and z1 == z2}
 
         loc_to_new = {}
         for (x, z) in col_loc:
             # r0 = \sqrt(x^2+z^2)
             r0 = math.hypot(x, z)
+            
             # Scale radius
-            s = rad / r0
+            if r0 > 0:
+                s = rad / (r0+1e-5)
+            else:
+                s = 0
+
             # Apply scaling to x and z values 
             loc_to_new[(x, z)] = (x * s, z * s)
 
-        def adjust_point(x, y, z):
-            if (x, z) in loc_to_new:
-                nx, nz = loc_to_new[(x, z)]
-                return nx, y, nz
+        def adjust(x, y, z):
+            new = loc_to_new.get((x,z))
+            if new:
+                return new[0], y, new[1]
             return x, y, z
-
+        
         SWcoor = [
-            (*adjust_point(x1, y1, z1), *adjust_point(x2, y2, z2))
+            (*adjust(x1, y1, z1), *adjust(x2, y2, z2))
             for x1, y1, z1, x2, y2, z2 in SWcoor
     ]
-
-
-
 
     # Function to group lines
     def beam_class(p1, p2):
@@ -253,6 +252,8 @@ def InputFun(SWcoor, var, Misc):
     ap.append("EMODIF,ALL,MAT,2  ! modify selected elements to material 2 ")
     ap.append("ALLSEL,ALL  ")
 
+
+    """
     # Display Cross section
     ap.append("/ESHAPE,1 ! Display Cross Section ")
         
@@ -268,6 +269,7 @@ def InputFun(SWcoor, var, Misc):
     ap.append("EPLOT  ")
     ap.append("/SHOW,close  ")
     ap.append("/SHOW,TERM  ")
+    """
 
     # RUN STATIC ANALYSIS
     # We use sparse solver with pre-stress on

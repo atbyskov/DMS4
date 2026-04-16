@@ -42,7 +42,8 @@ var = {
     "t1": t1,
     "rad": rad
 }
-print("Variables included:", list(var.keys()))
+print(f"{len(var)} variables included:", list(var.keys()))
+
 # Misc
 esize = 100             # Element Size [mm]
 P_Load_z = 502.52      # Horizontal Force [N]
