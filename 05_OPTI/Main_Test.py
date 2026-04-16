@@ -50,6 +50,7 @@ P_Load_z =  502.52      # Horizontal Force [N]
 P_Load_y = -25.13E+3    # Vertical Force   [N]
 P_COG_y = -3.751E+3     # Crane Weight load at CoG [N]
 f_y = 690               # Yield Strength of S690 [MPa]
+f_y_brace = 355         # Brace Yield Strength S355 [MPa]
 E_mod = 200*1E3         # Youngs Modulus [MPa]
 
 # Create Misc as dict
