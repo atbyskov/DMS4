@@ -95,7 +95,7 @@ def run_optimization(
             return cache["f"], cache["c"]
 
         # Run the expensive model once
-        f_val = RunAPDL(mapdl, SWcoor, x, Misc)
+        f_val = RunAPDL(mapdl, x, Misc)
         logger.log_evaluation(x, f_val)
 
         utils = PostProcessor()
