@@ -21,9 +21,6 @@
 #       3. Read Mass of assembly
 #   Return Mass
         
-# Import Tools
-import time
-import os
 
 # Import Functions
 from APDL_Input import InputFun
@@ -31,22 +28,19 @@ from APDL_Input import InputFun
 
 def RunAPDL(mapdl,var,Misc):
     import numpy as np
+    import time
     ans_time_tic = time.time()
    
+    # Handle List or Misc
     if isinstance(var, dict):
-        x = np.array([var["d0"], var["t0"], var["d1"], var["t1"], var["rad"]], dtype=float)
+        var_dict = var
     else:
-        x = np.asarray(var, dtype=float).ravel()
+        x = np.array(var,dtype=float).ravel()
+        names = Misc.get("active_vars",None)
 
-    var_dict = {
-        "d0": x[0],
-        "t0": x[1],
-        "d1": x[2],
-        "t1": x[3],
-        "rad": x[4]
-    }
+        var_dict = dict(zip(names,x))
 
-
+    # Clear everything in MAPDL
     mapdl.clear()
 
     # Create input file for Eigenvalue Analysis

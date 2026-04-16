@@ -44,6 +44,7 @@ def run_optimization(
         ("rad",(150.0, 350.0)),
     ]
     active_vars = [(name,bnds) for name,bnds in des_var if name in var]
+    Misc["active_vars"] = [name for name, _ in active_vars]
 
     # Print active variables
     print(
@@ -51,8 +52,8 @@ def run_optimization(
         + ", ".join(
             f"x{i} = {name}"
             for i, (name, _) in enumerate(active_vars)
-        )
-)
+        ))
+    
     x0 = np.array([var[name] for name, _ in active_vars], dtype=float)
 
     bounds = [bnds for _, bnds in active_vars]
@@ -60,8 +61,17 @@ def run_optimization(
     xl = np.array([b[0] for b in bounds], dtype=float)
     xu = np.array([b[1] for b in bounds], dtype=float)
 
-    # Settings that roughly correspond to your old SciPy options
-    finite_diff_abs_step = [0.01,0.01,0.01,0.01,3]
+    # Step Options
+    fd_step = {
+        "d0": 0.01,
+        "t0": 0.01,
+        "d1": 0.01,
+        "t1": 0.01,
+        "rad": 2
+        }
+    finite_diff_abs_step = [fd_step[name] for name, _ in active_vars]
+
+
     acc = 1e-3
     maxiter = 40
 
@@ -98,21 +108,16 @@ def run_optimization(
         return np.asarray(v, dtype=float).ravel()
 
     def evaluate_model(x):
-        """
-        Shared evaluation of objective + constraints at one x.
-        Uses caching so repeated calls at the same x do not rerun APDL.
-        """
-        
+
         x = np.asarray(x, dtype=float).ravel()
 
         if cache["x"] is not None and np.array_equal(x, cache["x"]):
             return cache["f"], cache["c"]
         
-        var_dict = {
-            name: x[i]
-            for i, (name,_) in enumerate(active_vars)
-        }
-        # Run the expensive model once
+        # Convert variables to dict again
+        var_dict = {name: x[i] for i, (name,_) in enumerate(active_vars)}
+
+        # Run the Model
         f_val = RunAPDL(mapdl, x, Misc)
         logger.log_evaluation(x, f_val)
 
@@ -174,8 +179,8 @@ def run_optimization(
 
     def objective(x): #This is the objective function for PySLSQP.
         """Objective function for PySLSQP."""
-        f_val, _ = evaluate_model(x) # evaluate the model and return the objective function and the constraint vector
-        return f_val # return the objective function
+        f_val, _ = evaluate_model(x) 
+        return f_val 
 
     def constraints(x):
         """Constraint vector for PySLSQP."""

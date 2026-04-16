@@ -24,10 +24,10 @@ tic = time.time()
 # Collect variables
 # Uncomment "rad" if its to be included in the analysis
 var = {
-    "d0": 48.86,
-    "t0": 2.05,
-    "d1": 31,
-    "t1": 0.54,
+    "d0": 76.1,
+    "t0": 3,
+    "d1": 26.9,
+    "t1": 2.3,
     "rad": 350
 }
 print(f"{len(var)} variables included:", list(var.keys()))
