@@ -1,3 +1,3 @@
 # To Do List
 
-- [Remove internal forces from linear]
+- Make Force loaded as remote and see if it changes anything
