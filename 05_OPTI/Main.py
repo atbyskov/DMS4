@@ -9,12 +9,13 @@
 import os
 import time 
 from ansys.mapdl.core import launch_mapdl
-
+from pyslsqp import optimize
 # Import Functions
 from optimization import run_optimization
 import SW_Import as SW
 from Post_Process import PostProcessor
 from MyAPDLCall import RunAPDL
+
 
 # Start global timing
 tic = time.time()
@@ -34,12 +35,13 @@ t1 = 2.3        # Brace Thickness       [mm]
 var = [d0, t0, d1, t1] # Assemble variables
 
 # Other specifications
-esize = 100              # Element Size [mm]
+esize = 250              # Element Size [mm]
 Hor_Force = 502.52      # Horizontal Force [N]
 Ver_Force = 26400       # Vertical Force   [N]
 MomZ = -70364000        # Applied Moment around Z-axis [Nmm]
 MomY = 1407140          # Applied Moment around Y-axis [Nmm]
 f_y = 690               # Yield Strength of S690 [MPa]
+f_y_brace = 355         # Yield Strength of S355 [MPa]
 E_mod = 200*1E3         # Youngs Modulus [MPa]
 
 # Create Misc as dict
@@ -50,6 +52,7 @@ Misc = {
     "MomZ": MomZ,
     "MomY": MomY,
     "f_y": f_y,
+    "f_y_brace": f_y_brace,
     "E_mod": E_mod
 }
 
@@ -62,7 +65,6 @@ mapdl = launch_mapdl(
     nproc=8,
     additional_switches="-p ansys -smp",
 )
-
 # Ensures that MAPDL closes if something chrashes
 try:
     f1 = RunAPDL(mapdl,SWcoor,var,Misc)
