@@ -20,7 +20,7 @@ var = {
     "t0": 3,                        # Column Thickness [mm]
     "d1": 26.9,                     # Brace Diameter   [mm]
     "t1": 2.3,                      # Brace Thickness  [mm]
-    #"rad": 170                      # Radius Structure [mm]
+    "rad": 202.07                      # Radius Structure [mm]
 }
 
 # Static variables

@@ -21,7 +21,18 @@ import numpy as np
 import re
 import math
 from io import StringIO
+import SW_Import as SW
 
+
+# Function to calculate the span of horizontal brace - It works, but i don't understand this
+def _brace_span_mm(var, misc):
+    co = SW.import_SW(str(Path("IGS") / misc["SW_filename"]))
+    if (rad := var.get("rad")) is not None:
+        col = {(x1, z1) for x1, y1, z1, x2, y2, z2 in co if x1 == x2 and z1 == z2}
+        ln = {p: (p[0]*rad/h, p[1]*rad/h) for p in col for h in [math.hypot(p[0], p[1])+1e-5]}
+        adj = lambda x,y,z: (ln[(x,z)][0],y,ln[(x,z)][1]) if (x,z) in ln else (x,y,z)
+        co = [(*adj(x1,y1,z1),*adj(x2,y2,z2)) for x1,y1,z1,x2,y2,z2 in co]
+    return next(math.hypot(x2-x1,y2-y1,z2-z1) for x1,y1,z1,x2,y2,z2 in co if x1!=x2 or z1!=z2)
 class PostProcessor:
 
     def __init__(self,var,Misc):
@@ -489,8 +500,9 @@ class PostProcessor:
 
         # Force and Length
         P = 200 * 9.82      # [N]
-        L = 350             # [mm]
-
+        #L = 350             # [mm]
+        L = _brace_span_mm(self.var, self.Misc)  # [mm] first horizontal brace (same for all)
+        print("Brace Length:", L)
         # Max Moment
         M = 1/8*P*L         # [Nmm]
 
