@@ -19,12 +19,12 @@ var = {
     "t0": 3,                        # Column Thickness [mm]
     "d1": 26.9,                     # Brace Diameter   [mm]
     "t1": 2.3,                      # Brace Thickness  [mm]
-    #"rad": 202.07                  # Radius Structure [mm]
+    "rad": 170                      # Radius Structure [mm]
 }
 
 # Static variables
 Misc = {
-    "esize": 100,                   # Element Size [mm]
+    "esize": 3,                    # Element Size [mm]
     "Hor_Force": 502.52,            # Horizontal Force (P_Load_z) [N]
     "Ver_Force": -25.13E+3,         # Vertical Force (P_Load_y)   [N]
     "f_y": 690 ,                    # Column Yield Strength [MPa]

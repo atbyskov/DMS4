@@ -14,6 +14,7 @@ def run_optimization(
     eps_geom=0.1,
     save_folder="Optimization_Logs",
 ):
+    
     """
     Run constrained optimization with PySLSQP.
 
@@ -22,6 +23,7 @@ def run_optimization(
         x[1] = Column thickness      [mm]
         x[2] = Brace outer diameter  [mm]
         x[3] = Brace thickness       [mm]
+
 
     Constraint convention for PySLSQP:
         - First meq constraints are equalities: c_i(x) = 0
@@ -33,21 +35,33 @@ def run_optimization(
         - Class_2 and Eigenvalue_1 already return values in >= 0 form
           if they are to be used directly as inequality constraints
     """
-
-    x0 = np.array([var["d0"], var["t0"], var["d1"], var["t1"]])
-
-    bounds = [
-        (40.0, 100.0),  # Column outer diameter [mm]
-        (1.0,   7.0),   # Column thickness [mm]
-        (10.0, 100.0),  # Brace outer diameter [mm]
-        (0.1,   7.0),   # Brace thickness [mm]
+    # Design variables and bounds
+    des_var = [
+        ("d0", (40.0,  100)),
+        ("t0", (1.0,   7.0)),
+        ("d1", (10.0,  100.0)),
+        ("t1", (0.1,   7.0)),
+        ("rad",(150.0, 350.0)),
     ]
+    active_vars = [(name,bnds) for name,bnds in des_var if name in var]
+
+    # Print active variables
+    print(
+        f"{len(active_vars)} Design Variables included: "
+        + ", ".join(
+            f"x{i} = {name}"
+            for i, (name, _) in enumerate(active_vars)
+        )
+)
+    x0 = np.array([var[name] for name, _ in active_vars], dtype=float)
+
+    bounds = [bnds for _, bnds in active_vars]
 
     xl = np.array([b[0] for b in bounds], dtype=float)
     xu = np.array([b[1] for b in bounds], dtype=float)
 
     # Settings that roughly correspond to your old SciPy options
-    finite_diff_abs_step = 0.01
+    finite_diff_abs_step = [0.01,0.01,0.01,0.01,3]
     acc = 1e-3
     maxiter = 40
 
@@ -95,11 +109,9 @@ def run_optimization(
             return cache["f"], cache["c"]
         
         var_dict = {
-            "d0": x[0],
-            "t0": x[1],
-            "d1": x[2],
-            "t1": x[3],
-}
+            name: x[i]
+            for i, (name,_) in enumerate(active_vars)
+        }
         # Run the expensive model once
         f_val = RunAPDL(mapdl, x, Misc)
         logger.log_evaluation(x, f_val)

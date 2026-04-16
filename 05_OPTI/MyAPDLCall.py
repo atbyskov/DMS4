@@ -34,7 +34,7 @@ def RunAPDL(mapdl,var,Misc):
     ans_time_tic = time.time()
    
     if isinstance(var, dict):
-        x = np.array([var["d0"], var["t0"], var["d1"], var["t1"]], dtype=float)
+        x = np.array([var["d0"], var["t0"], var["d1"], var["t1"], var["rad"]], dtype=float)
     else:
         x = np.asarray(var, dtype=float).ravel()
 
@@ -43,6 +43,7 @@ def RunAPDL(mapdl,var,Misc):
         "t0": x[1],
         "d1": x[2],
         "t1": x[3],
+        "rad": x[4]
     }
 
 

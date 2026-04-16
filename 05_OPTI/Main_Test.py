@@ -21,26 +21,14 @@ from MyAPDLCall import RunAPDL
 # Start timing
 tic = time.time()
 
-# Import SW coordinates as list
-SW_filename = "LWC_LC1.IGS"   # Specify IGES File Name
-SW_folder = "IGS"
-SWcoor = SW.import_SW(os.path.join(SW_folder,SW_filename))
-
-# Specify tube dimensions
-d0 = 76.1       # Column Outer Diameter [mm]
-t0 = 3          # Column Thickness      [mm]
-d1 = 26.9       # Brace Outer Diameter  [mm]
-t1 = 2.3        # Brace Thickness       [mm]
-rad = 202.07    # Radius Centerline    [mm] - Default: 202.07
-
 # Collect variables
 # Uncomment "rad" if its to be included in the analysis
 var = {
-    "d0": d0,
-    "t0": t0,
-    "d1": d1,
-    "t1": t1,
-    #"rad": rad
+    "d0": 48.86,
+    "t0": 2.05,
+    "d1": 31,
+    "t1": 0.54,
+    "rad": 350
 }
 print(f"{len(var)} variables included:", list(var.keys()))
 
@@ -55,13 +43,16 @@ E_mod = 200*1E3         # Youngs Modulus [MPa]
 
 # Create Misc as dict
 Misc = {
-    "esize": esize,
-    "Hor_Force": P_Load_z,
-    "Ver_Force": P_Load_y,
-    "f_y": f_y,
-    "E_mod": E_mod,
-    "W_Force": P_COG_y
+    "esize": 3,                   # Element Size [mm]
+    "Hor_Force": 502.52,            # Horizontal Force (P_Load_z) [N]
+    "Ver_Force": -25.13E+3,         # Vertical Force (P_Load_y)   [N]
+    "f_y": 690 ,                    # Column Yield Strength [MPa]
+    "f_y_brace": 355,               # Brace Yield Strength [MPa]
+    "E_mod": 200*1E3,               # Youngs Modulus [MPa]
+    "W_Force": -3.751E+3,           # Vertical Force COG (P_COG_y) [N]
+    "SW_filename": "LWC_LC1.IGS"    # Filename for IGS File
 }
+
 #C:\Program Files\ANSYS Inc\v251\ansys\bin\winx64
 # Start License Server
 
@@ -78,7 +69,7 @@ print(f"License opened in: {toc_lic-tic_lic:.2f} s")
 
 # Run Environment
 try:
-    f = RunAPDL(mapdl, SWcoor, var, Misc) # Runs APDL and returns MASS
+    f = RunAPDL(mapdl, var, Misc) # Runs APDL and returns MASS
 finally:
     mapdl.exit()
 
@@ -88,6 +79,8 @@ print(f"Mass of Assembly: {f:.2f} kg")
 utils = PostProcessor(var, Misc)
 Util_list = utils.Util_list()  
 
+
+"""
 print("\n--- UTILIZATION REPORT ---")
 for key, util in Util_list.items():
 
@@ -95,7 +88,16 @@ for key, util in Util_list.items():
         print(f"{key:10s}  Column:   N/A    Brace:   N/A")
         continue
 
-    util = np.atleast_1d(util)
+    
+    if isinstance(util, dict):
+        util = np.array(list(util.values()), dtype=float)
+
+    elif hasattr(util, "to_numpy"):  # pandas Series/DataFrame
+        util = util.to_numpy(dtype=float).ravel()
+
+    else:
+        util = np.atleast_1d(util)
+
 
     # Special case for Brace-Step
     if key == "Util_BS":
@@ -111,3 +113,4 @@ for key, util in Util_list.items():
         f"Column: {col_val:8.3f}  "
         f"Brace: {brc_val:8.3f}"
     )
+"""

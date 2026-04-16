@@ -80,7 +80,9 @@ class OptimizationLogger:
 
         self.log_line(f"[EVALUATION {self.eval_counter}]") # Writes the evaluation number to the optimization log file.
         self.log_line(f"  Date/time : {now}") # Writes the current date and time to the optimization log file.
-        self.log_line(f"  x         : {np.array2string(x, precision=6, separator=', ')}") # Writes the design variables to the optimization log file.
+        x_str = ", ".join(f"{v:.2f}" for v in x) ######### Maybe doesnt work
+        self.log_line(f"  x         : [{x_str}]")
+        # Writes the design variables to the optimization log file.
         self.log_line(f"  Objective : {fun:.3f}") # Writes the objective function to the optimization log file.
         self.log_line("") # Writes an empty line to the optimization log file.
 

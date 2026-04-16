@@ -64,28 +64,27 @@ def InputFun(var, Misc):
     # Change Radius Logic
     if rad is not None:
         import math
+
+        # Check if Column Member 
+        def is_column(x1, z1, x2, z2): 
+            return (x1 == x2) and (z1 == z2)
         
         # Only take Column Members
-        col_loc = {(x1, z1) for x1, _, z1, x2, _, z2 in SWcoor if x1 == x2 and z1 == z2}
+        col_loc = {(x1, z1) for x1, y1, z1, x2, y2, z2 in SWcoor if is_column(x1, z1, x2, z2)}
 
         loc_to_new = {}
-        for (x, z) in col_loc:
-            # r0 = \sqrt(x^2+z^2)
-            r0 = math.hypot(x, z)
-            
-            # Scale radius
-            if r0 > 0:
-                s = rad / (r0+1e-5)
-            else:
-                s = 0
-
+        for (x, z) in col_loc: 
+            # r0 = \sqrt(x^2+z^2) 
+            r0 = math.hypot(x, z) 
+            # Scale radius 
+            s = rad / (r0+1e-5) 
             # Apply scaling to x and z values 
             loc_to_new[(x, z)] = (x * s, z * s)
-
+            
         def adjust(x, y, z):
-            new = loc_to_new.get((x,z))
-            if new:
-                return new[0], y, new[1]
+            if (x,z) in loc_to_new:
+                nx,nz = loc_to_new[(x,z)]
+                return nx,y,nz
             return x, y, z
         
         SWcoor = [
@@ -215,7 +214,7 @@ def InputFun(var, Misc):
 
     # ELEMENT DEFINITION
     ap.append("! ELEMENT SIZE !  ")
-    ap.append(f"ESIZE,{esize}   ")
+    ap.append(f"ESIZE,,{esize}   ")
     
     # Function to mesh each group seperatly
     # Makes sure each section has the correct cross section
@@ -257,8 +256,7 @@ def InputFun(var, Misc):
     ap.append("EMODIF,ALL,MAT,2  ! modify selected elements to material 2 ")
     ap.append("ALLSEL,ALL  ")
 
-
-    """
+    
     # Display Cross section
     ap.append("/ESHAPE,1 ! Display Cross Section ")
         
@@ -274,7 +272,7 @@ def InputFun(var, Misc):
     ap.append("EPLOT  ")
     ap.append("/SHOW,close  ")
     ap.append("/SHOW,TERM  ")
-    """
+    
 
     # RUN STATIC ANALYSIS
     # We use sparse solver with pre-stress on
