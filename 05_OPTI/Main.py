@@ -10,14 +10,14 @@ import optimization
 import Self_Written_Optimization.optimization_self_written as optimization_self_written
 from MyAPDLCall import RunAPDL
 
-# Variables. Uncomment variable to include it.
+# Variables. Choose which ones to include by setting "active": True or False.
 # Include Bounds
 var = {
-    "d0": 76.1,                     # Column Diameter  [mm]
-    "t0": 3,                        # Column Thickness [mm]
-    "d1": 26.9,                     # Brace Diameter   [mm]
-    "t1": 2.3,                      # Brace Thickness  [mm]
-    "rad": 202.07                   # Radius Structure [mm]
+    "d0": {"value": 76.1, "bounds": (40.0, 100), "active": True},       # Column Diameter  [mm]
+    "t0": {"value": 3.0,  "bounds": (1.0, 7.0),  "active": True},       # Column Thickness [mm]
+    "d1": {"value": 26.9, "bounds": (10.0, 100.0), "active": True},     # Brace Diameter   [mm]
+    "t1": {"value": 2.3,  "bounds": (0.1, 7.0),  "active": True},       # Brace Thickness  [mm]
+    "rad": {"value": 202.07, "bounds": (150.0, 350.0), "active": True}, # Radius Structure [mm]
 }
 
 # Static variables
@@ -29,7 +29,15 @@ Misc = {
     "f_y_brace": 355,               # Brace Yield Strength [MPa]
     "E_mod": 200*1E3,               # Youngs Modulus [MPa]
     "W_Force": -3.751E+3,           # Vertical Force COG (P_COG_y) [N]
-    "SW_filename": "LWC_LC1.IGS"    # Filename for IGS File
+    "eps_geom": 0.1,    # Minimum thickness specification for geometry updates [mm]
+    "SW_filename": "LWC_LC1.IGS",    # Filename for IGS File
+    "save_folder": "Optimization_Logs" # Save Folder
+}
+
+# Solver Settings
+Solver_Settings = {
+    "acc": 1e-3,       # Maximum objective function tolerance
+    "maxiter": 40,     # Maximum iterations
 }
 
 # Launch MAPDL
@@ -37,14 +45,14 @@ mapdl = launch_mapdl(
     run_location="Ansout",
     log_apdl="apdl_log",
     override=True,
-    nproc=8,
+    nproc=2,
     additional_switches="-p ansys -smp",
 )
 
 # Ensures that MAPDL closes if something chrashes
 try:
     f1 = RunAPDL(mapdl,var,Misc)
-    result, txt_path, csv_path = optimization.run_optimization(mapdl, var, Misc)
+    result, txt_path, csv_path = optimization.run_optimization(mapdl, var, Misc, Solver_Settings)
 finally:
     mapdl.exit()
 

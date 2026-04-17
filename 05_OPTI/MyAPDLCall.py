@@ -36,10 +36,10 @@ def RunAPDL(mapdl,var,Misc):
     if isinstance(var, dict):
         var_dict = var
     else:
-        x = np.array(var,dtype=float).ravel()
-        names = Misc.get("active_vars",None)
-
-        var_dict = dict(zip(names,x))
+        x = np.asarray(var, dtype=float).ravel()
+        names = Misc.get("active_vars")
+        var_dict = {name: {"value": float(val), "active": True}
+                    for name, val in zip(names, x)}
 
     # Clear everything in MAPDL
     mapdl.clear()

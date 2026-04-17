@@ -1,28 +1,18 @@
+# Import packages
 import os
 import numpy as np
 from pyslsqp import optimize as pyslsqp_optimize
 
+# Import Functions
 from MyAPDLCall import RunAPDL
 from opt_logger import OptimizationLogger
 from Post_Process import PostProcessor
 
 # Optimization Function
-def run_optimization(mapdl,var,Misc):
-    
-    # Data saved in this folder:
-    save_folder="Optimization_Logs"
+def run_optimization(mapdl,var,Misc,Solver_Settings):
 
-    # Design Variables and Bounds
-    des_var = [
-        ("d0", (40.0,  100)),
-        ("t0", (1.0,   7.0)),
-        ("d1", (10.0,  100.0)),
-        ("t1", (0.1,   7.0)),
-        ("rad",(150.0, 350.0)),
-    ]
-    
     # Set active variables
-    active = [(name,bnds) for name,bnds in des_var if name in var]
+    active = [(name, data["bounds"]) for name, data in var.items() if data.get("active", True)]
     names = [name for name,_ in active]
     Misc["active_vars"] = names
 
@@ -31,12 +21,9 @@ def run_optimization(mapdl,var,Misc):
             ", ".join(f"x{i}={n}" for i,n in enumerate(names)))
 
     # Set initial guess, bounds and ranges to np array
-    x0 = np.array([var[name] for name, _ in active], dtype=float)
+    x0 = np.array([var[name]["value"] for name, _ in active], dtype=float)
     bounds = [bnds for _, bnds in active]
     xl, xu = np.array(bounds).T
-
-    # Minimum thickness specification
-    eps_geom=0.1
 
     # Step Options for each variable
     fd_step_options = {
@@ -48,10 +35,6 @@ def run_optimization(mapdl,var,Misc):
         }
     fd_step = [fd_step_options[name] for name, _ in active]
 
-    # Maximum objective function tolerance and iterations
-    acc = 1e-3
-    maxiter = 40
-
     # Logger Options
     logger = OptimizationLogger(
         x0=x0,
@@ -59,10 +42,10 @@ def run_optimization(mapdl,var,Misc):
         method="PySLSQP",
         options={
             "finite_diff_abs_step": fd_step,
-            "acc": acc,
-            "maxiter": maxiter,
+            "acc": Solver_Settings["acc"],
+            "maxiter": Solver_Settings["maxiter"],
         },
-        save_folder=save_folder,
+        save_folder=Misc["save_folder"],
     )
 
     # Internal cache so RunAPDL is only executed once per unique x
@@ -103,8 +86,8 @@ def run_optimization(mapdl,var,Misc):
 
         # Set up the constraints
         constraints = [
-            arr(x[1] - eps_geom),
-            arr(x[3] - eps_geom),
+            arr(x[1] - Misc["eps_geom"]),
+            arr(x[3] - Misc["eps_geom"]),
             *[v for pair in col_brace for v in pair],
             1 - arr(pp.Util_BS()),
             *map(arr, pp.Class_2()),
@@ -133,9 +116,9 @@ def run_optimization(mapdl,var,Misc):
         return c_val 
 
     # Create Folder
-    os.makedirs(save_folder, exist_ok=True) 
-    save_filename = os.path.join(save_folder, "pyslsqp_history.hdf5") # Save File
-    summary_filename = os.path.join(save_folder, "slsqp_summary.out") # Summary File
+    os.makedirs(Misc["save_folder"], exist_ok=True) 
+    save_filename = os.path.join(Misc["save_folder"], "pyslsqp_history.hdf5") # Save File
+    summary_filename = os.path.join(Misc["save_folder"], "slsqp_summary.out") # Summary File
 
     # Run PySLSQP
     result = pyslsqp_optimize( 
@@ -146,8 +129,8 @@ def run_optimization(mapdl,var,Misc):
         xl=xl,
         xu=xu, 
         finite_diff_abs_step=fd_step, 
-        maxiter=maxiter, 
-        acc=acc,                        # Objective Function Tolerance
+        maxiter=Solver_Settings["maxiter"], 
+        acc=Solver_Settings["acc"],     # Objective Function Tolerance
         iprint=2,                       # print iteration info
         save_itr="major",               # save major iterations
         save_vars=[
