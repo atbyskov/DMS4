@@ -20,15 +20,16 @@
 #       2. Run Analysis via os.system
 #       3. Read Mass of assembly
 #   Return Mass
-        
+
+# Import packages        
+import numpy as np
+import time
 
 # Import Functions
 from APDL_Input import InputFun
 
-
 def RunAPDL(mapdl,var,Misc):
-    import numpy as np
-    import time
+    # Start timer for APDL run
     ans_time_tic = time.time()
    
     # Handle List or Misc
@@ -55,7 +56,6 @@ def RunAPDL(mapdl,var,Misc):
     # Clear APDL
     mapdl.finish()
     
-
     # Read First eigenvalue:
     with open("Ansout/Eigenvalue1.txt") as f:
         eigenvalues = [float(line.strip()) for line in f if line.strip()]
@@ -69,6 +69,7 @@ def RunAPDL(mapdl,var,Misc):
     with open("Ansout/Mass_Assembly.txt","r") as f:
         Mass = [float(line.strip()) for line in f if line.strip()]
 
+    # Stop timer for APDL run
     ans_time_toc = time.time()
 
     print(f"Sim time: {ans_time_toc-ans_time_tic:.2f} s")

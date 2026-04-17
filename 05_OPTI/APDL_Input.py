@@ -20,46 +20,33 @@
     # Apply SECTYPE,1 to vertical beams
     # Apply SECTYPE,2 to brace beams
     # Apply SECTYPE,3 to Top (constant)
-    # 
+
+# Import packages
+import os
+import SW_Import as SW
 
 def InputFun(var, Misc):
-    import os
-    import SW_Import as SW
-
     SW_filename = Misc["SW_filename"]
 
     # Initialize APDL Command for PyMAPDL
     SWcoor = SW.import_SW(os.path.join("IGS",SW_filename))
     ap = []
-    
-    # Import variables
-    d0 = var["d0"]
-    t0 = var["t0"]
-    d1 = var["d1"]
-    t1 = var["t1"]
 
     # Only use Rad if selected in main
     rad = var.get("rad",None)
 
     # Convert to Radii
-    R0 = d0/2 - t0       # Column Inner Radius [mm]
-    R1 = d0/2            # Column Outer Radius [mm]
-    R2 = d1/2 - t1       # Brace Inner Radius  [mm]
-    R3 = d1/2            # Brace Outer Radius  [mm]
-
-    R0 = round(R0,4)
-    R1 = round(R1,4)
-    R2 = round(R2,4)
-    R3 = round(R3,4)
+    R0 = round(var["d0"]/2 - var["t0"],4)       # Column Inner Radius [mm]
+    R1 = round(var["d0"]/2,4)                   # Column Outer Radius [mm]
+    R2 = round(var["d1"]/2 - var["t1"],4)       # Brace Inner Radius  [mm]
+    R3 = round(var["d1"]/2,4)                   # Brace Outer Radius  [mm]
 
     # Import Misc
     esize     = Misc["esize"]
     Hor_Force = Misc["Hor_Force"]
     Ver_Force = Misc["Ver_Force"]
-    f_y       = Misc["f_y"]
     E_mod     = Misc["E_mod"]
     W_Force   = Misc["W_Force"]
-
 
     # Change Radius Logic
     if rad is not None:
