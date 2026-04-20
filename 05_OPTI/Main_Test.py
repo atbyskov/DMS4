@@ -24,10 +24,10 @@ tic = time.time()
 # Collect variables
 
 var = {
-    "d0": {"value": 76.1,    "active": True},       # Column Diameter  [mm]
-    "t0": {"value": 3.0,     "active": True},       # Column Thickness [mm]
-    "d1": {"value": 26.9,    "active": True},       # Brace Diameter   [mm]
-    "t1": {"value": 2.3,     "active": True},       # Brace Thickness  [mm]
+    "d0": {"value": 76.1,    "active": True},        # Column Diameter  [mm]
+    "t0": {"value": 3.0,     "active": True},        # Column Thickness [mm]
+    "d1": {"value": 26.9,    "active": True},        # Brace Diameter   [mm]
+    "t1": {"value": 2.3,     "active": True},        # Brace Thickness  [mm]
     "rad": {"value": 202.07, "active": False},       # Radius Structure [mm]
 }
 
