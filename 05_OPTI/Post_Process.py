@@ -536,7 +536,7 @@ class PostProcessor:
         P = 200 * 9.82      # [N]
         #L = 350             # [mm]
         L = _brace_span_mm(self.var, self.Misc)  # [mm] first horizontal brace (same for all)
-        print("Brace Length:", L)
+        #print("Brace Length:", L)
         # Max Moment
         M = 1/8*P*L         # [Nmm]
 
@@ -562,7 +562,7 @@ class PostProcessor:
 
         # Write to Utilization Ratio
         Util_BS_brace = sig_vm/f_y_brace                 # [Na] Brace
-        print("Util_BS_brace:", Util_BS_brace)
+        #print("Util_BS_brace:", Util_BS_brace)
         return Util_BS_brace
 
     def Class_2(self): 

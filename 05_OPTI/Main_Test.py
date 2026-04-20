@@ -22,28 +22,24 @@ from MyAPDLCall import RunAPDL
 tic = time.time()
 
 # Collect variables
-# Uncomment "rad" if its to be included in the analysis
+
 var = {
-    "d0": 76.1,
-    "t0": 3,
-    "d1": 26.9,
-    "t1": 2.3,
-    "rad": 350
+    "d0": {"value": 76.1,    "active": True},       # Column Diameter  [mm]
+    "t0": {"value": 3.0,     "active": True},       # Column Thickness [mm]
+    "d1": {"value": 26.9,    "active": True},       # Brace Diameter   [mm]
+    "t1": {"value": 2.3,     "active": True},       # Brace Thickness  [mm]
+    "rad": {"value": 202.07, "active": True},       # Radius Structure [mm]
 }
 print(f"{len(var)} variables included:", list(var.keys()))
 
-# Misc
-esize = 100             # Element Size [mm]
-P_Load_z =  502.52      # Horizontal Force [N]
-P_Load_y = -25.13E+3    # Vertical Force   [N]
-P_COG_y = -3.751E+3     # Crane Weight load at CoG [N]
-f_y = 690               # Yield Strength of S690 [MPa]
-f_y_brace = 355         # Brace Yield Strength S355 [MPa]
-E_mod = 200*1E3         # Youngs Modulus [MPa]
+
+
+
+
 
 # Create Misc as dict
 Misc = {
-    "esize": 3,                   # Element Size [mm]
+    "esize": 3,                     # Element Size [mm]
     "Hor_Force": 502.52,            # Horizontal Force (P_Load_z) [N]
     "Ver_Force": -25.13E+3,         # Vertical Force (P_Load_y)   [N]
     "f_y": 690 ,                    # Column Yield Strength [MPa]
@@ -76,7 +72,15 @@ finally:
 
 print(f"Mass of Assembly: {f:.2f} kg")
 
-utils = PostProcessor(var, Misc)
+
+# Pack specifically for compability
+active = [(name,data["value"]) for name,data in var.items() if data.get("active", True)]
+names = [name for name,_ in active]
+x0 = np.array([var[name]["value"] for name, _ in active], dtype=float)
+var_dict = dict(zip(names, x0))
+
+
+utils = PostProcessor(var_dict, Misc)
 Util_list = utils.Util_list()  
 
 
