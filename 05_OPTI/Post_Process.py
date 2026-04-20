@@ -21,7 +21,52 @@ import numpy as np
 import re
 import math
 from io import StringIO
+import SW_Import as SW
 
+
+# Function to calculate the span of horizontal brace - It works, but i don't understand this
+def _brace_span_mm(var, misc, tol=1e-3):
+    co = SW.import_SW(str(Path("IGS") / misc["SW_filename"]))
+
+    # If a target radius is provided, move the column-connected points
+    # radially in the x-z plane while keeping y unchanged
+    if (rad := var.get("rad")) is not None:
+        # Find vertical column footprints in the x-z plane
+        col = {
+            (x1, z1)
+            for x1, y1, z1, x2, y2, z2 in co
+            if abs(x1 - x2) < tol and abs(z1 - z2) < tol
+        }
+
+        # Map each footprint to the same direction but new radius = rad
+        ln = {}
+        for x, z in col:
+            h = math.hypot(x, z)
+            if h < tol:
+                ln[(x, z)] = (x, z)  # avoid dividing by ~0
+            else:
+                ln[(x, z)] = (x * rad / h, z * rad / h)
+
+        def adj(x, y, z):
+            if (x, z) in ln:
+                x_new, z_new = ln[(x, z)]
+                return (x_new, y, z_new)
+            return (x, y, z)
+
+        co = [
+            (*adj(x1, y1, z1), *adj(x2, y2, z2))
+            for x1, y1, z1, x2, y2, z2 in co
+        ]
+
+    # Find the first member that is horizontal:
+    #   - same y-coordinate
+    #   - but different x/z coordinates
+    for x1, y1, z1, x2, y2, z2 in co:
+        is_horizontal = abs(y2 - y1) < tol
+        has_horizontal_span = abs(x2 - x1) >= tol or abs(z2 - z1) >= tol
+
+        if is_horizontal and has_horizontal_span:
+            return math.sqrt((x2 - x1)**2 + (y2 - y1)**2 + (z2 - z1)**2)
 class PostProcessor:
 
     def __init__(self,var,Misc):
@@ -489,8 +534,9 @@ class PostProcessor:
 
         # Force and Length
         P = 200 * 9.82      # [N]
-        L = 350             # [mm]
-
+        #L = 350             # [mm]
+        L = _brace_span_mm(self.var, self.Misc)  # [mm] first horizontal brace (same for all)
+        print("Brace Length:", L)
         # Max Moment
         M = 1/8*P*L         # [Nmm]
 
@@ -516,7 +562,7 @@ class PostProcessor:
 
         # Write to Utilization Ratio
         Util_BS_brace = sig_vm/f_y_brace                 # [Na] Brace
-
+        print("Util_BS_brace:", Util_BS_brace)
         return Util_BS_brace
 
     def Class_2(self): 

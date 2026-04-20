@@ -1,18 +1,28 @@
-# Import packages
 import os
 import numpy as np
 from pyslsqp import optimize as pyslsqp_optimize
 
-# Import Functions
 from MyAPDLCall import RunAPDL
 from opt_logger import OptimizationLogger
 from Post_Process import PostProcessor
 
 # Optimization Function
-def run_optimization(mapdl,var,Misc,Solver_Settings):
+def run_optimization(mapdl,var,Misc):
+    
+    # Data saved in this folder:
+    save_folder="Optimization_Logs"
 
+    # Design Variables and Bounds
+    des_var = [
+        ("d0", (40.0,  100)),
+        ("t0", (1.0,   7.0)),
+        ("d1", (10.0,  100.0)),
+        ("t1", (0.1,   7.0)),
+        ("rad",(150.0, 350.0)),
+    ]
+    
     # Set active variables
-    active = [(name, data["bounds"]) for name, data in var.items() if data.get("active", True)]
+    active = [(name,bnds) for name,bnds in des_var if name in var]
     names = [name for name,_ in active]
     Misc["active_vars"] = names
 
@@ -21,9 +31,12 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
             ", ".join(f"x{i}={n}" for i,n in enumerate(names)))
 
     # Set initial guess, bounds and ranges to np array
-    x0 = np.array([var[name]["value"] for name, _ in active], dtype=float)
+    x0 = np.array([var[name] for name, _ in active], dtype=float)
     bounds = [bnds for _, bnds in active]
     xl, xu = np.array(bounds).T
+
+    # Minimum thickness specification
+    eps_geom=0.1
 
     # Step Options for each variable
     fd_step_options = {
@@ -35,6 +48,10 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
         }
     fd_step = [fd_step_options[name] for name, _ in active]
 
+    # Maximum objective function tolerance and iterations
+    acc = 1e-3
+    maxiter = 100
+
     # Logger Options
     logger = OptimizationLogger(
         x0=x0,
@@ -42,10 +59,10 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
         method="PySLSQP",
         options={
             "finite_diff_abs_step": fd_step,
-            "acc": Solver_Settings["acc"],
-            "maxiter": Solver_Settings["maxiter"],
+            "acc": acc,
+            "maxiter": maxiter,
         },
-        save_folder=Misc["save_folder"],
+        save_folder=save_folder,
     )
 
     # Internal cache so RunAPDL is only executed once per unique x
@@ -86,8 +103,8 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
 
         # Set up the constraints
         constraints = [
-            arr(x[1] - Misc["eps_geom"]),
-            arr(x[3] - Misc["eps_geom"]),
+            arr(x[1] - eps_geom),
+            arr(x[3] - eps_geom),
             *[v for pair in col_brace for v in pair],
             1 - arr(pp.Util_BS()),
             *map(arr, pp.Class_2()),
@@ -116,36 +133,30 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
         return c_val 
 
     # Create Folder
-    os.makedirs(Misc["save_folder"], exist_ok=True) 
-    save_filename = os.path.join(Misc["save_folder"], "pyslsqp_history.hdf5") # Save File
-    summary_filename = os.path.join(Misc["save_folder"], "slsqp_summary.out") # Summary File
+    os.makedirs(save_folder, exist_ok=True) 
+    save_filename = os.path.join(save_folder, "pyslsqp_history.hdf5") # Save File
+    summary_filename = os.path.join(save_folder, "slsqp_summary.out") # Summary File
 
-    # Run PySLSQP
-    result = pyslsqp_optimize( 
-        x0=x0, 
-        obj=objective, 
-        con=constraints, 
-        meq=0,                          # all constraints are inequalities
+    # Run custom optimizer (see optimization_methods.minimize)
+    #   method      : "steepest_descent" | "conjugate_gradient" | "slp"
+    #   line_search : "armijo" | "golden" | "bisection" | "quadratic"
+    from optimization_methods import minimize
+    result = minimize(
+        obj=objective,
+        con=constraints,
+        x0=x0,
         xl=xl,
-        xu=xu, 
-        finite_diff_abs_step=fd_step, 
-        maxiter=Solver_Settings["maxiter"], 
-        acc=Solver_Settings["acc"],     # Objective Function Tolerance
-        iprint=2,                       # print iteration info
-        save_itr="major",               # save major iterations
-        save_vars=[
-            "majiter",                  # major iteration
-            "x",                        # design variables
-            "objective",                # objective function
-            "constraints",              # constraint vector
-            "optimality",               # optimality
-            "feasibility",              # feasibility
-            "step",                     # step
-        ],
-        save_filename=save_filename, 
-        summary_filename=summary_filename, 
-        visualize=True, 
-        visualize_vars=['objective', 'optimality', 'feasibility', 'x[0]', 'gradient[0]', 'constraints[0]', 'multipliers[0]', 'jacobian[0,0]'], 
-    ) 
+        xu=xu,
+        method="steepest_descent",
+        line_search="golden",
+        fd_step=fd_step,
+        fd_type="forward",
+        maxiter=maxiter,
+        ftol=acc,
+        penalty_weight=1e3,
+        display=True,
+    )
+    # Touch save_filename/summary_filename so unused-variable linters stay quiet
+    _ = (save_filename, summary_filename)
     # return the result, the text path, and the csv path
     return result, logger.txt_path, logger.csv_path 

@@ -20,46 +20,26 @@
     # Apply SECTYPE,1 to vertical beams
     # Apply SECTYPE,2 to brace beams
     # Apply SECTYPE,3 to Top (constant)
-    # 
+
+# Import packages
+import os
+import SW_Import as SW
 
 def InputFun(var, Misc):
-    import os
-    import SW_Import as SW
-
     SW_filename = Misc["SW_filename"]
 
     # Initialize APDL Command for PyMAPDL
     SWcoor = SW.import_SW(os.path.join("IGS",SW_filename))
     ap = []
-    
-    # Import variables
-    d0 = var["d0"]
-    t0 = var["t0"]
-    d1 = var["d1"]
-    t1 = var["t1"]
 
     # Only use Rad if selected in main
-    rad = var.get("rad",None)
+    rad = var["rad"]["value"] if "rad" in var and var["rad"].get("active", True) else None
 
     # Convert to Radii
-    R0 = d0/2 - t0       # Column Inner Radius [mm]
-    R1 = d0/2            # Column Outer Radius [mm]
-    R2 = d1/2 - t1       # Brace Inner Radius  [mm]
-    R3 = d1/2            # Brace Outer Radius  [mm]
-
-    R0 = round(R0,4)
-    R1 = round(R1,4)
-    R2 = round(R2,4)
-    R3 = round(R3,4)
-
-    # Import Misc
-    esize     = Misc["esize"]
-    Hor_Force = Misc["Hor_Force"]
-    Ver_Force = Misc["Ver_Force"]
-    f_y       = Misc["f_y"]
-    E_mod     = Misc["E_mod"]
-    W_Force   = Misc["W_Force"]
-
+    R0 = round(var["d0"]["value"]/2 - var["t0"]["value"], 4)  # Column Inner Radius [mm]
+    R1 = round(var["d0"]["value"]/2, 4)                       # Column Outer Radius [mm]
+    R2 = round(var["d1"]["value"]/2 - var["t1"]["value"], 4)  # Brace Inner Radius  [mm]
+    R3 = round(var["d1"]["value"]/2, 4)                       # Brace Outer Radius  [mm]
 
     # Change Radius Logic
     if rad is not None:
@@ -131,7 +111,7 @@ def InputFun(var, Misc):
 
     # MATERIAL
     ap.append("! MATERIAL DATA ")
-    ap.append(f"MP,EX,1,{E_mod} ! [MPa]")
+    ap.append(f"MP,EX,1,{Misc['E_mod']} ! [MPa]")
     ap.append("MP,PRXY,1,0.3  ")
     ap.append("MP,DENS,1,1.7850E-6 ! [kg/mm^3]")
 
@@ -214,7 +194,7 @@ def InputFun(var, Misc):
 
     # ELEMENT DEFINITION
     ap.append("! ELEMENT SIZE !  ")
-    ap.append(f"ESIZE,,{esize}   ")
+    ap.append(f"ESIZE,,{Misc['esize']}   ")
     
     # Function to mesh each group seperatly
     # Makes sure each section has the correct cross section
@@ -294,14 +274,14 @@ def InputFun(var, Misc):
 
     ap.append("NSEL,S,LOC,Y,NodeYMax")
     ap.append("NSEL,R,LOC,X,NodeXMax")
-    ap.append(f"F,ALL,FY,{Ver_Force}")
-    ap.append(f"F,ALL,FZ,{Hor_Force}")
+    ap.append(f"F,ALL,FY,{Misc['Ver_Force']}")
+    ap.append(f"F,ALL,FZ,{Misc['Hor_Force']}")
     ap.append("NSEL,ALL")
 
     # Force at x = 0 / Weight
     ap.append("NSEL,S,LOC,X,0")
     ap.append("*GET,w_force_nodes,NODE,0,COUNT")
-    ap.append(f"W_Force = {W_Force}/w_force_nodes")
+    ap.append(f"W_Force = {Misc['W_Force']}/w_force_nodes")
     ap.append("F,ALL,FY,W_Force")
 
     # Fixed displacement at bottom nodes
@@ -379,7 +359,7 @@ def InputFun(var, Misc):
     ap.append("*ENDIF  ")
     ap.append("alpha_m = 2 ! Assumed for now  ")
     ap.append("imp_ang = 1/200 * alpha_h * alpha_m  ")
-    ap.append(f"FORCE_IMP = {Ver_Force}*imp_ang  ")
+    ap.append(f"FORCE_IMP = {Misc['Ver_Force']}*imp_ang  ")
 
     #ap.append("ALLSEL,ALL   FDELE,ALL,ALL   DDELE,ALL,ALL  ")
 
@@ -409,14 +389,14 @@ def InputFun(var, Misc):
 
     ap.append("NSEL,S,LOC,Y,NodeYMax")
     ap.append("NSEL,R,LOC,X,NodeXMax")
-    ap.append(f"F,ALL,FY,{Ver_Force}")
-    ap.append(f"F,ALL,FX,{Hor_Force}")
+    ap.append(f"F,ALL,FY,{Misc['Ver_Force']}")
+    ap.append(f"F,ALL,FX,{Misc['Hor_Force']}")
     ap.append("NSEL,ALL")
 
     # Force at x = 0 / Weight
     ap.append("NSEL,S,LOC,X,0")
     ap.append("*GET,w_force_nodes,NODE,0,COUNT")
-    ap.append(f"W_Force = {W_Force}/w_force_nodes")
+    ap.append(f"W_Force = {Misc['W_Force']}/w_force_nodes")
     ap.append("FORCE_IMP_2 = FORCE_IMP/w_force_nodes")
     ap.append("F,ALL,FY,W_Force")
     ap.append("F,ALL,FX,Force_IMP_2")
