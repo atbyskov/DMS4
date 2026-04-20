@@ -28,7 +28,7 @@ import time
 # Import Functions
 from APDL_Input import InputFun
 
-def RunAPDL(mapdl,var,Misc):
+def RunAPDL(mapdl,var,Misc,opti_settings):
     # Start timer for APDL run
     ans_time_tic = time.time()
    
@@ -45,7 +45,7 @@ def RunAPDL(mapdl,var,Misc):
     mapdl.clear()
 
     # Create input file for Eigenvalue Analysis
-    apdl_cmds = InputFun(var_dict,Misc)
+    apdl_cmds = InputFun(var_dict,Misc,opti_settings)
 
     with mapdl.non_interactive:
         for cmd in apdl_cmds:
@@ -62,17 +62,12 @@ def RunAPDL(mapdl,var,Misc):
     # Retrieve first positive eigenvalue
     alpha_crit = next(v for v in eigenvalues if v > 0) 
 
-    # Print Information
-    print(f"Analysis Complete\n -> Eigenvalue 1: {alpha_crit:.2f}")
-
     # Open and Read Mass
     with open("Ansout/Mass_Assembly.txt","r") as f:
         Mass = [float(line.strip()) for line in f if line.strip()]
 
     # Stop timer for APDL run
     ans_time_toc = time.time()
-
-    print(f"Sim time: {ans_time_toc-ans_time_tic:.2f} s")
 
     # Return Mass as float value
     return sum(Mass)

@@ -25,7 +25,7 @@
 import os
 import SW_Import as SW
 
-def InputFun(var, Misc):
+def InputFun(var,Misc,opti_settings):
     SW_filename = Misc["SW_filename"]
 
     # Initialize APDL Command for PyMAPDL
@@ -35,11 +35,25 @@ def InputFun(var, Misc):
     # Only use Rad if selected in main
     rad = var["rad"]["value"] if "rad" in var and var["rad"].get("active", True) else None
 
+    n = opti_settings["n_mast_segments"]
+    mast_height = opti_settings["mast_segment_height"]
+    brace_start = n + 1
+    top_sectype = 99
+
     # Convert to Radii
-    R0 = round(var["d0"]["value"]/2 - var["t0"]["value"], 4)  # Column Inner Radius [mm]
-    R1 = round(var["d0"]["value"]/2, 4)                       # Column Outer Radius [mm]
-    R2 = round(var["d1"]["value"]/2 - var["t1"]["value"], 4)  # Brace Inner Radius  [mm]
-    R3 = round(var["d1"]["value"]/2, 4)                       # Brace Outer Radius  [mm]
+    if opti_settings.get("multi_size_columns", True):
+        R0_list = [round(var[f"d0_{i}"]["value"]/2 - var[f"t0_{i}"]["value"], 4) for i in range(1, n+1)]
+        R1_list = [round(var[f"d0_{i}"]["value"]/2, 4) for i in range(1, n+1)]
+    else:
+        R0 = round(var["d0"]["value"]/2 - var["t0"]["value"], 4)
+        R1 = round(var["d0"]["value"]/2, 4)
+
+    if opti_settings.get("multi_size_braces", True):
+        R2_list = [round(var[f"d1_{i}"]["value"]/2 - var[f"t1_{i}"]["value"], 4) for i in range(1, n+1)]
+        R3_list = [round(var[f"d1_{i}"]["value"]/2, 4) for i in range(1, n+1)]
+    else:
+        R2 = round(var["d1"]["value"]/2 - var["t1"]["value"], 4)
+        R3 = round(var["d1"]["value"]/2, 4)
 
     # Change Radius Logic
     if rad is not None:
@@ -97,16 +111,26 @@ def InputFun(var, Misc):
     ap.append("! Static Structural Analysis !  ")
     ap.append("/PREP7  ")
     ap.append("ET,1,BEAM189 ! Use BEAM189 Elements    ")
-    # CROSS SECTION
+    ## CROSS SECTION
     ap.append("! CROSS SECTION ! ")
-    ap.append("! Corner Type (SECTYPE = 1)  ")
-    ap.append("SECTYPE,1,BEAM,CTUBE  ")
-    ap.append(f"SECDATA,{R0},{R1},8  ")
-    ap.append("! Brace Section Type (SECTYPE = 2)  ")
-    ap.append("SECTYPE,2,BEAM,CTUBE  ")
-    ap.append(f"SECDATA,{R2},{R3},8    ")
-    ap.append("! Top Section Type (SECTYPE= 3 )  ")
-    ap.append("SECTYPE,3,BEAM,CTUBE  ")
+    if opti_settings.get("multi_size_columns", True):
+        for i in range(1, n+1):
+            ap.append(f"SECTYPE,{i},BEAM,CTUBE  ")
+            ap.append(f"SECDATA,{R0_list[i-1]},{R1_list[i-1]},8  ")
+    else:
+        ap.append("SECTYPE,1,BEAM,CTUBE  ")
+        ap.append(f"SECDATA,{R0},{R1},8  ")
+    
+    if opti_settings.get("multi_size_braces", True):
+        for i in range(1, n+1):
+            secnum = brace_start + i - 1
+            ap.append(f"SECTYPE,{secnum},BEAM,CTUBE  ")
+            ap.append(f"SECDATA,{R2_list[i-1]},{R3_list[i-1]},8  ")
+    else:
+        ap.append(f"SECTYPE,{brace_start},BEAM,CTUBE  ")
+        ap.append(f"SECDATA,{R2},{R3},8  ")
+    
+    ap.append(f"SECTYPE,{top_sectype},BEAM,CTUBE  ")
     ap.append("SECDATA,35.05,38.05,8  ")
 
     # MATERIAL
@@ -126,8 +150,15 @@ def InputFun(var, Misc):
     # Initialize values used later        
     key_id = 1
     line_id = 1
-    corner_lines = []
-    brace_lines = []
+    if opti_settings.get("multi_size_columns", True):
+        corner_lines = [[] for _ in range(n)]
+    else:
+        corner_lines = []
+    if opti_settings.get("multi_size_braces", True):
+        brace_lines = [[] for _ in range(n)]
+    else:
+        brace_lines = []
+    Top_lines = []
     corner_id = 1
     brace_id = 1
     Top_lines = []        
@@ -176,12 +207,22 @@ def InputFun(var, Misc):
         else:
             # Not a top beam → classify as corner or brace
             if group == "corner":
-                corner_lines.append(line_id)
+                if opti_settings.get("multi_size_columns", True):
+                    segment = int(min(y1, y2) // mast_height) + 1
+                    segment = min(max(segment, 1), n)
+                    corner_lines[segment-1].append(line_id)
+                else:
+                    corner_lines.append(line_id)
                 ap.append(f"CM,COLUMN_{corner_id},LINE ")
                 corner_id += 1
                 CM_Column_dict += 1
             else:
-                brace_lines.append(line_id)
+                if opti_settings.get("multi_size_braces", True):
+                    segment = int(min(y1,y2) // mast_height) + 1
+                    segment = min(max(segment, 1), n)
+                    brace_lines[segment-1].append(line_id)
+                else:
+                    brace_lines.append(line_id)
                 ap.append(f"CM,BRACE_{brace_id},LINE ")
                 brace_id += 1
                 CM_Brace_dict += 1
@@ -216,9 +257,22 @@ def InputFun(var, Misc):
             
         
     # Run the function for Corner and Brace
-    group_mesh("Meshing CORNER Beams (SECNUM=1)",1, corner_lines)
-    group_mesh("Meshing BRACE Beams  (SECNUM=2)",2, brace_lines)
-    group_mesh("Meshing TOP Beam     (SECNUM=3)",3, Top_lines)
+    if opti_settings.get("multi_size_columns", True):
+        for i in range(n):
+            if corner_lines[i]:
+                group_mesh(f"Meshing CORNER Beams Segment {i+1} (SECNUM={i+1})", i+1, corner_lines[i])
+    else:
+        group_mesh("Meshing CORNER Beams (SECNUM=1)", 1, corner_lines)
+    
+    if opti_settings.get("multi_size_braces", True):
+        for i in range(n):
+            if brace_lines[i]:
+                secnum = brace_start + i
+                group_mesh(f"Meshing BRACE Beams Segment {i+1} (SECNUM={secnum})", secnum, brace_lines[i])
+    else:
+        group_mesh(f"Meshing BRACE Beams (SECNUM={brace_start})", brace_start, brace_lines)
+    
+    group_mesh(f"Meshing TOP Beam (SECNUM={top_sectype})", top_sectype, Top_lines)
 
     # Select all lines
     ap.append("LSEL,ALL ")
@@ -501,4 +555,3 @@ def InputFun(var, Misc):
 
 
 
-    

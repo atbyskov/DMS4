@@ -9,7 +9,7 @@ from opt_logger import OptimizationLogger
 from Post_Process import PostProcessor
 
 # Optimization Function
-def run_optimization(mapdl,var,Misc,Solver_Settings):
+def run_optimization(mapdl,opti_settings,var,Misc,Solver_Settings):
 
     # Set active variables
     active = [(name, data["bounds"]) for name, data in var.items() if data.get("active", True)]
@@ -18,7 +18,7 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
 
     # Print active variables
     print(f"{len(names)} Design Variables included: " +
-            ", ".join(f"x{i}={n}" for i,n in enumerate(names)))
+            ", ".join(f"x{i}={n}" for i,n in enumerate(names)), flush=True)
 
     # Set initial guess, bounds and ranges to np array
     x0 = np.array([var[name]["value"] for name, _ in active], dtype=float)
@@ -26,14 +26,14 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
     xl, xu = np.array(bounds).T
 
     # Step Options for each variable
-    fd_step_options = {
-        "d0": 0.01,
-        "t0": 0.01,
-        "d1": 0.01,
-        "t1": 0.01,
-        "rad": 2
-        }
-    fd_step = [fd_step_options[name] for name, _ in active]
+    #fd_step_options = {
+    #    "d0": 0.01,
+    #    "t0": 0.01,
+    #    "d1": 0.01,
+    #    "t1": 0.01,
+    #    "rad": 2
+    #    }
+    #fd_step = [fd_step_options[name] for name, _ in active]
 
     # Logger Options
     logger = OptimizationLogger(
@@ -41,7 +41,6 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
         bounds=bounds,
         method="PySLSQP",
         options={
-            "finite_diff_abs_step": fd_step,
             "acc": Solver_Settings["acc"],
             "maxiter": Solver_Settings["maxiter"],
         },
@@ -66,11 +65,11 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
         var_dict = dict(zip(names, x))
 
         # Run the Model
-        f = RunAPDL(mapdl, x, Misc)
+        f = RunAPDL(mapdl, x, Misc, opti_settings)
         logger.log_evaluation(x, f)
 
         # Initiate Post Processing
-        pp = PostProcessor(var_dict,Misc)
+        pp = PostProcessor(var_dict,Misc,opti_settings)
 
         # Call Utlization Ratios
         utils = [
@@ -85,9 +84,15 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
         col_brace = [(1-arr(c), 1-arr(b)) for c,b in utils]
 
         # Set up the constraints
+        # Ensure all thickness variables remain above the geometric minimum
+        thickness_constraints = [
+            v - Misc["eps_geom"]
+            for name, v in var_dict.items()
+            if name.startswith("t0") or name.startswith("t1")
+        ]
+        # Combine all inequality constraints for optimization
         constraints = [
-            arr(x[1] - Misc["eps_geom"]),
-            arr(x[3] - Misc["eps_geom"]),
+            *map(arr, thickness_constraints),
             *[v for pair in col_brace for v in pair],
             1 - arr(pp.Util_BS()),
             *map(arr, pp.Class_2()),
@@ -95,8 +100,6 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
         ]
         # Collect them together
         c = np.concatenate(constraints)
-        # Print length of constraints
-        print(f"Constraint vector length: {len(c)}")
 
         # Update design variables and constraints
         cache.update(x=x.copy(), f=float(f), c=c)
@@ -128,7 +131,6 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
         meq=0,                          # all constraints are inequalities
         xl=xl,
         xu=xu, 
-        finite_diff_abs_step=fd_step, 
         maxiter=Solver_Settings["maxiter"], 
         acc=Solver_Settings["acc"],     # Objective Function Tolerance
         iprint=2,                       # print iteration info

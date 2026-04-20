@@ -30,7 +30,10 @@ def _brace_span_mm(var, misc, tol=1e-3):
 
     # If a target radius is provided, move the column-connected points
     # radially in the x-z plane while keeping y unchanged
-    if (rad := var.get("rad")) is not None:
+    rad = var.get("rad")
+    if isinstance(rad, dict):
+        rad = rad.get("value")
+    if rad is not None:
         # Find vertical column footprints in the x-z plane
         col = {
             (x1, z1)
@@ -69,24 +72,93 @@ def _brace_span_mm(var, misc, tol=1e-3):
             return math.sqrt((x2 - x1)**2 + (y2 - y1)**2 + (z2 - z1)**2)
 class PostProcessor:
 
-    def __init__(self,var,Misc):
+    def __init__(self,var,Misc,opti_settings):
         # Store inputs
         self.var = var
         self.Misc = Misc
+        self.opti_settings = opti_settings
 
-        # Unpack variables
-        self.d0 = var["d0"]
-        self.t0 = var["t0"]
-        self.d1 = var["d1"]
-        self.t1 = var["t1"]
+        self.n = int(opti_settings.get("n_mast_segments"))
+        self.mast_height = float(opti_settings.get("mast_segment_height"))
+        self.multi_size_columns = bool(opti_settings.get("multi_size_columns"))
+        self.multi_size_braces = bool(opti_settings.get("multi_size_braces"))
         self.E_mod = Misc["E_mod"]
         self.f_y = Misc["f_y"]
         self.f_y_brace = Misc["f_y_brace"]
 
+        # Build per-segment section radii for columns and braces
+        self.column_R0, self.column_R1 = self._build_section_radii("d0", "t0", self.multi_size_columns)
+        self.brace_R2, self.brace_R3 = self._build_section_radii("d1", "t1", self.multi_size_braces)
 
+        # Build per-segment diameter/thickness data for class checks
+        self.column_d0_t0 = self._build_section_dimensions("d0", "t0", self.multi_size_columns)
+        self.brace_d1_t1 = self._build_section_dimensions("d1", "t1", self.multi_size_braces)
+
+        # Load nonlinear results and separate columns from braces
         self.df_nonlin = self.read_forces("Ansout/APDL_Nonlin_Internal.txt")
         self.df_col = self.df_nonlin[self.df_nonlin["Member"].str.startswith("ColMember")].copy()
         self.df_brace = self.df_nonlin[self.df_nonlin["Member"].str.startswith("BraceMember")].copy()
+
+        self._annotate_member_sections()
+
+    # Extract numeric value from the var dictionary, supporting nested dict shape
+    def _get_value(self, key):
+        value = self.var.get(key)
+        if isinstance(value, dict):
+            return float(value["value"])
+        return float(value)
+
+    # Build inner and outer radii for one or multiple section sizes
+    def _build_section_radii(self, d_key, t_key, multi_size):
+        if multi_size:
+            inner = []
+            outer = []
+            for i in range(1, self.n + 1):
+                d = self._get_value(f"{d_key}_{i}")
+                t = self._get_value(f"{t_key}_{i}")
+                outer.append(d / 2.0)
+                inner.append(d / 2.0 - t)
+            return inner, outer
+
+        d = self._get_value(d_key)
+        t = self._get_value(t_key)
+        return [d / 2.0 - t], [d / 2.0]
+
+    # Build diameter/thickness tuples for class checks and brace sizing
+    def _build_section_dimensions(self, d_key, t_key, multi_size):
+        if multi_size:
+            return [
+                (self._get_value(f"{d_key}_{i}"), self._get_value(f"{t_key}_{i}"))
+                for i in range(1, self.n + 1)
+            ]
+        return [(self._get_value(d_key), self._get_value(t_key))]
+
+    # Convert Y location to mast segment indices for section lookup
+    def _segment_series(self, y_series):
+        segments = np.ceil(y_series / self.mast_height).astype(int)
+        segments = np.maximum(segments, 1)
+        segments = np.minimum(segments, self.n)
+        return segments
+
+    # Assign section radii to each member row based on its segment position
+    def _annotate_member_sections(self):
+        if not self.df_col.empty:
+            self.df_col["segment"] = self._segment_series(self.df_col["Y_LOC"])
+            if len(self.column_R0) > 1:
+                self.df_col["R0"] = self.df_col["segment"].map(lambda s: self.column_R0[s - 1])
+                self.df_col["R1"] = self.df_col["segment"].map(lambda s: self.column_R1[s - 1])
+            else:
+                self.df_col["R0"] = self.column_R0[0]
+                self.df_col["R1"] = self.column_R1[0]
+
+        if not self.df_brace.empty:
+            self.df_brace["segment"] = self._segment_series(self.df_brace["Y_LOC"])
+            if len(self.brace_R2) > 1:
+                self.df_brace["R2"] = self.df_brace["segment"].map(lambda s: self.brace_R2[s - 1])
+                self.df_brace["R3"] = self.df_brace["segment"].map(lambda s: self.brace_R3[s - 1])
+            else:
+                self.df_brace["R2"] = self.brace_R2[0]
+                self.df_brace["R3"] = self.brace_R3[0]
 
     # Function to read and parse forces 
     # NOTE: I have used Copilot for most of this function, so understanding is low ...
@@ -161,220 +233,104 @@ class PostProcessor:
     
     # Local Buckling  [Timeshenko p. 458]
     def Util_LB(self):
-
-        # Convert to Radii
-        R0 = self.d0/2 - self.t0       # Column Inner Radius [mm]
-        R1 = self.d0/2            # Column Outer Radius [mm]
-        R2 = self.d1/2 - self.t1       # Brace Inner Radius  [mm]
-        R3 = self.d1/2            # Brace Outer Radius  [mm]
-
         # Import E_mod 
         E_mod = self.E_mod
 
         # Poissons Ratio
         v = 0.3
 
-        # Initialize np.zeros
-        Util_LB_col = np.zeros(len(self.df_col))
-        Util_LB_brace = np.zeros(len(self.df_brace))
-        
-
-        def LocalBucklingFun(df_member, Ro, Ri):
+        def LocalBucklingFun(df_member, Ro_col, Ri_col):
             df = df_member.copy()
-
-            P_cr = (2 * math.pi * E_mod * (Ro - Ri)**2) / math.sqrt(3 * (1 - v**2))
-
+            P_cr = (2 * math.pi * E_mod * (df[Ro_col] - df[Ri_col])**2) / math.sqrt(3 * (1 - v**2))
             N_raw = df["NF"].to_numpy(dtype=float)
             N_comp = np.maximum(-N_raw, 0.0)   # only compression counts
+            return pd.Series(N_comp / P_cr, index=df.index, name="Util_LB")
 
-            util_local = N_comp / P_cr
-
-            return pd.Series(util_local, index=df.index, name="Util_LB")
-                
-        Util_LB_col = LocalBucklingFun(self.df_col,R1,R0)
-        Util_LB_brace = LocalBucklingFun(self.df_brace,R3,R2)
+        Util_LB_col = LocalBucklingFun(self.df_col, "R1", "R0")
+        Util_LB_brace = LocalBucklingFun(self.df_brace, "R3", "R2")
 
         return Util_LB_col, Util_LB_brace
 
     # Normal Force [6.2.4]                
     def Util_NF(self):
 
-        # Initialize
-        Util_NF = np.zeros(2)
-
-
-        # Convert to Radii
-        R0 = self.d0/2 - self.t0       # Column Inner Radius [mm]
-        R1 = self.d0/2            # Column Outer Radius [mm]
-        R2 = self.d1/2 - self.t1       # Brace Inner Radius  [mm]
-        R3 = self.d1/2            # Brace Outer Radius  [mm]
-
-        # Import E-modulus
+        # Import f_y
         f_y = self.f_y
         f_y_brace = self.f_y_brace
 
-        # Function to calculate Util
-        def NormalForceFun(df_member,Ro,Ri,f_y):
+        def NormalForceFun(df_member, Ro_col, Ri_col, f_y):
+            A = np.pi * ((df_member[Ro_col]**2) - (df_member[Ri_col]**2))
+            df_member["Util_NF"] = df_member["NF"].abs() / (A * f_y)
+            return df_member["Util_NF"]
 
-
-            # Area
-            A = np.pi * ((Ro**2) - (Ri**2)) 
-
-            # Design Resistance [6.2.4 (6.10)] 
-
-            N_Rd = A*f_y 
-
-
-            # Compression/Tension Utilization (1993-1-1 [6.2.3] and [6.2.4])
-            df_member["Util_NF"] = df_member["NF"].abs() / N_Rd
-
-            # Utilization Ratio [1993-1-1 [6.2.4] -  p. 49 (6.9)]
-            # This takes Utilization Ratio of each member
-            Util_NF = df_member["Util_NF"]
-
-            # Return Utilization Ratio
-            return Util_NF
-
-        Util_NF_col = NormalForceFun(self.df_col,R1,R0,f_y) # Column
-        Util_NF_brace = NormalForceFun(self.df_brace,R3,R2,f_y_brace) # Brace
+        Util_NF_col = NormalForceFun(self.df_col, "R1", "R0", f_y) # Column
+        Util_NF_brace = NormalForceFun(self.df_brace, "R3", "R2", f_y_brace) # Brace
         
         return Util_NF_col, Util_NF_brace
 
     # Shear Force [6.2.6]
     def Util_S(self):
-        
-        # Initialize
-        Util_S = np.zeros(2)
-
-        # Convert to Radii
-        R0 = self.d0/2 - self.t0       # Column Inner Radius [mm]
-        R1 = self.d0/2            # Column Outer Radius [mm]
-        R2 = self.d1/2 - self.t1       # Brace Inner Radius  [mm]
-        R3 = self.d1/2            # Brace Outer Radius  [mm]      
 
         # Import Misc
         f_y = self.f_y
         f_y_brace = self.f_y_brace
 
-        # Function        
-        def shearFun(df_member,Ro,Ri,f_y):
-
-            A = np.pi * ((Ro**2) - (Ri**2)) 
-            
-            # Av Area [6.2.6 (3) with option (g)]
-            Av = 2/math.pi * A 
-
-            # Design Plastic Shear Resistance [6.2.6 (6.18)]
-            V_cRd = Av*(f_y/math.sqrt(3))
-
-            # Utilization Ratio [6.2.6 (6.17)]
-            # We have two directions (y,z), so we take whatever value in each element, that is highest
+        def shearFun(df_member, Ro_col, Ri_col, f_y):
+            A = np.pi * ((df_member[Ro_col]**2) - (df_member[Ri_col]**2))
+            Av = 2/math.pi * A
+            V_cRd = Av * (f_y / math.sqrt(3))
             df_member["Util_S"] = df_member[["Vy","Vz"]].abs().max(axis=1) / V_cRd
+            return df_member["Util_S"]
 
-            # Take max Utilization Ratio
-            Util_S = df_member["Util_S"]
-
-            return Util_S
-        
-        Util_S_col = shearFun(self.df_col,R1,R0,f_y) # Column
-        Util_S_brace = shearFun(self.df_brace,R3,R2,f_y_brace) # Brace
-
+        Util_S_col = shearFun(self.df_col, "R1", "R0", f_y) # Column
+        Util_S_brace = shearFun(self.df_brace, "R3", "R2", f_y_brace) # Brace
 
         return Util_S_col, Util_S_brace
 
     # Torsion [6.2.7]
     def Util_T(self):
 
-        # Initialize Util_T
-        Util_T_col = np.zeros(len(self.df_col))
-        Util_T_brace = np.zeros(len(self.df_brace))
-
-
-        # Convert to Radii
-        R0 = self.d0/2 - self.t0       # Column Inner Radius [mm]
-        R1 = self.d0/2            # Column Outer Radius [mm]
-        R2 = self.d1/2 - self.t1       # Brace Inner Radius  [mm]
-        R3 = self.d1/2            # Brace Outer Radius  [mm]
-
         # Import Misc
         f_y = self.f_y
         f_y_brace = self.f_y_brace
 
-        # Function to handle col and brace
-        
-        def torsionFun(df_member,Ro,Ri,f_y):
-
-            D0 = Ro*2 # Outer Diameter
-            Di = Ri*2 #Inner Diameter
-
-            # Torsion Design Resistance [6.2.7 (6.23)]
-            T_Rd = (math.pi/16 * (D0**4 - Di**4)/D0)*f_y/math.sqrt(3)
-
-            # Torsion Check [6.2.7 (6.23)]
+        def torsionFun(df_member, Ro_col, Ri_col, f_y):
+            D0 = df_member[Ro_col] * 2
+            Di = df_member[Ri_col] * 2
+            T_Rd = (math.pi/16 * (D0**4 - Di**4) / D0) * f_y / math.sqrt(3)
             df_member["Util_T"] = df_member["T"].abs() / T_Rd
-  
-            # Utilization Ratio
-            Util_T = df_member["Util_T"]
+            return df_member["Util_T"]
 
-            # Return Utilization Ratio
-            return Util_T
-
-        Util_T_col = torsionFun(self.df_col,R1,R0,f_y) # Column
-        Util_T_brace = torsionFun(self.df_brace,R3,R2,f_y_brace) # Brace
+        Util_T_col = torsionFun(self.df_col, "R1", "R0", f_y) # Column
+        Util_T_brace = torsionFun(self.df_brace, "R3", "R2", f_y_brace) # Brace
 
         return Util_T_col, Util_T_brace
 
     # Bending, Normal and Shear [6.2.9]
     def Util_BNS(self):
 
-        # Initialize Util_BNS
-        Util_BNS_col = np.zeros(len(self.df_col))
-        Util_BNS_brace = np.zeros(len(self.df_brace))
-
-        # Convert to Radii
-        R0 = self.d0/2 - self.t0       # Column Inner Radius [mm]
-        R1 = self.d0/2            # Column Outer Radius [mm]
-        R2 = self.d1/2 - self.t1       # Brace Inner Radius  [mm]
-        R3 = self.d1/2            # Brace Outer Radius  [mm]]
-
         # Import f_y
         f_y = self.f_y
         f_y_brace = self.f_y_brace
 
-        def bnsFun(df_member,Ro,Ri,f_y):
-        
-            D0 = Ro*2 # Outer Diameter
-            Di = Ri*2 # Inner Diameter
-            t = (D0-Di)/2   # Thickness
-
-            # Area
-            A = np.pi * ((Ro**2) - (Ri**2)) 
-            Aw = (A-2*D0*t)/A
-            Aw = np.clip(Aw,0,0.5)
-
-            # Design Moment Resistance
-            M_Rd = (D0**3 - Di**3)/6 * f_y
-
-            # Design Normal Force Resistanc
+        def bnsFun(df_member, Ro_col, Ri_col, f_y):
+            D0 = df_member[Ro_col] * 2
+            Di = df_member[Ri_col] * 2
+            t = (D0 - Di) / 2
+            A = np.pi * ((df_member[Ro_col]**2) - (df_member[Ri_col]**2))
+            Aw = (A - 2 * D0 * t) / A
+            Aw = np.clip(Aw, 0, 0.5)
+            M_Rd = (D0**3 - Di**3) / 6 * f_y
             N_Rd = A * f_y
-  
-            # Forces (Here read as abs values)
-            N = df_member["NF"].abs() 
+            N = df_member["NF"].abs()
             My = df_member["My"].abs()
             Mz = df_member["Mz"].abs()
-
-            # Fraction to be used in Utilization Ratio
             red_col = (1 - (N / N_Rd)**1.7)
-
-            # Utilization Ratio
             df_member["Util_BNS"] = (My / (M_Rd * red_col))**2 + (Mz / (M_Rd * red_col))**2
+            return df_member["Util_BNS"]
 
-            Util_BNS = df_member["Util_BNS"]
-
-            return Util_BNS
-        
-        Util_BNS_col = bnsFun(self.df_col,R1,R0,f_y) # Column
-        Util_BNS_brace = bnsFun(self.df_brace,R3,R2,f_y_brace) # Brace
+        Util_BNS_col = bnsFun(self.df_col, "R1", "R0", f_y) # Column
+        Util_BNS_brace = bnsFun(self.df_brace, "R3", "R2", f_y_brace) # Brace
 
         return Util_BNS_col, Util_BNS_brace
 
@@ -386,63 +342,36 @@ class PostProcessor:
             eigenvalues = [float(line.strip()) for line in f if line.strip()]
         a_cr = next(v for v in eigenvalues if v > 0)
 
-        # Utilize Util_IN
-        Util_BR_col = np.zeros(len(self.df_col))
-        Util_BR_brace = np.zeros(len(self.df_brace))
-
-        # Convert to Radii
-        R0 = self.d0/2 - self.t0       # Column Inner Radius [mm]
-        R1 = self.d0/2            # Column Outer Radius [mm]
-        R2 = self.d1/2 - self.t1       # Brace Inner Radius  [mm]
-        R3 = self.d1/2            # Brace Outer Radius  [mm]
-
         # Import Misc
         f_y = self.f_y
         f_y_brace = self.f_y_brace
 
-        # Function to handle columns and brace
-        def bucklingResFun(df_member, Ro, Ri, f_y):
+        def bucklingResFun(df_member, Ro_col, Ri_col, f_y):
             df = df_member.copy()
             util = np.zeros(len(df), dtype=float)
-
-            A = np.pi * (Ro**2 - Ri**2)
-
+            A = np.pi * (df[Ro_col]**2 - df[Ri_col]**2)
             N_raw = df["NF"].to_numpy(dtype=float)
             N_comp = np.maximum(-N_raw, 0.0)
-
             active = N_comp > 0.0
 
             if np.any(active):
                 a_imp = 0.49
                 N_cr = a_cr * N_comp[active]
-
-                slen = np.sqrt((A * f_y) / N_cr)
+                slen = np.sqrt((A[active] * f_y) / N_cr)
                 Phi = 0.5 * (1 + a_imp * (slen - 0.2) + slen**2)
                 Chi = 1.0 / (Phi + np.sqrt(Phi**2 - slen**2))
-                N_bRd = Chi * A * f_y
-
+                N_bRd = Chi * A[active] * f_y
                 util[active] = N_comp[active] / N_bRd
 
             return pd.Series(util, index=df.index, name="Util_BR")
         
-        Util_BR_col = bucklingResFun(self.df_col,R1,R0,f_y) # Column
-        Util_BR_brace = bucklingResFun(self.df_brace,R3,R2,f_y_brace) # Brace
+        Util_BR_col = bucklingResFun(self.df_col, "R1", "R0", f_y) # Column
+        Util_BR_brace = bucklingResFun(self.df_brace, "R3", "R2", f_y_brace) # Brace
 
         return Util_BR_col, Util_BR_brace
 
     # Interaction Force [6.3.3]
     def Util_IN(self):
-
-        # Initialize Util_IN
-        Util_IN_col = np.zeros(len(self.df_col))
-        Util_IN_brace = np.zeros(len(self.df_brace))
-
-
-        # Convert to Radii
-        R0 = self.d0/2 - self.t0       # Column Inner Radius [mm]
-        R1 = self.d0/2            # Column Outer Radius [mm]
-        R2 = self.d1/2 - self.t1       # Brace Inner Radius  [mm]
-        R3 = self.d1/2            # Brace Outer Radius  [mm]
 
         # Imperfection Factor
         a_imp = 0.49
@@ -456,19 +385,16 @@ class PostProcessor:
             eigenvalues = [float(line.strip()) for line in f if line.strip()]
         a_cr = next(v for v in eigenvalues if v > 0)
 
-        def interaction(df_member, Ro, Ri, f_y):
+        def interaction(df_member, Ro_col, Ri_col, f_y):
             df = df_member.copy()
             util = np.zeros(len(df), dtype=float)
-
-            Do = 2 * Ro
-            Di = 2 * Ri
-            A = math.pi * (Ro**2 - Ri**2)
-
+            Do = 2 * df[Ro_col]
+            Di = 2 * df[Ri_col]
+            A = math.pi * (df[Ro_col]**2 - df[Ri_col]**2)
             N_raw = df["NF"].to_numpy(dtype=float)
             N_comp = np.maximum(-N_raw, 0.0)
             active = N_comp > 0.0
 
-            # Psi should come from the full member data, not filtered compression-only data
             M_start_y = df["My"].iloc[0]
             M_end_y = df["My"].iloc[-1]
             M1_y, M2_y = (M_start_y, M_end_y) if abs(M_start_y) >= abs(M_end_y) else (M_end_y, M_start_y)
@@ -481,26 +407,19 @@ class PostProcessor:
 
             if np.any(active):
                 N_cr = a_cr * N_comp[active]
-
-                slen = np.sqrt(A * f_y / N_cr)
+                slen = np.sqrt(A[active] * f_y / N_cr)
                 Phi = 0.5 * (1 + a_imp * (slen - 0.2) + slen**2)
                 Chi = 1.0 / (Phi + np.sqrt(Phi**2 - slen**2))
-
                 mu = (1 - N_comp[active] / N_cr) / (1 - Chi * N_comp[active] / N_cr)
-
                 Cmy = 0.79 + 0.21 * Psi_y + 0.36 * (Psi_y - 0.33) * N_comp[active] / N_cr
                 CmLT = 1.0
                 Cmz = 0.79 + 0.21 * Psi_z + 0.36 * (Psi_z - 0.33) * N_comp[active] / N_cr
-
                 k_yy = Cmy * CmLT * (mu / (1 - N_comp[active] / N_cr))
                 k_yz = Cmz * CmLT * (mu / (1 - N_comp[active] / N_cr))
-
-                N_Rk = A * f_y
-                M_Rk = (math.pi * (Do**4 - Di**4)) / (32 * Do) * f_y
-
+                N_Rk = A[active] * f_y
+                M_Rk = (math.pi * (Do[active]**4 - Di[active]**4)) / (32 * Do[active]) * f_y
                 My = df["My"].abs().to_numpy(dtype=float)
                 Mz = df["Mz"].abs().to_numpy(dtype=float)
-
                 util[active] = (
                     N_comp[active] / (Chi * N_Rk)
                     + k_yy * My[active] / M_Rk
@@ -509,86 +428,68 @@ class PostProcessor:
 
             return pd.Series(util, index=df.index, name="Util_IN")
 
-        Util_IN_col = interaction(self.df_col,R1,R0,f_y) # Column
-        Util_IN_brace = interaction(self.df_brace,R3,R2,f_y_brace) # Brace
+        Util_IN_col = interaction(self.df_col, "R1", "R0", f_y) # Column
+        Util_IN_brace = interaction(self.df_brace, "R3", "R2", f_y_brace) # Brace
 
         return Util_IN_col, Util_IN_brace
 
 
     def Util_BS(self): 
 
-        # Import variables
-        d0 = self.d0
-        t0 = self.t0
-        d1 = self.d1
-        t1 = self.t1
-
-        # Convert to Radii
-        R0 = d0/2 - t0       # Column Inner Radius [mm]
-        R1 = d0/2            # Column Outer Radius [mm]
-        R2 = d1/2 - t1       # Brace Inner Radius  [mm]
-        R3 = d1/2            # Brace Outer Radius  [mm]
+        # Determine most critical brace section for the check
+        if self.multi_size_braces:
+            d1, t1 = max(self.brace_d1_t1, key=lambda pair: pair[0] / pair[1] if pair[1] > 0 else -np.inf)
+        else:
+            d1, t1 = self.brace_d1_t1[0]
 
         # Import Misc
         f_y_brace = self.f_y_brace
 
         # Force and Length
         P = 200 * 9.82      # [N]
-        #L = 350             # [mm]
         L = _brace_span_mm(self.var, self.Misc)  # [mm] first horizontal brace (same for all)
-        print("Brace Length:", L)
-        # Max Moment
-        M = 1/8*P*L         # [Nmm]
+        M = 1/8 * P * L     # [Nmm]
 
-        # Moment of Intertia and Area
-        I = np.pi/64*(d1**4-(d1-2*t1)**4)   # [mm^4]
-        A = np.pi/4*(d1**2-(d1-2*t1)**2)    # [mm^2]
+        # Moment of Inertia and Area
+        I = np.pi / 64 * (d1**4 - (d1 - 2 * t1)**4)
+        A = np.pi / 4 * (d1**2 - (d1 - 2 * t1)**2)
 
         # Sectional Modulus
-        W = I/(d1/2)                        # [mm^3]
+        W = I / (d1 / 2)
+        sig_b = M / W
+        V = P / 2
+        tau_avg = V / A
+        tau_max = 2 * tau_avg
+        sig_vm = np.sqrt(sig_b**2 + 3 * tau_max**2)
 
-        # Bending Stress
-        sig_b = M/W                         # [N/mm^2]
-        
-        # Vertical Force
-        V = P/2                             # [N]
-
-        # Average and Max Shear Stress
-        tau_avg = V/A                       # [N/mm^2]
-        tau_max = 2*tau_avg                 # [N/mm^2]
-
-        # Von Misses
-        sig_vm = np.sqrt(sig_b**2+3*tau_max**2) # [N/mm^2]
-
-        # Write to Utilization Ratio
-        Util_BS_brace = sig_vm/f_y_brace                 # [Na] Brace
-        print("Util_BS_brace:", Util_BS_brace)
+        Util_BS_brace = sig_vm / f_y_brace
         return Util_BS_brace
 
     def Class_2(self): 
 
-
-
-        # For this function we use it for a constraint, such that we always have a Class 2 section. or below according to
+        # For this function we use it for a constraint, such that we always have a Class 2 section or below according to
         # Eurocode 3 Section Table 5.2
         # And for the optimization scheme we need to implement the form:
         # c(x) >= 0 "Inequality Constraint"
         # Therefore we get:
         # 70*235/f_y-dw/tw >=0
-        
-        d0 = self.d0
-        t0 = self.t0
-        d1 = self.d1
-        t1 = self.t1
 
-        #Yield Strength of Columns
         f_y = self.f_y
-        # Yield Strength of Braces
         f_y_brace = self.f_y_brace
 
+        if self.multi_size_columns:
+            col_ratio = max(d / t for d, t in self.column_d0_t0)
+        else:
+            col_ratio = self.column_d0_t0[0][0] / self.column_d0_t0[0][1]
+
+        if self.multi_size_braces:
+            brace_ratio = max(d / t for d, t in self.brace_d1_t1)
+        else:
+            brace_ratio = self.brace_d1_t1[0][0] / self.brace_d1_t1[0][1]
+
         Util_Class_2 = np.zeros(2)
-        Util_Class_2[0] = 70*(235/f_y)-(d0/t0) #column
-        Util_Class_2[1] = 70*(235/f_y_brace)-(d1/t1) #brace
+        Util_Class_2[0] = 70 * (235 / f_y) - col_ratio
+        Util_Class_2[1] = 70 * (235 / f_y_brace) - brace_ratio
         return Util_Class_2
 
 

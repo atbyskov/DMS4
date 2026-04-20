@@ -37,9 +37,11 @@ class OptimizationLogger:
         self._write_header(x0, bounds, method) # This line writes the header to the optimization log file.
 
     def log_line(self, text="", mode="a"): # Help Function to help write to the Optimization_Log folder files. It is instead of using print statements.
-        print(text)
+        import sys
+        print(text, flush=True)  # Flush stdout immediately
         with open(self.txt_path, mode, encoding="utf-8") as f:
             f.write(text + "\n")
+            f.flush()  # Ensure file is written to disk
 
     def _write_header(self, x0, bounds, method): # Function to write the initial Header in the Optimization_Log folder files., using the log_line function.
         self.log_line("=" * 80, mode="w")
