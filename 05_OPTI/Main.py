@@ -17,7 +17,7 @@ var = {
     "t0": {"value": 3.0,  "bounds": (1.0, 7.0),  "active": True},       # Column Thickness [mm]
     "d1": {"value": 26.9, "bounds": (10.0, 100.0), "active": True},     # Brace Diameter   [mm]
     "t1": {"value": 2.3,  "bounds": (0.1, 7.0),  "active": True},       # Brace Thickness  [mm]
-    "rad": {"value": 202.07, "bounds": (150.0, 350.0), "active": True}, # Radius Structure [mm]
+    "rad": {"value": 202.07, "bounds": (160.0, 350.0), "active": True}, # Radius Structure [mm]
 }
 
 # Static variables
@@ -36,8 +36,10 @@ Misc = {
 
 # Solver Settings
 Solver_Settings = {
-    "acc": 1e-3,       # Maximum objective function tolerance
-    "maxiter": 40,     # Maximum iterations
+    "acc": 1e-3,             # Maximum objective function tolerance
+    "maxiter": 40,           # Maximum iterations
+    "Aggregate": None,       # None, "P-norm", "P-norm-mean"  (Write exacly)
+    "p_value": 10,           # Value for "P-norm" and "P-norm-mean"
 }
 
 # Launch MAPDL

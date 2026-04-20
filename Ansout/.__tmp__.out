@@ -96,8 +96,8 @@
   BATCH MODE REQUESTED (-b)    = LIST
   INPUT FILE COPY MODE (-c)    = COPY
   SHARED MEMORY PARALLEL REQUESTED
-    SINGLE PROCESS WITH   6 THREADS REQUESTED
-    TOTAL OF     6 CORES REQUESTED
+    SINGLE PROCESS WITH   2 THREADS REQUESTED
+    TOTAL OF     2 CORES REQUESTED
   INPUT FILE NAME              = C:\Users\atbys\Desktop\DMS4 Local\DMS4\Ansout\.__tmp__.inp
   OUTPUT FILE NAME             = C:\Users\atbys\Desktop\DMS4 Local\DMS4\Ansout\.__tmp__.out
 
@@ -107,7 +107,7 @@
  PORT                              50052.0000                    SCALAR
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
- CURRENT JOBNAME=file  09:00:42  APR 20, 2026 CP=      0.125
+ CURRENT JOBNAME=file  11:39:10  APR 20, 2026 CP=      0.125
 
      1  FINISH 
 
@@ -209,7 +209,7 @@
  |                                                                             |
  |-----------------------------------------------------------------------------|
  |                                                                             |
- |        CP Time      (sec) =          0.359       Time  =  09:00:43          |
- |        Elapsed Time (sec) =          8.000       Date  =  04/20/2026        |
+ |        CP Time      (sec) =          0.359       Time  =  11:39:10          |
+ |        Elapsed Time (sec) =          5.000       Date  =  04/20/2026        |
  |                                                                             |
  *-----------------------------------------------------------------------------*
