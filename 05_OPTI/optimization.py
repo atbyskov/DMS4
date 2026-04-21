@@ -7,6 +7,7 @@ from pyslsqp import optimize as pyslsqp_optimize
 from MyAPDLCall import RunAPDL
 from opt_logger import OptimizationLogger
 from Post_Process import PostProcessor
+from aggregate import ConstraintAggregate
 
 # Optimization Function
 def run_optimization(mapdl,var,Misc,Solver_Settings):
@@ -82,19 +83,33 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
             pp.Util_BR(),
             pp.Util_IN(),
         ]
-        col_brace = [(1-arr(c), 1-arr(b)) for c,b in utils]
+        col_brace = [(arr(c), arr(b)) for c,b in utils]
 
         # Set up the constraints
-        constraints = [
-            arr(x[1] - Misc["eps_geom"]),
-            arr(x[3] - Misc["eps_geom"]),
-            *[v for pair in col_brace for v in pair],
-            1 - arr(pp.Util_BS()),
-            *map(arr, pp.Class_2()),
-            arr(pp.Eigenvalue_1())
-        ]
+        c_geom = np.concatenate([
+                 arr(x[1] - Misc["eps_geom"]),
+                 arr(x[3] - Misc["eps_geom"])])
+        
+        c_util = np.concatenate([
+                *[v for pair in col_brace for v in pair],
+                arr(pp.Util_BS())])
+        print("No Aggregate first value: ")
+        print(type(c_util))
+        
+        c_misc = np.concatenate([
+                *map(arr, pp.Class_2()),
+                arr(pp.Eigenvalue_1())])
+        
+        # Handle aggregation of constraints
+        agg = ConstraintAggregate(
+            method = Solver_Settings["Aggregate"],
+            p_value = Solver_Settings["p_value"]
+        )
+
+        c_util_agg = agg.agg_output(c_util)
+        
         # Collect them together
-        c = np.concatenate(constraints)
+        c = np.concatenate([c_geom,np.atleast_1d(c_util_agg),c_misc])
         # Print length of constraints
         print(f"Constraint vector length: {len(c)}")
 
@@ -144,7 +159,7 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
         ],
         save_filename=save_filename, 
         summary_filename=summary_filename, 
-        visualize=True, 
+        visualize=False, 
         visualize_vars=['objective', 'optimality', 'feasibility', 'x[0]', 'gradient[0]', 'constraints[0]', 'multipliers[0]', 'jacobian[0,0]'], 
     ) 
     # return the result, the text path, and the csv path

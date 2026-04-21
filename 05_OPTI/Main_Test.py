@@ -1,9 +1,5 @@
-## MAIN BEAM ELEMENT DOCUMENT ##
-# Main.py               -> Runs the entire script
-# SW_Import.py          -> Reads IGS File and converts it to Keypoints and Lines for APDL
-# MyAPDLCall.py         -> Inputs Swcoor, var and Misc and Runs the APDL Script
-#   APDL_Input.py       -> Writes the .txt input file for APDL
-# Post_Process.py       -> Reads internal forces from analysis and outputs Utilization Ratios
+# Main_Test.py
+# Script for Standalone Analysis Without Optimization
 
 
 # Import packages
@@ -11,6 +7,7 @@ import os
 import time 
 from ansys.mapdl.core import launch_mapdl
 import numpy as np
+import pandas as pd
 
 # Import Functions
 import SW_Import as SW
@@ -22,6 +19,7 @@ from MyAPDLCall import RunAPDL
 tic = time.time()
 
 # Collect variables
+x : float = 2
 
 var = {
     "d0": {"value": 76.1,    "active": True},        # Column Diameter  [mm]
@@ -78,37 +76,39 @@ utils = PostProcessor(var_dict, Misc)
 Util_list = utils.Util_list()  
 
 
-"""
 print("\n--- UTILIZATION REPORT ---")
+
+def extract_max(val):
+    if val is None:
+        return None
+
+    if isinstance(val, (pd.Series, pd.DataFrame)):
+        if len(val) == 0:
+            return None
+        return np.nanmax(val.to_numpy(dtype=float))
+
+    if np.isscalar(val):
+        return float(val)
+
+    return None
+
+
 for key, util in Util_list.items():
 
-    if util is None:
-        print(f"{key:10s}  Column:   N/A    Brace:   N/A")
-        continue
+    col_val = None
+    brc_val = None
 
-    
-    if isinstance(util, dict):
-        util = np.array(list(util.values()), dtype=float)
+    # Case 1: tuple → (Column, Brace)
+    if isinstance(util, tuple):
+        col_val = extract_max(util[0])
+        brc_val = extract_max(util[1])
 
-    elif hasattr(util, "to_numpy"):  # pandas Series/DataFrame
-        util = util.to_numpy(dtype=float).ravel()
-
+    # Case 2: single value (fx Util_BS)
     else:
-        util = np.atleast_1d(util)
+        brc_val = extract_max(util)
 
+    # Formatting
+    col_str = f"{col_val:8.3f}" if col_val is not None else "   N/A  "
+    brc_str = f"{brc_val:8.3f}" if brc_val is not None else "   N/A  "
 
-    # Special case for Brace-Step
-    if key == "Util_BS":
-        col_val = np.nan
-        brc_val = util[0] if len(util) > 0 and np.isfinite(util[0]) else np.nan
-
-    else:
-        col_val = util[0] if len(util) > 0 and np.isfinite(util[0]) else np.nan
-        brc_val = util[1] if len(util) > 1 and np.isfinite(util[1]) else np.nan
-
-    print(
-        f"{key:10s}  "
-        f"Column: {col_val:8.3f}  "
-        f"Brace: {brc_val:8.3f}"
-    )
-"""
+    print(f"{key:10s}  Column: {col_str}  Brace: {brc_str}")

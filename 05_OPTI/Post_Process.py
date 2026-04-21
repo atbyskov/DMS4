@@ -82,6 +82,8 @@ class PostProcessor:
         self.E_mod = Misc["E_mod"]
         self.f_y = Misc["f_y"]
         self.f_y_brace = Misc["f_y_brace"]
+        print(self.d0)
+        print(type(self.d0))
 
 
         self.df_nonlin = self.read_forces("Ansout/APDL_Nonlin_Internal.txt")
@@ -514,7 +516,7 @@ class PostProcessor:
 
         return Util_IN_col, Util_IN_brace
 
-
+    # Brace Step [Machine Design]
     def Util_BS(self): 
 
         # Import variables
@@ -590,7 +592,6 @@ class PostProcessor:
         Util_Class_2[0] = 70*(235/f_y)-(d0/t0) #column
         Util_Class_2[1] = 70*(235/f_y_brace)-(d1/t1) #brace
         return Util_Class_2
-
 
     def Eigenvalue_1(self):
 

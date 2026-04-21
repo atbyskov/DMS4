@@ -25,52 +25,75 @@
 import os
 import SW_Import as SW
 
+def r4(v):
+    return round(float(v), 4)
+
+
 def InputFun(var, Misc):
     SW_filename = Misc["SW_filename"]
 
     # Initialize APDL Command for PyMAPDL
     SWcoor = SW.import_SW(os.path.join("IGS",SW_filename))
     ap = []
+    
+    SWcoor = [
+        (r4(x1), r4(y1), r4(z1), r4(x2), r4(y2), r4(z2))
+        for x1, y1, z1, x2, y2, z2 in SWcoor
+]
+
 
     # Only use Rad if selected in main
     rad = var["rad"]["value"] if "rad" in var and var["rad"].get("active", True) else None
 
     # Convert to Radii
-    R0 = round(var["d0"]["value"]/2 - var["t0"]["value"], 4)  # Column Inner Radius [mm]
-    R1 = round(var["d0"]["value"]/2, 4)                       # Column Outer Radius [mm]
-    R2 = round(var["d1"]["value"]/2 - var["t1"]["value"], 4)  # Brace Inner Radius  [mm]
-    R3 = round(var["d1"]["value"]/2, 4)                       # Brace Outer Radius  [mm]
+    R0 = round(var["d0"]["value"]/2,4) - round(var["t0"]["value"],4)      # Column Inner Radius [mm]
+    R1 = round(var["d0"]["value"]/2,4)                           # Column Outer Radius [mm]
+    R2 = round(var["d1"]["value"]/2,4) - round(var["t1"]["value"],4)      # Brace Inner Radius  [mm]
+    R3 = round(var["d1"]["value"]/2,4)                           # Brace Outer Radius  [mm]
 
     # Change Radius Logic
     if rad is not None:
+        base = 202.07
         import math
 
-        # Check if Column Member 
-        def is_column(x1, z1, x2, z2): 
-            return (x1 == x2) and (z1 == z2)
-        
-        # Only take Column Members
-        col_loc = {(x1, z1) for x1, y1, z1, x2, y2, z2 in SWcoor if is_column(x1, z1, x2, z2)}
+        def is_column(x1, z1, x2, z2, tol=1e-3):
+            return abs(x1 - x2) < tol and abs(z1 - z2) < tol
 
         loc_to_new = {}
-        for (x, z) in col_loc: 
-            # r0 = \sqrt(x^2+z^2) 
-            r0 = math.hypot(x, z) 
-            # Scale radius 
-            s = rad / (r0+1e-5) 
-            # Apply scaling to x and z values 
-            loc_to_new[(x, z)] = (x * s, z * s)
-            
-        def adjust(x, y, z):
-            if (x,z) in loc_to_new:
-                nx,nz = loc_to_new[(x,z)]
-                return nx,y,nz
+
+        for x1, y1, z1, x2, y2, z2 in SWcoor:
+            if is_column(x1, z1, x2, z2):
+                x, z = x1, z1
+                #r0 = math.sqrt(x**2 + z**2)
+                #r0 = round(r0,6)
+
+                #if r0 < 30:
+                    #continue  # do NOT collapse node
+
+                s = round(rad / base,3)
+                #print(f"Scaling: {s}")
+                loc_to_new[(x, z)] = (x * s, z * s)
+                
+        #print(f"scaling: {s}")
+        #for (x_old, z_old), (x_new, z_new) in loc_to_new.items():
+        #    print(f"Old: ({x_old:.6f}, {z_old:.6f}) -> New: ({x_new:.6f}, {z_new:.6f})")
+
+
+        def adjust(x, y, z, tol=1e-3):
+            for (x0, z0), (nx, nz) in loc_to_new.items():
+                if abs(x - x0) < tol and abs(z - z0) < tol:
+                    return nx, y, nz
             return x, y, z
-        
+
         SWcoor = [
             (*adjust(x1, y1, z1), *adjust(x2, y2, z2))
             for x1, y1, z1, x2, y2, z2 in SWcoor
-    ]
+        ]
+        with open("coordinates_after.txt", "w", encoding="utf-8") as f:
+            f.write("# x1 y1 z1 x2 y2 z2 (after adjust)\n")
+            for x1, y1, z1, x2, y2, z2 in SWcoor:
+                f.write(f"{x1:.4f} {y1:.4f} {z1:.4f} {x2:.4f} {y2:.4f} {z2:.4f}\n")
+
 
     # Function to group lines
     def beam_class(p1, p2):
@@ -113,18 +136,18 @@ def InputFun(var, Misc):
     ap.append("! MATERIAL DATA ")
     ap.append(f"MP,EX,1,{Misc['E_mod']} ! [MPa]")
     ap.append("MP,PRXY,1,0.3  ")
-    ap.append("MP,DENS,1,1.7850E-6 ! [kg/mm^3]")
+    ap.append("MP,DENS,1,7.850E-6 ! [kg/mm^3]")
 
     # STIFF Material
     ap.append("! INF STIFNESS MATERIAL REGION ABOVE Y=4070 ")
     ap.append("MP,EX,2,2E+09 ")
     ap.append("MP,PRXY,2,0.3 ")
-    ap.append("MP,DENS,2,1.7850E-6 ")
+    ap.append("MP,DENS,2,7.850E-6 ")
 
     # NODES
     ap.append("! KEYPOINT AND LINES !  ")
     # Initialize values used later        
-    key_id = 1
+    key_id = 2
     line_id = 1
     corner_lines = []
     brace_lines = []
@@ -150,7 +173,7 @@ def InputFun(var, Misc):
         else:
             kp1 = key_id
             kp_dict[p1] = kp1
-            ap.append(f"K,{key_id}, {x1:.3f}, {y1:.3f}, {z1:.3f}  ")
+            ap.append(f"K,{key_id}, {x1:.6f}, {y1:.6f}, {z1:.6f}  ")
             key_id += 1
 
         # Second Point
@@ -160,7 +183,7 @@ def InputFun(var, Misc):
         else:
             kp2 = key_id
             kp_dict[p2] = kp2
-            ap.append(f"K,{kp2}, {x2:.3f}, {y2:.3f}, {z2:.3f} ")
+            ap.append(f"K,{kp2}, {x2:.6f}, {y2:.6f}, {z2:.6f} ")
             key_id += 1
 
         # Group the lines points
@@ -289,6 +312,8 @@ def InputFun(var, Misc):
     ap.append("EN,79999,_npilot")
     ap.append("TSHAPE")
     # Display Cross section
+    ap.append("ALLSEL")
+    ap.append("EPLOT")
     ap.append("/ESHAPE,1 ! Display Cross Section ")
         
     #Create and save .png of the mesh
