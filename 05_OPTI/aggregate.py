@@ -2,24 +2,27 @@
 # This script handles the aggregation of utilization constraints for optimization
 # ----------------------------------------------------
 # INPUT  <- Utilization Constraints as list (c_util_agg)
-# OUTPUT -> Aggregated utilization Constraints as list
+#        <- Method: is chosen in Main
+#        <- P-value: is chosen in Main
+# OUTPUT -> Aggregated Utilization Constraints 
 # ----------------------------------------------------
 import numpy as np
 
+# Define the class
 class ConstraintAggregate:
-    def __init__(self, method=None, p_value = None):
+    def __init__(self, method=None, p_value = None, rho_value = None):
         # Read Method
         self.method = method
-        print(method)
+        self.rho = rho_value
+
         # Read P value
         self.p = p_value
 
-        
-
-    
+    # Function for handling aggregation
     def agg_output(self,g):
+        # Relaxation parameter for P-norm methods (0<eps<1)
         eps = 0
-        
+        # Read constraints
         g = np.asarray(g, dtype = float)
 
         # No Aggregate Method 
@@ -39,10 +42,21 @@ class ConstraintAggregate:
             con_constraints = 1 - g - eps
             n0 = con_constraints.size
 
-            
             return (np.sum((con_constraints)**p) / n0)**(1 / p)
         
         if self.method == "KS":
+            # rho parameter (typically between 2 and 200)
+            rho = float(self.rho)
+            g = 1.0 - g - eps
+            g_max = np.max(g)
 
-            return "hey ho lets go"
+            return ((1/rho)*np.log(np.sum(np.exp(rho*g))))
+        
+        if self.method == "KS_shift":
+            # rho parameter (typically between 2 and 200)
+            rho = float(self.rho)
+            g = 1.0 - g - eps
+            g_max = np.max(g)
+
+            return (g_max + (1/rho)*np.log(np.sum(np.exp(rho * (g-g_max)))))
 

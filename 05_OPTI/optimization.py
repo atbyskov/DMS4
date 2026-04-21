@@ -102,7 +102,8 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
         # Handle aggregation of constraints
         agg = ConstraintAggregate(
             method = Solver_Settings["Aggregate"],
-            p_value = Solver_Settings["p_value"]
+            p_value = Solver_Settings["p_value"],
+            rho_value = Solver_Settings["rho_value"]
         )
 
         c_util_agg = agg.agg_output(c_util)
