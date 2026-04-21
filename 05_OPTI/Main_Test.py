@@ -20,11 +20,11 @@ tic = time.time()
 
 
 var = {
-    "d0": {"value": 76.1,    "active": True},        # Column Diameter  [mm]
-    "t0": {"value": 3.0,     "active": True},        # Column Thickness [mm]
-    "d1": {"value": 26.9,    "active": True},        # Brace Diameter   [mm]
-    "t1": {"value": 2.3,     "active": True},        # Brace Thickness  [mm]
-    "rad": {"value": 202, "active": True},       # Radius Structure [mm]
+    "d0": {"value": 49.4,    "active": True},        # Column Diameter  [mm]
+    "t0": {"value": 2.07,     "active": True},        # Column Thickness [mm]
+    "d1": {"value": 28.88,    "active": True},        # Brace Diameter   [mm]
+    "t1": {"value": 0.62,     "active": True},        # Brace Thickness  [mm]
+    "rad": {"value": 314.72, "active": True},       # Radius Structure [mm]
 }
 
 # Create Misc as dict
@@ -60,7 +60,7 @@ finally:
     mapdl.exit()
 
 
-print(f" Mass of Assembly: {f:.2f} kg")
+print(f" -> Mass of Assembly: {f:.2f} kg")
 
 
 # Pack specifically for compability

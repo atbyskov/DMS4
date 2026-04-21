@@ -563,7 +563,7 @@ class PostProcessor:
         # Write to Utilization Ratio
         Util_BS_brace = sig_vm/f_y_brace                 # [Na] Brace
         #print("Util_BS_brace:", Util_BS_brace)
-        return Util_BS_brace
+        return pd.Series([Util_BS_brace], name="Util_BS")
 
     def Class_2(self): 
 

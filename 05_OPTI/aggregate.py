@@ -14,18 +14,35 @@ class ConstraintAggregate:
         # Read P value
         self.p = p_value
 
+        
+
     
     def agg_output(self,g):
+        eps = 0
         
         g = np.asarray(g, dtype = float)
 
         # No Aggregate Method 
         if self.method is None:
-            print("Aggregate first value: ")
-            print(g)
             return 1.0 - g
         
         # P-norm method
         if self.method == "P-norm":
-            pass
+            p = float(self.p)
+            con_constraints = 1 - g - eps
+            
+            return (np.sum((con_constraints)**p))**(1 / p)
+        
+        # P-norm mean method
+        if self.method == "P-norm-mean":
+            p = float(self.p)
+            con_constraints = 1 - g - eps
+            n0 = con_constraints.size
+
+            
+            return (np.sum((con_constraints)**p) / n0)**(1 / p)
+        
+        if self.method == "KS":
+
+            return "hey ho lets go"
 

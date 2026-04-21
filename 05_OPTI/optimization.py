@@ -50,7 +50,7 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
     )
 
     # Internal cache so RunAPDL is only executed once per unique x
-    cache = {"x": None, "f": None, "c": None,}
+    cache = {"x": None, "f": None, "c": None, "util": None}
 
     # Helper
     def arr(v):
@@ -86,6 +86,7 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
         col_brace = [(arr(c), arr(b)) for c,b in utils]
 
         # Set up the constraints
+        # Can i only aggregate the utils or do we need to have them all
         c_geom = np.concatenate([
                  arr(x[1] - Misc["eps_geom"]),
                  arr(x[3] - Misc["eps_geom"])])
@@ -93,8 +94,6 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
         c_util = np.concatenate([
                 *[v for pair in col_brace for v in pair],
                 arr(pp.Util_BS())])
-        print("No Aggregate first value: ")
-        print(type(c_util))
         
         c_misc = np.concatenate([
                 *map(arr, pp.Class_2()),
@@ -113,8 +112,21 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
         # Print length of constraints
         print(f"Constraint vector length: {len(c)}")
 
+        
+        
+        util_report = {
+                "Util_LB": pp.Util_LB(),
+                "Util_NF": pp.Util_NF(),
+                "Util_S":  pp.Util_S(),
+                "Util_T":  pp.Util_T(),
+                "Util_BNS": pp.Util_BNS(),
+                "Util_BR": pp.Util_BR(),
+                "Util_IN": pp.Util_IN(),
+                "Util_BS": pp.Util_BS(),
+            }
+
         # Update design variables and constraints
-        cache.update(x=x.copy(), f=float(f), c=c)
+        cache.update(x=x.copy(), f=float(f), c=c, util = util_report)
 
         return f, c
     
@@ -130,6 +142,15 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
         _, c_val = evaluate_model(x) 
         return c_val 
 
+    
+    def iteration_callback(x):
+        logger.log_iteration(x)
+
+        util = cache.get("util", None)
+        if util is not None:
+            logger.log_utilization(util)
+
+
     # Create Folder
     os.makedirs(Misc["save_folder"], exist_ok=True) 
     save_filename = os.path.join(Misc["save_folder"], "pyslsqp_history.hdf5") # Save File
@@ -143,6 +164,7 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
         meq=0,                          # all constraints are inequalities
         xl=xl,
         xu=xu, 
+        callback=iteration_callback,
         finite_diff_abs_step=fd_step, 
         maxiter=Solver_Settings["maxiter"], 
         acc=Solver_Settings["acc"],     # Objective Function Tolerance

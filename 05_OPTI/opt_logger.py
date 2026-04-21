@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from collections.abc import Sequence
 
 import numpy as np
 
@@ -116,3 +117,37 @@ class OptimizationLogger:
         self.log_line("=" * 80) # ======= lines
         self.log_line("END OF LOG") 
         self.log_line("=" * 80) # ======= lines
+
+    
+    def _extract_max(self, val):
+        if val is None:
+            return None
+        arr = np.asarray(val, dtype=float)
+        if arr.size == 0:
+            return None
+        return np.nanmax(arr)
+
+
+    def log_utilization(self, util_dict):
+
+        for key, util in util_dict.items():
+
+            col_val = None
+            brc_val = None
+
+            # Column / Brace case
+            if isinstance(util, Sequence) and len(util) == 2:
+                col_val = self._extract_max(util[0])
+                brc_val = self._extract_max(util[1])
+
+            # Brace-only case (e.g. Util_BS)
+            else:
+                brc_val = self._extract_max(util)
+
+            col_str = f"{col_val:8.3f}" if col_val is not None else "   N/A  "
+            brc_str = f"{brc_val:8.3f}" if brc_val is not None else "   N/A  "
+
+            self.log_line(
+                f"{key:10s}  Column: {col_str}  Brace: {brc_str}"
+            )
+
