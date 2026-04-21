@@ -49,8 +49,12 @@ def InputFun(var,Misc,opti_settings):
         R1 = round(var["d0"]["value"]/2, 4)
 
     if opti_settings.get("multi_size_braces", True):
-        R2_list = [round(var[f"d1_{i}"]["value"]/2 - var[f"t1_{i}"]["value"], 4) for i in range(1, n+1)]
-        R3_list = [round(var[f"d1_{i}"]["value"]/2, 4) for i in range(1, n+1)]
+        # Horizontal braces
+        R2_horiz_list = [round(var[f"d1_h_{i}"]["value"]/2 - var[f"t1_h_{i}"]["value"], 4) for i in range(1, n+1)]
+        R3_horiz_list = [round(var[f"d1_h_{i}"]["value"]/2, 4) for i in range(1, n+1)]
+        # Cross braces
+        R2_cross_list = [round(var[f"d1_c_{i}"]["value"]/2 - var[f"t1_c_{i}"]["value"], 4) for i in range(1, n+1)]
+        R3_cross_list = [round(var[f"d1_c_{i}"]["value"]/2, 4) for i in range(1, n+1)]
     else:
         R2 = round(var["d1"]["value"]/2 - var["t1"]["value"], 4)
         R3 = round(var["d1"]["value"]/2, 4)
@@ -91,12 +95,18 @@ def InputFun(var,Misc,opti_settings):
         
         (x1, y1, z1) = p1
         (x2, y2, z2) = p2
+        
+        tol = 1e-3  # Tolerance for floating point comparison
 
         # Corner beam if x2 == x1 AND z2 == z1, i.e. these are unchanged. 
-        if x1 == x2 and z1 == z2:
+        if abs(x1 - x2) < tol and abs(z1 - z2) < tol:
             return "corner"
+        # Horizontal brace if y coordinates are the same
+        elif abs(y1 - y2) < tol:
+            return "horizontal"
+        # Cross brace if y coordinates differ
         else:
-            return "brace"
+            return "cross"
         
 
                         # SETUP
@@ -122,10 +132,16 @@ def InputFun(var,Misc,opti_settings):
         ap.append(f"SECDATA,{R0},{R1},8  ")
     
     if opti_settings.get("multi_size_braces", True):
+        # Horizontal braces
         for i in range(1, n+1):
-            secnum = brace_start + i - 1
+            secnum = brace_start + 2*(i-1)
             ap.append(f"SECTYPE,{secnum},BEAM,CTUBE  ")
-            ap.append(f"SECDATA,{R2_list[i-1]},{R3_list[i-1]},8  ")
+            ap.append(f"SECDATA,{R2_horiz_list[i-1]},{R3_horiz_list[i-1]},8  ")
+        # Cross braces
+        for i in range(1, n+1):
+            secnum = brace_start + 2*(i-1) + 1
+            ap.append(f"SECTYPE,{secnum},BEAM,CTUBE  ")
+            ap.append(f"SECDATA,{R2_cross_list[i-1]},{R3_cross_list[i-1]},8  ")
     else:
         ap.append(f"SECTYPE,{brace_start},BEAM,CTUBE  ")
         ap.append(f"SECDATA,{R2},{R3},8  ")
@@ -143,7 +159,7 @@ def InputFun(var,Misc,opti_settings):
     ap.append("! INF STIFNESS MATERIAL REGION ABOVE Y=4070 ")
     ap.append("MP,EX,2,2E+09 ")
     ap.append("MP,PRXY,2,0.3 ")
-    ap.append("MP,DENS,2,1.7850E-6 ")
+    ap.append("MP,DENS,2,7.850E-6 ")
 
     # NODES
     ap.append("! KEYPOINT AND LINES !  ")
@@ -155,12 +171,15 @@ def InputFun(var,Misc,opti_settings):
     else:
         corner_lines = []
     if opti_settings.get("multi_size_braces", True):
-        brace_lines = [[] for _ in range(n)]
+        horiz_lines = [[] for _ in range(n)]
+        cross_lines = [[] for _ in range(n)]
     else:
-        brace_lines = []
+        horiz_lines = []
+        cross_lines = []
     Top_lines = []
     corner_id = 1
-    brace_id = 1
+    horiz_id = 1
+    cross_id = 1
     Top_lines = []        
 
     kp_dict = {}
@@ -205,7 +224,7 @@ def InputFun(var,Misc,opti_settings):
             ap.append(f"CM,TOPMAT,LINE ")
 
         else:
-            # Not a top beam → classify as corner or brace
+            # Not a top beam → classify as corner, horizontal or cross brace
             if group == "corner":
                 if opti_settings.get("multi_size_columns", True):
                     segment = int(min(y1, y2) // mast_height) + 1
@@ -216,17 +235,28 @@ def InputFun(var,Misc,opti_settings):
                 ap.append(f"CM,COLUMN_{corner_id},LINE ")
                 corner_id += 1
                 CM_Column_dict += 1
-            else:
+            elif group == "horizontal":
                 if opti_settings.get("multi_size_braces", True):
-                    segment = int(min(y1,y2) // mast_height) + 1
+                    segment = int(min(y1, y2) // mast_height) + 1
                     segment = min(max(segment, 1), n)
-                    brace_lines[segment-1].append(line_id)
+                    horiz_lines[segment-1].append(line_id)
                 else:
-                    brace_lines.append(line_id)
-                ap.append(f"CM,BRACE_{brace_id},LINE ")
-                brace_id += 1
+                    horiz_lines.append(line_id)
+                ap.append(f"CM,HORIZ_{horiz_id},LINE ")
+                horiz_id += 1
                 CM_Brace_dict += 1
-        
+            else:  # cross
+                if opti_settings.get("multi_size_braces", True):
+                    segment = int(min(y1, y2) // mast_height) + 1
+                    segment = min(max(segment, 1), n)
+                    cross_lines[segment-1].append(line_id)
+                else:
+                    cross_lines.append(line_id)
+                ap.append(f"CM,CROSS_{cross_id},LINE ")
+                cross_id += 1
+                CM_Brace_dict += 1
+        print("Corner Lines")
+        print(corner_lines)
         # Reset
         ap.append("LSEL,ALL  ")   
 
@@ -256,6 +286,10 @@ def InputFun(var,Misc,opti_settings):
         ap.append("LMESH,ALL   ")
             
         
+    # Save brace counts
+    CM_dict = [CM_Column_dict, horiz_id - 1, cross_id - 1]  # Brace counts (horizontal, cross)
+            
+        
     # Run the function for Corner and Brace
     if opti_settings.get("multi_size_columns", True):
         for i in range(n):
@@ -266,11 +300,17 @@ def InputFun(var,Misc,opti_settings):
     
     if opti_settings.get("multi_size_braces", True):
         for i in range(n):
-            if brace_lines[i]:
-                secnum = brace_start + i
-                group_mesh(f"Meshing BRACE Beams Segment {i+1} (SECNUM={secnum})", secnum, brace_lines[i])
+            # Horizontal braces
+            if horiz_lines[i]:
+                secnum = brace_start + 2*i
+                group_mesh(f"Meshing HORIZ Beams Segment {i+1} (SECNUM={secnum})", secnum, horiz_lines[i])
+            # Cross braces
+            if cross_lines[i]:
+                secnum = brace_start + 2*i + 1
+                group_mesh(f"Meshing CROSS Beams Segment {i+1} (SECNUM={secnum})", secnum, cross_lines[i])
     else:
-        group_mesh(f"Meshing BRACE Beams (SECNUM={brace_start})", brace_start, brace_lines)
+        group_mesh(f"Meshing HORIZ Beams (SECNUM={brace_start})", brace_start, horiz_lines)
+        group_mesh(f"Meshing CROSS Beams (SECNUM={brace_start+1})", brace_start+1, cross_lines)
     
     group_mesh(f"Meshing TOP Beam (SECNUM={top_sectype})", top_sectype, Top_lines)
 
@@ -290,9 +330,53 @@ def InputFun(var,Misc,opti_settings):
     ap.append("EMODIF,ALL,MAT,2  ! modify selected elements to material 2 ")
     ap.append("ALLSEL,ALL  ")
 
+    # Select all nodes with x=0
+    ap.append("SELTOL,1.0E-6  ") # Important for node selection
+    ap.append("NSEL,S,LOC,X,0")
+    ap.append("NSEL,R,LOC,Z,0")
+    ap.append("NSEL,U,LOC,Y,4284,6000")
+    ap.append("*GET,SlaveNum,NODE,0,COUNT")
+
+    ap.append("*DIM,SlaveIDs,ARRAY,SlaveNum")
+    ap.append("*VGET,SlaveIDs(1),NODE,,NLIST") # Stores all node IDs
+
+    # Create Master / Independent Node 
+    #ap.append("N,99999,0,4.179140091E+03,0")
+    ap.append("N,99999,0,4182.1384,0 ")
+    ap.append("*SET,tid,11")
+    ap.append("*SET,cid,10")
+    ap.append("ET,cid,175")
+    ap.append("ET,tid,170")
+    ap.append("KEYO,tid,2,1")
+    ap.append("KEYO,tid,4,0")
+    ap.append("KEYO,cid,12,5")
+    ap.append("KEYO,cid,4,0")
+    ap.append("KEYO,cid,2,2")
+    ap.append("MAT,10")
+    ap.append("REAL,10")
+    ap.append("TYPE,10")
+
+    ap.append("*DO,ii,1,SlaveNum,1")
+    ap.append("    *SET,elemID,8999+ii")
+    ap.append("    *SET,nodeID,SlaveIDs(ii)")
+    ap.append("    EN,elemID,nodeID")
+    ap.append("*ENDDO")
+
+    # Pilot Node Options
+    ap.append("*SET,_npilot,99999")
+    ap.append("_npilot1=_npilot")
+    ap.append("TYPE,tid")
+    ap.append("MAT,cid")
+    ap.append("REAL,cid")
+    ap.append("TSHAPE,PILO")
+    ap.append("EN,79999,_npilot")
+    ap.append("TSHAPE")
+    # Display Cross section
+    ap.append("ALLSEL")
+
     
     # Display Cross section
-    ap.append("/ESHAPE,1 ! Display Cross Section ")
+    #ap.append("/ESHAPE,1 ! Display Cross Section ")
         
     #Create and save .png of the mesh
     ap.append("/SHOW,PNG,,0  ")
@@ -333,10 +417,8 @@ def InputFun(var,Misc,opti_settings):
     ap.append("NSEL,ALL")
 
     # Force at x = 0 / Weight
-    ap.append("NSEL,S,LOC,X,0")
-    ap.append("*GET,w_force_nodes,NODE,0,COUNT")
-    ap.append(f"W_Force = {Misc['W_Force']}/w_force_nodes")
-    ap.append("F,ALL,FY,W_Force")
+    ap.append("NSEL,S,NODE,,99999")
+    ap.append(f"F,ALL,FY,{Misc['W_Force']}")
 
     # Fixed displacement at bottom nodes
     ap.append("! Displacement !  ")
@@ -444,16 +526,13 @@ def InputFun(var,Misc,opti_settings):
     ap.append("NSEL,S,LOC,Y,NodeYMax")
     ap.append("NSEL,R,LOC,X,NodeXMax")
     ap.append(f"F,ALL,FY,{Misc['Ver_Force']}")
-    ap.append(f"F,ALL,FX,{Misc['Hor_Force']}")
+    ap.append(f"F,ALL,FZ,{Misc['Hor_Force']}")
     ap.append("NSEL,ALL")
 
     # Force at x = 0 / Weight
-    ap.append("NSEL,S,LOC,X,0")
-    ap.append("*GET,w_force_nodes,NODE,0,COUNT")
-    ap.append(f"W_Force = {Misc['W_Force']}/w_force_nodes")
-    ap.append("FORCE_IMP_2 = FORCE_IMP/w_force_nodes")
-    ap.append("F,ALL,FY,W_Force")
-    ap.append("F,ALL,FX,Force_IMP_2")
+    ap.append("NSEL,S,NODE,,99999")
+    ap.append(f"F,ALL,FY,{Misc['W_Force']}")
+    ap.append(f"F,ALL,FX,FORCE_IMP")
 
     # Fixed Displacement at Bottom Nodes
     ap.append("! Displacement !  ")
@@ -476,7 +555,8 @@ def InputFun(var,Misc,opti_settings):
     # ONLY SELECT BEAM189 ELEMENTS
     ap.append("*GET,E_COUNT,ELEM,0,COUNT    ") 
     ap.append(f"! Number of Columns: {CM_dict[0]}  ")
-    ap.append(f"! Number of Braces : {CM_dict[1]}    ")
+    ap.append(f"! Number of Horiz Braces : {CM_dict[1]}    ")
+    ap.append(f"! Number of Cross Braces : {CM_dict[2]}    ")
     # SET OUTPUT FILE
     ap.append("! Open file to write  ")
     ap.append("*CFOPEN, APDL_Nonlin_Internal,txt  ")
@@ -514,19 +594,53 @@ def InputFun(var,Misc,opti_settings):
     ap.append("       *ENDDO    ")
     ap.append("*ENDDO")
 
-    # LOOP OVER BRACES
-    ap.append("! Loop over Braces  ")
+    # LOOP OVER HORIZONTAL BRACES
+    ap.append("! Loop over Horizontal Braces  ")
     ap.append(f"*DO,ii,1,{CM_dict[1]},1  ")
-    ap.append("   CMSEL,S,BRACE_%ii%,LINE  ")
+    ap.append("   CMSEL,S,HORIZ_%ii%,LINE  ")
     ap.append("   ESLL,S  ")
     ap.append("   ESEL,R,ENAME,,189  ")
     # FORMAT
     ap.append("   *IF,ii,LT,10,THEN  ")
     ap.append("       *VWRITE,ii  ")
-    ap.append('       ("NS BraceMember_",F2.0)  ')
+    ap.append('       ("NS HorizMember_",F2.0)  ')
     ap.append("   *ELSE  ")
     ap.append("       *VWRITE,ii  ")
-    ap.append('       ("NS BraceMember_",F3.0)  ')
+    ap.append('       ("NS HorizMember_",F3.0)  ')
+    ap.append("   *ENDIF  ")
+    # RESULT 
+    ap.append("   *GET,nElem,ELEM,0,COUNT  ")
+    ap.append("   *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC'  ")
+    ap.append("   (A12,7A20)  ")
+    ap.append("   elem = 0  ")
+    ap.append("   *DO,jj,1,nElem,1  ")
+    ap.append("       ELEM = ELNEXT(ELEM)  ")
+    ap.append("       *GET,NF,ELEM,ELEM,SMISC,1  ")
+    ap.append("       *GET,MY,ELEM,ELEM,SMISC,2  ")
+    ap.append("       *GET,MZ,ELEM,ELEM,SMISC,3  ")
+    ap.append("       *GET,VY,ELEM,ELEM,SMISC,6  ")
+    ap.append("       *GET,VZ,ELEM,ELEM,SMISC,5  ")
+    ap.append("       *GET,TQ,ELEM,ELEM,SMISC,4  ")
+    ap.append("       NSLE  ")
+    ap.append("       *GET,Y_LOC,NODE,0,MNLOC,Y  ")
+    ap.append("       *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ,Y_LOC  ")
+    ap.append("       (F12.0,7E20.8)  ")
+    ap.append("   *ENDDO  ")
+    ap.append("*ENDDO  ")
+
+    # LOOP OVER CROSS BRACES
+    ap.append("! Loop over Cross Braces  ")
+    ap.append(f"*DO,ii,1,{CM_dict[2]},1  ")
+    ap.append("   CMSEL,S,CROSS_%ii%,LINE  ")
+    ap.append("   ESLL,S  ")
+    ap.append("   ESEL,R,ENAME,,189  ")
+    # FORMAT
+    ap.append("   *IF,ii,LT,10,THEN  ")
+    ap.append("       *VWRITE,ii  ")
+    ap.append('       ("NS CrossMember_",F2.0)  ')
+    ap.append("   *ELSE  ")
+    ap.append("       *VWRITE,ii  ")
+    ap.append('       ("NS CrossMember_",F3.0)  ')
     ap.append("   *ENDIF  ")
     # RESULT 
     ap.append("   *GET,nElem,ELEM,0,COUNT  ")

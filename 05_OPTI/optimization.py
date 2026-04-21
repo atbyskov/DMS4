@@ -9,7 +9,7 @@ from opt_logger import OptimizationLogger
 from Post_Process import PostProcessor
 
 # Optimization Function
-def run_optimization(mapdl,opti_settings,var,Misc,Solver_Settings):
+def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
 
     # Set active variables
     active = [(name, data["bounds"]) for name, data in var.items() if data.get("active", True)]
@@ -25,15 +25,14 @@ def run_optimization(mapdl,opti_settings,var,Misc,Solver_Settings):
     bounds = [bnds for _, bnds in active]
     xl, xu = np.array(bounds).T
 
-    # Step Options for each variable
-    #fd_step_options = {
-    #    "d0": 0.01,
-    #    "t0": 0.01,
-    #    "d1": 0.01,
-    #    "t1": 0.01,
-    #    "rad": 2
-    #    }
-    #fd_step = [fd_step_options[name] for name, _ in active]
+    # Step Options for each variable (uniform step size for all, except rad)
+    fd_step_options = {
+        name: 0.01 for name, _ in active
+    }
+    # Set separate step size for 'rad' if it's an active variable
+    if "rad" in fd_step_options:
+        fd_step_options["rad"] = 0.5
+    fd_step = [fd_step_options[name] for name in names]
 
     # Logger Options
     logger = OptimizationLogger(
@@ -43,6 +42,7 @@ def run_optimization(mapdl,opti_settings,var,Misc,Solver_Settings):
         options={
             "acc": Solver_Settings["acc"],
             "maxiter": Solver_Settings["maxiter"],
+            "finite_diff_abs_step": fd_step,
         },
         save_folder=Misc["save_folder"],
     )
@@ -90,9 +90,30 @@ def run_optimization(mapdl,opti_settings,var,Misc,Solver_Settings):
             for name, v in var_dict.items()
             if name.startswith("t0") or name.startswith("t1")
         ]
+        
+        # Geometric constraints: ensure inner radius remains positive for valid circular tubes
+        # NEWLY ADDED
+        # For columns: d0/2 - t0 > 0 (inner radius must be positive)
+        # For braces: d1/2 - t1 > 0 (inner radius must be positive)
+        #geometric_constraints = []
+        #for name, value in var_dict.items():
+        #    if name.startswith("d0_"):
+        #        seg_idx = int(name.split("_")[1])
+        #        t_name = f"t0_{seg_idx}"
+        #        if t_name in var_dict:
+        #            # d0/2 - t0 > 0
+        #            geometric_constraints.append(value / 2 - var_dict[t_name])
+        #    elif name.startswith("d1_"):
+        #        seg_idx = int(name.split("_")[1])
+        #        t_name = f"t1_{seg_idx}"
+        #        if t_name in var_dict:
+        #            # d1/2 - t1 > 0
+        #            geometric_constraints.append(value / 2 - var_dict[t_name])
+        
         # Combine all inequality constraints for optimization
         constraints = [
             *map(arr, thickness_constraints),
+            #*map(arr, geometric_constraints), # NEWLY ADDED
             *[v for pair in col_brace for v in pair],
             1 - arr(pp.Util_BS()),
             *map(arr, pp.Class_2()),
@@ -131,6 +152,7 @@ def run_optimization(mapdl,opti_settings,var,Misc,Solver_Settings):
         meq=0,                          # all constraints are inequalities
         xl=xl,
         xu=xu, 
+        finite_diff_abs_step=fd_step,                # finite difference step size for each variable
         maxiter=Solver_Settings["maxiter"], 
         acc=Solver_Settings["acc"],     # Objective Function Tolerance
         iprint=2,                       # print iteration info
