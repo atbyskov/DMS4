@@ -28,18 +28,18 @@ var = {
     "t0": {"value": 3.0,     "active": True},        # Column Thickness [mm]
     "d1": {"value": 26.9,    "active": True},        # Brace Diameter   [mm]
     "t1": {"value": 2.3,     "active": True},        # Brace Thickness  [mm]
-    "rad": {"value": 202.07, "active": True},       # Radius Structure [mm]
+    "rad": {"value": 202.07, "active": True},        # Radius Structure [mm]
 }
-
+    
 # Create Misc as dict
 Misc = {
-    "esize": 3,                     # Element Size [mm]
-    "Hor_Force": 502.52,            # Horizontal Force (P_Load_z) [N]
-    "Ver_Force": -25.13E+3,         # Vertical Force (P_Load_y)   [N]
-    "f_y": 690 ,                    # Column Yield Strength [MPa]
-    "f_y_brace": 355,               # Brace Yield Strength [MPa]
-    "E_mod": 200*1E3,               # Youngs Modulus [MPa]
-    "W_Force": -3.751E+3,           # Vertical Force COG (P_COG_y) [N]
+    "esize": 3,                     # Element Size                      [mm]
+    "Hor_Force": 502.52,            # Horizontal Force (P_Load_z)       [N]
+    "Ver_Force": -25.13E+3,         # Vertical Force (P_Load_y)         [N]
+    "f_y": 690 ,                    # Column Yield Strength             [MPa]
+    "f_y_brace": 355,               # Brace Yield Strength              [MPa]
+    "E_mod": 200*1E3,               # Youngs Modulus                    [MPa]
+    "W_Force": -3.751E+3,           # Vertical Force COG (P_COG_y)      [N]
     "SW_filename": "LWC_LC1.IGS"    # Filename for IGS File
 }
 
@@ -63,7 +63,7 @@ try:
 finally:
     mapdl.exit()
 
-
+# Print mass of assembly
 print(f"Mass of Assembly: {f:.2f} kg")
 
 
