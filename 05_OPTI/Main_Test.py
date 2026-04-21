@@ -5,12 +5,9 @@
 # Import packages
 import os
 import time 
+from ansys.mapdl.core import launch_mapdl
 import numpy as np
 import pandas as pd
-
-# PyMAPDL Package
-from ansys.mapdl.core import launch_mapdl
-from ansys.mapdl.core.errors import MapdlRuntimeError, MapdlException
 
 # Import Functions
 import SW_Import as SW
@@ -21,25 +18,25 @@ from MyAPDLCall import RunAPDL
 # Start timing
 tic = time.time()
 
-# Collect variables
+
 var = {
     "d0": {"value": 76.1,    "active": True},        # Column Diameter  [mm]
     "t0": {"value": 3.0,     "active": True},        # Column Thickness [mm]
     "d1": {"value": 26.9,    "active": True},        # Brace Diameter   [mm]
     "t1": {"value": 2.3,     "active": True},        # Brace Thickness  [mm]
-    "rad": {"value": 202.07, "active": True},        # Radius Structure [mm]
+    "rad": {"value": 202, "active": True},       # Radius Structure [mm]
 }
-    
+
 # Create Misc as dict
 Misc = {
-    "esize": 3,                     # Number of sub divisions           [mm]
-    "Hor_Force": 502.52,            # Horizontal Force (P_Load_z)       [N]
-    "Ver_Force": -25.13E+3,         # Vertical Force (P_Load_y)         [N]
-    "f_y": 690 ,                    # Column Yield Strength             [MPa]
-    "f_y_brace": 355,               # Brace Yield Strength              [MPa]
-    "E_mod": 200*1E3,               # Youngs Modulus                    [MPa]
-    "W_Force": -3.751E+3,           # Vertical Force COG (P_COG_y)      [N]
-    "SW_filename": "LWC_LC1.IGS"    # Filename for IGS File
+    "esize": 3,                                      # Element Size [mm]
+    "Hor_Force": 502.52,                             # Horizontal Force (P_Load_z) [N]
+    "Ver_Force": -25.13E+3,                          # Vertical Force (P_Load_y)   [N]
+    "f_y": 690 ,                                     # Column Yield Strength [MPa]
+    "f_y_brace": 355,                                # Brace Yield Strength [MPa]
+    "E_mod": 200*1E3,                                # Youngs Modulus [MPa]
+    "W_Force": -3.751E+3,                            # Vertical Force COG (P_COG_y) [N]
+    "SW_filename": "LWC_LC1.IGS"                     # Filename for IGS File
 }
 
 #C:\Program Files\ANSYS Inc\v251\ansys\bin\winx64
@@ -59,21 +56,11 @@ print(f"License opened in: {toc_lic-tic_lic:.2f} s")
 # Run Environment
 try:
     f = RunAPDL(mapdl, var, Misc) # Runs APDL and returns MASS
-except KeyboardInterrupt:
-    print("Keyboard Interrupt")
-    mapdl.exit(force=True)
-    raise
-except MapdlRuntimeError as e:
-    # Handle MAPDL runtime errors
-    print(f"MAPDL error occured: {e}")
-except Exception as e:
-    # Handle other errors
-    print(f"Unexpected error: {e}")
 finally:
-        mapdl.exit(force=True)
+    mapdl.exit()
 
-# Print mass of assembly
-print(f" -> Mass of Assembly: {f:.2f} kg")
+
+print(f" Mass of Assembly: {f:.2f} kg")
 
 
 # Pack specifically for compability
