@@ -73,7 +73,7 @@ def RunAPDL(mapdl,var,Misc):
     # Stop timer for APDL run
     ans_time_toc = time.time()
 
-    print(f"Sim time: {ans_time_toc-ans_time_tic:.2f} s")
+    print(f" -> Sim time: {ans_time_toc-ans_time_tic:.2f} s")
 
     # Return Mass as float value
     return sum(Mass)

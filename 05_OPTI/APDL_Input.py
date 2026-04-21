@@ -160,7 +160,7 @@ def InputFun(var, Misc):
     CM_Column_dict = 0
 
     # For Remote Loading
-    ap.append("K,1,0,4179.14,0  ")
+    #ap.append("K,1,0,4179.14,0  ")
     
 
     # Loop through and create lines

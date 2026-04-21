@@ -82,8 +82,6 @@ class PostProcessor:
         self.E_mod = Misc["E_mod"]
         self.f_y = Misc["f_y"]
         self.f_y_brace = Misc["f_y_brace"]
-        print(self.d0)
-        print(type(self.d0))
 
 
         self.df_nonlin = self.read_forces("Ansout/APDL_Nonlin_Internal.txt")
