@@ -47,7 +47,7 @@ class SLPResult:
 # ----------------------------------------------------------------------
 def _fd_step_array(fd_step, n: int) -> np.ndarray:
     if fd_step is None:
-        return np.full(n, np.sqrt(np.finfo(float).eps), dtype=float)
+        return np.full(n, np.sqrt(np.finfo(float).eps), dtype=float) #Return an array of size n with the square root of the smallest positive number that is representable in the float data type
     arr = np.asarray(fd_step, dtype=float)
     if arr.ndim == 0:
         return np.full(n, float(arr), dtype=float)
@@ -76,8 +76,8 @@ def _grad_obj_fd(
             g[i] = (f0 - float(obj(xm))) / h[i]
     else:  # forward
         for i in range(n):
-            xp = x.copy(); xp[i] += h[i]
-            g[i] = (float(obj(xp)) - f0) / h[i]
+            xp = x.copy(); xp[i] += h[i] #Increment the i-th design variable by the step size and save the old value
+            g[i] = (float(obj(xp)) - f0) / h[i] #Calculate the gradient of the objective function at the new point
     return g
 
 
@@ -165,20 +165,23 @@ def _adaptive_move_limit(
 # ----------------------------------------------------------------------
 # Public entry point
 # ----------------------------------------------------------------------
-def solve_slp(
-    obj: ObjectiveFn,
-    con: Optional[ConstraintFn],
+def solve_slp( # This is the function that will be used to solve the optimization problem
+    # This is called the function signature. it tells pyhton what inputs it expect, optional defualt values, type hints for each input
+    # and what arguments must be passed by keyword
+    obj: ObjectiveFn, 
+    con: Optional[ConstraintFn], 
     x0: ArrayLike,
     xl: Optional[ArrayLike] = None,
     xu: Optional[ArrayLike] = None,
-    *,
+    *, #This means everything after this must be passed as a keyword argument, not positionally.So you must write:
+        #solve_slp(..., maxiter=50, display=True) not solve_slp(..., 50, True)
     fd_step=None,
     fd_type: str = "forward",
     maxiter: int = 40,
     move_limit: float = 0.1,
     move_limit_reduce: float = 0.5,
     move_limit_expand: float = 1.1,
-    infeasibility_penalty: float = 1e3,
+    infeasibility_penalty: float = 1e3, #Used in Merit function to penalize infeasibility
     gtol: float = 1e-6,
     ftol: float = 1e-3,
     xtol: float = 1e-8,
@@ -189,60 +192,68 @@ def solve_slp(
 
     See module docstring for the convention used for ``con``.
     """
-    x = np.asarray(x0, dtype=float).ravel().copy()
-    n = x.size
+    x = np.asarray(x0, dtype=float).ravel().copy() #Convert initial design to NumPy array and flatten it to 1D, anf then .copy() to make a copy of the array
+    n = x.size #Get the number of design variables
 
-    if xl is None:
-        xL = np.full(n, -np.inf, dtype=float)
+    if xl is None: 
+        xL = np.full(n, -np.inf, dtype=float) #Set lower bounds to negative infinity if not provided
     else:
         xL = np.asarray(xl, dtype=float).ravel().copy()
     if xu is None:
-        xU = np.full(n, np.inf, dtype=float)
+        xU = np.full(n, np.inf, dtype=float) #Set upper bounds to infinity if not provided
     else:
-        xU = np.asarray(xu, dtype=float).ravel().copy()
+        xU = np.asarray(xu, dtype=float).ravel().copy() #Convert upper bounds to NumPy array and flatten it to 1D, and then .copy() to make a copy of the array
 
-    h = _fd_step_array(fd_step, n)
+    h = _fd_step_array(fd_step, n) #Get the finite difference step size for each design variable
 
     # Initial evaluation
-    f = float(obj(x))
-    if con is not None:
+    f = float(obj(x)) #Evaluate the objective function at the initial design
+    if con is not None: #If there are constraints, convert the constraints to a NumPy array and flatten it to 1D
         c = np.asarray(con(x), dtype=float).ravel()
     else:
-        c = np.empty(0, dtype=float)
-    m = c.size
-    nfev = 1
+        c = np.empty(0, dtype=float) #If there are no constraints, create an empty array
+    m = c.size #Get the number of constraints
+    nfev = 1 #Initialize the function evaluation counter
 
-    def merit(f_val: float, c_val: np.ndarray) -> float:
+    def merit(f_val: float, c_val: np.ndarray) -> float: 
         if c_val.size == 0:
             return f_val
-        viol = np.maximum(0.0, -c_val).sum()
-        return f_val + infeasibility_penalty * viol
+        viol = np.maximum(0.0, -c_val).sum() #Calculate the total infeasibility, while ocnsidering the constraint form
+        return f_val + infeasibility_penalty * viol #The Merit function is the objective function plus a penalty for infeasibility
 
     P = merit(f, c)
-    P_prev = P
+    P_prev = P #Initialize the previous merit function value
     f_prev = f
 
-    xLcur = xL.copy()
-    xUcur = xU.copy()
-    xold1 = x.copy()
-    xold2 = x.copy()
+    xLcur = xL.copy() #Initialize the current lower bound
+    xUcur = xU.copy() #Initialize the current upper bound
+    xold1 = x.copy() #Initialize the previous design
+    xold2 = x.copy() #Initialize the second previous design
 
-    history: List[dict] = [{"iter": 0, "f": f, "viol": float(np.maximum(0.0, -c).sum() if m else 0.0), "P": P}]
+    # Creates a history list to store the iteration number, objective function value, infeasibility, and merit function value
+    history: List[dict] = [{"iter": 0, "f": f, "viol": float(np.maximum(0.0, -c).sum() if m else 0.0), "P": P}] 
 
-    if display:
+    if display: #If display is True, print the header of the optimization log
         print("*" * 80)
         print("    Custom SLP (slack-relaxed LP, adaptive move limits)")
         print("*" * 80)
         print(f"  {'iter':>5s}  {'f':>12s}  {'viol':>12s}  {'P':>12s}  {'||dx||':>12s}  {'nfev':>6s}")
 
-    success = False
-    message = "Maximum iterations reached"
-    grad_norm = 0.0
-    iter_no = 0
+    success = False #Initialize the success flag
+    message = "Maximum iterations reached" #Initialize the message
+    grad_norm = 0.0 #Initialize the gradient norm
+    iter_no = 0 #Initialize the iteration number
 
-    for iter_no in range(1, maxiter + 1):
+    # Main loop
+    # 1. estimate gradients
+    # 2. build a linear approximation of the problem near the current point 
+    # 3. solve an LP subproblem
+    # 4. test the proposed step on the real nonlinear functions
+    # 5. accept or reject it
+    # 6. check convergence
+    for iter_no in range(1, maxiter + 1): #Iterate from 1 to maxiter + 1
         # Gradients
-        g = _grad_obj_fd(obj, x, f, h, fd_type=fd_type)
+        g = _grad_obj_fd(obj, x, f, h, fd_type=fd_type) #Estimate the gradients of the objective function and constraints
         nfev += n if fd_type != "central" else 2 * n
         if con is not None and m > 0:
             J = _jac_con_fd(con, x, c, h, fd_type=fd_type)
