@@ -28,7 +28,7 @@ var = {
     "t0": {"value": 3.0,     "active": True},        # Column Thickness [mm]
     "d1": {"value": 26.9,    "active": True},        # Brace Diameter   [mm]
     "t1": {"value": 2.3,     "active": True},        # Brace Thickness  [mm]
-    "rad": {"value": 202.07, "active": False},       # Radius Structure [mm]
+    "rad": {"value": 202.07, "active": True},       # Radius Structure [mm]
 }
 
 # Create Misc as dict

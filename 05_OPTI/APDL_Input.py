@@ -241,7 +241,9 @@ def InputFun(var, Misc):
 
     # REMOTE POINT APPLICATION
     # Select all nodes with x=0
+    ap.append("SELTOL,1.0E-6  ") # Important for node selection
     ap.append("NSEL,S,LOC,X,0")
+    ap.append("NSEL,R,LOC,Z,0")
     ap.append("NSEL,U,LOC,Y,4284,6000")
     ap.append("*GET,SlaveNum,NODE,0,COUNT")
 
@@ -314,7 +316,7 @@ def InputFun(var, Misc):
     # BOUNDARY CONDITIONS
     ap.append(" ! -- BOUNDARY CONDITIONS -- !  ")
     ap.append("ALLSEL,ALL  ")
-    ap.append("SELTOL,1.0E-6  ") # Important for node selection
+    
 
     # Get top and bottom nodes
     ap.append("*GET, NodeYMax, NODE, 0, MXLOC, Y  ")
@@ -434,19 +436,17 @@ def InputFun(var, Misc):
     ap.append("*GET, NodeYMin, NODE, 0, MNLOC, Y  ")
     ap.append("*GET, NodeXMax, NODE, 0, MXLOC, X  ")
 
+
     ap.append("NSEL,S,LOC,Y,NodeYMax")
     ap.append("NSEL,R,LOC,X,NodeXMax")
     ap.append(f"F,ALL,FY,{Misc['Ver_Force']}")
-    ap.append(f"F,ALL,FX,{Misc['Hor_Force']}")
+    ap.append(f"F,ALL,FZ,{Misc['Hor_Force']}")
     ap.append("NSEL,ALL")
 
     # Force at x = 0 / Weight
-    ap.append("NSEL,S,LOC,X,0")
-    ap.append("*GET,w_force_nodes,NODE,0,COUNT")
-    ap.append(f"W_Force = {Misc['W_Force']}/w_force_nodes")
-    ap.append("FORCE_IMP_2 = FORCE_IMP/w_force_nodes")
-    ap.append("F,ALL,FY,W_Force")
-    ap.append("F,ALL,FX,Force_IMP_2")
+    ap.append("NSEL,S,NODE,,99999")
+    ap.append(f"F,ALL,FY,{Misc['W_Force']}")
+    ap.append(f"F,ALL,FX,FORCE_IMP")
 
     # Fixed Displacement at Bottom Nodes
     ap.append("! Displacement !  ")
