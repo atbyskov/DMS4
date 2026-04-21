@@ -14,26 +14,28 @@ import Self_Written_Optimization.optimization_self_written as optimization_self_
 from MyAPDLCall import RunAPDL
 
 
-# Variables. Uncomment variable to include it.
+# Variables. Choose which ones to include by setting "active": True or False.
 # Include Bounds
 var = {
-    "d0": 76.1,                     # Column Diameter  [mm]
-    "t0": 3,                        # Column Thickness [mm]
-    "d1": 26.9,                     # Brace Diameter   [mm]
-    "t1": 2.3,                      # Brace Thickness  [mm]
-    "rad": 202.07                      # Radius Structure [mm]
+    "d0": {"value": 76.1, "bounds": (40.0, 100), "active": True},       # Column Diameter  [mm]
+    "t0": {"value": 3.0,  "bounds": (1.0, 7.0),  "active": True},       # Column Thickness [mm]
+    "d1": {"value": 26.9, "bounds": (10.0, 100.0), "active": True},     # Brace Diameter   [mm]
+    "t1": {"value": 2.3,  "bounds": (0.1, 7.0),  "active": True},       # Brace Thickness  [mm]
+    "rad": {"value": 202.07, "bounds": (150.0, 350.0), "active": True}, # Radius Structure [mm]
 }
 
 # Static variables
 Misc = {
-    "esize": 3,                    # Element Size [mm]
+    "esize": 3,                     # Element Size [mm]
     "Hor_Force": 502.52,            # Horizontal Force (P_Load_z) [N]
     "Ver_Force": -25.13E+3,         # Vertical Force (P_Load_y)   [N]
     "f_y": 690 ,                    # Column Yield Strength [MPa]
     "f_y_brace": 355,               # Brace Yield Strength [MPa]
     "E_mod": 200*1E3,               # Youngs Modulus [MPa]
     "W_Force": -3.751E+3,           # Vertical Force COG (P_COG_y) [N]
-    "SW_filename": "LWC_LC1.IGS"    # Filename for IGS File
+    "eps_geom": 0.1,    # Minimum thickness specification for geometry updates [mm]
+    "SW_filename": "LWC_LC1.IGS",    # Filename for IGS File
+    "save_folder": "Optimization_Logs" # Save Folder
 }
 
 # Launch MAPDL

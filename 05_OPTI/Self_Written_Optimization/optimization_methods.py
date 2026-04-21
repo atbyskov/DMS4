@@ -35,14 +35,14 @@ from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 import numpy as np
 
-from line_search_methods import (
+from .line_search_methods import (
     armijo_backtracking,
     bisection,
     golden_section,
     quadratic_interpolation,
 )
-from search_direction_methods import conjugate_gradient, steepest_descent
-from slp import solve_slp, SLPResult
+from .search_direction_methods import conjugate_gradient, steepest_descent
+from .slp import solve_slp, SLPResult
 
 ArrayLike = Union[Sequence[float], np.ndarray]
 ObjectiveFn = Callable[[np.ndarray], float]
