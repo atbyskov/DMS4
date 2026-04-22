@@ -156,11 +156,36 @@ def minimize(
             method="slp",
             history=slp_res.history,
         )
+    elif method_l == "slp_mvp":
+        from .slp_MVP import solve_slp_mvp
+        slp_kwargs = dict(
+            fd_step=fd_step,
+            fd_type=fd_type,
+            maxiter=maxiter,
+            gtol=gtol,
+            ftol=ftol,
+            xtol=xtol,
+            infeasibility_penalty=penalty_weight,
+            display=display,
+        )
+        if slp_options:
+            slp_kwargs.update(slp_options)
+        slp_res: SLPResult = solve_slp_mvp(obj, con, x0, xl, xu, **slp_kwargs)
+        return Result(
+            x=slp_res.x,
+            fun=slp_res.fun,
+            nit=slp_res.nit,
+            nfev=slp_res.nfev,
+            success=slp_res.success,
+            message=slp_res.message,
+            method="slp_mvp",
+            history=slp_res.history,
+        )
 
     if method_l not in {"steepest_descent", "conjugate_gradient"}:
         raise ValueError(
             f"Unknown method '{method}'. Choose 'steepest_descent', "
-            f"'conjugate_gradient', or 'slp'."
+            f"'conjugate_gradient', 'slp', or 'slp_mvp'."
         )
 
     # ------------------------------------------------------------------

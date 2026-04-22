@@ -50,7 +50,7 @@ mapdl = launch_mapdl(
 # Ensures that MAPDL closes if something chrashes
 try:
     f1 = RunAPDL(mapdl,var,Misc)
-    result, txt_path, csv_path = optimization_self_written.run_optimization(mapdl, var, Misc)
+    result, txt_path, csv_path = optimization_self_written.run_optimization(mapdl, var, Misc, method="slp_mvp")
 finally:
     mapdl.exit()
 

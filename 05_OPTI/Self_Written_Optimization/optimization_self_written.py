@@ -7,7 +7,7 @@ from opt_logger import OptimizationLogger
 from Post_Process import PostProcessor
 
 # Optimization Function
-def run_optimization(mapdl,var,Misc):
+def run_optimization(mapdl,var,Misc,method="slp"):
     
     # Data saved in this folder:
     save_folder="Optimization_Logs"
@@ -184,7 +184,7 @@ def run_optimization(mapdl,var,Misc):
         x0=x0,
         xl=xl,
         xu=xu,
-        method="slp",
+        method=method,
         line_search="golden",
         fd_step=fd_step,
         fd_type="forward",
