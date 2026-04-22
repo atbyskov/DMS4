@@ -287,13 +287,13 @@ def InputFun(var,Misc,opti_settings):
         line_id += 1
     ap.append(" ")
 
-    # Printing lines for debug
-    print("Corner Lines")
-    print(corner_lines)
-    print("Horizontal Lines")
-    print(horiz_lines)
-    print("Cross Lines")
-    print(cross_lines)
+    # Printing lines for debug (for debug)
+    #print("Corner Lines")
+    #print(corner_lines)
+    #print("Horizontal Lines")
+    #print(horiz_lines)
+    #print("Cross Lines")
+    #print(cross_lines)
 
     # ELEMENT DEFINITION
     ap.append("! ELEMENT SIZE !  ")
