@@ -2,8 +2,11 @@
 
 # Import packages
 import sys
-print(sys.version)
 from ansys.mapdl.core import launch_mapdl
+
+# For mail
+import smtplib
+from email.message import EmailMessage
 
 # Import Functions
 import optimization
@@ -37,10 +40,11 @@ Misc = {
 # Solver Settings
 Solver_Settings = {
     "acc": 1e-3,                 # Maximum objective function tolerance
-    "maxiter": 40,               # Maximum iterations
+    "maxiter": 60,               # Maximum iterations
     "Aggregate": "P-norm",       # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
-    "p_value": 10,               # Value for "P-norm" and "P-norm-mean"
-    "rho_value": 100,                  # rho value used in KS
+    "p_value": 4,                # Value for "P-norm" and "P-norm-mean"
+    "rho_value": 100,            # rho value used in KS
+    "relaxation": 0,             # Relaxation parameter used in aggregation
 }
 
 # Launch MAPDL
@@ -48,7 +52,7 @@ mapdl = launch_mapdl(
     run_location="Ansout",
     log_apdl="apdl_log",
     override=True,
-    nproc=2,
+    nproc=6,
     additional_switches="-p ansys -smp",
 )
 
@@ -65,3 +69,21 @@ finally:
 #print("Message:", result.message)
 #print("TXT log file:", txt_path)
 #print("Objective CSV:", csv_path)
+
+
+def send_email(subject, body):
+    msg = EmailMessage()
+    msg.set_content(body)
+    msg["Subject"] = subject
+    msg["From"] = "atbyskov@gmail.com"
+    msg["To"] = "atbyskov@gmail.com"
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login("atbyskov@gmail.com", "zani dtwc hnmw dxpm")
+        server.send_message(msg)
+
+
+send_email(
+    "Python job finished ✅",
+    "optimization script has completed \n"
+)

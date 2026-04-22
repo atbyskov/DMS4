@@ -9,6 +9,10 @@ from ansys.mapdl.core import launch_mapdl
 import numpy as np
 import pandas as pd
 
+# For mail
+import smtplib
+from email.message import EmailMessage
+
 # Import Functions
 import SW_Import as SW
 from Post_Process import PostProcessor
@@ -110,3 +114,23 @@ for key, util in Util_list.items():
     brc_str = f"{brc_val:8.3f}" if brc_val is not None else "   N/A  "
 
     print(f"{key:10s}  Column: {col_str}  Brace: {brc_str}")
+
+
+"""
+def send_email(subject, body):
+    msg = EmailMessage()
+    msg.set_content(body)
+    msg["Subject"] = subject
+    msg["From"] = "atbyskov@gmail.com"
+    msg["To"] = "atbyskov@gmail.com"
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login("atbyskov@gmail.com", "zani dtwc hnmw dxpm")
+        server.send_message(msg)
+
+
+send_email(
+    "Python job finished ✅",
+    "Your optimization script has completed"
+)
+"""

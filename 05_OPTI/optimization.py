@@ -83,7 +83,7 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
             pp.Util_BR(),
             pp.Util_IN(),
         ]
-        col_brace = [(arr(c), arr(b)) for c,b in utils]
+        col_brace = [(1-arr(c), 1-arr(b)) for c,b in utils]
 
         # Set up the constraints
         # Can i only aggregate the utils or do we need to have them all
@@ -93,7 +93,7 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
         
         c_util = np.concatenate([
                 *[v for pair in col_brace for v in pair],
-                arr(pp.Util_BS())])
+                1- arr(pp.Util_BS())])
         
         c_misc = np.concatenate([
                 *map(arr, pp.Class_2()),
@@ -103,7 +103,8 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
         agg = ConstraintAggregate(
             method = Solver_Settings["Aggregate"],
             p_value = Solver_Settings["p_value"],
-            rho_value = Solver_Settings["rho_value"]
+            rho_value = Solver_Settings["rho_value"],
+            relaxation = Solver_Settings["relaxation"]
         )
 
         c_util_agg = agg.agg_output(c_util)

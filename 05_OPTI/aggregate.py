@@ -10,7 +10,7 @@ import numpy as np
 
 # Define the class
 class ConstraintAggregate:
-    def __init__(self, method=None, p_value = None, rho_value = None):
+    def __init__(self, method=None, p_value = None, rho_value = None, relaxation = None):
         # Read Method
         self.method = method
         self.rho = rho_value
@@ -21,25 +21,29 @@ class ConstraintAggregate:
     # Function for handling aggregation
     def agg_output(self,g):
         # Relaxation parameter for P-norm methods (0<eps<1)
-        eps = 0
+        relaxation = 0
         # Read constraints
         g = np.asarray(g, dtype = float)
 
         # No Aggregate Method 
         if self.method is None:
-            return 1.0 - g
+            return g
         
         # P-norm method
         if self.method == "P-norm":
             p = float(self.p)
-            con_constraints = 1 - g - eps
             
-            return (np.sum((con_constraints)**p))**(1 / p)
+            g_k = np.maximum(-(g - relaxation), 0.0)
+            v_agg = (np.sum(g_k**p))**(1/p)
+
+            print(f"P-norm: {v_agg:.2f}")
+
+            return -v_agg
         
         # P-norm mean method
         if self.method == "P-norm-mean":
             p = float(self.p)
-            con_constraints = 1 - g - eps
+            con_constraints = g - relaxation
             n0 = con_constraints.size
 
             return (np.sum((con_constraints)**p) / n0)**(1 / p)
@@ -47,7 +51,7 @@ class ConstraintAggregate:
         if self.method == "KS":
             # rho parameter (typically between 2 and 200)
             rho = float(self.rho)
-            g = 1.0 - g - eps
+            g = g - relaxation
             g_max = np.max(g)
 
             return ((1/rho)*np.log(np.sum(np.exp(rho*g))))
@@ -55,7 +59,7 @@ class ConstraintAggregate:
         if self.method == "KS_shift":
             # rho parameter (typically between 2 and 200)
             rho = float(self.rho)
-            g = 1.0 - g - eps
+            g = 1.0 - g - relaxation
             g_max = np.max(g)
 
             return (g_max + (1/rho)*np.log(np.sum(np.exp(rho * (g-g_max)))))

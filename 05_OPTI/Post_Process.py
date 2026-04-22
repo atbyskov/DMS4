@@ -24,6 +24,8 @@ from io import StringIO
 import SW_Import as SW
 
 
+
+
 # Function to calculate the span of horizontal brace - It works, but i don't understand this
 def _brace_span_mm(var, misc, tol=1e-3):
     co = SW.import_SW(str(Path("IGS") / misc["SW_filename"]))
@@ -364,7 +366,7 @@ class PostProcessor:
             Mz = df_member["Mz"].abs()
 
             # Fraction to be used in Utilization Ratio
-            red_col = (1 - (N / N_Rd)**1.7)
+            red_col = np.clip(1.0 - (N / N_Rd)**1.7, 0.1, 1.0)
 
             # Utilization Ratio
             df_member["Util_BNS"] = (My / (M_Rd * red_col))**2 + (Mz / (M_Rd * red_col))**2
