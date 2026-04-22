@@ -42,7 +42,7 @@ from .line_search_methods import (
     quadratic_interpolation,
 )
 from .search_direction_methods import conjugate_gradient, steepest_descent
-from .slp import solve_slp, SLPResult
+from .slp_MVP import solve_slp_mvp, SLPResult
 
 ArrayLike = Union[Sequence[float], np.ndarray]
 ObjectiveFn = Callable[[np.ndarray], float]
@@ -145,7 +145,7 @@ def minimize(
         )
         if slp_options:
             slp_kwargs.update(slp_options)
-        slp_res: SLPResult = solve_slp(obj, con, x0, xl, xu, **slp_kwargs)
+        slp_res: SLPResult = solve_slp_mvp(obj, con, x0, xl, xu, **slp_kwargs)
         return Result(
             x=slp_res.x,
             fun=slp_res.fun,
@@ -157,7 +157,6 @@ def minimize(
             history=slp_res.history,
         )
     elif method_l == "slp_mvp":
-        from .slp_MVP import solve_slp_mvp
         slp_kwargs = dict(
             fd_step=fd_step,
             fd_type=fd_type,

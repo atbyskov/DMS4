@@ -3,35 +3,116 @@ Minimum Viable Product (MVP) of a Sequential Linear Programming (SLP) solver.
 
 This implementation focuses on maximum readability and simplicity.
 It uses:
-- Forward difference gradients (reused from slp.py)
+- Forward difference gradients
 - A basic LP subproblem with strict linearized constraints
 - The simplest possible move limits (trust region) that shrink on rejection
 - Simple stopping criteria (step size / move limit size)
 """
 
+from __future__ import annotations
+from dataclasses import dataclass, field
+from typing import Callable, List, Optional, Sequence, Union
 import numpy as np
 from scipy.optimize import linprog
 
-# Reuse the gradient and finite difference helpers from the main slp.py
-from .slp import _grad_obj_fd, _jac_con_fd, _fd_step_array, SLPResult
+ArrayLike = Union[Sequence[float], np.ndarray]
+ObjectiveFn = Callable[[np.ndarray], float]
+ConstraintFn = Callable[[np.ndarray], np.ndarray]
+
+@dataclass
+class SLPResult:
+    """Return type for :func:`solve_slp_mvp`."""
+    x: np.ndarray
+    fun: float
+    nit: int = 0
+    nfev: int = 0
+    success: bool = False
+    message: str = ""
+    history: List[dict] = field(default_factory=list)
+
+# ----------------------------------------------------------------------
+# Finite-difference gradients (Ported from slp.py)
+# ----------------------------------------------------------------------
+def _fd_step_array(fd_step, n: int) -> np.ndarray:
+    if fd_step is None:
+        return np.full(n, np.sqrt(np.finfo(float).eps), dtype=float)
+    arr = np.asarray(fd_step, dtype=float)
+    if arr.ndim == 0:
+        return np.full(n, float(arr), dtype=float)
+    if arr.size != n:
+        raise ValueError(f"fd_step must be a scalar or have length {n}.")
+    return arr.astype(float).ravel()
+
+def _grad_obj_fd(
+    obj: ObjectiveFn,
+    x: np.ndarray,
+    f0: float,
+    h: np.ndarray,
+    fd_type: str = "forward",
+) -> np.ndarray:
+    n = x.size
+    g = np.zeros(n, dtype=float)
+    if fd_type == "central":
+        for i in range(n):
+            xp = x.copy(); xp[i] += h[i]
+            xm = x.copy(); xm[i] -= h[i]
+            g[i] = (float(obj(xp)) - float(obj(xm))) / (2.0 * h[i])
+    elif fd_type == "backward":
+        for i in range(n):
+            xm = x.copy(); xm[i] -= h[i]
+            g[i] = (f0 - float(obj(xm))) / h[i]
+    else:  # forward
+        for i in range(n):
+            xp = x.copy(); xp[i] += h[i]
+            g[i] = (float(obj(xp)) - f0) / h[i]
+    return g
+
+def _jac_con_fd(
+    con: ConstraintFn,
+    x: np.ndarray,
+    c0: np.ndarray,
+    h: np.ndarray,
+    fd_type: str = "forward",
+) -> np.ndarray:
+    """Return Jacobian J of shape (m, n): J[i, j] = dc_i / dx_j."""
+    n = x.size
+    m = c0.size
+    J = np.zeros((m, n), dtype=float)
+    if m == 0:
+        return J
+    if fd_type == "central":
+        for j in range(n):
+            xp = x.copy(); xp[j] += h[j]
+            xm = x.copy(); xm[j] -= h[j]
+            J[:, j] = (np.asarray(con(xp), dtype=float).ravel()
+                       - np.asarray(con(xm), dtype=float).ravel()) / (2.0 * h[j])
+    elif fd_type == "backward":
+        for j in range(n):
+            xm = x.copy(); xm[j] -= h[j]
+            J[:, j] = (c0 - np.asarray(con(xm), dtype=float).ravel()) / h[j]
+    else:  # forward
+        for j in range(n):
+            xp = x.copy(); xp[j] += h[j]
+            J[:, j] = (np.asarray(con(xp), dtype=float).ravel() - c0) / h[j]
+    return J
 
 def solve_slp_mvp(
-    obj, 
-    con, 
-    x0, 
-    xl=None, 
-    xu=None, 
+    obj: ObjectiveFn, 
+    con: Optional[ConstraintFn], 
+    x0: ArrayLike, 
+    xl: Optional[ArrayLike] = None, 
+    xu: Optional[ArrayLike] = None, 
     fd_step=None,
-    fd_type="forward",
-    maxiter=50, 
-    move_limit=0.1,
-    infeasibility_penalty=1000.0,
-    xtol=1e-4,
-    gtol=1e-6,
-    ftol=1e-3,
-    display=False,
+    fd_type: str = "forward",
+    maxiter: int = 50, 
+    move_limit: float = 0.1,
+    infeasibility_penalty: float = 1000.0,
+    xtol: float = 1e-4,
+    gtol: float = 1e-6,
+    ftol: float = 1e-3,
+    display: bool = False,
     **kwargs
-):
+) -> SLPResult:
     """
     Simplest possible Sequential Linear Programming (SLP) solver.
     
@@ -50,29 +131,29 @@ def solve_slp_mvp(
         SLPResult: A dataclass containing x, fun, nit, nfev, success, message, history.
     """
     # 1. Initialization
-    x = np.array(x0, dtype=float).copy()
-    n = len(x)
+    x = np.array(x0, dtype=float).ravel().copy()
+    n = x.size
     if xl is None:
         xl = np.full(n, -np.inf)
     else:
-        xl = np.array(xl, dtype=float)
+        xl = np.array(xl, dtype=float).ravel()
     if xu is None:
         xu = np.full(n, np.inf)
     else:
-        xu = np.array(xu, dtype=float)
+        xu = np.array(xu, dtype=float).ravel()
     
-    # Finite difference step sizes (using helper from slp.py)
+    # Finite difference step sizes
     h = _fd_step_array(fd_step, n)
 
     # Initial function evaluations
     f = float(obj(x))
-    c = np.array(con(x), dtype=float) if con else np.array([])
-    m = len(c)
+    c = np.array(con(x), dtype=float).ravel() if con else np.array([])
+    m = c.size
     nfev = 1
 
     def merit(f_val, c_val):
         """Merit function to evaluate step quality: Objective + Penalty * Violations"""
-        viol = np.sum(np.maximum(0.0, -c_val)) if len(c_val) > 0 else 0.0
+        viol = np.sum(np.maximum(0.0, -c_val)) if c_val.size > 0 else 0.0
         return f_val + infeasibility_penalty * viol
 
     P = merit(f, c)
@@ -144,7 +225,7 @@ def solve_slp_mvp(
         # Evaluate the proposed step
         x_new = np.clip(x + dx, xl, xu)
         f_new = float(obj(x_new))
-        c_new = np.array(con(x_new), dtype=float) if con else np.array([])
+        c_new = np.array(con(x_new), dtype=float).ravel() if con else np.array([])
         nfev += 1
         P_new = merit(f_new, c_new)
         
