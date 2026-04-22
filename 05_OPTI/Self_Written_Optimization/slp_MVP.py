@@ -4,7 +4,7 @@ Minimum Viable Product (MVP) of a Sequential Linear Programming (SLP) solver.
 This implementation focuses on maximum readability and simplicity.
 It uses:
 - Forward difference gradients (reused from slp.py)
-- A basic LP subproblem with slack variables to handle constraints
+- A basic LP subproblem with strict linearized constraints
 - The simplest possible move limits (trust region) that shrink on rejection
 - Simple stopping criteria (step size / move limit size)
 """
@@ -90,7 +90,7 @@ def solve_slp_mvp(
 
     if display:
         print("*" * 80)
-        print("    SLP MVP Optimizer")
+        print("    SLP MVP Optimizer (No Slacks)")
         print("*" * 80)
         print(f"  {'iter':>5s}  {'f':>12s}  {'viol':>12s}  {'P':>12s}  {'||dx||':>12s}  {'nfev':>6s}")
         print(f"  {0:>5d}  {f:12.4e}  {history[-1]['viol']:12.4e}  {P:12.4e}  {'-':>12s}  {nfev:>6d}")
@@ -108,40 +108,37 @@ def solve_slp_mvp(
             J = np.zeros((0, n))
 
         # Setup the Linear Programming (LP) Subproblem
-        # Variables for LP: [dx_0, ..., dx_{n-1}, s_0, ..., s_{m-1}]
-        c_lp = np.concatenate([g, np.full(m, infeasibility_penalty)])
+        # Variables for LP: [dx_0, ..., dx_{n-1}]
+        c_lp = g
         
-        # Subject to linearized constraints: c(x) + J * dx >= -s  =>  -J * dx - s <= -c(x)
+        # Subject to linearized constraints: c(x) + J * dx >= 0  =>  -J * dx <= c(x)
         if m > 0:
-            A_ub = np.hstack([-J, -np.eye(m)])
+            A_ub = -J
             b_ub = c.copy()
         else:
             A_ub = None
             b_ub = None
 
-        # Set bounds for the LP variables
-        bounds = []
-        for i in range(n):
-            # dx is bounded by both global bounds and local move limits (delta)
-            lb = max(xl[i] - x[i], -delta[i])
-            ub = min(xu[i] - x[i], delta[i])
-            bounds.append((lb, ub))
-            
-        for i in range(m):
-            # slack variables must be positive
-            bounds.append((0.0, None))
+        # Set bounds for the LP variables (dx is bounded by both global bounds and local move limits)
+        bounds = [(max(xl[i] - x[i], -delta[i]), min(xu[i] - x[i], delta[i])) for i in range(n)]
 
         # Solve the LP
         res = linprog(c_lp, A_ub=A_ub, b_ub=b_ub, bounds=bounds, method="highs")
         
         if not res.success:
-            message = "LP solver failed."
+            # LP solver failed (likely infeasible) -> shrink move limits and try again in next iteration
+            delta *= 0.5
             if display:
-                print(f"  {iter_no:>5d}  LP FAILED")
-            break
+                print(f"  {iter_no:>5d}  {' ' * 12}  {' ' * 12}  {' ' * 12}  INFEASIBLE  {nfev:>6d}")
+            
+            if np.max(delta) < xtol:
+                success = False
+                message = f"Stopped (LP infeasible and move limits shrunk < xtol: {xtol:.2e})."
+                break
+            continue
             
         # Extract the proposed step for design variables
-        dx = res.x[:n]
+        dx = res.x
         deltanorm = np.linalg.norm(dx)
         
         # Evaluate the proposed step
