@@ -479,9 +479,6 @@ def InputFun(var,Misc,opti_settings):
     ap.append("SOLVE  ")
     ap.append("FINISH   ")
 
-    # Save column and brace list
-    CM_dict = [CM_Column_dict, CM_Brace_dict]
-
     # MASS OF ASSEMBLY
     ap.append("! Get and Print Mass  ")
     ap.append("ALLSEL  ")

@@ -90,6 +90,7 @@ class PostProcessor:
 
         # Build per-segment section radii for columns and braces
         self.column_R0, self.column_R1 = self._build_section_radii("d0", "t0", self.multi_size_columns)
+        self.column_d0_t0 = self._build_section_dimensions("d0", "t0", self.multi_size_columns)
         
         # Handle braces based on split setting
         if self.brace_split:
@@ -100,6 +101,7 @@ class PostProcessor:
             # Build per-segment diameter/thickness data for class checks
             self.brace_horiz_d1_t1 = self._build_section_dimensions("d1_h", "t1_h", self.multi_size_braces)
             self.brace_cross_d1_t1 = self._build_section_dimensions("d1_c", "t1_c", self.multi_size_braces)
+            self.brace_d1_t1 = self.brace_horiz_d1_t1 + self.brace_cross_d1_t1
         else:
             # Combined braces (same size for both)
             self.brace_R2, self.brace_R3 = self._build_section_radii("d1", "t1", self.multi_size_braces)
@@ -120,6 +122,7 @@ class PostProcessor:
             ].copy()
 
         self._annotate_member_sections()
+        self.df_brace = self._combined_brace_dataframe()
 
     # Extract numeric value from the var dictionary, supporting nested dict shape
     def _get_value(self, key):
@@ -200,6 +203,26 @@ class PostProcessor:
                 else:
                     self.df_brace["R2"] = self.brace_R2[0]
                     self.df_brace["R3"] = self.brace_R3[0]
+
+    def _combined_brace_dataframe(self):
+        if self.brace_split:
+            frames = [df for df in (self.df_horiz, self.df_cross) if not df.empty]
+            if not frames:
+                return pd.DataFrame()
+            return pd.concat(frames, ignore_index=False)
+        return self.df_brace
+
+    def _brace_utilization(self, func):
+        if self.brace_split:
+            values = [
+                func(df, "R3", "R2", self.f_y_brace)
+                for df in (self.df_horiz, self.df_cross)
+                if not df.empty
+            ]
+            if values:
+                return pd.concat(values, ignore_index=False)
+            return pd.Series(dtype=float)
+        return func(self.df_brace, "R3", "R2", self.f_y_brace)
 
     # Function to read and parse forces 
     # NOTE: I have used Copilot for most of this function, so understanding is low ...
@@ -313,11 +336,7 @@ class PostProcessor:
             return df_member["Util_NF"]
 
         Util_NF_col = NormalForceFun(self.df_col, "R1", "R0", f_y) # Column
-        Util_NF_horiz = NormalForceFun(self.df_horiz, "R3", "R2", f_y_brace) # Horiz Brace
-        Util_NF_cross = NormalForceFun(self.df_cross, "R3", "R2", f_y_brace) # Cross Brace
-        
-        # Combine horizontal and cross braces
-        Util_NF_brace = pd.concat([Util_NF_horiz, Util_NF_cross], ignore_index=False)
+        Util_NF_brace = self._brace_utilization(NormalForceFun) # Brace
         
         return Util_NF_col, Util_NF_brace
 
@@ -344,11 +363,7 @@ class PostProcessor:
             return df_member["Util_S"]
 
         Util_S_col = shearFun(self.df_col, "R1", "R0", f_y) # Column
-        Util_S_horiz = shearFun(self.df_horiz, "R3", "R2", f_y_brace) # Horiz Brace
-        Util_S_cross = shearFun(self.df_cross, "R3", "R2", f_y_brace) # Cross Brace
-        
-        # Combine horizontal and cross braces
-        Util_S_brace = pd.concat([Util_S_horiz, Util_S_cross], ignore_index=False)
+        Util_S_brace = self._brace_utilization(shearFun) # Brace
 
         return Util_S_col, Util_S_brace
 
@@ -373,11 +388,7 @@ class PostProcessor:
             return df_member["Util_T"]
 
         Util_T_col = torsionFun(self.df_col, "R1", "R0", f_y) # Column
-        Util_T_horiz = torsionFun(self.df_horiz, "R3", "R2", f_y_brace) # Horiz Brace
-        Util_T_cross = torsionFun(self.df_cross, "R3", "R2", f_y_brace) # Cross Brace
-        
-        # Combine horizontal and cross braces
-        Util_T_brace = pd.concat([Util_T_horiz, Util_T_cross], ignore_index=False)
+        Util_T_brace = self._brace_utilization(torsionFun) # Brace
 
         return Util_T_col, Util_T_brace
 
@@ -539,11 +550,13 @@ class PostProcessor:
     # Brace-Step
     def Util_BS(self): 
 
-        # Determine most critical brace section for the check (NEED TO CHANGE)
+        brace_sections = self.brace_horiz_d1_t1 if self.brace_split else self.brace_d1_t1
+
+        # Determine most critical horizontal brace section for the check
         if self.multi_size_braces:
-            d1, t1 = max(self.brace_d1_t1, key=lambda pair: pair[0] / pair[1] if pair[1] > 0 else -np.inf)
+            d1, t1 = max(brace_sections, key=lambda pair: pair[0] / pair[1] if pair[1] > 0 else -np.inf)
         else:
-            d1, t1 = self.brace_d1_t1[0]
+            d1, t1 = brace_sections[0]
 
         # Import Misc
         f_y_brace = self.f_y_brace
