@@ -9,48 +9,78 @@ import pandas as pd
 
 # PyMAPDL Package
 from ansys.mapdl.core import launch_mapdl
-from ansys.mapdl.core.errors import MapdlRuntimeError, MapdlException
+from ansys.mapdl.core.errors import MapdlRuntimeError
 
 # Import Functions
 from Post_Process import PostProcessor
 from MyAPDLCall import RunAPDL
 
-
 # Start timing
 tic = time.time()
 
+# Collect variables
+# Defining variables with bounds and active status
+# Include Bounds
 opti_settings = {
     "n_mast_segments": 5,         # Number of mast segments
     "mast_segment_height": 810,   # Height of each mast segment [mm]
     "multi_size_columns": True,   # Whether mast segments columns uses different dimensions (True) or not (False)
     "multi_size_braces": True,    # Whether mast segments braces uses different dimensions (True) or not (False)
+    "brace_split": True,          # Whether braces are split between horiontal and cross (True) or not (False)
 }
 
-# Collect variables
+# Initial Guess
+column_diameter = 76.1 # Column Diameter [mm]
+column_thickness = 3.0 # Column Thickness [mm]
+brace_diameter = 26.9 # Brace Diameter [mm]
+brace_thickness = 2.3 # Brace Thickness [mm]
+
+# Bounds
+column_diameter_bounds = (50.0, 100) # Column Diameter Bounds [mm]
+column_thickness_bounds = (1.0, 7.0)   # Column Thickness Bounds [mm]
+brace_diameter_bounds = (10.0, 40.0)   # Brace Diameter Bounds [mm]
+brace_thickness_bounds = (0.1, 4.5)    # Brace Thickness Bounds [mm]
+
 # Defining variables with bounds and active status
 var = {
     "rad": {"value": 202.07, "bounds": (150.0, 300.0), "active": True}, # Radius Structure [mm]
 }
 if opti_settings["multi_size_columns"]:
     var.update({
-        **{f"d0_{i}": {"value": 76.1, "bounds": (50.0, 100), "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},       # Column Diameter  [mm]
-        **{f"t0_{i}": {"value": 3.0,  "bounds": (1.0, 7.0),  "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},       # Column Thickness [mm]
+        **{f"d0_{i}": {"value": column_diameter, "bounds": column_diameter_bounds, "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},       # Column Diameter  [mm]
+        **{f"t0_{i}": {"value": column_thickness,  "bounds": column_thickness_bounds,  "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},       # Column Thickness [mm]
     })
 else:
     var.update({
-        "d0": {"value": 76.1, "bounds": (50.0, 100), "active": True},       # Column Diameter  [mm]
-        "t0": {"value": 3.0,  "bounds": (1.0, 7.0),  "active": True},       # Column Thickness [mm]
+        "d0": {"value": column_diameter, "bounds": column_diameter_bounds, "active": True},       # Column Diameter  [mm]
+        "t0": {"value": column_thickness,  "bounds": column_thickness_bounds,  "active": True},       # Column Thickness [mm]
     })
 if opti_settings["multi_size_braces"]:
-    var.update({
-        **{f"d1_{i}": {"value": 26.9, "bounds": (10.0, 40.0), "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},     # Brace Diameter   [mm]
-        **{f"t1_{i}": {"value": 2.3,  "bounds": (0.1, 4.5),  "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},       # Brace Thickness  [mm]
-    })
+    if opti_settings["brace_split"]:
+        var.update({
+            **{f"d1_h_{i}": {"value": brace_diameter, "bounds": brace_diameter_bounds, "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},     # Horizontal Brace Diameter   [mm]
+            **{f"t1_h_{i}": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},       # Horizontal Brace Thickness  [mm]
+            **{f"d1_c_{i}": {"value": brace_diameter, "bounds": brace_diameter_bounds, "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},     # Cross Brace Diameter       [mm]
+            **{f"t1_c_{i}": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},       # Cross Brace Thickness      [mm]
+        })
+    else:
+        var.update({
+            **{f"d1_{i}": {"value": brace_diameter, "bounds": brace_diameter_bounds, "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},     # Brace Diameter   [mm]
+            **{f"t1_{i}": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},       # Brace Thickness  [mm]
+        })
 else:
-    var.update({
-        "d1": {"value": 26.9, "bounds": (10.0, 40.0), "active": True},     # Brace Diameter   [mm]
-        "t1": {"value": 2.3,  "bounds": (0.1, 4.5),  "active": True},       # Brace Thickness  [mm]
-    })
+    if opti_settings["brace_split"]:
+        var.update({
+            "d1_h": {"value": brace_diameter, "bounds": brace_diameter_bounds, "active": True},     # Horizontal Brace Diameter   [mm]
+            "t1_h": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True},       # Horizontal Brace Thickness  [mm]
+            "d1_c": {"value": brace_diameter, "bounds": brace_diameter_bounds, "active": True},     # Cross Brace Diameter       [mm]
+            "t1_c": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True},       # Cross Brace Thickness      [mm]
+        })
+    else:
+        var.update({
+            "d1": {"value": brace_diameter, "bounds": brace_diameter_bounds, "active": True},     # Brace Diameter   [mm]
+            "t1": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True},       # Brace Thickness  [mm]
+        })
     
 # Create Misc as dict
 Misc = {
@@ -79,19 +109,23 @@ toc_lic = time.time()
 print(f"License opened in: {toc_lic-tic_lic:.2f} s")
 
 # Run Environment
+f = None  # Initialize f to None
 try:
     f = RunAPDL(mapdl, var, Misc, opti_settings) # Runs APDL and returns MASS
 except MapdlRuntimeError as e:
     # Handle MAPDL runtime errors
-    print(f"MAPDL error occured: {e}")
+    print(f"MAPDL error occurred: {e}")
 except Exception as e:
     # Handle other errors
     print(f"Unexpected error: {e}")
 finally:
     mapdl.exit()
 
-# Print mass of assembly
-print(f" -> Mass of Assembly: {f:.2f} kg")
+# Print mass of assembly if successful
+if f is not None:
+    print(f" -> Mass of Assembly: {f:.2f} kg")
+else:
+    print(" -> Mass calculation failed due to an error")
 
 
 # Pack specifically for compability

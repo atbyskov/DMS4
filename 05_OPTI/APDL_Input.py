@@ -49,15 +49,26 @@ def InputFun(var,Misc,opti_settings):
         R1 = round(var["d0"]["value"]/2, 4)
 
     if opti_settings.get("multi_size_braces", True):
-        # Horizontal braces
-        R2_horiz_list = [round(var[f"d1_h_{i}"]["value"]/2 - var[f"t1_h_{i}"]["value"], 4) for i in range(1, n+1)]
-        R3_horiz_list = [round(var[f"d1_h_{i}"]["value"]/2, 4) for i in range(1, n+1)]
-        # Cross braces
-        R2_cross_list = [round(var[f"d1_c_{i}"]["value"]/2 - var[f"t1_c_{i}"]["value"], 4) for i in range(1, n+1)]
-        R3_cross_list = [round(var[f"d1_c_{i}"]["value"]/2, 4) for i in range(1, n+1)]
+        if opti_settings.get("brace_split", False):
+            # Horizontal braces
+            R2_horiz_list = [round(var[f"d1_h_{i}"]["value"]/2 - var[f"t1_h_{i}"]["value"], 4) for i in range(1, n+1)]
+            R3_horiz_list = [round(var[f"d1_h_{i}"]["value"]/2, 4) for i in range(1, n+1)]
+            # Cross braces
+            R2_cross_list = [round(var[f"d1_c_{i}"]["value"]/2 - var[f"t1_c_{i}"]["value"], 4) for i in range(1, n+1)]
+            R3_cross_list = [round(var[f"d1_c_{i}"]["value"]/2, 4) for i in range(1, n+1)]
+        else:
+            # Combined braces (same size for both horizontal and cross)
+            R2_list = [round(var[f"d1_{i}"]["value"]/2 - var[f"t1_{i}"]["value"], 4) for i in range(1, n+1)]
+            R3_list = [round(var[f"d1_{i}"]["value"]/2, 4) for i in range(1, n+1)]
     else:
-        R2 = round(var["d1"]["value"]/2 - var["t1"]["value"], 4)
-        R3 = round(var["d1"]["value"]/2, 4)
+        if opti_settings.get("brace_split", False):
+            R2_horiz = round(var["d1_h"]["value"]/2 - var["t1_h"]["value"], 4)
+            R3_horiz = round(var["d1_h"]["value"]/2, 4)
+            R2_cross = round(var["d1_c"]["value"]/2 - var["t1_c"]["value"], 4)
+            R3_cross = round(var["d1_c"]["value"]/2, 4)
+        else:
+            R2 = round(var["d1"]["value"]/2 - var["t1"]["value"], 4)
+            R3 = round(var["d1"]["value"]/2, 4)
 
     # Change Radius Logic
     if rad is not None:
@@ -132,19 +143,34 @@ def InputFun(var,Misc,opti_settings):
         ap.append(f"SECDATA,{R0},{R1},8  ")
     
     if opti_settings.get("multi_size_braces", True):
-        # Horizontal braces
-        for i in range(1, n+1):
-            secnum = brace_start + 2*(i-1)
-            ap.append(f"SECTYPE,{secnum},BEAM,CTUBE  ")
-            ap.append(f"SECDATA,{R2_horiz_list[i-1]},{R3_horiz_list[i-1]},8  ")
-        # Cross braces
-        for i in range(1, n+1):
-            secnum = brace_start + 2*(i-1) + 1
-            ap.append(f"SECTYPE,{secnum},BEAM,CTUBE  ")
-            ap.append(f"SECDATA,{R2_cross_list[i-1]},{R3_cross_list[i-1]},8  ")
+        if opti_settings.get("brace_split", False):
+            # Horizontal braces
+            for i in range(1, n+1):
+                secnum = brace_start + 2*(i-1)
+                ap.append(f"SECTYPE,{secnum},BEAM,CTUBE  ")
+                ap.append(f"SECDATA,{R2_horiz_list[i-1]},{R3_horiz_list[i-1]},8  ")
+            # Cross braces
+            for i in range(1, n+1):
+                secnum = brace_start + 2*(i-1) + 1
+                ap.append(f"SECTYPE,{secnum},BEAM,CTUBE  ")
+                ap.append(f"SECDATA,{R2_cross_list[i-1]},{R3_cross_list[i-1]},8  ")
+        else:
+            # Combined braces (same size for both horizontal and cross)
+            for i in range(1, n+1):
+                secnum = brace_start + i - 1
+                ap.append(f"SECTYPE,{secnum},BEAM,CTUBE  ")
+                ap.append(f"SECDATA,{R2_list[i-1]},{R3_list[i-1]},8  ")
     else:
-        ap.append(f"SECTYPE,{brace_start},BEAM,CTUBE  ")
-        ap.append(f"SECDATA,{R2},{R3},8  ")
+        if opti_settings.get("brace_split", False):
+            # Horizontal braces
+            ap.append(f"SECTYPE,{brace_start},BEAM,CTUBE  ")
+            ap.append(f"SECDATA,{R2_horiz},{R3_horiz},8  ")
+            # Cross braces
+            ap.append(f"SECTYPE,{brace_start+1},BEAM,CTUBE  ")
+            ap.append(f"SECDATA,{R2_cross},{R3_cross},8  ")
+        else:
+            ap.append(f"SECTYPE,{brace_start},BEAM,CTUBE  ")
+            ap.append(f"SECDATA,{R2},{R3},8  ")
     
     ap.append(f"SECTYPE,{top_sectype},BEAM,CTUBE  ")
     ap.append("SECDATA,35.05,38.05,8  ")
@@ -255,13 +281,19 @@ def InputFun(var,Misc,opti_settings):
                 ap.append(f"CM,CROSS_{cross_id},LINE ")
                 cross_id += 1
                 CM_Brace_dict += 1
-        print("Corner Lines")
-        print(corner_lines)
         # Reset
         ap.append("LSEL,ALL  ")   
 
         line_id += 1
     ap.append(" ")
+
+    # Printing lines for debug
+    print("Corner Lines")
+    print(corner_lines)
+    print("Horizontal Lines")
+    print(horiz_lines)
+    print("Cross Lines")
+    print(cross_lines)
 
     # ELEMENT DEFINITION
     ap.append("! ELEMENT SIZE !  ")
@@ -299,18 +331,33 @@ def InputFun(var,Misc,opti_settings):
         group_mesh("Meshing CORNER Beams (SECNUM=1)", 1, corner_lines)
     
     if opti_settings.get("multi_size_braces", True):
-        for i in range(n):
-            # Horizontal braces
-            if horiz_lines[i]:
-                secnum = brace_start + 2*i
-                group_mesh(f"Meshing HORIZ Beams Segment {i+1} (SECNUM={secnum})", secnum, horiz_lines[i])
-            # Cross braces
-            if cross_lines[i]:
-                secnum = brace_start + 2*i + 1
-                group_mesh(f"Meshing CROSS Beams Segment {i+1} (SECNUM={secnum})", secnum, cross_lines[i])
+        if opti_settings.get("brace_split", False):
+            for i in range(n):
+                # Horizontal braces
+                if horiz_lines[i]:
+                    secnum = brace_start + 2*i
+                    group_mesh(f"Meshing HORIZ Beams Segment {i+1} (SECNUM={secnum})", secnum, horiz_lines[i])
+                # Cross braces
+                if cross_lines[i]:
+                    secnum = brace_start + 2*i + 1
+                    group_mesh(f"Meshing CROSS Beams Segment {i+1} (SECNUM={secnum})", secnum, cross_lines[i])
+        else:
+            # Combined braces - same section number for both horizontal and cross
+            for i in range(n):
+                if horiz_lines[i]:
+                    secnum = brace_start + i
+                    group_mesh(f"Meshing HORIZ Beams Segment {i+1} (SECNUM={secnum})", secnum, horiz_lines[i])
+                if cross_lines[i]:
+                    secnum = brace_start + i
+                    group_mesh(f"Meshing CROSS Beams Segment {i+1} (SECNUM={secnum})", secnum, cross_lines[i])
     else:
-        group_mesh(f"Meshing HORIZ Beams (SECNUM={brace_start})", brace_start, horiz_lines)
-        group_mesh(f"Meshing CROSS Beams (SECNUM={brace_start+1})", brace_start+1, cross_lines)
+        if opti_settings.get("brace_split", False):
+            group_mesh(f"Meshing HORIZ Beams (SECNUM={brace_start})", brace_start, horiz_lines)
+            group_mesh(f"Meshing CROSS Beams (SECNUM={brace_start+1})", brace_start+1, cross_lines)
+        else:
+            # Combine all braces (horizontal + cross) into one section
+            combined_lines = horiz_lines + cross_lines
+            group_mesh(f"Meshing ALL Braces (SECNUM={brace_start})", brace_start, combined_lines)
     
     group_mesh(f"Meshing TOP Beam (SECNUM={top_sectype})", top_sectype, Top_lines)
 

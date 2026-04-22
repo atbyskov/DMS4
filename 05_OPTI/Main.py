@@ -19,30 +19,58 @@ opti_settings = {
     "brace_split": True,          # Whether braces are split between horiontal and cross (True) or not (False)
 }
 
+# Initial Guess
+column_diameter = 76.1 # Column Diameter [mm]
+column_thickness = 3.0 # Column Thickness [mm]
+brace_diameter = 26.9 # Brace Diameter [mm]
+brace_thickness = 2.3 # Brace Thickness [mm]
+
+# Bounds
+column_diameter_bounds = (50.0, 100) # Column Diameter Bounds [mm]
+column_thickness_bounds = (1.0, 7.0)   # Column Thickness Bounds [mm]
+brace_diameter_bounds = (10.0, 40.0)   # Brace Diameter Bounds [mm]
+brace_thickness_bounds = (0.1, 4.5)    # Brace Thickness Bounds [mm]
+
 # Defining variables with bounds and active status
 var = {
     "rad": {"value": 202.07, "bounds": (150.0, 300.0), "active": True}, # Radius Structure [mm]
 }
 if opti_settings["multi_size_columns"]:
     var.update({
-        **{f"d0_{i}": {"value": 76.1, "bounds": (50.0, 100), "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},       # Column Diameter  [mm]
-        **{f"t0_{i}": {"value": 3.0,  "bounds": (1.0, 7.0),  "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},       # Column Thickness [mm]
+        **{f"d0_{i}": {"value": column_diameter, "bounds": column_diameter_bounds, "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},       # Column Diameter  [mm]
+        **{f"t0_{i}": {"value": column_thickness,  "bounds": column_thickness_bounds,  "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},       # Column Thickness [mm]
     })
 else:
     var.update({
-        "d0": {"value": 76.1, "bounds": (50.0, 100), "active": True},       # Column Diameter  [mm]
-        "t0": {"value": 3.0,  "bounds": (1.0, 7.0),  "active": True},       # Column Thickness [mm]
+        "d0": {"value": column_diameter, "bounds": column_diameter_bounds, "active": True},       # Column Diameter  [mm]
+        "t0": {"value": column_thickness,  "bounds": column_thickness_bounds,  "active": True},       # Column Thickness [mm]
     })
 if opti_settings["multi_size_braces"]:
-    var.update({
-        **{f"d1_{i}": {"value": 26.9, "bounds": (10.0, 40.0), "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},     # Brace Diameter   [mm]
-        **{f"t1_{i}": {"value": 2.3,  "bounds": (0.1, 4.5),  "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},       # Brace Thickness  [mm]
-    })
+    if opti_settings["brace_split"]:
+        var.update({
+            **{f"d1_h_{i}": {"value": brace_diameter, "bounds": brace_diameter_bounds, "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},     # Horizontal Brace Diameter   [mm]
+            **{f"t1_h_{i}": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},       # Horizontal Brace Thickness  [mm]
+            **{f"d1_c_{i}": {"value": brace_diameter, "bounds": brace_diameter_bounds, "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},     # Cross Brace Diameter       [mm]
+            **{f"t1_c_{i}": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},       # Cross Brace Thickness      [mm]
+        })
+    else:
+        var.update({
+            **{f"d1_{i}": {"value": brace_diameter, "bounds": brace_diameter_bounds, "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},     # Brace Diameter   [mm]
+            **{f"t1_{i}": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},       # Brace Thickness  [mm]
+        })
 else:
-    var.update({
-        "d1": {"value": 26.9, "bounds": (10.0, 40.0), "active": True},     # Brace Diameter   [mm]
-        "t1": {"value": 2.3,  "bounds": (0.1, 4.5),  "active": True},       # Brace Thickness  [mm]
-    })
+    if opti_settings["brace_split"]:
+        var.update({
+            "d1_h": {"value": brace_diameter, "bounds": brace_diameter_bounds, "active": True},     # Horizontal Brace Diameter   [mm]
+            "t1_h": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True},       # Horizontal Brace Thickness  [mm]
+            "d1_c": {"value": brace_diameter, "bounds": brace_diameter_bounds, "active": True},     # Cross Brace Diameter       [mm]
+            "t1_c": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True},       # Cross Brace Thickness      [mm]
+        })
+    else:
+        var.update({
+            "d1": {"value": brace_diameter, "bounds": brace_diameter_bounds, "active": True},     # Brace Diameter   [mm]
+            "t1": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True},       # Brace Thickness  [mm]
+        })
 
 # Static variables
 Misc = {

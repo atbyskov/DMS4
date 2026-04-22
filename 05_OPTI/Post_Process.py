@@ -83,27 +83,41 @@ class PostProcessor:
         self.mast_height = float(opti_settings.get("mast_segment_height"))
         self.multi_size_columns = bool(opti_settings.get("multi_size_columns"))
         self.multi_size_braces = bool(opti_settings.get("multi_size_braces"))
+        self.brace_split = bool(opti_settings.get("brace_split", False))
         self.E_mod = Misc["E_mod"]
         self.f_y = Misc["f_y"]
         self.f_y_brace = Misc["f_y_brace"]
 
         # Build per-segment section radii for columns and braces
         self.column_R0, self.column_R1 = self._build_section_radii("d0", "t0", self.multi_size_columns)
-        # Horizontal braces
-        self.brace_horiz_R2, self.brace_horiz_R3 = self._build_section_radii("d1_h", "t1_h", self.multi_size_braces)
-        # Cross braces
-        self.brace_cross_R2, self.brace_cross_R3 = self._build_section_radii("d1_c", "t1_c", self.multi_size_braces)
-
-        # Build per-segment diameter/thickness data for class checks
-        self.column_d0_t0 = self._build_section_dimensions("d0", "t0", self.multi_size_columns)
-        self.brace_horiz_d1_t1 = self._build_section_dimensions("d1_h", "t1_h", self.multi_size_braces)
-        self.brace_cross_d1_t1 = self._build_section_dimensions("d1_c", "t1_c", self.multi_size_braces)
+        
+        # Handle braces based on split setting
+        if self.brace_split:
+            # Horizontal braces
+            self.brace_horiz_R2, self.brace_horiz_R3 = self._build_section_radii("d1_h", "t1_h", self.multi_size_braces)
+            # Cross braces
+            self.brace_cross_R2, self.brace_cross_R3 = self._build_section_radii("d1_c", "t1_c", self.multi_size_braces)
+            # Build per-segment diameter/thickness data for class checks
+            self.brace_horiz_d1_t1 = self._build_section_dimensions("d1_h", "t1_h", self.multi_size_braces)
+            self.brace_cross_d1_t1 = self._build_section_dimensions("d1_c", "t1_c", self.multi_size_braces)
+        else:
+            # Combined braces (same size for both)
+            self.brace_R2, self.brace_R3 = self._build_section_radii("d1", "t1", self.multi_size_braces)
+            self.brace_d1_t1 = self._build_section_dimensions("d1", "t1", self.multi_size_braces)
 
         # Load nonlinear results and separate columns from braces
         self.df_nonlin = self.read_forces("Ansout/APDL_Nonlin_Internal.txt")
         self.df_col = self.df_nonlin[self.df_nonlin["Member"].str.startswith("ColMember")].copy()
-        self.df_horiz = self.df_nonlin[self.df_nonlin["Member"].str.startswith("HorizMember")].copy()
-        self.df_cross = self.df_nonlin[self.df_nonlin["Member"].str.startswith("CrossMember")].copy()
+        
+        if self.brace_split:
+            self.df_horiz = self.df_nonlin[self.df_nonlin["Member"].str.startswith("HorizMember")].copy()
+            self.df_cross = self.df_nonlin[self.df_nonlin["Member"].str.startswith("CrossMember")].copy()
+        else:
+            # If not split, combine all braces
+            self.df_brace = self.df_nonlin[
+                (self.df_nonlin["Member"].str.startswith("HorizMember")) |
+                (self.df_nonlin["Member"].str.startswith("CrossMember"))
+            ].copy()
 
         self._annotate_member_sections()
 
@@ -157,14 +171,35 @@ class PostProcessor:
                 self.df_col["R0"] = self.column_R0[0]
                 self.df_col["R1"] = self.column_R1[0]
 
-        if not self.df_brace.empty:
-            self.df_brace["segment"] = self._segment_series(self.df_brace["Y_LOC"])
-            if len(self.brace_R2) > 1:
-                self.df_brace["R2"] = self.df_brace["segment"].map(lambda s: self.brace_R2[s - 1])
-                self.df_brace["R3"] = self.df_brace["segment"].map(lambda s: self.brace_R3[s - 1])
-            else:
-                self.df_brace["R2"] = self.brace_R2[0]
-                self.df_brace["R3"] = self.brace_R3[0]
+        if self.brace_split:
+            # Handle separate horizontal and cross braces
+            if not self.df_horiz.empty:
+                self.df_horiz["segment"] = self._segment_series(self.df_horiz["Y_LOC"])
+                if len(self.brace_horiz_R2) > 1:
+                    self.df_horiz["R2"] = self.df_horiz["segment"].map(lambda s: self.brace_horiz_R2[s - 1])
+                    self.df_horiz["R3"] = self.df_horiz["segment"].map(lambda s: self.brace_horiz_R3[s - 1])
+                else:
+                    self.df_horiz["R2"] = self.brace_horiz_R2[0]
+                    self.df_horiz["R3"] = self.brace_horiz_R3[0]
+
+            if not self.df_cross.empty:
+                self.df_cross["segment"] = self._segment_series(self.df_cross["Y_LOC"])
+                if len(self.brace_cross_R2) > 1:
+                    self.df_cross["R2"] = self.df_cross["segment"].map(lambda s: self.brace_cross_R2[s - 1])
+                    self.df_cross["R3"] = self.df_cross["segment"].map(lambda s: self.brace_cross_R3[s - 1])
+                else:
+                    self.df_cross["R2"] = self.brace_cross_R2[0]
+                    self.df_cross["R3"] = self.brace_cross_R3[0]
+        else:
+            # Handle combined braces
+            if not self.df_brace.empty:
+                self.df_brace["segment"] = self._segment_series(self.df_brace["Y_LOC"])
+                if len(self.brace_R2) > 1:
+                    self.df_brace["R2"] = self.df_brace["segment"].map(lambda s: self.brace_R2[s - 1])
+                    self.df_brace["R3"] = self.df_brace["segment"].map(lambda s: self.brace_R3[s - 1])
+                else:
+                    self.df_brace["R2"] = self.brace_R2[0]
+                    self.df_brace["R3"] = self.brace_R3[0]
 
     # Function to read and parse forces 
     # NOTE: I have used Copilot for most of this function, so understanding is low ...
@@ -278,7 +313,11 @@ class PostProcessor:
             return df_member["Util_NF"]
 
         Util_NF_col = NormalForceFun(self.df_col, "R1", "R0", f_y) # Column
-        Util_NF_brace = NormalForceFun(self.df_brace, "R3", "R2", f_y_brace) # Brace
+        Util_NF_horiz = NormalForceFun(self.df_horiz, "R3", "R2", f_y_brace) # Horiz Brace
+        Util_NF_cross = NormalForceFun(self.df_cross, "R3", "R2", f_y_brace) # Cross Brace
+        
+        # Combine horizontal and cross braces
+        Util_NF_brace = pd.concat([Util_NF_horiz, Util_NF_cross], ignore_index=False)
         
         return Util_NF_col, Util_NF_brace
 
@@ -305,7 +344,11 @@ class PostProcessor:
             return df_member["Util_S"]
 
         Util_S_col = shearFun(self.df_col, "R1", "R0", f_y) # Column
-        Util_S_brace = shearFun(self.df_brace, "R3", "R2", f_y_brace) # Brace
+        Util_S_horiz = shearFun(self.df_horiz, "R3", "R2", f_y_brace) # Horiz Brace
+        Util_S_cross = shearFun(self.df_cross, "R3", "R2", f_y_brace) # Cross Brace
+        
+        # Combine horizontal and cross braces
+        Util_S_brace = pd.concat([Util_S_horiz, Util_S_cross], ignore_index=False)
 
         return Util_S_col, Util_S_brace
 
@@ -330,7 +373,11 @@ class PostProcessor:
             return df_member["Util_T"]
 
         Util_T_col = torsionFun(self.df_col, "R1", "R0", f_y) # Column
-        Util_T_brace = torsionFun(self.df_brace, "R3", "R2", f_y_brace) # Brace
+        Util_T_horiz = torsionFun(self.df_horiz, "R3", "R2", f_y_brace) # Horiz Brace
+        Util_T_cross = torsionFun(self.df_cross, "R3", "R2", f_y_brace) # Cross Brace
+        
+        # Combine horizontal and cross braces
+        Util_T_brace = pd.concat([Util_T_horiz, Util_T_cross], ignore_index=False)
 
         return Util_T_col, Util_T_brace
 
