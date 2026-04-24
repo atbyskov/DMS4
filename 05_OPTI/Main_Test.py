@@ -39,7 +39,7 @@ brace_thickness = 2.3 # Brace Thickness [mm]
 column_diameter_bounds = (50.0, 100) # Column Diameter Bounds [mm]
 column_thickness_bounds = (1.0, 7.0)   # Column Thickness Bounds [mm]
 brace_diameter_bounds = (10.0, 40.0)   # Brace Diameter Bounds [mm]
-brace_thickness_bounds = (0.1, 4.5)    # Brace Thickness Bounds [mm]
+brace_thickness_bounds = (1.0, 4.5)    # Brace Thickness Bounds [mm]
 
 # Defining variables with bounds and active status
 var = {

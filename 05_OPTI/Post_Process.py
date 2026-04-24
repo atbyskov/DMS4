@@ -24,7 +24,7 @@ from io import StringIO
 import SW_Import as SW
 
 
-# Function to calculate the span of horizontal brace - It works, but i don't understand this
+# Function to calculate the span of horizontal brace - It works, but i (Christian) don't understand this
 def _brace_span_mm(var, misc, tol=1e-3):
     co = SW.import_SW(str(Path("IGS") / misc["SW_filename"]))
 
@@ -297,7 +297,7 @@ class PostProcessor:
                 "Util_NF": self.Util_NF(),
                 "Util_S": self.Util_S(),
                 "Util_T": self.Util_T(),
-                "Util_BNS": self.Util_BNS(),
+                #"Util_BNS": self.Util_BNS(),
                 "Util_BR": self.Util_BR(),
                 "Util_IN": self.Util_IN(),
                 "Util_BS": self.Util_BS()
@@ -333,7 +333,6 @@ class PostProcessor:
 
         # Import f_y
         f_y = self.f_y
-        f_y_brace = self.f_y_brace
 
         def NormalForceFun(df_member, Ro_col, Ri_col, f_y):
             # Area
@@ -355,7 +354,6 @@ class PostProcessor:
 
         # Import Misc
         f_y = self.f_y
-        f_y_brace = self.f_y_brace
 
         def shearFun(df_member, Ro_col, Ri_col, f_y):
             A = np.pi * ((df_member[Ro_col]**2) - (df_member[Ri_col]**2))
@@ -382,11 +380,10 @@ class PostProcessor:
 
         # Import Misc
         f_y = self.f_y
-        f_y_brace = self.f_y_brace
 
-        def torsionFun(df_member, Ro_col, Ri_col, f_y):
-            D0 = df_member[Ro_col] * 2 # Outer Diameter
-            Di = df_member[Ri_col] * 2 # Inner Diameter
+        def torsionFun(df_member, Ro, Ri, f_y):
+            D0 = df_member[Ro] * 2 # Outer Diameter
+            Di = df_member[Ri] * 2 # Inner Diameter
 
             # Torsion Design Resitance [6.2.7 (6.23)]
             T_Rd = (math.pi/16 * (D0**4 - Di**4) / D0) * f_y / math.sqrt(3)
@@ -409,13 +406,13 @@ class PostProcessor:
         f_y = self.f_y
         f_y_brace = self.f_y_brace
 
-        def bnsFun(df_member, Ro_col, Ri_col, f_y):
-            D0 = df_member[Ro_col] * 2
-            Di = df_member[Ri_col] * 2
+        def bnsFun(df_member, Ro, Ri, f_y):
+            D0 = df_member[Ro] * 2
+            Di = df_member[Ri] * 2
             t = (D0 - Di) / 2
 
             # Area
-            A = np.pi * ((df_member[Ro_col]**2) - (df_member[Ri_col]**2))
+            A = np.pi * ((df_member[Ro]**2) - (df_member[Ri]**2))
             Aw = (A - 2 * D0 * t) / A
             Aw = np.clip(Aw, 0, 0.5)
 
@@ -431,10 +428,10 @@ class PostProcessor:
             Mz = df_member["Mz"].abs()
 
             # Fraction to be used in Utilization Ratio
-            red_col = (1 - (N / N_Rd)**1.7)
+            red = (1 - (N / N_Rd)**1.7)
 
             # Utilization Ratio
-            df_member["Util_BNS"] = (My / (M_Rd * red_col))**2 + (Mz / (M_Rd * red_col))**2
+            df_member["Util_BNS"] = (My / (M_Rd * red))**2 + (Mz / (M_Rd * red))**2
 
             return df_member["Util_BNS"]
 
@@ -455,11 +452,11 @@ class PostProcessor:
         f_y = self.f_y
         f_y_brace = self.f_y_brace
 
-        def bucklingResFun(df_member, Ro_col, Ri_col, f_y):
+        def bucklingResFun(df_member, Ro, Ri, f_y):
             df = df_member.copy()
             util = np.zeros(len(df), dtype=float)
 
-            A = np.pi * (df[Ro_col]**2 - df[Ri_col]**2)
+            A = np.pi * (df[Ro]**2 - df[Ri]**2)
 
             N_raw = df["NF"].to_numpy(dtype=float)
             N_comp = np.maximum(-N_raw, 0.0)
@@ -499,14 +496,14 @@ class PostProcessor:
             eigenvalues = [float(line.strip()) for line in f if line.strip()]
         a_cr = next(v for v in eigenvalues if v > 0)
 
-        def interaction(df_member, Ro_col, Ri_col, f_y):
+        def interaction(df_member, Ro, Ri, f_y):
             df = df_member.copy()
             util = np.zeros(len(df), dtype=float)
 
             # Geometry (row-wise)
-            Do = 2 * df[Ro_col]
-            Di = 2 * df[Ri_col]
-            A = math.pi * (df[Ro_col]**2 - df[Ri_col]**2)
+            Do = 2 * df[Ro]
+            Di = 2 * df[Ri]
+            A = math.pi * (df[Ro]**2 - df[Ri]**2)
 
             N_raw = df["NF"].to_numpy(dtype=float)
             N_comp = np.maximum(-N_raw, 0.0)
@@ -515,10 +512,6 @@ class PostProcessor:
             for member, g in df.groupby("Member"):
                 idx = g.index.to_numpy()
 
-                # Debug
-                print(f"Processing Member: {member}, Indices: {idx}")
-                print("g")
-                print(g)
                 N_c = N_comp[idx]
                 active = N_c > 0.0
                 if not np.any(active):
