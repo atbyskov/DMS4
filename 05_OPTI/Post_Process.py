@@ -153,7 +153,7 @@ class PostProcessor:
                 "Util_NF": self.Util_NF(),
                 "Util_S": self.Util_S(),
                 "Util_T": self.Util_T(),
-                "Util_BNS": self.Util_BNS(),
+                #"Util_BNS": self.Util_BNS(), # Sometimes gives very high results, which seems unrealistic
                 "Util_BR": self.Util_BR(),
                 "Util_IN": self.Util_IN(),
                 "Util_BS": self.Util_BS()
@@ -477,15 +477,46 @@ class PostProcessor:
             active = N_comp > 0.0
 
             # Psi should come from the full member data, not filtered compression-only data
-            M_start_y = df["My"].iloc[0]
-            M_end_y = df["My"].iloc[-1]
-            M1_y, M2_y = (M_start_y, M_end_y) if abs(M_start_y) >= abs(M_end_y) else (M_end_y, M_start_y)
-            Psi_y = 0.0 if abs(M1_y) < 1e-12 else np.clip(M2_y / M1_y, -1.0, 1.0)
+           # --- Psi per member (broadcasted to each element row) ---
+            if "Member" in df.columns:
+                order_col = "Y_LOC" if "Y_LOC" in df.columns else "ElemID"
+                df_sorted = df.sort_values(["Member", order_col])
 
-            M_start_z = df["Mz"].iloc[0]
-            M_end_z = df["Mz"].iloc[-1]
-            M1_z, M2_z = (M_start_z, M_end_z) if abs(M_start_z) >= abs(M_end_z) else (M_end_z, M_start_z)
-            Psi_z = 0.0 if abs(M1_z) < 1e-12 else np.clip(M2_z / M1_z, -1.0, 1.0)
+                def psi_from_endmoments(s: pd.Series) -> float:
+                    # s is already ordered start->end
+                    if len(s) < 2:
+                        return 0.0
+                    M_start = float(s.iloc[0])
+                    M_end   = float(s.iloc[-1])
+
+                    # Choose M1 as the one with larger absolute value
+                    if abs(M_start) >= abs(M_end):
+                        M1, M2 = M_start, M_end
+                    else:
+                        M1, M2 = M_end, M_start
+
+                    if abs(M1) < 1e-12:
+                        return 0.0
+                    return float(np.clip(M2 / M1, -1.0, 1.0))
+
+                psi_y_by_member = df_sorted.groupby("Member")["My"].apply(psi_from_endmoments)
+                psi_z_by_member = df_sorted.groupby("Member")["Mz"].apply(psi_from_endmoments)
+
+                # Broadcast to every row (each member's 3 elements get the same Psi)
+                Psi_y = df["Member"].map(psi_y_by_member).to_numpy(dtype=float)
+                Psi_z = df["Member"].map(psi_z_by_member).to_numpy(dtype=float)
+
+            else:
+                # Fallback: treat whole df as a single member (old behavior)
+                M_start_y = df["My"].iloc[0]
+                M_end_y   = df["My"].iloc[-1]
+                M1_y, M2_y = (M_start_y, M_end_y) if abs(M_start_y) >= abs(M_end_y) else (M_end_y, M_start_y)
+                Psi_y = np.full(len(df), 0.0 if abs(M1_y) < 1e-12 else np.clip(M2_y / M1_y, -1.0, 1.0), dtype=float)
+
+                M_start_z = df["Mz"].iloc[0]
+                M_end_z   = df["Mz"].iloc[-1]
+                M1_z, M2_z = (M_start_z, M_end_z) if abs(M_start_z) >= abs(M_end_z) else (M_end_z, M_start_z)
+                Psi_z = np.full(len(df), 0.0 if abs(M1_z) < 1e-12 else np.clip(M2_z / M1_z, -1.0, 1.0), dtype=float)
 
             if np.any(active):
                 N_cr = a_cr * N_comp[active]
@@ -496,9 +527,9 @@ class PostProcessor:
 
                 mu = (1 - N_comp[active] / N_cr) / (1 - Chi * N_comp[active] / N_cr)
 
-                Cmy = 0.79 + 0.21 * Psi_y + 0.36 * (Psi_y - 0.33) * N_comp[active] / N_cr
+                Cmy = 0.79 + 0.21 * Psi_y[active] + 0.36 * (Psi_y[active] - 0.33) * N_comp[active] / N_cr
                 CmLT = 1.0
-                Cmz = 0.79 + 0.21 * Psi_z + 0.36 * (Psi_z - 0.33) * N_comp[active] / N_cr
+                Cmz = 0.79 + 0.21 * Psi_z[active] + 0.36 * (Psi_z[active] - 0.33) * N_comp[active] / N_cr
 
                 k_yy = Cmy * CmLT * (mu / (1 - N_comp[active] / N_cr))
                 k_yz = Cmz * CmLT * (mu / (1 - N_comp[active] / N_cr))

@@ -38,7 +38,7 @@ class ConstraintAggregate:
 
             g_max = np.max(g_k)
 
-            print(f"P-norm: {v_agg:.2f}")
+            print(f"Max Const: {g_max:.3f} | P-norm: {v_agg:.3}")
 
             return -v_agg, v_agg, g_max
         
@@ -52,23 +52,31 @@ class ConstraintAggregate:
 
             g_max = np.max(g_k)
 
-            print(f"P-norm: {v_agg:.2f}")
+            print(f"Max Const: {g_max:.3f} | P-norm-mean: {v_agg:.3}")
 
             return -v_agg, v_agg, g_max
         
         if self.method == "KS":
-            # rho parameter (typically between 2 and 200)
             rho = float(self.rho)
-            g = g - relaxation
-            g_max = np.max(g)
+            g_k = np.maximum(-(g - relaxation), 0.0)
+            g_max = np.max(g_k)
 
-            return ((1/rho)*np.log(np.sum(np.exp(rho*g))))
+            v_agg = 1/rho * np.log((np.sum(np.exp(rho*g_k))))
+
+            print(f"Max Const: {g_max:.3f} | KS: {v_agg:.3f}")
+
+            return -v_agg, v_agg, g_max
         
+                
         if self.method == "KS_shift":
-            # rho parameter (typically between 2 and 200)
             rho = float(self.rho)
-            g = 1.0 - g - relaxation
-            g_max = np.max(g)
+            g_k = np.maximum(-(g - relaxation), 0.0)
+            g_max = np.max(g_k)
 
-            return (g_max + (1/rho)*np.log(np.sum(np.exp(rho * (g-g_max)))))
+            v_agg = g_max + (1.0 / rho) * np.log(np.sum(np.exp(rho * (g_k - g_max))))
+
+            print(f"Max Const: {g_max:.3f} | KS: {v_agg:.3f}")
+            return -v_agg, v_agg, g_max
+
+  
 

@@ -303,7 +303,7 @@ def InputFun(var, Misc):
     ap.append("TSHAPE")
     # Display Cross section
     ap.append("ALLSEL")
-    ap.append("EPLOT")
+    #ap.append("EPLOT")
     ap.append("/ESHAPE,1 ! Display Cross Section ")
         
     #Create and save .png of the mesh
@@ -497,10 +497,10 @@ def InputFun(var, Misc):
     # FORMAT
     ap.append("   *IF,ii,LT,10,THEN  ")
     ap.append("       *VWRITE,ii  ")
-    ap.append('       ("NS ColMember_",F2.0)  ')
+    ap.append('       ("NS ColMember_",F3.0)  ')
     ap.append("   *ELSE  ")
     ap.append("       *VWRITE,ii  ")
-    ap.append('       ("NS ColMember_",F3.0)  ')
+    ap.append('       ("NS ColMember_",F4.0)  ')
     ap.append("   *ENDIF  ")
     # RESULT 
     ap.append("   *GET,nElem,ELEM,0,COUNT  ")
@@ -531,10 +531,10 @@ def InputFun(var, Misc):
     # FORMAT
     ap.append("   *IF,ii,LT,10,THEN  ")
     ap.append("       *VWRITE,ii  ")
-    ap.append('       ("NS BraceMember_",F2.0)  ')
+    ap.append('       ("NS BraceMember_",F3.0)  ')
     ap.append("   *ELSE  ")
     ap.append("       *VWRITE,ii  ")
-    ap.append('       ("NS BraceMember_",F3.0)  ')
+    ap.append('       ("NS BraceMember_",F4.0)  ')
     ap.append("   *ENDIF  ")
     # RESULT 
     ap.append("   *GET,nElem,ELEM,0,COUNT  ")

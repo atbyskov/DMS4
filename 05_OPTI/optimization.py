@@ -84,7 +84,7 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
             pp.Util_NF(),
             pp.Util_S(),
             pp.Util_T(),
-            pp.Util_BNS(),
+            #pp.Util_BNS(),
             pp.Util_BR(),
             pp.Util_IN(),
         ]
@@ -128,7 +128,7 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
                 "Util_NF": pp.Util_NF(),
                 "Util_S":  pp.Util_S(),
                 "Util_T":  pp.Util_T(),
-                "Util_BNS": pp.Util_BNS(),
+                #"Util_BNS": pp.Util_BNS(),
                 "Util_BR": pp.Util_BR(),
                 "Util_IN": pp.Util_IN(),
                 "Util_BS": pp.Util_BS(),
