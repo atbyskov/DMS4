@@ -1468,10 +1468,10 @@ ESLL,S
 ESEL,R,ENAME,,189
 *IF,ii,LT,10,THEN
 *VWRITE,ii
-("NS ColMember_",F2.0)
+("NS ColMember_",F3.0)
 *ELSE
 *VWRITE,ii
-("NS ColMember_",F3.0)
+("NS ColMember_",F4.0)
 *ENDIF
 *GET,nElem,ELEM,0,COUNT
 *VWRITE,'ElemID','NF [N]','My [Nmm]','Mz [Nmm]','Vy [N]','Vz [N]','T [N/mm]','Y_LOC'

@@ -613,10 +613,10 @@ def InputFun(var,Misc,opti_settings):
     # FORMAT
     ap.append("   *IF,ii,LT,10,THEN  ")
     ap.append("       *VWRITE,ii  ")
-    ap.append('       ("NS ColMember_",F2.0)  ')
+    ap.append('       ("NS ColMember_",F3.0)  ')
     ap.append("   *ELSE  ")
     ap.append("       *VWRITE,ii  ")
-    ap.append('       ("NS ColMember_",F3.0)  ')
+    ap.append('       ("NS ColMember_",F4.0)  ')
     ap.append("   *ENDIF  ")
     # RESULT 
     ap.append("   *GET,nElem,ELEM,0,COUNT  ")

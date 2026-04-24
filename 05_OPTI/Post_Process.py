@@ -207,17 +207,19 @@ class PostProcessor:
     def _combined_brace_dataframe(self):
         if self.brace_split:
             frames = [df for df in (self.df_horiz, self.df_cross) if not df.empty]
-            print("Horizontal: )")
-            print(self.df_horiz)
-            print("Cross: )")
-            print(self.df_cross)
-            print("Frames:")
-            print(frames)
             if not frames:
                 return pd.DataFrame()
-            # Preserve original row order from the nonlinear results.
-            # Util_IN relies on first/last rows, so concat order must match the source data.
-            return pd.concat(frames, ignore_index=False).sort_index()
+            # Combine horizontal and cross braces into one continuous DataFrame.
+            # Use a fresh index to avoid separate original index spaces.
+
+            # For Debug
+            #print("Combined Brace DataFrame:")
+            #print(self.df_horiz)
+            #print("Cross:")
+            #print(self.df_cross)
+            #print("Frame")
+            #print(frame)
+            return pd.concat(frames, ignore_index=True)
         return self.df_brace
 
     def _brace_utilization(self, func):
@@ -501,51 +503,63 @@ class PostProcessor:
             df = df_member.copy()
             util = np.zeros(len(df), dtype=float)
 
+            # Geometry (row-wise)
             Do = 2 * df[Ro_col]
             Di = 2 * df[Ri_col]
             A = math.pi * (df[Ro_col]**2 - df[Ri_col]**2)
 
             N_raw = df["NF"].to_numpy(dtype=float)
             N_comp = np.maximum(-N_raw, 0.0)
-            active = N_comp > 0.0
 
-            # Psi should come from the full member data, not filtered compression-only data
-            M_start_y = df["My"].iloc[0]
-            M_end_y = df["My"].iloc[-1]
-            M1_y, M2_y = (M_start_y, M_end_y) if abs(M_start_y) >= abs(M_end_y) else (M_end_y, M_start_y)
-            Psi_y = 0.0 if abs(M1_y) < 1e-12 else np.clip(M2_y / M1_y, -1.0, 1.0)
+            # Loop per structural member
+            for member, g in df.groupby("Member"):
+                idx = g.index.to_numpy()
 
-            M_start_z = df["Mz"].iloc[0]
-            M_end_z = df["Mz"].iloc[-1]
-            M1_z, M2_z = (M_start_z, M_end_z) if abs(M_start_z) >= abs(M_end_z) else (M_end_z, M_start_z)
-            Psi_z = 0.0 if abs(M1_z) < 1e-12 else np.clip(M2_z / M1_z, -1.0, 1.0)
+                # Debug
+                print(f"Processing Member: {member}, Indices: {idx}")
+                print("g")
+                print(g)
+                N_c = N_comp[idx]
+                active = N_c > 0.0
+                if not np.any(active):
+                    continue
 
-            if np.any(active):
-                N_cr = a_cr * N_comp[active]
+                # ---- END MOMENTS (per member) ---------------------------------
+                My_start, My_end = g["My"].iloc[0], g["My"].iloc[-1]
+                M1y, M2y = (My_start, My_end) if abs(My_start) >= abs(My_end) else (My_end, My_start)
+                Psi_y = 0.0 if abs(M1y) < 1e-12 else np.clip(M2y / M1y, -1.0, 1.0)
 
-                slen = np.sqrt(A[active] * f_y / N_cr)
+                Mz_start, Mz_end = g["Mz"].iloc[0], g["Mz"].iloc[-1]
+                M1z, M2z = (Mz_start, Mz_end) if abs(Mz_start) >= abs(Mz_end) else (Mz_end, Mz_start)
+                Psi_z = 0.0 if abs(M1z) < 1e-12 else np.clip(M2z / M1z, -1.0, 1.0)
+
+                # ---- BUCKLING / INTERACTION ----------------------------------- (Calculations per element)
+                N_cr = a_cr * N_c[active]
+
+                slen = np.sqrt(A[idx][active] * f_y / N_cr)
                 Phi = 0.5 * (1 + a_imp * (slen - 0.2) + slen**2)
                 Chi = 1.0 / (Phi + np.sqrt(Phi**2 - slen**2))
 
-                mu = (1 - N_comp[active] / N_cr) / (1 - Chi * N_comp[active] / N_cr)
+                mu = (1 - N_c[active] / N_cr) / (1 - Chi * N_c[active] / N_cr)
 
-                Cmy = 0.79 + 0.21 * Psi_y + 0.36 * (Psi_y - 0.33) * N_comp[active] / N_cr
+                Cmy = 0.79 + 0.21 * Psi_y + 0.36 * (Psi_y - 0.33) * N_c[active] / N_cr
+                Cmz = 0.79 + 0.21 * Psi_z + 0.36 * (Psi_z - 0.33) * N_c[active] / N_cr
                 CmLT = 1.0
-                Cmz = 0.79 + 0.21 * Psi_z + 0.36 * (Psi_z - 0.33) * N_comp[active] / N_cr
 
-                k_yy = Cmy * CmLT * (mu / (1 - N_comp[active] / N_cr))
-                k_yz = Cmz * CmLT * (mu / (1 - N_comp[active] / N_cr))
+                k_yy = Cmy * CmLT * (mu / (1 - N_c[active] / N_cr))
+                k_yz = Cmz * CmLT * (mu / (1 - N_c[active] / N_cr))
 
-                N_Rk = A[active] * f_y
-                M_Rk = (math.pi * (Do[active]**4 - Di[active]**4)) / (32 * Do[active]) * f_y
+                N_Rk = A[idx][active] * f_y
+                M_Rk = (math.pi * (Do[idx][active]**4 - Di[idx][active]**4)) / (32 * Do[idx][active]) * f_y
 
-                My = df["My"].abs().to_numpy(dtype=float)
-                Mz = df["Mz"].abs().to_numpy(dtype=float)
+                My = df.loc[idx, "My"].abs().to_numpy()[active]
+                Mz = df.loc[idx, "Mz"].abs().to_numpy()[active]
 
-                util[active] = (
-                    N_comp[active] / (Chi * N_Rk)
-                    + k_yy * My[active] / M_Rk
-                    + k_yz * Mz[active] / M_Rk
+                util_idx = idx[active]
+                util[util_idx] = (
+                    N_c[active] / (Chi * N_Rk)
+                    + k_yy * My / M_Rk
+                    + k_yz * Mz / M_Rk
                 )
 
             return pd.Series(util, index=df.index, name="Util_IN")
