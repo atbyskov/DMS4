@@ -27,7 +27,7 @@ class ConstraintAggregate:
 
         # No Aggregate Method 
         if self.method is None:
-            return g
+            return g, None, None
         
         # P-norm method
         if self.method == "P-norm":
@@ -36,17 +36,25 @@ class ConstraintAggregate:
             g_k = np.maximum(-(g - relaxation), 0.0)
             v_agg = (np.sum(g_k**p))**(1/p)
 
+            g_max = np.max(g_k)
+
             print(f"P-norm: {v_agg:.2f}")
 
-            return -v_agg
+            return -v_agg, v_agg, g_max
         
         # P-norm mean method
         if self.method == "P-norm-mean":
             p = float(self.p)
-            con_constraints = g - relaxation
-            n0 = con_constraints.size
+            
+            n = np.size(g)
+            g_k = np.maximum(-(g - relaxation), 0.0)
+            v_agg = (1/n*np.sum(g_k**p))**(1/p)
 
-            return (np.sum((con_constraints)**p) / n0)**(1 / p)
+            g_max = np.max(g_k)
+
+            print(f"P-norm: {v_agg:.2f}")
+
+            return -v_agg, v_agg, g_max
         
         if self.method == "KS":
             # rho parameter (typically between 2 and 200)

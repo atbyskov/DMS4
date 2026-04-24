@@ -36,19 +36,14 @@ def InputFun(var, Misc):
     SWcoor = SW.import_SW(os.path.join("IGS",SW_filename))
     ap = []
     
-    SWcoor = [
-        (r4(x1), r4(y1), r4(z1), r4(x2), r4(y2), r4(z2))
-        for x1, y1, z1, x2, y2, z2 in SWcoor
-]
-
-
+   
     # Only use Rad if selected in main
     rad = var["rad"]["value"] if "rad" in var and var["rad"].get("active", True) else None
 
     # Convert to Radii
-    R0 = round(var["d0"]["value"]/2,4) - round(var["t0"]["value"],4)      # Column Inner Radius [mm]
+    R0 = round(var["d0"]["value"]/2 - var["t0"]["value"],4)      # Column Inner Radius [mm]
     R1 = round(var["d0"]["value"]/2,4)                           # Column Outer Radius [mm]
-    R2 = round(var["d1"]["value"]/2,4) - round(var["t1"]["value"],4)      # Brace Inner Radius  [mm]
+    R2 = round(var["d1"]["value"]/2 - var["t1"]["value"],4)      # Brace Inner Radius  [mm]
     R3 = round(var["d1"]["value"]/2,4)                           # Brace Outer Radius  [mm]
 
     # Change Radius Logic
@@ -70,7 +65,7 @@ def InputFun(var, Misc):
                 #if r0 < 30:
                     #continue  # do NOT collapse node
 
-                s = round(rad / base,3)
+                s = rad / base
                 #print(f"Scaling: {s}")
                 loc_to_new[(x, z)] = (x * s, z * s)
                 
@@ -89,11 +84,6 @@ def InputFun(var, Misc):
             (*adjust(x1, y1, z1), *adjust(x2, y2, z2))
             for x1, y1, z1, x2, y2, z2 in SWcoor
         ]
-        with open("coordinates_after.txt", "w", encoding="utf-8") as f:
-            f.write("# x1 y1 z1 x2 y2 z2 (after adjust)\n")
-            for x1, y1, z1, x2, y2, z2 in SWcoor:
-                f.write(f"{x1:.4f} {y1:.4f} {z1:.4f} {x2:.4f} {y2:.4f} {z2:.4f}\n")
-
 
     # Function to group lines
     def beam_class(p1, p2):
@@ -267,7 +257,7 @@ def InputFun(var, Misc):
     ap.append("SELTOL,1.0E-6  ") # Important for node selection
     ap.append("NSEL,S,LOC,X,0")
     ap.append("NSEL,R,LOC,Z,0")
-    ap.append("NSEL,U,LOC,Y,4284,6000")
+    ap.append("NSEL,U,LOC,Y,4283,6000")
     ap.append("*GET,SlaveNum,NODE,0,COUNT")
 
     ap.append("*DIM,SlaveIDs,ARRAY,SlaveNum")
@@ -275,7 +265,7 @@ def InputFun(var, Misc):
 
     # Create Master / Independent Node 
     #ap.append("N,99999,0,4.179140091E+03,0")
-    ap.append("N,99999,0,4182.1384,0 ")
+    ap.append("N,99999,0,4180.14,0 ")
     ap.append("*SET,tid,11")
     ap.append("*SET,cid,10")
     ap.append("ET,cid,175")
@@ -317,17 +307,17 @@ def InputFun(var, Misc):
     ap.append("/ESHAPE,1 ! Display Cross Section ")
         
     #Create and save .png of the mesh
-    ap.append("/SHOW,PNG,,0  ")
-    ap.append("/RGB,INDEX,100,100,100,0  ")
-    ap.append("/RGB,INDEX,80,80,80,13  ")
-    ap.append("/RGB,INDEX,60,60,60,14  ")
-    ap.append("/RGB,INDEX,0,0,0,15  ")
-    ap.append("/TYPE,,4  ")
-    ap.append("/VIEW,,0,0,1  ")
-    ap.append("/ANGLE,,30,YM  ")
-    ap.append("EPLOT  ")
-    ap.append("/SHOW,close  ")
-    ap.append("/SHOW,TERM  ")
+    #ap.append("/SHOW,PNG,,0  ")
+    #ap.append("/RGB,INDEX,100,100,100,0  ")
+    #ap.append("/RGB,INDEX,80,80,80,13  ")
+    #ap.append("/RGB,INDEX,60,60,60,14  ")
+    #ap.append("/RGB,INDEX,0,0,0,15  ")
+    #ap.append("/TYPE,,4  ")
+    #ap.append("/VIEW,,0,0,1  ")
+    #ap.append("/ANGLE,,30,YM  ")
+    #ap.append("EPLOT  ")
+    #ap.append("/SHOW,close  ")
+    #ap.append("/SHOW,TERM  ")
     
 
     # RUN STATIC ANALYSIS
@@ -376,7 +366,7 @@ def InputFun(var, Misc):
     # MASS OF ASSEMBLY
     ap.append("! Get and Print Mass  ")
     ap.append("ALLSEL  ")
-    ap.append("NSEL,S,LOC,Y,,4080  ")
+    ap.append("NSEL,S,LOC,Y,,4050  ")
     ap.append("ESLN  ")
     ap.append("*GET,ecnt,ELEM,0,COUNT  ")
     ap.append("*GET,enum,ELEM,0,NUM,MIN  ")

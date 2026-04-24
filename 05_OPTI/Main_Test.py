@@ -9,9 +9,6 @@ from ansys.mapdl.core import launch_mapdl
 import numpy as np
 import pandas as pd
 
-# For mail
-import smtplib
-from email.message import EmailMessage
 
 # Import Functions
 import SW_Import as SW
@@ -24,11 +21,11 @@ tic = time.time()
 
 
 var = {
-    "d0": {"value": 49.4,    "active": True},        # Column Diameter  [mm]
-    "t0": {"value": 2.07,     "active": True},        # Column Thickness [mm]
-    "d1": {"value": 28.88,    "active": True},        # Brace Diameter   [mm]
-    "t1": {"value": 0.62,     "active": True},        # Brace Thickness  [mm]
-    "rad": {"value": 314.72, "active": True},       # Radius Structure [mm]
+    "d0": {"value": 76.1,    "active": True},        # Column Diameter  [mm]
+    "t0": {"value": 3,     "active": True},        # Column Thickness [mm]
+    "d1": {"value": 26.9,    "active": True},        # Brace Diameter   [mm]
+    "t1": {"value": 2.3,     "active": True},        # Brace Thickness  [mm]
+    "rad": {"value": 202.07, "active": True},       # Radius Structure [mm]
 }
 
 # Create Misc as dict
@@ -40,7 +37,7 @@ Misc = {
     "f_y_brace": 355,                                # Brace Yield Strength [MPa]
     "E_mod": 200*1E3,                                # Youngs Modulus [MPa]
     "W_Force": -3.751E+3,                            # Vertical Force COG (P_COG_y) [N]
-    "SW_filename": "LWC_LC1.IGS"                     # Filename for IGS File
+    "SW_filename": "LWC_Sketch_FixedV2.IGS"                     # Filename for IGS File
 }
 
 #C:\Program Files\ANSYS Inc\v251\ansys\bin\winx64
@@ -114,23 +111,3 @@ for key, util in Util_list.items():
     brc_str = f"{brc_val:8.3f}" if brc_val is not None else "   N/A  "
 
     print(f"{key:10s}  Column: {col_str}  Brace: {brc_str}")
-
-
-"""
-def send_email(subject, body):
-    msg = EmailMessage()
-    msg.set_content(body)
-    msg["Subject"] = subject
-    msg["From"] = "atbyskov@gmail.com"
-    msg["To"] = "atbyskov@gmail.com"
-
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login("atbyskov@gmail.com", "zani dtwc hnmw dxpm")
-        server.send_message(msg)
-
-
-send_email(
-    "Python job finished ✅",
-    "Your optimization script has completed"
-)
-"""

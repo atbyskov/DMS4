@@ -41,16 +41,21 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
         x0=x0,
         bounds=bounds,
         method="PySLSQP",
+        var_names=names,
         options={
             "finite_diff_abs_step": fd_step,
             "acc": Solver_Settings["acc"],
             "maxiter": Solver_Settings["maxiter"],
+            "Aggregate": Solver_Settings["Aggregate"],
+            "p_value": Solver_Settings["p_value"],
+            "rho_value": Solver_Settings["rho_value"],
+            "relaxation": Solver_Settings["relaxation"],
         },
         save_folder=Misc["save_folder"],
     )
 
     # Internal cache so RunAPDL is only executed once per unique x
-    cache = {"x": None, "f": None, "c": None, "util": None}
+    cache = {"x": None, "f": None, "c": None, "util": None, "v_agg": None, "g_max": None}
 
     # Helper
     def arr(v):
@@ -68,7 +73,7 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
 
         # Run the Model
         f = RunAPDL(mapdl, x, Misc)
-        logger.log_evaluation(x, f)
+        
 
         # Initiate Post Processing
         pp = PostProcessor(var_dict,Misc)
@@ -107,12 +112,14 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
             relaxation = Solver_Settings["relaxation"]
         )
 
-        c_util_agg = agg.agg_output(c_util)
+        c_util_agg, v_agg, g_max = agg.agg_output(c_util)
         
         # Collect them together
         c = np.concatenate([c_geom,np.atleast_1d(c_util_agg),c_misc])
         # Print length of constraints
         print(f"Constraint vector length: {len(c)}")
+
+        logger.log_evaluation(x, f,v_agg=v_agg,g_max=g_max)
 
         
         
@@ -128,7 +135,7 @@ def run_optimization(mapdl,var,Misc,Solver_Settings):
             }
 
         # Update design variables and constraints
-        cache.update(x=x.copy(), f=float(f), c=c, util = util_report)
+        cache.update(x=x.copy(), f=float(f), c=c, util = util_report, v_agg = v_agg, g_max=g_max)
 
         return f, c
     

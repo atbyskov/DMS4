@@ -339,6 +339,7 @@ class PostProcessor:
         R2 = self.d1/2 - self.t1       # Brace Inner Radius  [mm]
         R3 = self.d1/2            # Brace Outer Radius  [mm]]
 
+
         # Import f_y
         f_y = self.f_y
         f_y_brace = self.f_y_brace
@@ -354,6 +355,7 @@ class PostProcessor:
             Aw = (A-2*D0*t)/A
             Aw = np.clip(Aw,0,0.5)
 
+
             # Design Moment Resistance
             M_Rd = (D0**3 - Di**3)/6 * f_y
 
@@ -364,6 +366,10 @@ class PostProcessor:
             N = df_member["NF"].abs() 
             My = df_member["My"].abs()
             Mz = df_member["Mz"].abs()
+
+            # Design normal force
+            N_Rd = A*f_y 
+            n = N/N_Rd
 
             # Fraction to be used in Utilization Ratio
             red_col = np.clip(1.0 - (N / N_Rd)**1.7, 0.1, 1.0)

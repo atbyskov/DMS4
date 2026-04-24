@@ -18,8 +18,13 @@ class OptimizationLogger:
         bounds,
         method="SLSQP",
         options=None,
+        var_names = None,
         save_folder="Optimization_Logs",
     ):
+        
+        self.options = options or {} # This line stores the optimization options.
+        self.eval_counter = 0 # This line stores the evaluation counter.
+        self.iter_counter = 0 # This line stores the iteration counte
         self.start_dt = datetime.now() #Get the time once now, and then we store it in different formats underneath
         self.start_str = self.start_dt.strftime("%Y-%m-%d %H:%M:%S") # THis is a human readable format.
         ts = self.start_dt.strftime("%Y-%m-%d_%H-%M-%S") # And this one is the timestamp for the file name, so for example optimization_log_2026-03-31_31_10-23-25.txt
@@ -27,17 +32,31 @@ class OptimizationLogger:
         os.makedirs(save_folder, exist_ok=True) # This line creates the folder "Optimization_Logs" if it doesn't exist.
         self.txt_path = os.path.join(save_folder, f"optimization_log_{ts}.txt") # This line creates the path to the optimization log file.
         self.csv_path = os.path.join(save_folder, f"objective_history_{ts}.csv") # This line creates the path to the objective history file.
+        self._write_header(x0, bounds, method) # This line writes the header to the optimization log file.
 
         n_vars = len(x0)
+        var_names = var_names or [f"x{i}" for i in range(n_vars)]
         x_headers = ",".join(f"x{i}" for i in range(n_vars))
+
+        # Header
         with open(self.csv_path, "w", encoding="utf-8") as f: # This line writes the header to the objective history file.
-            f.write(f"eval_index,objective,{x_headers}\n")
+            f.write("Optimization Data\n \n")
+            f.write(f"Start time: {self.start_str} \n \n")
+            f.write(f"Solver Options:\n")
+            f.write(f"Method: {method} \n")
+            for key, value in self.options.items():
+                f.write(f"# {key}: {value} \n")
 
-        self.options = options or {} # This line stores the optimization options.
-        self.eval_counter = 0 # This line stores the evaluation counter.
-        self.iter_counter = 0 # This line stores the iteration counter.
+            f.write("Design Variables and Bounds \n")
+            f.write("# x0 = [" + ", ".join(f"{v:.2f}" for v in x0) + "]\n")
+            for i, (name,bnd) in enumerate(zip(var_names, bounds)):
+                f.write(f" x[{i}] ({name}) bounds = [{bnd[0]}, {bnd[1]}] \n")
 
-        self._write_header(x0, bounds, method) # This line writes the header to the optimization log file.
+            f.write("\n\n")
+            f.write(f"iteration,eval_index,objective,{x_headers},g_max,v_agg\n")
+
+        
+        
 
     def log_line(self, text="", mode="a"): # Help Function to help write to the Optimization_Log folder files. It is instead of using print statements.
         print(text)
@@ -69,7 +88,7 @@ class OptimizationLogger:
         self.log_line("=" * 80)
         self.log_line("")
 
-    def log_evaluation(self, x, fun): # When called, it will log the evaluation of the objective function and design variables, and write it inside the Optimization_Log folder files.
+    def log_evaluation(self, x, fun, v_agg=None,g_max=None,p_value=None): # When called, it will log the evaluation of the objective function and design variables, and write it inside the Optimization_Log folder files.
         x = np.asarray(x, dtype=float) # Shows the design variables as a numpy array.
         fun = float(fun) # Shows the objective function as a float.
         self.eval_counter += 1 # Increments the evaluation counter.
@@ -80,10 +99,22 @@ class OptimizationLogger:
 
         
 # Convert x into CSV format
-        x_csv = ",".join(f"{v:.6f}" for v in x)
+        x_csv = ",".join(f"{v:.2f}" for v in x)
+
+        v_agg_str = f"{v_agg:.4f}" if v_agg is not None else "NA"
+        g_max_str = f"{g_max:.4f}" if g_max is not None else "NA"
 
         with open(self.csv_path, "a", encoding="utf-8") as f:
-            f.write(f"{self.eval_counter},{fun:.6f},{x_csv}\n")
+            f.write(
+                f"{self.iter_counter},"
+                f"{self.eval_counter},"
+                f"{fun:.2f},"
+                f"{x_csv},"
+                f"{g_max_str},"
+                f"{v_agg_str}\n"
+            )
+
+
 
 
         self.log_line(f"[EVALUATION {self.eval_counter}]") # Writes the evaluation number to the optimization log file.

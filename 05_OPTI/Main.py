@@ -13,6 +13,9 @@ import optimization
 import Self_Written_Optimization.optimization_self_written as optimization_self_written
 from MyAPDLCall import RunAPDL
 
+
+
+
 # Variables. Choose which ones to include by setting "active": True or False.
 # Include Bounds
 var = {
@@ -41,8 +44,8 @@ Misc = {
 Solver_Settings = {
     "acc": 1e-3,                 # Maximum objective function tolerance
     "maxiter": 60,               # Maximum iterations
-    "Aggregate": "P-norm",       # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
-    "p_value": 4,                # Value for "P-norm" and "P-norm-mean"
+    "Aggregate": "P-norm-mean",       # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
+    "p_value": 1,                # Value for "P-norm" and "P-norm-mean"
     "rho_value": 100,            # rho value used in KS
     "relaxation": 0,             # Relaxation parameter used in aggregation
 }

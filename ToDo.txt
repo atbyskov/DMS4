@@ -1,3 +1,6 @@
 # To Do List
 
-- Make Force loaded as remote and see if it changes anything
+Aggregated Constraints
+ -> Make csv/txt that outputs
+    Maximum utilization value | P-value 
+    
