@@ -207,9 +207,17 @@ class PostProcessor:
     def _combined_brace_dataframe(self):
         if self.brace_split:
             frames = [df for df in (self.df_horiz, self.df_cross) if not df.empty]
+            print("Horizontal: )")
+            print(self.df_horiz)
+            print("Cross: )")
+            print(self.df_cross)
+            print("Frames:")
+            print(frames)
             if not frames:
                 return pd.DataFrame()
-            return pd.concat(frames, ignore_index=False)
+            # Preserve original row order from the nonlinear results.
+            # Util_IN relies on first/last rows, so concat order must match the source data.
+            return pd.concat(frames, ignore_index=False).sort_index()
         return self.df_brace
 
     def _brace_utilization(self, func):
@@ -552,12 +560,6 @@ class PostProcessor:
 
         brace_sections = self.brace_horiz_d1_t1 if self.brace_split else self.brace_d1_t1
 
-        # Determine most critical horizontal brace section for the check
-        if self.multi_size_braces:
-            d1, t1 = max(brace_sections, key=lambda pair: pair[0] / pair[1] if pair[1] > 0 else -np.inf)
-        else:
-            d1, t1 = brace_sections[0]
-
         # Import Misc
         f_y_brace = self.f_y_brace
 
@@ -566,29 +568,35 @@ class PostProcessor:
         L = _brace_span_mm(self.var, self.Misc)  # [mm] first horizontal brace (same for all)
         M = 1/8 * P * L     # Max Moment [Nmm]
 
-        # Moment of Inertia and Area
-        I = np.pi / 64 * (d1**4 - (d1 - 2 * t1)**4) # [mm^4]
-        A = np.pi / 4 * (d1**2 - (d1 - 2 * t1)**2)  # [mm^2]
+        # Calculate utilization for all horizontal brace sections
+        util_values = []
+        
+        for d1, t1 in brace_sections:
+            # Moment of Inertia and Area
+            I = np.pi / 64 * (d1**4 - (d1 - 2 * t1)**4) # [mm^4]
+            A = np.pi / 4 * (d1**2 - (d1 - 2 * t1)**2)  # [mm^2]
 
-        # Sectional Modulus
-        W = I / (d1 / 2)                            # [mm^3]
+            # Sectional Modulus
+            W = I / (d1 / 2)                            # [mm^3]
 
-        # Bending Stress
-        sig_b = M / W                               # [N/mm^2]
+            # Bending Stress
+            sig_b = M / W                               # [N/mm^2]
 
-        # Vertical Force
-        V = P / 2                                   # [N]
+            # Vertical Force
+            V = P / 2                                   # [N]
 
-        # Average and Max Shear Stress
-        tau_avg = V / A                             # [N/mm^2]
-        tau_max = 2 * tau_avg                       # [N/mm^2]
+            # Average and Max Shear Stress
+            tau_avg = V / A                             # [N/mm^2]
+            tau_max = 2 * tau_avg                       # [N/mm^2]
 
-        # Von Mises
-        sig_vm = np.sqrt(sig_b**2 + 3 * tau_max**2) # [N/mm^2]
+            # Von Mises
+            sig_vm = np.sqrt(sig_b**2 + 3 * tau_max**2) # [N/mm^2]
 
-        # Write to Utilization Ratio
-        Util_BS_brace = sig_vm / f_y_brace          # [Na] Brace
-        return Util_BS_brace
+            # Utilization for this section
+            util_values.append(sig_vm / f_y_brace)      # [Na] Brace
+
+        # Return as Series to allow extract_max to work with multiple values
+        return pd.Series(util_values, name="Util_BS")
 
     def Class_2(self): 
 

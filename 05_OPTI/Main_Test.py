@@ -91,7 +91,7 @@ Misc = {
     "f_y_brace": 355,               # Brace Yield Strength              [MPa]
     "E_mod": 200*1E3,               # Youngs Modulus                    [MPa]
     "W_Force": -3.751E+3,           # Vertical Force COG (P_COG_y)      [N]
-    "SW_filename": "LWC_L1_LINES.IGS"    # Filename for IGS File
+    "SW_filename": "LWC_LC1.IGS"    # Filename for IGS File
 }
 
 #C:\Program Files\ANSYS Inc\v251\ansys\bin\winx64
@@ -102,7 +102,7 @@ mapdl = launch_mapdl(
     run_location="Ansout", 
     log_apdl="apdl_logging",
     override=True,
-    nproc=2,
+    nproc=10,
     additional_switches="-p ansys -smp"
 )
 toc_lic = time.time()

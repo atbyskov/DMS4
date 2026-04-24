@@ -61,6 +61,7 @@ def RunAPDL(mapdl,var,Misc,opti_settings):
         eigenvalues = [float(line.strip()) for line in f if line.strip()]
     # Retrieve first positive eigenvalue
     alpha_crit = next(v for v in eigenvalues if v > 0) 
+    print(f"Critical Alpha: {alpha_crit}")
 
     # Open and Read Mass
     with open("Ansout/Mass_Assembly.txt","r") as f:

@@ -86,7 +86,7 @@ def InputFun(var,Misc,opti_settings):
             # r0 = \sqrt(x^2+z^2) 
             r0 = math.hypot(x, z) 
             # Scale radius 
-            s = rad / (r0+1e-5) 
+            s = rad / 202.07         # NEEDS TO CHANGE IF ANOTHER IGS FILE IS USED
             # Apply scaling to x and z values 
             loc_to_new[(x, z)] = (x * s, z * s)
             
@@ -179,10 +179,10 @@ def InputFun(var,Misc,opti_settings):
     ap.append("! MATERIAL DATA ")
     ap.append(f"MP,EX,1,{Misc['E_mod']} ! [MPa]")
     ap.append("MP,PRXY,1,0.3  ")
-    ap.append("MP,DENS,1,1.7850E-6 ! [kg/mm^3]")
+    ap.append("MP,DENS,1,7.850E-6 ! [kg/mm^3]")
 
     # STIFF Material
-    ap.append("! INF STIFNESS MATERIAL REGION ABOVE Y=4070 ")
+    ap.append("! INF STIFNESS MATERIAL REGION ABOVE Y=4078 ")
     ap.append("MP,EX,2,2E+09 ")
     ap.append("MP,PRXY,2,0.3 ")
     ap.append("MP,DENS,2,7.850E-6 ")
@@ -244,7 +244,7 @@ def InputFun(var,Misc,opti_settings):
 
         
         # Split lines into corner, brace or top section
-        if y1 > 4070 and y2 > 4070:
+        if y1 > 4078 and y2 > 4078:
             # This is a TOP beam!
             Top_lines.append(line_id)
             ap.append(f"CM,TOPMAT,LINE ")
@@ -381,7 +381,7 @@ def InputFun(var,Misc,opti_settings):
     ap.append("SELTOL,1.0E-6  ") # Important for node selection
     ap.append("NSEL,S,LOC,X,0")
     ap.append("NSEL,R,LOC,Z,0")
-    ap.append("NSEL,U,LOC,Y,4284,6000")
+    ap.append("NSEL,U,LOC,Y,4283,6000") # Old value: 4282
     ap.append("*GET,SlaveNum,NODE,0,COUNT")
 
     ap.append("*DIM,SlaveIDs,ARRAY,SlaveNum")
@@ -389,7 +389,7 @@ def InputFun(var,Misc,opti_settings):
 
     # Create Master / Independent Node 
     #ap.append("N,99999,0,4.179140091E+03,0")
-    ap.append("N,99999,0,4182.1384,0 ")
+    ap.append("N,99999,0,4180.14,0 ") # Old value: 4182.1384
     ap.append("*SET,tid,11")
     ap.append("*SET,cid,10")
     ap.append("ET,cid,175")
@@ -482,7 +482,7 @@ def InputFun(var,Misc,opti_settings):
     # MASS OF ASSEMBLY
     ap.append("! Get and Print Mass  ")
     ap.append("ALLSEL  ")
-    ap.append("NSEL,S,LOC,Y,,4080  ")
+    ap.append("NSEL,S,LOC,Y,,4050  ")
     ap.append("ESLN  ")
     ap.append("*GET,ecnt,ELEM,0,COUNT  ")
     ap.append("*GET,enum,ELEM,0,NUM,MIN  ")

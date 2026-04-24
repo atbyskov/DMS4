@@ -88,8 +88,8 @@ Misc = {
 
 # Solver Settings
 Solver_Settings = {
-    "acc": 1e-3,       # Maximum objective function tolerance
-    "maxiter": 10,     # Maximum iterations
+    "acc": 1e-2,       # Maximum objective function tolerance
+    "maxiter": 50,     # Maximum iterations
 }
 
 # Launch MAPDL
@@ -109,17 +109,17 @@ finally:
     mapdl.exit()
 
 # Print Information
-print("\n" + "="*60)
-print("OPTIMIZATION RESULTS")
-print("="*60)
-print(f"\nOptimal Mass: {result.fun:.3f} kg")
-print(f"\nOptimal Design Variables:")
+#print("\n" + "="*60)
+#print("OPTIMIZATION RESULTS")
+#print("="*60)
+#print(f"\nOptimal Mass: {result.fun:.3f} kg")
+#print(f"\nOptimal Design Variables:")
 # Get active variable names in order
-active_names = [name for name, data in var.items() if data.get("active", True)]
-for name, value in zip(active_names, result.x):
-    print(f"  {name:8s}: {value:10.4f}")
-print(f"\nOptimization Message: {result.message}")
-print(f"\nLog files saved to:")
-print(f"  - TXT: {txt_path}")
-print(f"  - CSV: {csv_path}")
-print("="*60)
+#active_names = [name for name, data in var.items() if data.get("active", True)]
+#for name, value in zip(active_names, result.x):
+#    print(f"  {name:8s}: {value:10.4f}")
+#print(f"\nOptimization Message: {result.message}")
+#print(f"\nLog files saved to:")
+#print(f"  - TXT: {txt_path}")
+#print(f"  - CSV: {csv_path}")
+#print("="*60)
