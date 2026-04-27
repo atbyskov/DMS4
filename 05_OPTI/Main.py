@@ -10,6 +10,9 @@ from ansys.mapdl.core import launch_mapdl
 import optimization
 from MyAPDLCall import RunAPDL
 
+
+
+
 # Variables. Choose which ones to include by setting "active": True or False.
 # Include Bounds
 opti_settings = {
@@ -89,10 +92,12 @@ Misc = {
 
 # Solver Settings
 Solver_Settings = {
-    "acc": 1e-3,             # Maximum objective function tolerance
-    "maxiter": 40,           # Maximum iterations
-    "Aggregate": None,       # None, "P-norm", "P-norm-mean"  (Write exacly)
-    "p_value": 10,           # Value for "P-norm" and "P-norm-mean"
+    "acc": 1e-3,                 # Maximum objective function tolerance
+    "maxiter": 60,               # Maximum iterations
+    "Aggregate": "KS",           # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
+    "p_value": 1,                # Value for "P-norm" and "P-norm-mean"
+    "rho_value": 100,            # rho value used in KS
+    "relaxation": 0,             # Relaxation parameter used in aggregation
 }
 
 tic_lic = time.time()
@@ -101,7 +106,7 @@ mapdl = launch_mapdl(
     run_location="Ansout",
     log_apdl="apdl_log",
     override=True,
-    nproc=2,
+    nproc=6,
     additional_switches="-p ansys -smp",
 )
 toc_lic = time.time()
@@ -113,3 +118,10 @@ try:
     result, txt_path, csv_path = optimization.run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings)
 finally:
     mapdl.exit()
+
+# Print Information
+#print("\nOptimal x:", result.x)
+#print("Optimal objective:", result.fun)
+#print("Message:", result.message)
+#print("TXT log file:", txt_path)
+#print("Objective CSV:", csv_path)

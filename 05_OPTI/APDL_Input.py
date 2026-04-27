@@ -32,8 +32,6 @@ def InputFun(var,Misc,opti_settings):
     # Initialize APDL Command for PyMAPDL
     SWcoor = SW.import_SW(os.path.join("IGS",SW_filename))
     ap = []
-    
-
     # Only use Rad if selected in main
     rad = var["rad"]["value"] if "rad" in var and var["rad"].get("active", True) else None
 
@@ -418,17 +416,17 @@ def InputFun(var,Misc,opti_settings):
     ap.append("ALLSEL")
         
     #Create and save .png of the mesh
-    ap.append("/SHOW,PNG,,0  ")
-    ap.append("/RGB,INDEX,100,100,100,0  ")
-    ap.append("/RGB,INDEX,80,80,80,13  ")
-    ap.append("/RGB,INDEX,60,60,60,14  ")
-    ap.append("/RGB,INDEX,0,0,0,15  ")
-    ap.append("/TYPE,,4  ")
-    ap.append("/VIEW,,0,0,1  ")
-    ap.append("/ANGLE,,30,YM  ")
-    ap.append("EPLOT  ")
-    ap.append("/SHOW,close  ")
-    ap.append("/SHOW,TERM  ")
+    #ap.append("/SHOW,PNG,,0  ")
+    #ap.append("/RGB,INDEX,100,100,100,0  ")
+    #ap.append("/RGB,INDEX,80,80,80,13  ")
+    #ap.append("/RGB,INDEX,60,60,60,14  ")
+    #ap.append("/RGB,INDEX,0,0,0,15  ")
+    #ap.append("/TYPE,,4  ")
+    #ap.append("/VIEW,,0,0,1  ")
+    #ap.append("/ANGLE,,30,YM  ")
+    #ap.append("EPLOT  ")
+    #ap.append("/SHOW,close  ")
+    #ap.append("/SHOW,TERM  ")
     
 
     # RUN STATIC ANALYSIS

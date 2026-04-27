@@ -40,16 +40,21 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         x0=x0,
         bounds=bounds,
         method="PySLSQP",
+        var_names=names,
         options={
             "acc": Solver_Settings["acc"],
-            "maxiter": Solver_Settings["maxiter"],
             "finite_diff_abs_step": fd_step,
+            "maxiter": Solver_Settings["maxiter"],
+            "Aggregate": Solver_Settings["Aggregate"],
+            "p_value": Solver_Settings["p_value"],
+            "rho_value": Solver_Settings["rho_value"],
+            "relaxation": Solver_Settings["relaxation"],
         },
         save_folder=Misc["save_folder"],
     )
 
     # Internal cache so RunAPDL is only executed once per unique x
-    cache = {"x": None, "f": None, "c": None,}
+    cache = {"x": None, "f": None, "c": None, "util": None, "v_agg": None, "g_max": None}
 
     # Helper
     def arr(v):
@@ -66,19 +71,19 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         var_dict = dict(zip(names, x))
 
         # Run the Model
-        f = RunAPDL(mapdl, x, Misc, opti_settings)
-        logger.log_evaluation(x, f)
+        f = RunAPDL(mapdl, x, Misc)
 
         # Initiate Post Processing
         pp = PostProcessor(var_dict,Misc,opti_settings)
 
         # Call Utlization Ratios
+        #### FIX DOUBLE utils CALL !
         utils = [
             pp.Util_LB(),
             pp.Util_NF(),
             pp.Util_S(),
             pp.Util_T(),
-            pp.Util_BNS(),
+            #pp.Util_BNS(),
             pp.Util_BR(),
             pp.Util_IN(),
         ]
@@ -91,23 +96,50 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
             for name, v in var_dict.items()
             if name.startswith("t0") or name.startswith("t1")
         ]
+        # Can i only aggregate the utils or do we need to have them all
+        c_geom = [
+                 *map(arr, thickness_constraints)]
         
-        # Combine all inequality constraints for optimization
-        constraints = [
-            *map(arr, thickness_constraints),
-            #*map(arr, geometric_constraints), # NEWLY ADDED
-            *[v for pair in col_brace for v in pair],
-            1 - arr(pp.Util_BS()),
-            *map(arr, pp.Class_2()),
-            arr(pp.Eigenvalue_1())
-        ]
+        c_util = np.concatenate([
+                *[v for pair in col_brace for v in pair],
+                1- arr(pp.Util_BS())])
         
+        c_misc = np.concatenate([
+                *map(arr, pp.Class_2()),
+                arr(pp.Eigenvalue_1())])
+        
+        # Handle aggregation of constraints
+        agg = ConstraintAggregate(
+            method = Solver_Settings["Aggregate"],
+            p_value = Solver_Settings["p_value"],
+            rho_value = Solver_Settings["rho_value"],
+            relaxation = Solver_Settings["relaxation"]
+        )
+
+        c_util_agg, v_agg, g_max = agg.agg_output(c_util)
+        
+        # Collect them together
+        c = np.concatenate([c_geom,np.atleast_1d(c_util_agg),c_misc])
         # Print length of constraints
-        c = np.concatenate(constraints)
         print(f"Constraint vector length: {len(c)}")
+
+        logger.log_evaluation(x, f,v_agg=v_agg,g_max=g_max)
+
         
+        
+        util_report = {
+                "Util_LB": pp.Util_LB(),
+                "Util_NF": pp.Util_NF(),
+                "Util_S":  pp.Util_S(),
+                "Util_T":  pp.Util_T(),
+                #"Util_BNS": pp.Util_BNS(),
+                "Util_BR": pp.Util_BR(),
+                "Util_IN": pp.Util_IN(),
+                "Util_BS": pp.Util_BS(),
+            }
+
         # Update design variables and constraints
-        cache.update(x=x.copy(), f=float(f), c=c)
+        cache.update(x=x.copy(), f=float(f), c=c, util = util_report, v_agg = v_agg, g_max=g_max)
 
         return f, c
     
@@ -123,6 +155,15 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         _, c_val = evaluate_model(x) 
         return c_val 
 
+    
+    def iteration_callback(x):
+        logger.log_iteration(x)
+
+        util = cache.get("util", None)
+        if util is not None:
+            logger.log_utilization(util)
+
+
     # Create Folder
     os.makedirs(Misc["save_folder"], exist_ok=True) 
     save_filename = os.path.join(Misc["save_folder"], "pyslsqp_history.hdf5") # Save File
@@ -136,7 +177,8 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         meq=0,                          # all constraints are inequalities
         xl=xl,
         xu=xu, 
-        finite_diff_abs_step=fd_step,                # finite difference step size for each variable
+        callback=iteration_callback,
+        finite_diff_abs_step=fd_step, 
         maxiter=Solver_Settings["maxiter"], 
         acc=Solver_Settings["acc"],     # Objective Function Tolerance
         iprint=2,                       # print iteration info

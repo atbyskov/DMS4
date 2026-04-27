@@ -125,11 +125,8 @@ except Exception as e:
 finally:
     mapdl.exit()
 
-# Print mass of assembly if successful
-if f is not None:
-    print(f" -> Mass of Assembly: {f:.2f} kg")
-else:
-    print(" -> Mass calculation failed due to an error")
+
+print(f" -> Mass of Assembly: {f:.2f} kg")
 
 
 # Pack specifically for compability

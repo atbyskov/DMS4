@@ -2,30 +2,81 @@
 # This script handles the aggregation of utilization constraints for optimization
 # ----------------------------------------------------
 # INPUT  <- Utilization Constraints as list (c_util_agg)
-# OUTPUT -> Aggregated utilization Constraints as list
+#        <- Method: is chosen in Main
+#        <- P-value: is chosen in Main
+# OUTPUT -> Aggregated Utilization Constraints 
 # ----------------------------------------------------
 import numpy as np
 
+# Define the class
 class ConstraintAggregate:
-    def __init__(self, method=None, p_value = None):
+    def __init__(self, method=None, p_value = None, rho_value = None, relaxation = None):
         # Read Method
         self.method = method
-        print(method)
+        self.rho = rho_value
+
         # Read P value
         self.p = p_value
 
-    
+    # Function for handling aggregation
     def agg_output(self,g):
-        
+        # Relaxation parameter for P-norm methods (0<eps<1)
+        relaxation = 0
+        # Read constraints
         g = np.asarray(g, dtype = float)
 
         # No Aggregate Method 
         if self.method is None:
-            print("Aggregate first value: ")
-            print(g)
-            return 1.0 - g
+            return g, None, None
         
         # P-norm method
         if self.method == "P-norm":
-            pass
+            p = float(self.p)
+            
+            g_k = np.maximum(-(g - relaxation), 0.0)
+            v_agg = (np.sum(g_k**p))**(1/p)
+
+            g_max = np.max(g_k)
+
+            print(f"Max Const: {g_max:.3f} | P-norm: {v_agg:.3}")
+
+            return -v_agg, v_agg, g_max
+        
+        # P-norm mean method
+        if self.method == "P-norm-mean":
+            p = float(self.p)
+            
+            n = np.size(g)
+            g_k = np.maximum(-(g - relaxation), 0.0)
+            v_agg = (1/n*np.sum(g_k**p))**(1/p)
+
+            g_max = np.max(g_k)
+
+            print(f"Max Const: {g_max:.3f} | P-norm-mean: {v_agg:.3}")
+
+            return -v_agg, v_agg, g_max
+        
+        if self.method == "KS":
+            rho = float(self.rho)
+            g_k = np.maximum(-(g - relaxation), 0.0)
+            g_max = np.max(g_k)
+
+            v_agg = 1/rho * np.log((np.sum(np.exp(rho*g_k))))
+
+            print(f"Max Const: {g_max:.3f} | KS: {v_agg:.3f}")
+
+            return -v_agg, v_agg, g_max
+        
+                
+        if self.method == "KS_shift":
+            rho = float(self.rho)
+            g_k = np.maximum(-(g - relaxation), 0.0)
+            g_max = np.max(g_k)
+
+            v_agg = g_max + (1.0 / rho) * np.log(np.sum(np.exp(rho * (g_k - g_max))))
+
+            print(f"Max Const: {g_max:.3f} | KS: {v_agg:.3f}")
+            return -v_agg, v_agg, g_max
+
+  
 

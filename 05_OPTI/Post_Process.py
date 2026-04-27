@@ -394,7 +394,6 @@ class PostProcessor:
 
     # Bending, Normal and Shear [6.2.9]
     def Util_BNS(self):
-
         # Import f_y
         f_y = self.f_y
         f_y_brace = self.f_y_brace
@@ -420,8 +419,12 @@ class PostProcessor:
             My = df_member["My"].abs()
             Mz = df_member["Mz"].abs()
 
+            # Design normal force
+            N_Rd = A*f_y 
+            n = N/N_Rd
+
             # Fraction to be used in Utilization Ratio
-            red = (1 - (N / N_Rd)**1.7)
+            red = np.clip(1 - (N / N_Rd)**1.7,0.1,1.0)
 
             # Utilization Ratio
             df_member["Util_BNS"] = (My / (M_Rd * red))**2 + (Mz / (M_Rd * red))**2
