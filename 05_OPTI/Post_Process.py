@@ -562,6 +562,7 @@ class PostProcessor:
 
         return Util_IN_col, Util_IN_brace
 
+    # Brace Step [Machine Design]
     # Brace-Step
     def Util_BS(self): 
 
@@ -599,8 +600,12 @@ class PostProcessor:
             # Von Mises
             sig_vm = np.sqrt(sig_b**2 + 3 * tau_max**2) # [N/mm^2]
 
+        # Write to Utilization Ratio
+        Util_BS_brace = sig_vm/f_y_brace                 # [Na] Brace
+        #print("Util_BS_brace:", Util_BS_brace)
+        return Util_BS_brace
             # Utilization for this section
-            util_values.append(sig_vm / f_y_brace)      # [Na] Brace
+            #util_values.append(sig_vm / f_y_brace)      # [Na] Brace
 
         # Return as Series to allow extract_max to work with multiple values
         return pd.Series(util_values, name="Util_BS")

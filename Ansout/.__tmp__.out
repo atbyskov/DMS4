@@ -93,10 +93,17 @@
   BATCH MODE REQUESTED (-b)    = LIST
   INPUT FILE COPY MODE (-c)    = COPY
   SHARED MEMORY PARALLEL REQUESTED
+<<<<<<< HEAD
     SINGLE PROCESS WITH  10 THREADS REQUESTED
     TOTAL OF    10 CORES REQUESTED
   INPUT FILE NAME              = C:\Users\gusta\OneDrive\Uni\Kandidat\10. Semester\GitHub\Desktop\DMS4\Ansout\.__tmp__.inp
   OUTPUT FILE NAME             = C:\Users\gusta\OneDrive\Uni\Kandidat\10. Semester\GitHub\Desktop\DMS4\Ansout\.__tmp__.out
+=======
+    SINGLE PROCESS WITH   8 THREADS REQUESTED
+    TOTAL OF     8 CORES REQUESTED
+  INPUT FILE NAME              = C:\Users\boggy\OneDrive\Desktop\DMS4\Ansout\.__tmp__.inp
+  OUTPUT FILE NAME             = C:\Users\boggy\OneDrive\Desktop\DMS4\Ansout\.__tmp__.out
+>>>>>>> 040094ffbcc9d37128ac9eba0f1928e559bf0530
 
  PARAMETER STATUS-           (   1 PARAMETERS DEFINED)
 
@@ -104,7 +111,11 @@
  PORT                              50052.0000                    SCALAR
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
+<<<<<<< HEAD
  CURRENT JOBNAME=file  10:43:56  APR 24, 2026 CP=      0.078
+=======
+ CURRENT JOBNAME=file  08:43:28  APR 22, 2026 CP=      0.094
+>>>>>>> 040094ffbcc9d37128ac9eba0f1928e559bf0530
 
      1  FINISH 
 
@@ -176,3 +187,38 @@
  Ansys Mechanical Enterprise Academic Research     
 
  /OUTPUT FILE=         
+<<<<<<< HEAD
+=======
+
+ EXIT MAPDL WHILE IN SERVER MODE
+
+ SAVE ALL MODEL, SOLUTION AND POST DATA
+
+ ALL CURRENT MAPDL DATA WRITTEN TO FILE NAME= 
+  FOR POSSIBLE RESUME FROM THIS POINT
+
+
+ NUMBER OF WARNING MESSAGES ENCOUNTERED=          2
+ NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2025 R1         Build 25.1         UP20241202    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
+ |  Maximum Database Used       1 MB     Maximum Scratch Memory Used      8 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =          0.469       Time  =  08:43:29          |
+ |        Elapsed Time (sec) =         10.000       Date  =  04/22/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*
+>>>>>>> 040094ffbcc9d37128ac9eba0f1928e559bf0530

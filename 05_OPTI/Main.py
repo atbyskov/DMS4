@@ -89,8 +89,10 @@ Misc = {
 
 # Solver Settings
 Solver_Settings = {
-    "acc": 1e-2,       # Maximum objective function tolerance
-    "maxiter": 50,     # Maximum iterations
+    "acc": 1e-3,             # Maximum objective function tolerance
+    "maxiter": 40,           # Maximum iterations
+    "Aggregate": None,       # None, "P-norm", "P-norm-mean"  (Write exacly)
+    "p_value": 10,           # Value for "P-norm" and "P-norm-mean"
 }
 
 tic_lic = time.time()

@@ -1,5 +1,7 @@
 # Main_Test.py
 # Script for Standalone Analysis Without Optimization
+# Main_Test.py
+# Script for Standalone Analysis Without Optimization
 
 
 # Import packages
@@ -156,6 +158,22 @@ def extract_max(val):
     return None
 
 
+
+def extract_max(val):
+    if val is None:
+        return None
+
+    if isinstance(val, (pd.Series, pd.DataFrame)):
+        if len(val) == 0:
+            return None
+        return np.nanmax(val.to_numpy(dtype=float))
+
+    if np.isscalar(val):
+        return float(val)
+
+    return None
+
+
 for key, util in Util_list.items():
 
     col_val = None
@@ -167,11 +185,25 @@ for key, util in Util_list.items():
         brc_val = extract_max(util[1])
 
     # Case 2: single value (fx Util_BS)
+    col_val = None
+    brc_val = None
+
+    # Case 1: tuple → (Column, Brace)
+    if isinstance(util, tuple):
+        col_val = extract_max(util[0])
+        brc_val = extract_max(util[1])
+
+    # Case 2: single value (fx Util_BS)
     else:
+        brc_val = extract_max(util)
         brc_val = extract_max(util)
 
     # Formatting
     col_str = f"{col_val:8.3f}" if col_val is not None else "   N/A  "
     brc_str = f"{brc_val:8.3f}" if brc_val is not None else "   N/A  "
+    # Formatting
+    col_str = f"{col_val:8.3f}" if col_val is not None else "   N/A  "
+    brc_str = f"{brc_val:8.3f}" if brc_val is not None else "   N/A  "
 
+    print(f"{key:10s}  Column: {col_str}  Brace: {brc_str}")
     print(f"{key:10s}  Column: {col_str}  Brace: {brc_str}")

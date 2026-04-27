@@ -25,12 +25,19 @@
 import os
 import SW_Import as SW
 
+
 def InputFun(var,Misc,opti_settings):
     SW_filename = Misc["SW_filename"]
 
     # Initialize APDL Command for PyMAPDL
     SWcoor = SW.import_SW(os.path.join("IGS",SW_filename))
     ap = []
+    
+    SWcoor = [
+        (r4(x1), r4(y1), r4(z1), r4(x2), r4(y2), r4(z2))
+        for x1, y1, z1, x2, y2, z2 in SWcoor
+]
+
 
     # Only use Rad if selected in main
     rad = var["rad"]["value"] if "rad" in var and var["rad"].get("active", True) else None
@@ -72,6 +79,7 @@ def InputFun(var,Misc,opti_settings):
 
     # Change Radius Logic
     if rad is not None:
+
         import math
 
         # Check if Column Member 
@@ -95,11 +103,12 @@ def InputFun(var,Misc,opti_settings):
                 nx,nz = loc_to_new[(x,z)]
                 return nx,y,nz
             return x, y, z
-        
+
         SWcoor = [
             (*adjust(x1, y1, z1), *adjust(x2, y2, z2))
             for x1, y1, z1, x2, y2, z2 in SWcoor
-    ]
+        ]
+
 
     # Function to group lines
     def beam_class(p1, p2):
@@ -190,7 +199,7 @@ def InputFun(var,Misc,opti_settings):
     # NODES
     ap.append("! KEYPOINT AND LINES !  ")
     # Initialize values used later        
-    key_id = 1
+    key_id = 2
     line_id = 1
     if opti_settings.get("multi_size_columns", True):
         corner_lines = [[] for _ in range(n)]
@@ -211,6 +220,9 @@ def InputFun(var,Misc,opti_settings):
     kp_dict = {}
     CM_Brace_dict = 0
     CM_Column_dict = 0
+
+    # For Remote Loading
+    #ap.append("K,1,0,4179.14,0  ")
     
 
     # Loop through and create lines
@@ -223,7 +235,7 @@ def InputFun(var,Misc,opti_settings):
         else:
             kp1 = key_id
             kp_dict[p1] = kp1
-            ap.append(f"K,{key_id}, {x1:.3f}, {y1:.3f}, {z1:.3f}  ")
+            ap.append(f"K,{key_id}, {x1:.6f}, {y1:.6f}, {z1:.6f}  ")
             key_id += 1
 
         # Second Point
@@ -233,7 +245,7 @@ def InputFun(var,Misc,opti_settings):
         else:
             kp2 = key_id
             kp_dict[p2] = kp2
-            ap.append(f"K,{kp2}, {x2:.3f}, {y2:.3f}, {z2:.3f} ")
+            ap.append(f"K,{kp2}, {x2:.6f}, {y2:.6f}, {z2:.6f} ")
             key_id += 1
 
         # Group the lines points
@@ -421,7 +433,99 @@ def InputFun(var,Misc,opti_settings):
     # Display Cross section
     ap.append("ALLSEL")
 
+    # Select all nodes with x=0
+    ap.append("SELTOL,1.0E-6  ") # Important for node selection
+    ap.append("NSEL,S,LOC,X,0")
+    ap.append("NSEL,R,LOC,Z,0")
+    ap.append("NSEL,U,LOC,Y,4283,6000") # Old value: 4282
+    ap.append("*GET,SlaveNum,NODE,0,COUNT")
+
+    ap.append("*DIM,SlaveIDs,ARRAY,SlaveNum")
+    ap.append("*VGET,SlaveIDs(1),NODE,,NLIST") # Stores all node IDs
+
+    # Create Master / Independent Node 
+    #ap.append("N,99999,0,4.179140091E+03,0")
+    ap.append("N,99999,0,4180.14,0 ") # Old value: 4182.1384
+    ap.append("*SET,tid,11")
+    ap.append("*SET,cid,10")
+    ap.append("ET,cid,175")
+    ap.append("ET,tid,170")
+    ap.append("KEYO,tid,2,1")
+    ap.append("KEYO,tid,4,0")
+    ap.append("KEYO,cid,12,5")
+    ap.append("KEYO,cid,4,0")
+    ap.append("KEYO,cid,2,2")
+    ap.append("MAT,10")
+    ap.append("REAL,10")
+    ap.append("TYPE,10")
+
+    ap.append("*DO,ii,1,SlaveNum,1")
+    ap.append("    *SET,elemID,8999+ii")
+    ap.append("    *SET,nodeID,SlaveIDs(ii)")
+    ap.append("    EN,elemID,nodeID")
+    ap.append("*ENDDO")
+
+    # Pilot Node Options
+    ap.append("*SET,_npilot,99999")
+    ap.append("_npilot1=_npilot")
+    ap.append("TYPE,tid")
+    ap.append("MAT,cid")
+    ap.append("REAL,cid")
+    ap.append("TSHAPE,PILO")
+    ap.append("EN,79999,_npilot")
+    ap.append("TSHAPE")
+    # Display Cross section
+    ap.append("ALLSEL")
+
+    # REMOTE POINT APPLICATION
+    # Select all nodes with x=0
+    ap.append("SELTOL,1.0E-6  ") # Important for node selection
+    ap.append("NSEL,S,LOC,X,0")
+    ap.append("NSEL,R,LOC,Z,0")
+    ap.append("NSEL,U,LOC,Y,4284,6000")
+    ap.append("*GET,SlaveNum,NODE,0,COUNT")
+
+    ap.append("*DIM,SlaveIDs,ARRAY,SlaveNum")
+    ap.append("*VGET,SlaveIDs(1),NODE,,NLIST") # Stores all node IDs
+
+    # Create Master / Independent Node 
+    #ap.append("N,99999,0,4.179140091E+03,0")
+    ap.append("N,99999,0,4182.1384,0 ")
+    ap.append("*SET,tid,11")
+    ap.append("*SET,cid,10")
+    ap.append("ET,cid,175")
+    ap.append("ET,tid,170")
+    ap.append("KEYO,tid,2,1")
+    ap.append("KEYO,tid,4,0")
+    ap.append("KEYO,cid,12,5")
+    ap.append("KEYO,cid,4,0")
+    ap.append("KEYO,cid,2,2")
+    ap.append("MAT,10")
+    ap.append("REAL,10")
+    ap.append("TYPE,10")
+
+    # Create slave elements
+    #ap.append("*CFOPEN,SlaveNodes")
+    #ap.append("*SET,firstnode,SlaveIDs(1)")
+    #ap.append("*VWRITE,firstnode")
+    #ap.append("(F15.0)")
+    #ap.append("*CFCLOSE")
     
+    ap.append("*DO,ii,1,SlaveNum,1")
+    ap.append("    *SET,elemID,8999+ii")
+    ap.append("    *SET,nodeID,SlaveIDs(ii)")
+    ap.append("    EN,elemID,nodeID")
+    ap.append("*ENDDO")
+
+    # Pilot Node Options
+    ap.append("*SET,_npilot,99999")
+    ap.append("_npilot1=_npilot")
+    ap.append("TYPE,tid")
+    ap.append("MAT,cid")
+    ap.append("REAL,cid")
+    ap.append("TSHAPE,PILO")
+    ap.append("EN,79999,_npilot")
+    ap.append("TSHAPE")
     # Display Cross section
     #ap.append("/ESHAPE,1 ! Display Cross Section ")
         
@@ -450,7 +554,7 @@ def InputFun(var,Misc,opti_settings):
     # BOUNDARY CONDITIONS
     ap.append(" ! -- BOUNDARY CONDITIONS -- !  ")
     ap.append("ALLSEL,ALL  ")
-    ap.append("SELTOL,1.0E-6  ") # Important for node selection
+    
 
     # Get top and bottom nodes
     ap.append("*GET, NodeYMax, NODE, 0, MXLOC, Y  ")
@@ -566,6 +670,7 @@ def InputFun(var,Misc,opti_settings):
     ap.append("*GET, NodeYMax, NODE, 0, MXLOC, Y  ")
     ap.append("*GET, NodeYMin, NODE, 0, MNLOC, Y  ")
     ap.append("*GET, NodeXMax, NODE, 0, MXLOC, X  ")
+
 
     ap.append("NSEL,S,LOC,Y,NodeYMax")
     ap.append("NSEL,R,LOC,X,NodeXMax")

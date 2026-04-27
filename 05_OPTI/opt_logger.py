@@ -27,8 +27,10 @@ class OptimizationLogger:
         self.txt_path = os.path.join(save_folder, f"optimization_log_{ts}.txt") # This line creates the path to the optimization log file.
         self.csv_path = os.path.join(save_folder, f"objective_history_{ts}.csv") # This line creates the path to the objective history file.
 
+        n_vars = len(x0)
+        x_headers = ",".join(f"x{i}" for i in range(n_vars))
         with open(self.csv_path, "w", encoding="utf-8") as f: # This line writes the header to the objective history file.
-            f.write("eval_index,objective\n")
+            f.write(f"eval_index,objective,{x_headers}\n")
 
         self.options = options or {} # This line stores the optimization options.
         self.eval_counter = 0 # This line stores the evaluation counter.
@@ -77,8 +79,9 @@ class OptimizationLogger:
         #NOTE: Relative time that it takes per evaluation is not implemented yet.
         #Implement, such that it is relative time that it takes per evaluation ############################################
 
+        x_vals = ",".join(f"{v:.2f}" for v in x)
         with open(self.csv_path, "a", encoding="utf-8") as f: # Writes the evaluation to the objective history file.
-            f.write(f"{self.eval_counter},{fun:.3f}\n") # Writes the evaluation to the objective history file.
+            f.write(f"{self.eval_counter},{fun:.3f},{x_vals}\n") # Writes the evaluation to the objective history file.
 
         self.log_line(f"[EVALUATION {self.eval_counter}]") # Writes the evaluation number to the optimization log file.
         self.log_line(f"  Date/time : {now}") # Writes the current date and time to the optimization log file.

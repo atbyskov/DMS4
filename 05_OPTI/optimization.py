@@ -7,6 +7,7 @@ from pyslsqp import optimize as pyslsqp_optimize
 from MyAPDLCall import RunAPDL
 from opt_logger import OptimizationLogger
 from Post_Process import PostProcessor
+from aggregate import ConstraintAggregate
 
 # Optimization Function
 def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
@@ -81,7 +82,7 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
             pp.Util_BR(),
             pp.Util_IN(),
         ]
-        col_brace = [(1-arr(c), 1-arr(b)) for c,b in utils]
+        col_brace = [(arr(c), arr(b)) for c,b in utils]
 
         # Set up the constraints
         # Ensure all thickness variables remain above the geometric minimum
@@ -119,7 +120,32 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
             *map(arr, pp.Class_2()),
             arr(pp.Eigenvalue_1())
         ]
+        c_geom = np.concatenate([
+                 arr(x[1] - Misc["eps_geom"]),
+                 arr(x[3] - Misc["eps_geom"])])
+        
+        c_util = np.concatenate([
+                *[v for pair in col_brace for v in pair],
+                arr(pp.Util_BS())])
+        print("No Aggregate first value: ")
+        print(type(c_util))
+        
+        c_misc = np.concatenate([
+                *map(arr, pp.Class_2()),
+                arr(pp.Eigenvalue_1())])
+        
+        # Handle aggregation of constraints
+        agg = ConstraintAggregate(
+            method = Solver_Settings["Aggregate"],
+            p_value = Solver_Settings["p_value"]
+        )
+
+        c_util_agg = agg.agg_output(c_util)
+        
         # Collect them together
+        c = np.concatenate([c_geom,np.atleast_1d(c_util_agg),c_misc])
+        # Print length of constraints
+        print(f"Constraint vector length: {len(c)}")
         c = np.concatenate(constraints)
 
         # Update design variables and constraints
