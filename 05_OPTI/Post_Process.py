@@ -490,7 +490,7 @@ class PostProcessor:
         a_cr = next(v for v in eigenvalues if v > 0)
 
         def interaction(df_member, Ro, Ri, f_y):
-            df = df_member.copy()
+            df = df_member.copy().reset_index(drop=True)
             util = np.zeros(len(df), dtype=float)
 
             # Geometry (row-wise)
