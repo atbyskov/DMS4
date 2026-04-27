@@ -82,7 +82,7 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
             pp.Util_BR(),
             pp.Util_IN(),
         ]
-        col_brace = [(arr(c), arr(b)) for c,b in utils]
+        col_brace = [(1-arr(c), 1-arr(b)) for c,b in utils]
 
         # Set up the constraints
         # Ensure all thickness variables remain above the geometric minimum
@@ -91,25 +91,6 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
             for name, v in var_dict.items()
             if name.startswith("t0") or name.startswith("t1")
         ]
-        
-        # Geometric constraints: ensure inner radius remains positive for valid circular tubes
-        # NEWLY ADDED
-        # For columns: d0/2 - t0 > 0 (inner radius must be positive)
-        # For braces: d1/2 - t1 > 0 (inner radius must be positive)
-        #geometric_constraints = []
-        #for name, value in var_dict.items():
-        #    if name.startswith("d0_"):
-        #        seg_idx = int(name.split("_")[1])
-        #        t_name = f"t0_{seg_idx}"
-        #        if t_name in var_dict:
-        #            # d0/2 - t0 > 0
-        #            geometric_constraints.append(value / 2 - var_dict[t_name])
-        #    elif name.startswith("d1_"):
-        #        seg_idx = int(name.split("_")[1])
-        #        t_name = f"t1_{seg_idx}"
-        #        if t_name in var_dict:
-        #            # d1/2 - t1 > 0
-        #            geometric_constraints.append(value / 2 - var_dict[t_name])
         
         # Combine all inequality constraints for optimization
         constraints = [

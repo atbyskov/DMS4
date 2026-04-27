@@ -194,7 +194,7 @@ def InputFun(var,Misc,opti_settings):
     # NODES
     ap.append("! KEYPOINT AND LINES !  ")
     # Initialize values used later        
-    key_id = 2
+    key_id = 1
     line_id = 1
     if opti_settings.get("multi_size_columns", True):
         corner_lines = [[] for _ in range(n)]
@@ -215,9 +215,6 @@ def InputFun(var,Misc,opti_settings):
     kp_dict = {}
     CM_Brace_dict = 0
     CM_Column_dict = 0
-
-    # For Remote Loading
-    #ap.append("K,1,0,4179.14,0  ")
     
 
     # Loop through and create lines
@@ -293,14 +290,6 @@ def InputFun(var,Misc,opti_settings):
 
         line_id += 1
     ap.append(" ")
-
-    # Printing lines for debug (for debug)
-    #print("Corner Lines")
-    #print(corner_lines)
-    #print("Horizontal Lines")
-    #print(horiz_lines)
-    #print("Cross Lines")
-    #print(cross_lines)
 
     # ELEMENT DEFINITION
     ap.append("! ELEMENT SIZE !  ")
@@ -427,102 +416,6 @@ def InputFun(var,Misc,opti_settings):
     ap.append("TSHAPE")
     # Display Cross section
     ap.append("ALLSEL")
-
-    # Select all nodes with x=0
-    ap.append("SELTOL,1.0E-6  ") # Important for node selection
-    ap.append("NSEL,S,LOC,X,0")
-    ap.append("NSEL,R,LOC,Z,0")
-    ap.append("NSEL,U,LOC,Y,4283,6000") # Old value: 4282
-    ap.append("*GET,SlaveNum,NODE,0,COUNT")
-
-    ap.append("*DIM,SlaveIDs,ARRAY,SlaveNum")
-    ap.append("*VGET,SlaveIDs(1),NODE,,NLIST") # Stores all node IDs
-
-    # Create Master / Independent Node 
-    #ap.append("N,99999,0,4.179140091E+03,0")
-    ap.append("N,99999,0,4180.14,0 ") # Old value: 4182.1384
-    ap.append("*SET,tid,11")
-    ap.append("*SET,cid,10")
-    ap.append("ET,cid,175")
-    ap.append("ET,tid,170")
-    ap.append("KEYO,tid,2,1")
-    ap.append("KEYO,tid,4,0")
-    ap.append("KEYO,cid,12,5")
-    ap.append("KEYO,cid,4,0")
-    ap.append("KEYO,cid,2,2")
-    ap.append("MAT,10")
-    ap.append("REAL,10")
-    ap.append("TYPE,10")
-
-    ap.append("*DO,ii,1,SlaveNum,1")
-    ap.append("    *SET,elemID,8999+ii")
-    ap.append("    *SET,nodeID,SlaveIDs(ii)")
-    ap.append("    EN,elemID,nodeID")
-    ap.append("*ENDDO")
-
-    # Pilot Node Options
-    ap.append("*SET,_npilot,99999")
-    ap.append("_npilot1=_npilot")
-    ap.append("TYPE,tid")
-    ap.append("MAT,cid")
-    ap.append("REAL,cid")
-    ap.append("TSHAPE,PILO")
-    ap.append("EN,79999,_npilot")
-    ap.append("TSHAPE")
-    # Display Cross section
-    ap.append("ALLSEL")
-
-    # REMOTE POINT APPLICATION
-    # Select all nodes with x=0
-    ap.append("SELTOL,1.0E-6  ") # Important for node selection
-    ap.append("NSEL,S,LOC,X,0")
-    ap.append("NSEL,R,LOC,Z,0")
-    ap.append("NSEL,U,LOC,Y,4284,6000")
-    ap.append("*GET,SlaveNum,NODE,0,COUNT")
-
-    ap.append("*DIM,SlaveIDs,ARRAY,SlaveNum")
-    ap.append("*VGET,SlaveIDs(1),NODE,,NLIST") # Stores all node IDs
-
-    # Create Master / Independent Node 
-    #ap.append("N,99999,0,4.179140091E+03,0")
-    ap.append("N,99999,0,4182.1384,0 ")
-    ap.append("*SET,tid,11")
-    ap.append("*SET,cid,10")
-    ap.append("ET,cid,175")
-    ap.append("ET,tid,170")
-    ap.append("KEYO,tid,2,1")
-    ap.append("KEYO,tid,4,0")
-    ap.append("KEYO,cid,12,5")
-    ap.append("KEYO,cid,4,0")
-    ap.append("KEYO,cid,2,2")
-    ap.append("MAT,10")
-    ap.append("REAL,10")
-    ap.append("TYPE,10")
-
-    # Create slave elements
-    #ap.append("*CFOPEN,SlaveNodes")
-    #ap.append("*SET,firstnode,SlaveIDs(1)")
-    #ap.append("*VWRITE,firstnode")
-    #ap.append("(F15.0)")
-    #ap.append("*CFCLOSE")
-    
-    ap.append("*DO,ii,1,SlaveNum,1")
-    ap.append("    *SET,elemID,8999+ii")
-    ap.append("    *SET,nodeID,SlaveIDs(ii)")
-    ap.append("    EN,elemID,nodeID")
-    ap.append("*ENDDO")
-
-    # Pilot Node Options
-    ap.append("*SET,_npilot,99999")
-    ap.append("_npilot1=_npilot")
-    ap.append("TYPE,tid")
-    ap.append("MAT,cid")
-    ap.append("REAL,cid")
-    ap.append("TSHAPE,PILO")
-    ap.append("EN,79999,_npilot")
-    ap.append("TSHAPE")
-    # Display Cross section
-    #ap.append("/ESHAPE,1 ! Display Cross Section ")
         
     #Create and save .png of the mesh
     ap.append("/SHOW,PNG,,0  ")
@@ -549,7 +442,7 @@ def InputFun(var,Misc,opti_settings):
     # BOUNDARY CONDITIONS
     ap.append(" ! -- BOUNDARY CONDITIONS -- !  ")
     ap.append("ALLSEL,ALL  ")
-    
+    ap.append("SELTOL,1.0E-6  ") # Important for node selection
 
     # Get top and bottom nodes
     ap.append("*GET, NodeYMax, NODE, 0, MXLOC, Y  ")

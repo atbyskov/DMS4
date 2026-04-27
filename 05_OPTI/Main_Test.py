@@ -5,6 +5,8 @@
 
 
 # Import packages
+import sys
+print(sys.version, flush=True)
 import time 
 import numpy as np
 import pandas as pd
@@ -104,7 +106,7 @@ mapdl = launch_mapdl(
     run_location="Ansout", 
     log_apdl="apdl_logging",
     override=True,
-    nproc=8,
+    nproc=2,
     additional_switches="-p ansys -smp"
 )
 toc_lic = time.time()
@@ -169,18 +171,8 @@ for key, util in Util_list.items():
         brc_val = extract_max(util[1])
 
     # Case 2: single value (fx Util_BS)
-    col_val = None
-    brc_val = None
-
-    # Case 1: tuple → (Column, Brace)
-    if isinstance(util, tuple):
-        col_val = extract_max(util[0])
-        brc_val = extract_max(util[1])
-
-    # Case 2: single value (fx Util_BS)
     else:
         brc_val = extract_max(util)
-
 
     # Formatting
     col_str = f"{col_val:8.3f}" if col_val is not None else "   N/A  "

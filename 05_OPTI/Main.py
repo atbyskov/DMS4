@@ -1,6 +1,8 @@
 ## MAIN BEAM ELEMENT DOCUMENT ##
 
 # Import packages
+import sys
+print(sys.version, flush=True)
 import time
 from ansys.mapdl.core import launch_mapdl
 
@@ -13,9 +15,9 @@ from MyAPDLCall import RunAPDL
 opti_settings = {
     "n_mast_segments": 5,         # Number of mast segments
     "mast_segment_height": 810,   # Height of each mast segment [mm]
-    "multi_size_columns": False,   # Whether mast segments columns uses different dimensions (True) or not (False)
-    "multi_size_braces": False,    # Whether mast segments braces uses different dimensions (True) or not (False)
-    "brace_split": False,          # Whether braces are split between horiontal and cross (True) or not (False)
+    "multi_size_columns": True,   # Whether mast segments columns uses different dimensions (True) or not (False)
+    "multi_size_braces": True,    # Whether mast segments braces uses different dimensions (True) or not (False)
+    "brace_split": True,          # Whether braces are split between horiontal and cross (True) or not (False)
 }
 
 # Initial Guess
@@ -111,19 +113,3 @@ try:
     result, txt_path, csv_path = optimization.run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings)
 finally:
     mapdl.exit()
-
-# Print Information
-#print("\n" + "="*60)
-#print("OPTIMIZATION RESULTS")
-#print("="*60)
-#print(f"\nOptimal Mass: {result.fun:.3f} kg")
-#print(f"\nOptimal Design Variables:")
-# Get active variable names in order
-#active_names = [name for name, data in var.items() if data.get("active", True)]
-#for name, value in zip(active_names, result.x):
-#    print(f"  {name:8s}: {value:10.4f}")
-#print(f"\nOptimization Message: {result.message}")
-#print(f"\nLog files saved to:")
-#print(f"  - TXT: {txt_path}")
-#print(f"  - CSV: {csv_path}")
-#print("="*60)
