@@ -11,6 +11,8 @@
 #   7. write Latin Hypercube sampling points to a .txt file: "seach_space.txt"
 
 import numpy as np
+import time
+from functools import wraps
 from scipy.stats import qmc
 import matplotlib.pyplot as plt
 
@@ -18,7 +20,7 @@ var_bounds = {
     "d0":  (40.0,  100.0),
     "t0":  (1.0,     7.0),
     "d1":  (10.0,  100.0),
-    #"t1":  (0.1,     7.0),
+    "t1":  (0.1,     7.0),
     #"rad": (150.0,  350.0)
 }
 
@@ -26,8 +28,21 @@ n = 30      # Sampling size
 d = len(var_bounds)
 
 
-# Variables and Bounds
-def equal_spacing(var_bounds,step):
+
+def timer(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        tic = time.perf_counter()
+        result = fn(*args, **kwargs)
+        toc = time.perf_counter()
+        print(f"Time for {fn.__name__}: {toc - tic:.6f} s")
+        return result
+    return wrapper
+
+
+
+# Equal Spacing
+def equal_spacing(var_bounds,n_per_dim):
     
     names = list(var_bounds.keys())
 
@@ -37,10 +52,10 @@ def equal_spacing(var_bounds,step):
         lower,upper = var_bounds[name]
 
         # Step size
-        step_size = float(step[name])
+        num = int(n_per_dim[name])
 
         # Create values and append
-        values = np.arange(lower,upper + 0.5*step_size, step_size)
+        values = np.linspace(lower, upper, num=num)
         axes.append(values)
 
     # Create mesh
@@ -51,7 +66,7 @@ def equal_spacing(var_bounds,step):
     return grid, names
 
 
-
+# Random Spacing
 def random_spacing(var_bounds, n_points, seed=None):
     """
     Random points uniformly inside bounds.
@@ -70,21 +85,21 @@ def random_spacing(var_bounds, n_points, seed=None):
 
 
 # Use equal spacing
-step = {
+n_per_dim = {
     "d0": 10,
-    "t0": 1, 
+    "t0": 7, 
     "d1": 10,
-    "t1": 1,
+    "t1": 7,
     "rad": 10,
 }
-# Use grid
-grid, names = equal_spacing(var_bounds, step)
+grid, names = equal_spacing(var_bounds, n_per_dim)
 
+print(grid)
 # Use random
 N = grid.shape[0]
 rand_points,_ = random_spacing(var_bounds, n_points=N, seed=42)
 
-
+## Plotting
 # def plot equal spacing
 def grid_3dplot():
     x = grid[:, 0]
@@ -124,12 +139,31 @@ def rand_2dplot():
     plt.grid(True)
     plt.show()
 
-#grid_2dplot()
-rand_2dplot()
-grid_2dplot()
-
-# We scale
+# We scale dimensions down to [0:1] for consistency
 def scale_to_unit(points, var_bounds, names):
     lowers = np.array([var_bounds[n][0] for n in names])
     uppers = np.array([var_bounds[n][1] for n in names])
+    return (points - lowers) / (uppers - lowers)
+
+def disc(points_unit):
+    return qmc.discrepancy(points_unit, method="CD")
+
+def evaluate_spacing(points,var_bounds,names):
+    pts_u = scale_to_unit(points, var_bounds, names)
+
+    metrics = {}
+    metrics["disc"] = disc(pts_u)
+
+    return metrics
+
+grid_m = evaluate_spacing(grid, var_bounds, names)
+rand_m = evaluate_spacing(rand_points, var_bounds, names)
+
+print("GRID:", grid_m)
+print("RAND:",rand_m)
+
+
+print("\n--- Simulation counts ---")
+print("Grid simulations :", grid.shape[0])
+print("Random simulations:", rand_points.shape[0])
 
