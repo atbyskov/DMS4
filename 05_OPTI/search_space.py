@@ -26,13 +26,44 @@ d = len(var_bounds)
 
 
 # Variables and Bounds
+def equal_spacing(var_bounds,step):
+    
+    names = list(var_bounds.keys())
 
-# Random
-def random(n,d,seed):
-    rng = np.random.default_rng(seed)
-    return rng.random((n,d))
+    axes = []
+    for name in names:
+        # Read lower and upper bounds
+        lower,upper = var_bounds[name]
 
-ran=random(n,d,47)
+        # Step size
+        step_size = float(step[name])
 
-print(random)
+        # Create values and append
+        values = np.arange(lower,upper + 0.5*step_size, step_size)
+        axes.append(values)
+
+    # Create mesh
+    mesh = np.meshgrid(*axes, indexing="ij")
+
+    grid = np.stack(mesh, axis=-1).reshape(-1, len(names))
+
+    return grid, names
+
+# Use equal spacing
+step = {
+    "d0": 1,
+    "t0": 1, 
+    "d1": 10,
+    "t1": 1,
+    "rad": 10,
+}
+grid, names = equal_spacing(var_bounds, step)
+
+
+print("Variable order:", names)
+print("Grid shape:", grid.shape)
+print("First 5 points:\n", grid[:5])
+print("Last 5 points:\n", grid[-5:])
+
+
 
