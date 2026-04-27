@@ -85,7 +85,6 @@ Misc = {
     "f_y_brace": 355,               # Brace Yield Strength [MPa]
     "E_mod": 200*1E3,               # Youngs Modulus [MPa]
     "W_Force": -3.751E+3,           # Vertical Force COG (P_COG_y) [N]
-    "eps_geom": 0.1,    # Minimum thickness specification for geometry updates [mm]
     "SW_filename": "LWC_L1_LINES.IGS",    # Filename for IGS File
     "save_folder": "Optimization_Logs" # Save Folder
 }

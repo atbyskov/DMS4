@@ -89,17 +89,11 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         ]
         col_brace = [(1-arr(c), 1-arr(b)) for c,b in utils]
 
-        # Set up the constraints
-        # Ensure all thickness variables remain above the geometric minimum
-        thickness_constraints = [
-            v - Misc["eps_geom"]
-            for name, v in var_dict.items()
-            if name.startswith("t0") or name.startswith("t1")
-        ]
-        
+        # Set up the constraints      
         c_util = np.concatenate([
                 *[v for pair in col_brace for v in pair],
-                1- arr(pp.Util_BS())])
+                1- arr(pp.Util_BS()[0]), # stress constraint here
+                1- arr(pp.Util_BS()[1])]) # deflection constraint here
         
         # Handle aggregation of constraints
         agg = ConstraintAggregate(
@@ -113,7 +107,6 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         
         # Collect them together
         c = np.concatenate([
-            *map(arr, thickness_constraints),
             np.atleast_1d(c_util_agg),
             *map(arr, pp.Class_2()),
             arr(pp.Eigenvalue_1())
@@ -133,7 +126,8 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
                 #"Util_BNS": pp.Util_BNS(),
                 "Util_BR": pp.Util_BR(),
                 "Util_IN": pp.Util_IN(),
-                "Util_BS": pp.Util_BS(),
+                "Util_BS_sig": pp.Util_BS()[0], # stress
+                "Util_BS_defl": pp.Util_BS()[1], # deflection
             }
 
         # Update design variables and constraints
