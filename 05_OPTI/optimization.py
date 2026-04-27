@@ -71,7 +71,7 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         var_dict = dict(zip(names, x))
 
         # Run the Model
-        f = RunAPDL(mapdl, x, Misc)
+        f = RunAPDL(mapdl, x, Misc,opti_settings)
 
         # Initiate Post Processing
         pp = PostProcessor(var_dict,Misc,opti_settings)
@@ -96,17 +96,10 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
             for name, v in var_dict.items()
             if name.startswith("t0") or name.startswith("t1")
         ]
-        # Can i only aggregate the utils or do we need to have them all
-        c_geom = [
-                 *map(arr, thickness_constraints)]
         
         c_util = np.concatenate([
                 *[v for pair in col_brace for v in pair],
                 1- arr(pp.Util_BS())])
-        
-        c_misc = np.concatenate([
-                *map(arr, pp.Class_2()),
-                arr(pp.Eigenvalue_1())])
         
         # Handle aggregation of constraints
         agg = ConstraintAggregate(
@@ -119,8 +112,13 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         c_util_agg, v_agg, g_max = agg.agg_output(c_util)
         
         # Collect them together
-        c = np.concatenate([c_geom,np.atleast_1d(c_util_agg),c_misc])
-        # Print length of constraints
+        c = np.concatenate([
+            *map(arr, thickness_constraints),
+            np.atleast_1d(c_util_agg),
+            *map(arr, pp.Class_2()),
+            arr(pp.Eigenvalue_1())
+        ])
+
         print(f"Constraint vector length: {len(c)}")
 
         logger.log_evaluation(x, f,v_agg=v_agg,g_max=g_max)
