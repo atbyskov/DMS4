@@ -21,14 +21,14 @@ var_bounds = {
     "t0":  (1.0,     7.0),
     "d1":  (10.0,  100.0),
     "t1":  (0.1,     7.0),
-    #"rad": (150.0,  350.0)
+    "rad": (150.0,  350.0)
 }
 
 n = 30      # Sampling size
 d = len(var_bounds)
 
 
-
+# Timer Function
 def timer(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
@@ -38,8 +38,6 @@ def timer(fn):
         print(f"Time for {fn.__name__}: {toc - tic:.6f} s")
         return result
     return wrapper
-
-
 
 # Equal Spacing
 def equal_spacing(var_bounds,n_per_dim):
@@ -65,7 +63,6 @@ def equal_spacing(var_bounds,n_per_dim):
 
     return grid, names
 
-
 # Random Spacing
 def random_spacing(var_bounds, n_points, seed=None):
     """
@@ -83,14 +80,30 @@ def random_spacing(var_bounds, n_points, seed=None):
 
     return points, names
 
+# LHS Spacing
+def latin_spacing(var_bounds, n_points, seed=None, scramble=True):
+    names = list(var_bounds.keys())
+    d = len(names)
+
+    # LHS in the unit hypercube [0,1]^d
+    sampler = qmc.LatinHypercube(d=d, scramble=scramble, seed=seed)
+    sample_unit = sampler.random(n=n_points)
+
+    # Scale to physical bounds
+    lower = np.array([var_bounds[name][0] for name in names], dtype=float)
+    upper = np.array([var_bounds[name][1] for name in names], dtype=float)
+    points = qmc.scale(sample_unit, lower, upper)
+
+    return points, names
+
 
 # Use equal spacing
 n_per_dim = {
-    "d0": 10,
-    "t0": 7, 
-    "d1": 10,
-    "t1": 7,
-    "rad": 10,
+    "d0": 3,
+    "t0": 3, 
+    "d1": 3,
+    "t1": 3,
+    "rad": 3,
 }
 
 grid, names = equal_spacing(var_bounds, n_per_dim)
@@ -99,8 +112,13 @@ grid, names = equal_spacing(var_bounds, n_per_dim)
 N = grid.shape[0]
 rand_points,_ = random_spacing(var_bounds, n_points=N, seed=42)
 
+# Use LHS
+lhs_points, _ = latin_spacing(var_bounds, n_points=N, seed=42, scramble=True)
+
+
 ## Plotting
 # def plot equal spacing
+
 def grid_3dplot():
     x = grid[:, 0]
     y = grid[:, 1]
@@ -139,31 +157,29 @@ def rand_2dplot():
     plt.grid(True)
     plt.show()
 
-# We scale dimensions down to [0:1] for consistency
-def scale_to_unit(points, var_bounds, names):
-    lowers = np.array([var_bounds[n][0] for n in names])
-    uppers = np.array([var_bounds[n][1] for n in names])
-    return (points - lowers) / (uppers - lowers)
+# Evaluate Discrepancy
+def evaluate_spacing(points, var_bounds, names, method="CD"):
+    """
+    Scale points to [0,1]^d using var_bounds and return discrepancy.
+    """
+    lowers = np.array([var_bounds[n][0] for n in names], dtype=float)
+    uppers = np.array([var_bounds[n][1] for n in names], dtype=float)
 
-def disc(points_unit):
-    return qmc.discrepancy(points_unit, method="CD")
+    points_unit = (points - lowers) / (uppers - lowers)
+    return qmc.discrepancy(points_unit, method=method)
 
-def evaluate_spacing(points,var_bounds,names):
-    pts_u = scale_to_unit(points, var_bounds, names)
-
-    metrics = {}
-    metrics["disc"] = disc(pts_u)
-
-    return metrics
 
 grid_m = evaluate_spacing(grid, var_bounds, names)
 rand_m = evaluate_spacing(rand_points, var_bounds, names)
-
-print("GRID:", grid_m)
-print("RAND:",rand_m)
+LHS_m = evaluate_spacing(lhs_points, var_bounds, names)
 
 
-print("\n--- Simulation counts ---")
-print("Grid simulations :", grid.shape[0])
-print("Random simulations:", rand_points.shape[0])
+print("!---- Results ---- !")
+print(f"GRID: {grid_m:.4f}")
+print(f"RAND: {rand_m:.4f}")
+print(f"LHS:  {LHS_m:.4f}")
+print("Number of simulations :", grid.shape[0])
+
+#grid_2dplot()
+#rand_2dplot()
 
