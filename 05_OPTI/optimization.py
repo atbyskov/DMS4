@@ -120,34 +120,11 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
             *map(arr, pp.Class_2()),
             arr(pp.Eigenvalue_1())
         ]
-        c_geom = np.concatenate([
-                 arr(x[1] - Misc["eps_geom"]),
-                 arr(x[3] - Misc["eps_geom"])])
         
-        c_util = np.concatenate([
-                *[v for pair in col_brace for v in pair],
-                arr(pp.Util_BS())])
-        print("No Aggregate first value: ")
-        print(type(c_util))
-        
-        c_misc = np.concatenate([
-                *map(arr, pp.Class_2()),
-                arr(pp.Eigenvalue_1())])
-        
-        # Handle aggregation of constraints
-        agg = ConstraintAggregate(
-            method = Solver_Settings["Aggregate"],
-            p_value = Solver_Settings["p_value"]
-        )
-
-        c_util_agg = agg.agg_output(c_util)
-        
-        # Collect them together
-        c = np.concatenate([c_geom,np.atleast_1d(c_util_agg),c_misc])
         # Print length of constraints
-        print(f"Constraint vector length: {len(c)}")
         c = np.concatenate(constraints)
-
+        print(f"Constraint vector length: {len(c)}")
+        
         # Update design variables and constraints
         cache.update(x=x.copy(), f=float(f), c=c)
 
@@ -196,7 +173,7 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         summary_filename=summary_filename, 
         #warm_start=True, # For restarting optimization from prior optimization runs
         #load_filename=save_filename, # Filename for restart file
-        visualize=True, 
+        visualize=False, 
         visualize_vars=['objective', 'optimality', 'feasibility', 'x[0]', 'gradient[0]', 'constraints[0]', 'multipliers[0]', 'jacobian[0,0]'], 
     ) 
     # return the result, the text path, and the csv path

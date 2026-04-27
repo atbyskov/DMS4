@@ -33,11 +33,6 @@ def InputFun(var,Misc,opti_settings):
     SWcoor = SW.import_SW(os.path.join("IGS",SW_filename))
     ap = []
     
-    SWcoor = [
-        (r4(x1), r4(y1), r4(z1), r4(x2), r4(y2), r4(z2))
-        for x1, y1, z1, x2, y2, z2 in SWcoor
-]
-
 
     # Only use Rad if selected in main
     rad = var["rad"]["value"] if "rad" in var and var["rad"].get("active", True) else None
