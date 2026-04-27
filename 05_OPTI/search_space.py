@@ -10,25 +10,23 @@
 #   6. Calculate Disceptancy for each method and print
 #   7. write Latin Hypercube sampling points to a .txt file: "seach_space.txt"
 
+# Import Tools 
 import numpy as np
 import time
 from functools import wraps
 from scipy.stats import qmc
 import matplotlib.pyplot as plt
 
+# Write Bounds, must match exacly Main.py
 var_bounds = {
     "d0":  (40.0,  100.0),
     "t0":  (1.0,     7.0),
-    "d1":  (10.0,  100.0),
-    "t1":  (0.1,     7.0),
-    "rad": (150.0,  350.0)
+    #"d1":  (10.0,  100.0),
+    #"t1":  (0.1,     7.0),
+    #"rad": (150.0,  350.0)
 }
 
-n = 30      # Sampling size
-d = len(var_bounds)
-
-
-# Timer Function
+# Timer Decorator
 def timer(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
@@ -49,8 +47,10 @@ def equal_spacing(var_bounds,n_per_dim):
         # Read lower and upper bounds
         lower,upper = var_bounds[name]
 
-        # Step size
-        num = int(n_per_dim[name])
+        if isinstance(n_per_dim, dict):
+            num = int(n_per_dim[name])
+        else:
+            num = int(n_per_dim)
 
         # Create values and append
         values = np.linspace(lower, upper, num=num)
@@ -96,68 +96,51 @@ def latin_spacing(var_bounds, n_points, seed=None, scramble=True):
 
     return points, names
 
+# Sobol Spacing
+def sobol_spacing(var_bounds, n_points, seed=None, scramble=True, power2=True):
+    
+    names = list(var_bounds.keys())
+    d = len(names)
 
-# Use equal spacing
+    sampler = qmc.Sobol(d=d, scramble=scramble, seed=seed)
+
+    if power2:
+        # Find smallest 2^m >= n_points
+        m = int(np.ceil(np.log2(n_points)))
+        sample_unit = sampler.random_base2(m=m)[:n_points]
+    else:
+        sample_unit = sampler.random(n=n_points)
+
+    lower = np.array([var_bounds[name][0] for name in names], dtype=float)
+    upper = np.array([var_bounds[name][1] for name in names], dtype=float)
+    points = qmc.scale(sample_unit, lower, upper)
+
+    return points, names
+
+# Use non-equal spacing (remove =2 from n_per_dim=2 in)
 n_per_dim = {
     "d0": 3,
     "t0": 3, 
-    "d1": 3,
-    "t1": 3,
-    "rad": 3,
+    #"d1": 3,
+    #"t1": 3,
+    #"rad": 3,
 }
-
-grid, names = equal_spacing(var_bounds, n_per_dim)
-
-# Use random
+n_per_dim_equal = 2
+# Call grid function with options
+grid, names = equal_spacing(var_bounds, n_per_dim=n_per_dim_equal)
 N = grid.shape[0]
+
+# Call random samplint (Seed is set for reproducability)
 rand_points,_ = random_spacing(var_bounds, n_points=N, seed=42)
 
-# Use LHS
+# Use LHS 
 lhs_points, _ = latin_spacing(var_bounds, n_points=N, seed=42, scramble=True)
 
+# Use Sobol
+sobol_points, _ = sobol_spacing(var_bounds, n_points=N, seed=42, scramble=True, power2=True)
 
-## Plotting
-# def plot equal spacing
 
-def grid_3dplot():
-    x = grid[:, 0]
-    y = grid[:, 1]
-    z = grid[:, 2]
-
-    fig = plt.figure(figsize=(8,5))
-    ax = fig.add_subplot(111, projection="3d")
-
-    ax.scatter(x,y,z,s=20)
-
-    ax.set_xlabel(names[0])
-    ax.set_ylabel(names[1])
-    ax.set_zlabel(names[2])
-    ax.set_title("3D Grid Points")
-
-    plt.grid(True)
-    plt.show()
-
-def grid_2dplot():
-
-    plt.figure(figsize=(8,5))
-    plt.scatter(grid[:, 0], grid[:, 1], s=20)
-    plt.xlabel(names[0])
-    plt.ylabel(names[1])
-    plt.title("2D Grid points")
-    plt.grid(True)
-    plt.show()
-
-# def plot random spacing
-def rand_2dplot():
-    plt.figure(figsize=(8,5))
-    plt.scatter(rand_points[:,0],rand_points[:, 1], s=20)
-    plt.xlabel(names[0])
-    plt.ylabel(names[1])
-    plt.title("2D Random Points")
-    plt.grid(True)
-    plt.show()
-
-# Evaluate Discrepancy
+# Evaluate Discrepancy Function
 def evaluate_spacing(points, var_bounds, names, method="CD"):
     """
     Scale points to [0,1]^d using var_bounds and return discrepancy.
@@ -169,17 +152,62 @@ def evaluate_spacing(points, var_bounds, names, method="CD"):
     return qmc.discrepancy(points_unit, method=method)
 
 
-grid_m = evaluate_spacing(grid, var_bounds, names)
-rand_m = evaluate_spacing(rand_points, var_bounds, names)
-LHS_m = evaluate_spacing(lhs_points, var_bounds, names)
+# Call evaluations
+grid_m = evaluate_spacing(grid,          var_bounds, names)
+rand_m = evaluate_spacing(rand_points,   var_bounds, names)
+LHS_m = evaluate_spacing(lhs_points,     var_bounds, names)
+Sobol_m = evaluate_spacing(sobol_points, var_bounds, names)
 
-
+# Print results
 print("!---- Results ---- !")
-print(f"GRID: {grid_m:.4f}")
-print(f"RAND: {rand_m:.4f}")
-print(f"LHS:  {LHS_m:.4f}")
 print("Number of simulations :", grid.shape[0])
+print(f"GRID: {grid_m:.6f}")
+print(f"RAND: {rand_m:.6f}")
+print(f"LHS:  {LHS_m:.6f}")
+print(f"SOBOL: {Sobol_m:.6f}")
 
-#grid_2dplot()
-#rand_2dplot()
+# Plotting
+def plotting():
 
+    fig, axs = plt.subplots(1, 4, figsize=(14, 4))
+
+    # Data + labels
+    methods = ["Grid", "Random", "LHS", "Sobol"]
+    scores  = [grid_m, rand_m, LHS_m, Sobol_m]
+    data    = [grid, rand_points, lhs_points, sobol_points]
+
+    # Bounds
+    xmin, xmax = var_bounds["d0"]
+    ymin, ymax = var_bounds["t0"]
+
+    for i, ax in enumerate(axs):
+
+        # Scatter
+        ax.scatter(data[i][:,0], data[i][:,1])
+
+        # Bounding box
+        ax.plot([xmin, xmax, xmax, xmin, xmin],
+                [ymin, ymin, ymax, ymax, ymin])
+
+        # Titles
+        ax.set_title(f"{methods[i]}\nCD = {scores[i]:.4f}")
+
+        # Labels
+        ax.set_xlabel("d0 [mm]")
+        ax.set_ylabel("t0 [mm]")
+
+        # Limits (important for comparison)
+        ax.set_xlim(xmin, xmax)
+        ax.set_ylim(ymin, ymax)
+
+        # Grid
+        ax.grid(True)
+
+    # Main title
+    fig.suptitle(f"Search Methods ({n_per_dim_equal} values per dimension)")
+
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    plt.show()
+
+
+plotting()
