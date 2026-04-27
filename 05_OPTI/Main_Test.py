@@ -175,4 +175,4 @@ for key, util in Util_list.items():
     col_str = f"{col_val:8.3f}" if col_val is not None else "   N/A  "
     brc_str = f"{brc_val:8.3f}" if brc_val is not None else "   N/A  "
 
-    print(f"{key:10s}  Column: {col_str}  Brace: {brc_str}")
+    print(f"{key:15s}  Column: {col_str}  Brace: {brc_str}")

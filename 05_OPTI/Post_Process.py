@@ -293,7 +293,8 @@ class PostProcessor:
                 #"Util_BNS": self.Util_BNS(),
                 "Util_BR": self.Util_BR(),
                 "Util_IN": self.Util_IN(),
-                "Util_BS": self.Util_BS()
+                "Util_BS_sig": self.Util_BS()[0], # stress
+                "Util_BS_defl": self.Util_BS()[1], # deflection
             }
 
             return util_data
@@ -566,14 +567,16 @@ class PostProcessor:
 
         # Import Misc
         f_y_brace = self.f_y_brace
+        E_mod = self.E_mod
 
         # Force and Length
-        P = 200 * 9.82      # [N]
+        P = 150 * 9.82      # [N] 150 kg from standard
         L = _brace_span_mm(self.var, self.Misc)  # [mm] first horizontal brace (same for all)
         M = 1/8 * P * L     # Max Moment [Nmm]
 
         # Calculate utilization for all horizontal brace sections
-        util_values = []
+        util_values_sig = []
+        util_values_defl = []
         
         for d1, t1 in brace_sections:
             # Moment of Inertia and Area
@@ -596,10 +599,14 @@ class PostProcessor:
             # Von Mises
             sig_vm = np.sqrt(sig_b**2 + 3 * tau_max**2) # [N/mm^2]
 
-            util_values.append(sig_vm / f_y_brace)      # [Na] Brace
+            util_values_sig.append(sig_vm / f_y_brace)      # [Na] Brace
 
+            # Deflection (u_max = (1/192) * ((P * L^3) / (E * I)))
+            u_max = (P * L**3) / (192 * E_mod * I)         # [mm]
+
+            util_values_defl.append(u_max / (L / 200))          # [Na] Brace Max deflection from standard
         # Return as Series to allow extract_max to work with multiple values
-        return pd.Series(util_values, name="Util_BS")
+        return pd.Series(util_values_sig, name="Util_BS_sig"), pd.Series(util_values_defl, name="Util_BS_defl")
 
     def Class_2(self): 
 
