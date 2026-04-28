@@ -1,0 +1,65 @@
+! ===== APDL OUTPUT FILE ===== ! 
+ 
+/POST1 
+SET,LAST 
+ 
+ALLSEL,ALL 
+/INPUT,APDL_out,txt 
+ESEL,S, ENAME,, 189 
+*GET,E_COUNT,ELEM,0,COUNT 
+ 
+! Number of Columns: 2 
+! Number of Braces : 1 
+ 
+*CFOPEN, APDL_out,txt 
+ 
+! Loop over Columns 
+*DO,ii,1,2,1 
+   CMSEL,S,COLUMN_%ii%,NODE 
+   *IF,ii,LT,10,THEN 
+       *VWRITE,ii 
+       ("NS ColMember_",F2.0) 
+   *ELSE 
+       *VWRITE,ii 
+       ("NS ColMember_",F3.0) 
+   *ENDIF 
+*GET nElem,ELEM,0,COUNT 
+   *VWRITE,'ElemID','NF','My','Mz','Vy',Vz','T' 
+   (A12,6A20) 
+   elem = 0 
+   *DO,jj,1,nElem,1 
+       *GET,NF,ELEM,ELEM,SMISC,1 
+       *GET,MY,ELEM,ELEM,SMISC,2 
+       *GET,MZ,ELEM,ELEM,SMISC,3 
+       *GET,VY,ELEM,ELEM,SMISC,4 
+       *GET,VZ,ELEM,ELEM,SMISC,5 
+       *GET,TQ,ELEM,ELEM,SMISC,6 
+       *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ 
+       (F12.0,6E20.8) 
+   *ENDDO 
+ 
+! Loop over Braces 
+*DO,ii,1,1,1 
+   CMSEL,S,BRACE_%ii%,NODE 
+   *IF,ii,LT,10,THEN 
+       *VWRITE,ii 
+       ("NS BraceMember_",F2.0) 
+   *ELSE 
+       *VWRITE,ii 
+       ("NS BraceMember_",F3.0) 
+   *ENDIF 
+*GET nElem,ELEM,0,COUNT 
+   *VWRITE,'ElemID','NF','My','Mz','Vy',Vz','T' 
+   (A12,6A20) 
+   elem = 0 
+   *DO,jj,1,nElem,1 
+       *GET,NF,ELEM,ELEM,SMISC,1 
+       *GET,MY,ELEM,ELEM,SMISC,2 
+       *GET,MZ,ELEM,ELEM,SMISC,3 
+       *GET,VY,ELEM,ELEM,SMISC,4 
+       *GET,VZ,ELEM,ELEM,SMISC,5 
+       *GET,TQ,ELEM,ELEM,SMISC,6 
+       *VWRITE,ELEM,NF,MY,MZ,VY,VZ,TQ 
+       (F12.0,6E20.8) 
+   *ENDDO 
+*ENDDO 
