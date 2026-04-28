@@ -16,14 +16,15 @@ import time
 from functools import wraps
 from scipy.stats import qmc
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D 
 
 # Write Bounds, must match exacly Main.py
 var_bounds = {
     "d0":  (40.0,  100.0),
     "t0":  (1.0,     7.0),
-    #"d1":  (10.0,  100.0),
-    #"t1":  (0.1,     7.0),
-    #"rad": (150.0,  350.0)
+    "d1":  (10.0,  100.0),
+    "t1":  (0.1,     7.0),
+    "rad": (150.0,  350.0)
 }
 
 # Timer Decorator
@@ -125,6 +126,7 @@ n_per_dim = {
     #"t1": 3,
     #"rad": 3,
 }
+
 n_per_dim_equal = 2
 # Call grid function with options
 grid, names = equal_spacing(var_bounds, n_per_dim=n_per_dim_equal)
@@ -138,6 +140,7 @@ lhs_points, _ = latin_spacing(var_bounds, n_points=N, seed=42, scramble=True)
 
 # Use Sobol
 sobol_points, _ = sobol_spacing(var_bounds, n_points=N, seed=42, scramble=True, power2=True)
+
 
 
 # Evaluate Discrepancy Function
@@ -158,6 +161,13 @@ rand_m = evaluate_spacing(rand_points,   var_bounds, names)
 LHS_m = evaluate_spacing(lhs_points,     var_bounds, names)
 Sobol_m = evaluate_spacing(sobol_points, var_bounds, names)
 
+data = {"GRID": {"points": grid, "names": names, "discrepancy": grid_m},
+        "RAND": {"points": rand_points, "names": names, "discrepancy": rand_m},
+        "LHS" : {"points": lhs_points, "names": names, "discrepancy": LHS_m},
+        "SOBOL":{"points": sobol_points, "names": names, "discrepancy": Sobol_m}
+
+}
+
 # Print results
 print("!---- Results ---- !")
 print("Number of simulations :", grid.shape[0])
@@ -166,8 +176,36 @@ print(f"RAND: {rand_m:.6f}")
 print(f"LHS:  {LHS_m:.6f}")
 print(f"SOBOL: {Sobol_m:.6f}")
 
-# Plotting
-def plotting():
+
+method_to_print = "LHS"
+# Write to file
+def read_to_file(var_bounds,method, method_key,n_per_dim_equal):
+    points = data[method_key]["points"]
+    names = data[method_key]["names"]
+    DS = data[method_key]["discrepancy"]
+    n_points = points.shape[0]
+
+    with open("05_Opti/search_space.txt","w") as f:
+        f.write("! Search Space Points \n")
+        f.write(f"Method: {method_key} \n")
+        f.write(f"Points per Dimension: {n_per_dim_equal} \n")
+        f.write(f"Number of Simulations: {n_points} \n")
+        f.write(f"discrepancy score: {DS:.4f} \n \n")
+        f.write(f"Active Design Variables and Bounds: \n")
+        for name, (lower, upper) in var_bounds.items():
+            f.write(f" {name}: [{lower}, {upper}] \n")
+
+        f.write("\nPoints: \n")
+        f.write("  "+ "  ".join(names) + "\n")
+        for row in points:
+            f.write("  "+"  ".join(f"{val:.4f}" for val in row) + "\n")
+
+
+read_to_file(var_bounds,data,method_to_print,n_per_dim_equal)
+
+
+# Plotting 2D
+def plotting2D():
 
     fig, axs = plt.subplots(1, 4, figsize=(14, 4))
 
@@ -187,7 +225,7 @@ def plotting():
 
         # Bounding box
         ax.plot([xmin, xmax, xmax, xmin, xmin],
-                [ymin, ymin, ymax, ymax, ymin])
+                [ymin, ymin, ymax, ymax, ymin], color="black")
 
         # Titles
         ax.set_title(f"{methods[i]}\nCD = {scores[i]:.4f}")
@@ -197,8 +235,8 @@ def plotting():
         ax.set_ylabel("t0 [mm]")
 
         # Limits (important for comparison)
-        ax.set_xlim(xmin, xmax)
-        ax.set_ylim(ymin, ymax)
+        ax.set_xlim(xmin-5, xmax+5)
+        ax.set_ylim(ymin-1, ymax+1)
 
         # Grid
         ax.grid(True)
@@ -209,5 +247,72 @@ def plotting():
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     plt.show()
 
+# Plitting 3D
+def plotting3D():
 
-plotting()
+    fig = plt.figure(figsize=(14, 4))
+
+    # Data + labels
+    methods = ["Grid", "Random", "LHS", "Sobol"]
+    scores  = [grid_m, rand_m, LHS_m, Sobol_m]
+    datasets = [grid, rand_points, lhs_points, sobol_points]
+
+    # Bounds
+    xmin, xmax = var_bounds["d0"]
+    ymin, ymax = var_bounds["rad"]
+    zmin, zmax = var_bounds["d1"]
+
+    for i in range(4):
+        ax = fig.add_subplot(1, 4, i+1, projection="3d")
+
+        data = datasets[i]
+
+        # Scatter
+        ax.scatter(
+            data[:, 0],  # d0
+            data[:, 1],  # t0
+            data[:, 2],  # d1
+        )
+
+        # Titles
+        ax.set_title(f"{methods[i]}\nCD = {scores[i]:.4f}")
+
+        # Labels
+        ax.set_xlabel("d0 [mm]")
+        ax.set_ylabel("t0 [mm]")
+        ax.set_zlabel("d1 [mm]")
+
+        # Limits
+        ax.set_xlim(xmin, xmax)
+        ax.set_ylim(ymin, ymax)
+        ax.set_zlim(zmin, zmax)
+
+        # Optional: equal aspect (helps interpretation)
+        ax.set_box_aspect((xmax-xmin, ymax-ymin, zmax-zmin))
+
+    # Main title
+    fig.suptitle(f"Search Methods ({n_per_dim_equal} values per dimension)")
+
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    plt.show()
+
+
+#plotting2D()
+
+# Aggregate Output
+# Make one for p = 2
+p_values = [4, 8, 16, 50, 100]
+ratio_pn = [1.66, 1.083, 1.04, 1.004, 1.004]
+ratio_pnmean = [0.193, 0.42, 0.632, 0.852, 0.923]
+
+
+plt.figure(figsize=(8,5))
+plt.plot(p_values, ratio_pn, label="P-norm")
+plt.plot(p_values,ratio_pnmean, label="P-norm-mean")
+plt.grid(True)
+plt.title("Aggretate P Methods Comparison (highest utiliation/aggregation output)")
+plt.xlabel("p-value")
+plt.ylabel("Aggregation Output")
+plt.legend()
+
+plt.show()
