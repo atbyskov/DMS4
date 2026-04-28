@@ -95,8 +95,8 @@
   SHARED MEMORY PARALLEL REQUESTED
     SINGLE PROCESS WITH   2 THREADS REQUESTED
     TOTAL OF     2 CORES REQUESTED
-  INPUT FILE NAME              = C:\Users\guest\OneDrive\Uni\Kandidat\10. Semester\GitHub\New\DMS4\Ansout\.__tmp__.inp
-  OUTPUT FILE NAME             = C:\Users\guest\OneDrive\Uni\Kandidat\10. Semester\GitHub\New\DMS4\Ansout\.__tmp__.out
+  INPUT FILE NAME              = C:\DMS4_Git\DMS4\Ansout\.__tmp__.inp
+  OUTPUT FILE NAME             = C:\DMS4_Git\DMS4\Ansout\.__tmp__.out
 
  PARAMETER STATUS-           (   1 PARAMETERS DEFINED)
 
@@ -104,7 +104,7 @@
  PORT                              50052.0000                    SCALAR
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
- CURRENT JOBNAME=file  15:01:47  APR 27, 2026 CP=      0.156
+ CURRENT JOBNAME=file  09:11:40  APR 28, 2026 CP=      0.156
 
      1  FINISH 
 
@@ -163,6 +163,12 @@
 
  /OUTPUT FILE=         
 
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
  /OUTPUT FILE=         
 
  CLEAR MAPDL DATABASE AND RESTART
@@ -175,34 +181,65 @@
 
  /OUTPUT FILE=         
 
- EXIT MAPDL WHILE IN SERVER MODE
-
- SAVE ALL MODEL, SOLUTION AND POST DATA
-
- ALL CURRENT MAPDL DATA WRITTEN TO FILE NAME= 
-  FOR POSSIBLE RESUME FROM THIS POINT
+ /OUTPUT FILE=         
+   *****MAPDL VERIFICATION RUN ONLY*****
+     DO NOT USE RESULTS FOR PRODUCTION
 
 
- NUMBER OF WARNING MESSAGES ENCOUNTERED=          2
- NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+          ***** TIME-HISTORY POSTPROCESSOR (POST26) *****
+
+ ALL POST26 SPECIFICATIONS ARE RESET TO INITIAL DEFAULTS
+
+ *** NOTE ***                            CP =       0.000   TIME= 00:00:00
+ Geometry is not available.  Issue RESUME to restore database.           
+
+ *** WARNING ***                         CP =       0.000   TIME= 00:00:00
+ The geometry is not available.  Issue the RESUME command to restore the 
+ database.  The NUMVAR command is ignored.                               
 
 
- *-----------------------------------------------------------------------------*
- |                                                                             |
- |                               RUN COMPLETED                                 |
- |                                                                             |
- |-----------------------------------------------------------------------------|
- |                                                                             |
- |  Ansys MAPDL 2025 R1         Build 25.1         UP20241202    WINDOWS x64   |
- |                                                                             |
- |-----------------------------------------------------------------------------|
- |                                                                             |
- |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
- |  Maximum Database Used       1 MB     Maximum Scratch Memory Used      8 MB |
- |                                                                             |
- |-----------------------------------------------------------------------------|
- |                                                                             |
- |        CP Time      (sec) =          0.891       Time  =  15:01:50          |
- |        Elapsed Time (sec) =          9.000       Date  =  04/27/2026        |
- |                                                                             |
- *-----------------------------------------------------------------------------*
+ ***** ROUTINE COMPLETED *****  CP =         0.000
+
+
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ *** WARNING ***                         CP =       0.000   TIME= 00:00:00
+ Altering the abort level key is not recommended.                        
+
+
+ NUMBER OF DISPLAYED ERRORS ALLOWED PER COMMAND=                200
+ NUMBER OF ERRORS ALLOWED PER COMMAND BEFORE ANSYS ABORT=     10000
+ ABORT LEVEL KEY= -1
+ ALL ERRORS WRITTEN TO                                                                                                                                                                                                                                                                     
+ DO NOT TERMINATE /INPUT UPON FIRST ERROR
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
+
+ /INPUT FILE=    LINE=       0
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         

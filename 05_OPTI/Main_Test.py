@@ -111,7 +111,7 @@ mapdl = launch_mapdl(
 )
 toc_lic = time.time()
 print(f"License opened in: {toc_lic-tic_lic:.2f} s")
-
+print(mapdl.version)
 # Run Environment
 f = None  # Initialize f to None
 try:
