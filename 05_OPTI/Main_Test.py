@@ -113,7 +113,7 @@ toc_lic = time.time()
 print(f"License opened in: {toc_lic-tic_lic:.2f} s")
 
 # Run Environment
-f = None  # Initialize f to None
+f = None  # Initialize f to None½
 try:
     f = RunAPDL(mapdl, var, Misc, opti_settings) # Runs APDL and returns MASS
 except MapdlRuntimeError as e:
