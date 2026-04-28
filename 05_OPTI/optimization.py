@@ -1,160 +1,195 @@
+# Import packages
 import os
-
 import numpy as np
-from scipy import optimize as spo
+from pyslsqp import optimize as pyslsqp_optimize
+
+# Import Functions
 from MyAPDLCall import RunAPDL
 from opt_logger import OptimizationLogger
 from Post_Process import PostProcessor
+from aggregate import ConstraintAggregate
 
+# Optimization Function
+def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
 
-def run_optimization(
-    mapdl,
-    var,
-    SWcoor,
-    Misc,
-    eps_geom=0.1,
-    save_folder="Optimization_Logs",
-):
-    x0 = np.array(var, dtype=float)
+    # Set active variables
+    active = [(name, data["bounds"]) for name, data in var.items() if data.get("active", True)]
+    names = [name for name,_ in active]
+    Misc["active_vars"] = names
 
-    bounds = [
-        (40.0, 100.0),  # Column Outer Diameter [mm]
-        (1.0, 7.0),  # Column Thickness [mm]
-        (10.0,  100.0),  # Brace Outer Diameter [mm]
-        (0.1,  7.0)   # Brace Thickness [mm]
-    ]
+    # Print active variables
+    print(f"{len(names)} Design Variables included: " +
+            ", ".join(f"x{i}={n}" for i,n in enumerate(names)), flush=True)
 
-    def constraint_values(x):             # This is the function that is used to calculate the constraint values
-<<<<<<< HEAD
-=======
-        #RunAPDL(mapdl, SWcoor, x, Misc)
->>>>>>> 5ce10acd15c03ebe45951fe6672e1a241f7598a2
-        utils = PostProcessor()
-        Util_LB_values = utils.Util_LB(x, Misc) 
-        Util_NF_values = utils.Util_NF(x, Misc)
-        Util_S_values = utils.Util_S(x, Misc)
-        Util_T_values = utils.Util_T(x, Misc)
-        Util_BNS_values = utils.Util_BNS(x, Misc)
-        Util_BR_values = utils.Util_BR(x, Misc)
-        Util_IN_values = utils.Util_IN(x, Misc)
-        Util_BS_values = utils.Util_BS(x, Misc)
-        Util_Class_2_values = utils.Class_2(x, Misc)
-        Eigenvalue_1_values = utils.Eigenvalue_1()
+    # Set initial guess, bounds and ranges to np array
+    x0 = np.array([var[name]["value"] for name, _ in active], dtype=float)
+    bounds = [bnds for _, bnds in active]
+    xl, xu = np.array(bounds).T
 
-    
-        """
-        Return all inequality constraints in the form c(x) >= 0.
-        Add as many as you want here.
-        """
-        return np.array([
-            x[1] - eps_geom, # Column Thickness [mm]
-            x[3] - eps_geom, # Brace Thickness [mm]
-            1.0 - Util_LB_values[0],           # local buckling column
-            1.0 - Util_LB_values[1],           # local buckling brace
-            1.0 - Util_NF_values[0],           # normal force column
-            1.0 - Util_NF_values[1],           # normal force brace
-            1.0 - Util_S_values[0],           # shear column
-            1.0 - Util_S_values[1],           # shear brace
-            1.0 - Util_T_values[0],           # Torsion column
-            1.0 - Util_T_values[1],           # Torsion brace
-            1.0 - Util_BNS_values[0],           # bending, normal and shear column
-            1.0 - Util_BNS_values[1],           # bending, normal and shear brace
-            1.0 - Util_BR_values[0],           # Flexural and torsional buckling brace
-            1.0 - Util_BR_values[1],           # Flexural and torsional buckling brace
-            1.0 - Util_IN_values[0],           # Interaction column
-            1.0 - Util_IN_values[1],           # Interaction brace
-            1.0 - Util_BS_values[0],           # Brace-Step c(x) = sigma_vm/f_y >= 0 "Inequality Constraint" 
-            Util_Class_2_values[0],            # Class 2 column c(x) = 70*235/f_y-dw/tw >= 0 "Inequality Constraint"
-            Util_Class_2_values[1],            # Class 2 brace c(x) = 70*235/f_y-dw/tw >= 0 "Inequality Constraint"
-            Eigenvalue_1_values,            # Eigenvalue 1 c(x)=4.0-alpha_cr >= 0 "Inequality Constraint"
-            # add more constraints here later if needed
-        ], dtype=float)
-
-    constraint_names = [
-        "thickness_column",
-        "thickness_brace",
-        "local_buckling_column",
-        "local_buckling_brace",
-        "normal_force_column",
-        "normal_force_brace",
-        "shear_column",
-        "shear_brace",
-        "torsion_column",
-        "torsion_brace",
-        "bending_normal_shear_column",  # Bending, Normal and Shear column
-        "bending_normal_shear_brace",
-        "flexural_torsional_buckling_column",  # Flexural and Torsional buckling column
-        "flexural_torsional_buckling_brace",
-        "interaction_column",  # Interaction column
-        "interaction_brace",  # Interaction brace
-        "Brace_Step",
-        "Class_2_column",
-        "Class_2_brace",
-        "Eigenvalue_1_constraint",
-        # add more names here if you add more constraints
-    ]
-
-    constraints = [                 # This is the constraints list that is used to set the constraints for the optimization process
-        {"type": "ineq", "fun": lambda x, i=i: constraint_values(x)[i]}
-        for i in range(len(constraint_names)) 
-    ]
-
-    options = {                   # This is the options dictionary that is used to set the optimization options
-        "disp": True,
-        "eps": 0.1,
-        "ftol": 1e-3,
-        "maxiter": 40
+    # Step Options for each variable (uniform step size for all, except rad)
+    fd_step_options = {
+        name: 0.01 for name, _ in active
     }
+    # Set separate step size for 'rad' if it's an active variable
+    if "rad" in fd_step_options:
+        fd_step_options["rad"] = 0.5
+    fd_step = [fd_step_options[name] for name in names]
 
+    # Logger Options
     logger = OptimizationLogger(
         x0=x0,
         bounds=bounds,
-        method="SLSQP",
-        options=options,
-        save_folder=save_folder,
+        method="PySLSQP",
+        var_names=names,
+        options={
+            "acc": Solver_Settings["acc"],
+            "finite_diff_abs_step": fd_step,
+            "maxiter": Solver_Settings["maxiter"],
+            "Aggregate": Solver_Settings["Aggregate"],
+            "p_value": Solver_Settings["p_value"],
+            "rho_value": Solver_Settings["rho_value"],
+            "relaxation": Solver_Settings["relaxation"],
+        },
+        save_folder=Misc["save_folder"],
     )
 
-    def objective(x):                # This is the objective function that is used to optimize the design variables
-        val = RunAPDL(mapdl, SWcoor, x, Misc)
-        logger.log_evaluation(x, val)
+    # Internal cache so RunAPDL is only executed once per unique x
+    cache = {"x": None, "f": None, "c": None, "util": None, "v_agg": None, "g_max": None}
 
-        utils = PostProcessor()
-        Util_list = utils.Util_list(x, Misc)  
+    # Helper
+    def arr(v):
+        return np.asarray(v, dtype=float).ravel()
 
-        print("\n--- UTILIZATION REPORT ---")
-        for key, util in Util_list.items():
+    # Model evaluation
+    def evaluate_model(x):
+        # Read variables and check
+        x = arr(x)
+        if cache["x"] is not None and np.array_equal(x, cache["x"]):
+            return cache["f"], cache["c"]
+        
+        # Convert variables to dict again
+        var_dict = dict(zip(names, x))
 
-            if util is None:
-                print(f"{key:10s}  Column:   N/A    Brace:   N/A")
-                continue
+        # Run the Model
+        f = RunAPDL(mapdl, x, Misc,opti_settings)
 
-            util = np.atleast_1d(util)
+        # Initiate Post Processing
+        pp = PostProcessor(var_dict,Misc,opti_settings)
 
-            col_val = util[0] if len(util) > 0 and np.isfinite(util[0]) else np.nan
-            brc_val = util[1] if len(util) > 1 and np.isfinite(util[1]) else np.nan
+        # Call Utlization Ratios
+        #### FIX DOUBLE utils CALL !
+        utils = [
+            pp.Util_LB(),
+            pp.Util_NF(),
+            pp.Util_S(),
+            pp.Util_T(),
+            #pp.Util_BNS(),
+            pp.Util_BR(),
+            pp.Util_IN(),
+        ]
+        col_brace = [(1-arr(c), 1-arr(b)) for c,b in utils]
 
-            print(
-                f"{key:10s}  "
-                f"Column: {col_val:8.4f}   "
-                f"Brace: {brc_val:8.4f}"
-            )
-        print("------------------")
-        return val
+        # Set up the constraints      
+        c_util = np.concatenate([
+                *[v for pair in col_brace for v in pair],
+                1- arr(pp.Util_BS()[0]), # stress constraint here
+                1- arr(pp.Util_BS()[1])]) # deflection constraint here
+        
+        # Handle aggregation of constraints
+        agg = ConstraintAggregate(
+            method = Solver_Settings["Aggregate"],
+            p_value = Solver_Settings["p_value"],
+            rho_value = Solver_Settings["rho_value"],
+            relaxation = Solver_Settings["relaxation"]
+        )
 
-    def callback(xk):               # This is the callback function that is called after each iteration in the optimization process
-        logger.log_iteration(xk)
+        c_util_agg, v_agg, g_max = agg.agg_output(c_util)
+        
+        # Collect them together
+        c = np.concatenate([
+            np.atleast_1d(c_util_agg),
+            *map(arr, pp.Class_2()),
+            arr(pp.Eigenvalue_1())
+        ])
+
+        print(f"Constraint vector length: {len(c)}")
+
+        logger.log_evaluation(x, f,v_agg=v_agg,g_max=g_max)
+
+        
+        
+        util_report = {
+                "Util_LB": pp.Util_LB(),
+                "Util_NF": pp.Util_NF(),
+                "Util_S":  pp.Util_S(),
+                "Util_T":  pp.Util_T(),
+                #"Util_BNS": pp.Util_BNS(),
+                "Util_BR": pp.Util_BR(),
+                "Util_IN": pp.Util_IN(),
+                "Util_BS_sig": pp.Util_BS()[0], # stress
+                "Util_BS_defl": pp.Util_BS()[1], # deflection
+            }
+
+        # Update design variables and constraints
+        cache.update(x=x.copy(), f=float(f), c=c, util = util_report, v_agg = v_agg, g_max=g_max)
+
+        return f, c
+    
+    # Objective function call that only returns mass
+    def objective(x):
+        """Objective function for PySLSQP."""
+        f_val, _ = evaluate_model(x) 
+        return f_val 
+
+    # Constrain function call that only returns constraints
+    def constraints(x):
+        """Constraint vector for PySLSQP."""
+        _, c_val = evaluate_model(x) 
+        return c_val 
+
+    
+    def iteration_callback(x):
+        logger.log_iteration(x)
+
+        util = cache.get("util", None)
+        if util is not None:
+            logger.log_utilization(util)
 
 
-    result = spo.minimize(               # This is the optimization function that is used to optimize the design variables
-        objective,
-        x0,
-        method="SLSQP",
-        bounds=bounds,
-        constraints=constraints,
-        callback=callback,
-        options=options
-    )
+    # Create Folder
+    os.makedirs(Misc["save_folder"], exist_ok=True) 
+    save_filename = os.path.join(Misc["save_folder"], "pyslsqp_history.hdf5") # Save File
+    summary_filename = os.path.join(Misc["save_folder"], "slsqp_summary.out") # Summary File
 
-    logger.finalize(result)
-    return result, logger.txt_path, logger.csv_path
-
+    # Run PySLSQP
+    result = pyslsqp_optimize( 
+        x0=x0, 
+        obj=objective, 
+        con=constraints, 
+        meq=0,                          # all constraints are inequalities
+        xl=xl,
+        xu=xu, 
+        callback=iteration_callback,
+        finite_diff_abs_step=fd_step, 
+        maxiter=Solver_Settings["maxiter"], 
+        acc=Solver_Settings["acc"],     # Objective Function Tolerance
+        iprint=2,                       # print iteration info
+        save_itr="major",               # save major iterations
+        save_vars=[
+            "majiter",                  # major iteration
+            "x",                        # design variables
+            "objective",                # objective function
+            "constraints",              # constraint vector
+            "optimality",               # optimality
+            "feasibility",              # feasibility
+            "step",                     # step
+        ],
+        save_filename=save_filename, 
+        summary_filename=summary_filename, 
+        #warm_start=True, # For restarting optimization from prior optimization runs
+        #load_filename=save_filename, # Filename for restart file
+        visualize=False, 
+        visualize_vars=['objective', 'optimality', 'feasibility', 'x[0]', 'gradient[0]', 'constraints[0]', 'multipliers[0]', 'jacobian[0,0]'], 
+    ) 
+    # return the result, the text path, and the csv path
+    return result, logger.txt_path, logger.csv_path 

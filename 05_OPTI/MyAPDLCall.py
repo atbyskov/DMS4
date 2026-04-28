@@ -20,22 +20,32 @@
 #       2. Run Analysis via os.system
 #       3. Read Mass of assembly
 #   Return Mass
-        
-# Import Tools
+
+# Import packages        
+import numpy as np
 import time
-import os
 
 # Import Functions
 from APDL_Input import InputFun
 
-
-def RunAPDL(mapdl,SWcoor,var,Misc):
+def RunAPDL(mapdl,var,Misc,opti_settings):
+    # Start timer for APDL run
     ans_time_tic = time.time()
    
+    # Handle List or Misc
+    if isinstance(var, dict):
+        var_dict = var
+    else:
+        x = np.asarray(var, dtype=float).ravel()
+        names = Misc.get("active_vars")
+        var_dict = {name: {"value": float(val), "active": True}
+                    for name, val in zip(names, x)}
+
+    # Clear everything in MAPDL
     mapdl.clear()
 
     # Create input file for Eigenvalue Analysis
-    apdl_cmds = InputFun(SWcoor,var,Misc)
+    apdl_cmds = InputFun(var_dict,Misc,opti_settings)
 
     with mapdl.non_interactive:
         for cmd in apdl_cmds:
@@ -46,23 +56,19 @@ def RunAPDL(mapdl,SWcoor,var,Misc):
     # Clear APDL
     mapdl.finish()
     
-
     # Read First eigenvalue:
     with open("Ansout/Eigenvalue1.txt") as f:
         eigenvalues = [float(line.strip()) for line in f if line.strip()]
     # Retrieve first positive eigenvalue
     alpha_crit = next(v for v in eigenvalues if v > 0) 
-
-    # Print Information
-    print(f"Analysis Complete\n -> Eigenvalue 1: {alpha_crit:.2f}")
+    print(f"Critical Alpha: {alpha_crit}")
 
     # Open and Read Mass
     with open("Ansout/Mass_Assembly.txt","r") as f:
         Mass = [float(line.strip()) for line in f if line.strip()]
 
+    # Stop timer for APDL run
     ans_time_toc = time.time()
-
-    print(f"Sim time: {ans_time_toc-ans_time_tic:.2f} s")
 
     # Return Mass as float value
     return sum(Mass)
