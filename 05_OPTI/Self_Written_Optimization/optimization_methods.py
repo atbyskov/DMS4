@@ -166,6 +166,7 @@ def minimize(
             xtol=xtol,
             infeasibility_penalty=penalty_weight,
             display=display,
+            callback=callback,
         )
         if slp_options:
             slp_kwargs.update(slp_options)

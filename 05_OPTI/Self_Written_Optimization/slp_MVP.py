@@ -111,24 +111,11 @@ def solve_slp_mvp(
     gtol: float = 1e-6,
     ftol: float = 1e-3,
     display: bool = False,
+    callback: Optional[Callable[[np.ndarray], None]] = None,
     **kwargs
 ) -> SLPResult:
     """
     Simplest possible Sequential Linear Programming (SLP) solver.
-    
-    Parameters:
-        obj: Callable returning the objective value (scalar).
-        con: Callable returning inequality constraints (numpy array). c(x) >= 0 is feasible.
-        x0: Initial guess for design variables.
-        xl, xu: Lower and upper bounds for design variables.
-        maxiter: Maximum number of iterations.
-        move_limit: Fraction of the bound width used for initial move limits.
-        infeasibility_penalty: Penalty factor for constraint violations in the merit function.
-        xtol: Stopping tolerance for the step size.
-        display: Whether to print progress to console.
-        
-    Returns:
-        SLPResult: A dataclass containing x, fun, nit, nfev, success, message, history.
     """
     # 1. Initialization
     x = np.array(x0, dtype=float).ravel().copy()
@@ -159,7 +146,6 @@ def solve_slp_mvp(
     P = merit(f, c)
 
     # Simplest move limits: A box around the current point.
-    # Initialized as a fraction of the total variable bounds.
     delta = move_limit * (xu - xl)
     delta = np.where(np.isinf(delta), 1.0, delta)
     delta = np.clip(delta, 1e-6, np.inf) # Prevent zero move limits if bounds are tight
@@ -172,9 +158,14 @@ def solve_slp_mvp(
     if display:
         print("*" * 80)
         print("    SLP MVP Optimizer (No Slacks)")
+        print(f"    Initial constraints: {m}")
         print("*" * 80)
         print(f"  {'iter':>5s}  {'f':>12s}  {'viol':>12s}  {'P':>12s}  {'||dx||':>12s}  {'nfev':>6s}")
         print(f"  {0:>5d}  {f:12.4e}  {history[-1]['viol']:12.4e}  {P:12.4e}  {'-':>12s}  {nfev:>6d}")
+
+    # Initial callback
+    if callback:
+        callback(x.copy())
 
     # 2. Optimization Loop
     for iter_no in range(1, maxiter + 1):
@@ -189,7 +180,6 @@ def solve_slp_mvp(
             J = np.zeros((0, n))
 
         # Setup the Linear Programming (LP) Subproblem
-        # Variables for LP: [dx_0, ..., dx_{n-1}]
         c_lp = g
         
         # Subject to linearized constraints: c(x) + J * dx >= 0  =>  -J * dx <= c(x)
@@ -248,6 +238,10 @@ def solve_slp_mvp(
             if display:
                 print(f"  {iter_no:>5d}  {f:12.4e}  {history[-1]['viol']:12.4e}  {P:12.4e}  {deltanorm:12.4e}  {nfev:>6d}")
             
+            # Callback after accepting step
+            if callback:
+                callback(x.copy())
+
             # Simple stopping criteria: Converged if step size is very small
             if deltanorm < xtol:
                 success = True
