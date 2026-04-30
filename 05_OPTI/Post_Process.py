@@ -276,7 +276,7 @@ class PostProcessor:
                 names=colnames
             )
             if "Y_LOC" in df.columns:
-                        df = df[df["Y_LOC"] <= 4080]
+                        df = df[df["Y_LOC"] <= 4078]
             df["Member"] = current_member
             blocks.append(df)
 
@@ -461,9 +461,10 @@ class PostProcessor:
             active = N_comp > 0.0
 
             if np.any(active):
-                a_imp = 0.49
+                a_imp = 0.49 # Table 6.1 CHS Profile Buckling Curve C Cold Roll
                 N_cr = a_cr * N_comp[active]
 
+                # P. 57
                 slen = np.sqrt((A[active] * f_y) / N_cr)
                 Phi = 0.5 * (1 + a_imp * (slen - 0.2) + slen**2)
                 Chi = 1.0 / (Phi + np.sqrt(Phi**2 - slen**2))
@@ -482,7 +483,7 @@ class PostProcessor:
     def Util_IN(self):
 
         # Imperfection Factor
-        a_imp = 0.49
+        a_imp = 0.49 # Table 6.1 CHS Profile Buckling Curve C Cold Roll
 
         # Import Misc
         f_y = self.f_y
@@ -526,16 +527,20 @@ class PostProcessor:
                 # ---- BUCKLING / INTERACTION ----------------------------------- (Calculations per element)
                 N_cr = a_cr * N_c[active]
 
+                # P. 57
                 slen = np.sqrt(A[idx][active] * f_y / N_cr)
                 Phi = 0.5 * (1 + a_imp * (slen - 0.2) + slen**2)
                 Chi = 1.0 / (Phi + np.sqrt(Phi**2 - slen**2))
 
+                # Annex A method 1 table A.1 (p. 76)
                 mu = (1 - N_c[active] / N_cr) / (1 - Chi * N_c[active] / N_cr)
 
+                # Annex A method 1 table A.2 (p. 78)
                 Cmy = 0.79 + 0.21 * Psi_y + 0.36 * (Psi_y - 0.33) * N_c[active] / N_cr
                 Cmz = 0.79 + 0.21 * Psi_z + 0.36 * (Psi_z - 0.33) * N_c[active] / N_cr
                 CmLT = 1.0
 
+                # Annex A method 1 table A.1 (p. 76)
                 k_yy = Cmy * CmLT * (mu / (1 - N_c[active] / N_cr))
                 k_yz = Cmz * CmLT * (mu / (1 - N_c[active] / N_cr))
 
@@ -601,7 +606,7 @@ class PostProcessor:
 
             util_values_sig.append(sig_vm / f_y_brace)      # [Na] Brace
 
-            # Deflection (u_max = (1/192) * ((P * L^3) / (E * I)))
+            # Deflection (u_max = (1/192) * ((P * L^3) / (E * I))) - Maskinståbi
             u_max = (P * L**3) / (192 * E_mod * I)         # [mm]
 
             util_values_defl.append(u_max / (L / 200))          # [Na] Brace Max deflection from standard
