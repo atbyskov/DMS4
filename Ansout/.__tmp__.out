@@ -66,6 +66,9 @@
  Ansys, Inc. License Manager 2025 R1 
  Discovery (reduced install) 2025 R1 
  Core WB Files 2025 R1   
+ CFD-Post only 2025 R1   
+ Fluent (includes CFD-Post) 2025 R1  
+ Polyflow (includes CFD-Post) 2025 R1
  Remote Solve Manager Standalone Services 2025 R1
  Additive 2025 R1
  Autodyn 2025 R1 
@@ -93,10 +96,17 @@
   BATCH MODE REQUESTED (-b)    = LIST
   INPUT FILE COPY MODE (-c)    = COPY
   SHARED MEMORY PARALLEL REQUESTED
+<<<<<<< HEAD
     SINGLE PROCESS WITH  10 THREADS REQUESTED
     TOTAL OF    10 CORES REQUESTED
   INPUT FILE NAME              = C:\Users\gusta\OneDrive\Uni\Kandidat\10. Semester\GitHub\Desktop\DMS4\Ansout\.__tmp__.inp
   OUTPUT FILE NAME             = C:\Users\gusta\OneDrive\Uni\Kandidat\10. Semester\GitHub\Desktop\DMS4\Ansout\.__tmp__.out
+=======
+    SINGLE PROCESS WITH   6 THREADS REQUESTED
+    TOTAL OF     6 CORES REQUESTED
+  INPUT FILE NAME              = C:\Users\atbys\Desktop\DMS4 Local\DMS4\Ansout\.__tmp__.inp
+  OUTPUT FILE NAME             = C:\Users\atbys\Desktop\DMS4 Local\DMS4\Ansout\.__tmp__.out
+>>>>>>> 8cdfcfb748f27b594e53a6686114f8ed0595cf32
 
  PARAMETER STATUS-           (   1 PARAMETERS DEFINED)
 
@@ -104,7 +114,11 @@
  PORT                              50052.0000                    SCALAR
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
+<<<<<<< HEAD
  CURRENT JOBNAME=file  09:44:50  APR 30, 2026 CP=      0.109
+=======
+ CURRENT JOBNAME=file  10:05:44  APR 30, 2026 CP=      0.156
+>>>>>>> 8cdfcfb748f27b594e53a6686114f8ed0595cf32
 
      1  FINISH 
 
@@ -176,3 +190,38 @@
  Ansys Mechanical Enterprise Academic Research     
 
  /OUTPUT FILE=         
+<<<<<<< HEAD
+=======
+
+ EXIT MAPDL WHILE IN SERVER MODE
+
+ SAVE ALL MODEL, SOLUTION AND POST DATA
+
+ ALL CURRENT MAPDL DATA WRITTEN TO FILE NAME= 
+  FOR POSSIBLE RESUME FROM THIS POINT
+
+
+ NUMBER OF WARNING MESSAGES ENCOUNTERED=          2
+ NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2025 R1         Build 25.1         UP20241202    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
+ |  Maximum Database Used       1 MB     Maximum Scratch Memory Used      8 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =          0.297       Time  =  10:05:45          |
+ |        Elapsed Time (sec) =          8.000       Date  =  04/30/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*
+>>>>>>> 8cdfcfb748f27b594e53a6686114f8ed0595cf32
