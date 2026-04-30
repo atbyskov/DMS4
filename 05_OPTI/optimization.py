@@ -30,7 +30,7 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
     fd_step = []
 
     for name in names:
-        xval = var[name]["value]"]
+        xval = var[name]["value"]
         step = 1E-3 * xval
         fd_step.append(step)
 
