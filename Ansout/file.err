@@ -1,4 +1,16 @@
+<<<<<<< HEAD
 /COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       09:48:44
+=======
+/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       10:05:39
+
+ *** WARNING ***                         CP =       0.000   TIME= 00:00:00
+ The geometry is not available.  Issue the RESUME command to restore the 
+ database.  The NUMVAR command is ignored.                               
+
+ *** WARNING ***                         CP =       0.000   TIME= 00:00:00
+ Altering the abort level key is not recommended.                        
+/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       09:44:47
+>>>>>>> 9a758fe91ed1e3808e82a98ef7745792d38f3582
 
  *** WARNING ***                         CP =       0.000   TIME= 00:00:00
  The geometry is not available.  Issue the RESUME command to restore the 

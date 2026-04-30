@@ -30,10 +30,10 @@ brace_diameter = 26.9 # Brace Diameter [mm]
 brace_thickness = 2.3 # Brace Thickness [mm]
 
 # Bounds
-column_diameter_bounds = (50.0, 100) # Column Diameter Bounds [mm]
-column_thickness_bounds = (1.0, 7.0)   # Column Thickness Bounds [mm]
+column_diameter_bounds = (60.0, 100) # Column Diameter Bounds [mm]
+column_thickness_bounds = (3.0, 5.0)   # Column Thickness Bounds [mm]
 brace_diameter_bounds = (10.0, 40.0)   # Brace Diameter Bounds [mm]
-brace_thickness_bounds = (1.0, 4.5)    # Brace Thickness Bounds [mm]
+brace_thickness_bounds = (1.0, 5.0)    # Brace Thickness Bounds [mm]
 
 # Defining variables with bounds and active status
 var = {
@@ -81,7 +81,7 @@ Misc = {
     "esize": 3,                     # Element Size [mm]
     "Hor_Force": 502.52,            # Horizontal Force (P_Load_z) [N]
     "Ver_Force": -25.13E+3,         # Vertical Force (P_Load_y)   [N]
-    "f_y": 690 ,                    # Column Yield Strength [MPa]
+    "f_y": 700 ,                    # Column Yield Strength [MPa]
     "f_y_brace": 355,               # Brace Yield Strength [MPa]
     "E_mod": 200*1E3,               # Youngs Modulus [MPa]
     "W_Force": -3.751E+3,           # Vertical Force COG (P_COG_y) [N]
@@ -93,8 +93,8 @@ Misc = {
 Solver_Settings = {
     "acc": 1e-3,                 # Maximum objective function tolerance
     "maxiter": 60,               # Maximum iterations
-    "Aggregate": "KS",           # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
-    "p_value": 1,                # Value for "P-norm" and "P-norm-mean"
+    "Aggregate": "P-norm",       # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
+    "p_value": 16,               # Value for "P-norm" and "P-norm-mean"
     "rho_value": 100,            # rho value used in KS
     "relaxation": 0,             # Relaxation parameter used in aggregation
 }
@@ -103,7 +103,7 @@ tic_lic = time.time()
 # Launch MAPDL
 mapdl = launch_mapdl(
     run_location="Ansout",
-    log_apdl="apdl_log",
+    #log_apdl="apdl_log",
     override=True,
     nproc=6,
     additional_switches="-p ansys -smp",

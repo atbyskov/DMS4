@@ -128,6 +128,7 @@ n_per_dim = {
 }
 
 n_per_dim_equal = 2
+
 # Call grid function with options
 grid, names = equal_spacing(var_bounds, n_per_dim=n_per_dim_equal)
 N = grid.shape[0]
@@ -185,7 +186,7 @@ def read_to_file(var_bounds,method, method_key,n_per_dim_equal):
     DS = data[method_key]["discrepancy"]
     n_points = points.shape[0]
 
-    with open("05_Opti/search_space.txt","w") as f:
+    with open("search_space.txt","w") as f:
         f.write("! Search Space Points \n")
         f.write(f"Method: {method_key} \n")
         f.write(f"Points per Dimension: {n_per_dim_equal} \n")
@@ -248,6 +249,7 @@ def plotting2D():
     plt.show()
 
 # Plitting 3D
+"""
 def plotting3D():
 
     fig = plt.figure(figsize=(14, 4))
@@ -295,9 +297,9 @@ def plotting3D():
 
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     plt.show()
+"""
 
-
-#plotting2D()
+plotting2D()
 
 # Aggregate Output
 # Make one for p = 2
