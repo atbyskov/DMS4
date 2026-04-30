@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 
 def plot_aggregate(csv_path):
     aggregate = "Unknown"
-    p_value = "N/A"
+    rho_value = "N/A"
 
     header_lines = []
     data_start_line = None
@@ -29,8 +29,8 @@ def plot_aggregate(csv_path):
             # Extract metadata
             if "Aggregate" in line:
                 aggregate = line.split(":")[-1].strip()
-            elif "p_value" in line:
-                p_value = line.split(":")[-1].strip()
+            elif "rho_value" in line:
+                rho_value = line.split(":")[-1].strip()
 
             # Detect start of CSV table
             if line.startswith("iteration,"):
@@ -65,24 +65,25 @@ def plot_aggregate(csv_path):
 
     plt.xlabel("g_max (true max constraint violation)")
     plt.ylabel("v_agg (aggregated constraint)")
-    plt.title(f"{aggregate} aggregation (p = {p_value}) | average (avg_v/avg_g) = {ratio:.3f}")
+    plt.title(f"{aggregate} aggregation (rho = {rho_value}) | average (avg_v/avg_g) = {ratio:.3f}")
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
     plt.show()
 
-# With p-norm
-plot_aggregate("Optimization_Logs/objective_history_2026-04-23_18-47-50.csv")
-plot_aggregate("Optimization_Logs/objective_history_2026-04-23_19-09-29.csv")
-plot_aggregate("Optimization_Logs/objective_history_2026-04-23_19-53-15.csv")
-plot_aggregate("Optimization_Logs/objective_history_2026-04-23_20-09-59.csv")
-plot_aggregate("Optimization_Logs/objective_history_2026-04-23_21-15-31.csv")
-plot_aggregate("Optimization_Logs/objective_history_2026-04-23_22-13-22.csv")
+# With KS
+plot_aggregate("Optimization_Logs/objective_history_2026-04-28_12-54-09.csv")
+plot_aggregate("Optimization_Logs/objective_history_2026-04-28_14-08-22.csv")
+plot_aggregate("Optimization_Logs/objective_history_2026-04-28_15-22-39.csv")
+plot_aggregate("Optimization_Logs/objective_history_2026-04-28_16-49-51.csv")
+plot_aggregate("Optimization_Logs/objective_history_2026-04-28_17-59-45.csv")
 
-# With p-norm-mean
-plot_aggregate("Optimization_Logs/objective_history_2026-04-23_22-42-06.csv")
-plot_aggregate("Optimization_Logs/objective_history_2026-04-23_22-59-39.csv")
-plot_aggregate("Optimization_Logs/objective_history_2026-04-23_23-27-24.csv")
-plot_aggregate("Optimization_Logs/objective_history_2026-04-23_23-56-21.csv")
-plot_aggregate("Optimization_Logs/objective_history_2026-04-24_00-48-02.csv")
-plot_aggregate("Optimization_Logs/objective_history_2026-04-24_01-03-34.csv")
+
+# With KS Stable
+plot_aggregate("Optimization_Logs/objective_history_2026-04-28_19-17-51.csv")
+plot_aggregate("Optimization_Logs/objective_history_2026-04-28_20-32-20.csv")
+plot_aggregate("Optimization_Logs/objective_history_2026-04-28_21-53-59.csv")
+plot_aggregate("Optimization_Logs/objective_history_2026-04-28_23-11-02.csv")
+plot_aggregate("Optimization_Logs/objective_history_2026-04-29_00-22-51.csv")
+
+

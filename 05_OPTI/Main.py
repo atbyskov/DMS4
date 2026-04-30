@@ -103,7 +103,7 @@ tic_lic = time.time()
 # Launch MAPDL
 mapdl = launch_mapdl(
     run_location="Ansout",
-    log_apdl="apdl_log",
+    #log_apdl="apdl_log",
     override=True,
     nproc=6,
     additional_switches="-p ansys -smp",
