@@ -189,7 +189,7 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         #warm_start=True, # For restarting optimization from prior optimization runs
         #load_filename=save_filename, # Filename for restart file
         visualize=False, 
-        visualize_vars=['objective', 'optimality', 'feasibility', 'x[0]', 'gradient[0]', 'constraints[0]', 'multipliers[0]', 'jacobian[0,0]'], 
+        visualize_vars=['objective', 'optimality', 'feasibility', 'x[0]'], # Extra: 'gradient[0]', 'constraints[0]', 'multipliers[0]', 'jacobian[0,0]'
     ) 
     # return the result, the text path, and the csv path
     return result, logger.txt_path, logger.csv_path 

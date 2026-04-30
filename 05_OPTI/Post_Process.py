@@ -359,10 +359,11 @@ class PostProcessor:
             V_cRd = Av * (f_y / math.sqrt(3))
 
             # Utilization Ratio [6.2.6 (6.17)]
-            # We have two directions (y,z), so we take whatever value in each element, that is highest
-            df_member["Util_S"] = df_member[["Vy","Vz"]].abs().max(axis=1) / V_cRd
+            # Calculate both directions separately so all shear utils are available.
+            df_member["Util_Sy"] = df_member["Vy"].abs() / V_cRd
+            df_member["Util_Sz"] = df_member["Vz"].abs() / V_cRd
 
-            return df_member["Util_S"]
+            return df_member[["Util_Sy", "Util_Sz"]]
 
         Util_S_col = shearFun(self.df_col, "R1", "R0", f_y) # Column
         Util_S_brace = self._brace_utilization(shearFun) # Brace
@@ -620,25 +621,23 @@ class PostProcessor:
         # And for the optimization scheme we need to implement the form:
         # c(x) >= 0 "Inequality Constraint"
         # Therefore we get:
-        # 70*235/f_y-dw/tw >=0
+        # 70*235/f_y - d/t >= 0 for each tube size
 
         f_y = self.f_y
         f_y_brace = self.f_y_brace
 
-        if self.multi_size_columns:
-            col_ratio = max(d / t for d, t in self.column_d0_t0)
-        else:
-            col_ratio = self.column_d0_t0[0][0] / self.column_d0_t0[0][1]
+        # Chat code for calculating class 2 for all elements
+        col_constraints = [
+            70 * (235 / f_y) - (d / t)
+            for d, t in self.column_d0_t0
+        ]
 
-        if self.multi_size_braces:
-            brace_ratio = max(d / t for d, t in self.brace_d1_t1)
-        else:
-            brace_ratio = self.brace_d1_t1[0][0] / self.brace_d1_t1[0][1]
+        brace_constraints = [
+            70 * (235 / f_y_brace) - (d / t)
+            for d, t in self.brace_d1_t1
+        ]
 
-        Util_Class_2 = np.zeros(2)
-        Util_Class_2[0] = 70 * (235 / f_y) - col_ratio
-        Util_Class_2[1] = 70 * (235 / f_y_brace) - brace_ratio
-        return Util_Class_2
+        return np.asarray(col_constraints + brace_constraints, dtype=float)
 
 
     def Eigenvalue_1(self):
