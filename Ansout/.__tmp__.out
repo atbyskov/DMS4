@@ -66,6 +66,9 @@
  Ansys, Inc. License Manager 2025 R1 
  Discovery (reduced install) 2025 R1 
  Core WB Files 2025 R1   
+ CFD-Post only 2025 R1   
+ Fluent (includes CFD-Post) 2025 R1  
+ Polyflow (includes CFD-Post) 2025 R1
  Remote Solve Manager Standalone Services 2025 R1
  Additive 2025 R1
  Autodyn 2025 R1 
@@ -93,10 +96,10 @@
   BATCH MODE REQUESTED (-b)    = LIST
   INPUT FILE COPY MODE (-c)    = COPY
   SHARED MEMORY PARALLEL REQUESTED
-    SINGLE PROCESS WITH   8 THREADS REQUESTED
-    TOTAL OF     8 CORES REQUESTED
-  INPUT FILE NAME              = C:\Users\boggy\OneDrive\Desktop\DMS4\Ansout\.__tmp__.inp
-  OUTPUT FILE NAME             = C:\Users\boggy\OneDrive\Desktop\DMS4\Ansout\.__tmp__.out
+    SINGLE PROCESS WITH   6 THREADS REQUESTED
+    TOTAL OF     6 CORES REQUESTED
+  INPUT FILE NAME              = C:\Users\atbys\Desktop\DMS4 Local\DMS4\Ansout\.__tmp__.inp
+  OUTPUT FILE NAME             = C:\Users\atbys\Desktop\DMS4 Local\DMS4\Ansout\.__tmp__.out
 
  PARAMETER STATUS-           (   1 PARAMETERS DEFINED)
 
@@ -104,7 +107,7 @@
  PORT                              50052.0000                    SCALAR
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
- CURRENT JOBNAME=file  13:17:59  APR 29, 2026 CP=      0.094
+ CURRENT JOBNAME=file  10:05:44  APR 30, 2026 CP=      0.156
 
      1  FINISH 
 
@@ -202,7 +205,7 @@
  |                                                                             |
  |-----------------------------------------------------------------------------|
  |                                                                             |
- |        CP Time      (sec) =          0.484       Time  =  13:18:09          |
- |        Elapsed Time (sec) =         15.000       Date  =  04/29/2026        |
+ |        CP Time      (sec) =          0.297       Time  =  10:05:45          |
+ |        Elapsed Time (sec) =          8.000       Date  =  04/30/2026        |
  |                                                                             |
  *-----------------------------------------------------------------------------*
