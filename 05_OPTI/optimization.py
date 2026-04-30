@@ -70,7 +70,7 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         var_dict = dict(zip(names, x))
 
         # Run the Model
-        f = RunAPDL(mapdl, x, Misc,opti_settings)
+        f, segment_masses = RunAPDL(mapdl, x, Misc,opti_settings)
 
         # Initiate Post Processing
         pp = PostProcessor(var_dict,Misc,opti_settings)
@@ -104,16 +104,21 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
 
         c_util_agg, v_agg, g_max = agg.agg_output(c_util)
         
+        # Segment Masses Constraint 
+        mass_limit = float(opti_settings["segment_mass_limit"])
+        mass_constraint = mass_limit - arr(segment_masses)
+
         # Collect them together
         c = np.concatenate([
             np.atleast_1d(c_util_agg),
             *map(arr, pp.Class_2()),
-            arr(pp.Eigenvalue_1())
+            arr(pp.Eigenvalue_1()),
+            mass_constraint
         ])
 
         print(f"Constraint vector length: {len(c)}")
 
-        logger.log_evaluation(x, f,v_agg=v_agg,g_max=g_max)
+        logger.log_evaluation(x, f, segment_masses,v_agg=v_agg,g_max=g_max)
 
         util_report = {
                 "Util_LB": pp.Util_LB(),

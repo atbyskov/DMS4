@@ -53,7 +53,7 @@ class OptimizationLogger:
                 f.write(f" x[{i}] ({name}) bounds = [{bnd[0]}, {bnd[1]}] \n")
 
             f.write("\n\n")
-            f.write(f"iteration,eval_index,objective,{x_headers},g_max,v_agg\n")
+            f.write(f"iteration,eval_index,objective,{x_headers},g_max,v_agg,seg_mass1,seg_mass2,seg_mass3,seg_mass4,seg_mass5\n")
 
         
         
@@ -90,7 +90,7 @@ class OptimizationLogger:
         self.log_line("=" * 80)
         self.log_line("")
 
-    def log_evaluation(self, x, fun, v_agg=None,g_max=None,p_value=None): # When called, it will log the evaluation of the objective function and design variables, and write it inside the Optimization_Log folder files.
+    def log_evaluation(self, x, fun, segment_masses, v_agg=None,g_max=None,p_value=None): # When called, it will log the evaluation of the objective function and design variables, and write it inside the Optimization_Log folder files.
         x = np.asarray(x, dtype=float) # Shows the design variables as a numpy array.
         fun = float(fun) # Shows the objective function as a float.
         self.eval_counter += 1 # Increments the evaluation counter.
@@ -99,8 +99,20 @@ class OptimizationLogger:
         #NOTE: Relative time that it takes per evaluation is not implemented yet.
         #Implement, such that it is relative time that it takes per evaluation ############################################
 
+        # ---- Segment masses (expect 5 values) -------------------------
+        if segment_masses is None:
+                seg_mass_str = ",".join(["NA"] * 5)
+        else:
+            seg = list(segment_masses)
+            # Ensure exactly 5 entries (pad or truncate)
+            seg = (seg + [np.nan] * 5)[:5]
+            seg_mass_str = ",".join(
+                f"{m:.3f}" if m == m else "NA"  # handles NaN
+                for m in seg
+            )
+
         
-# Convert x into CSV format
+        # Convert x into CSV format
         x_csv = ",".join(f"{v:.2f}" for v in x)
 
         v_agg_str = f"{v_agg:.4f}" if v_agg is not None else "NA"
@@ -113,7 +125,8 @@ class OptimizationLogger:
                 f"{fun:.2f},"
                 f"{x_csv},"
                 f"{g_max_str},"
-                f"{v_agg_str}\n"
+                f"{v_agg_str},"
+                f"{seg_mass_str}\n"
             )
 
 

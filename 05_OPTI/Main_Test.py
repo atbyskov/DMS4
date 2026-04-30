@@ -100,7 +100,7 @@ Misc = {
 tic_lic = time.time()
 mapdl = launch_mapdl(
     run_location="Ansout", 
-    #log_apdl="apdl_logging",
+    #log_apdl="apdl_logging_test",
     override=True,
     nproc=10,
     additional_switches="-p ansys -smp"
@@ -111,7 +111,7 @@ print(f"License opened in: {toc_lic-tic_lic:.2f} s")
 # Run Environment
 f = None  # Initialize f to None
 try:
-    f = RunAPDL(mapdl, var, Misc, opti_settings) # Runs APDL and returns MASS
+    f, segment_masses = RunAPDL(mapdl, var, Misc, opti_settings) # Runs APDL and returns MASS
 except MapdlRuntimeError as e:
     # Handle MAPDL runtime errors
     print(f"MAPDL error occurred: {e}")

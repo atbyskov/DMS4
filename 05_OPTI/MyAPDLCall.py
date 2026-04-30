@@ -22,6 +22,7 @@
 #   Return Mass
 
 # Import packages        
+import os
 import numpy as np
 
 # Import Functions
@@ -63,5 +64,13 @@ def RunAPDL(mapdl,var,Misc,opti_settings):
     with open("Ansout/Mass_Assembly.txt","r") as f:
         Mass = [float(line.strip()) for line in f if line.strip()]
 
+    # Return Mass as float value (evt. flyt)
+    # Read per-segment mass if available
+    segment_masses = []
+    segment_file = "Ansout/MASS_segments.txt"
+    if os.path.exists(segment_file):
+        with open(segment_file, "r") as f:
+            segment_masses = [float(line.strip()) for line in f if line.strip()]
+
     # Return Mass as float value
-    return sum(Mass)
+    return sum(Mass), segment_masses

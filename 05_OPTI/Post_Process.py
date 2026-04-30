@@ -82,7 +82,7 @@ class PostProcessor:
         self.mast_height = float(opti_settings.get("mast_segment_height"))
         self.multi_size_columns = bool(opti_settings.get("multi_size_columns"))
         self.multi_size_braces = bool(opti_settings.get("multi_size_braces"))
-        self.brace_split = bool(opti_settings.get("brace_split", False))
+        self.brace_split = bool(opti_settings.get("brace_split"))
         self.E_mod = Misc["E_mod"]
         self.f_y = Misc["f_y"]
         self.f_y_brace = Misc["f_y_brace"]
@@ -637,7 +637,6 @@ class PostProcessor:
         return pd.Series(util_values_sig, name="Util_BS_sig"), pd.Series(util_values_defl, name="Util_BS_defl")
 
     def Class_2(self): 
-
         # For this function we use it for a constraint, such that we always have a Class 2 section or below according to
         # Eurocode 3 Section Table 5.2
         # And for the optimization scheme we need to implement the form:
@@ -649,15 +648,33 @@ class PostProcessor:
         f_y_brace = self.f_y_brace
 
         # Chat code for calculating class 2 for all elements
+        # --- Column --------------------------------------------------
         col_constraints = [
             70 * (235 / f_y) - (d / t)
             for d, t in self.column_d0_t0
         ]
 
-        brace_constraints = [
-            70 * (235 / f_y_brace) - (d / t)
-            for d, t in self.brace_d1_t1
-        ]
+        # --- Braces --------------------------------------------------
+        brace_constraints = []
+
+        if self.brace_split:
+            # Horizontal braces
+            brace_constraints.extend(
+                70 * (235 / f_y_brace) - (d / t)
+                for d, t in self.brace_horiz_d1_t1
+            )
+
+            # Cross braces
+            brace_constraints.extend(
+                70 * (235 / f_y_brace) - (d / t)
+                for d, t in self.brace_cross_d1_t1
+            )
+        else:
+            # Same size used for all braces
+            brace_constraints.extend(
+                70 * (235 / f_y_brace) - (d / t)
+                for d, t in self.brace_d1_t1
+            )
 
         return np.asarray(col_constraints + brace_constraints, dtype=float)
 

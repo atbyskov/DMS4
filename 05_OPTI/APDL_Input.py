@@ -204,6 +204,7 @@ def InputFun(var,Misc,opti_settings):
     else:
         horiz_lines = []
         cross_lines = []
+    segment_lines = [[] for _ in range(n)]
     Top_lines = []
     corner_id = 1
     horiz_id = 1
@@ -254,32 +255,35 @@ def InputFun(var,Misc,opti_settings):
         else:
             # Not a top beam → classify as corner, horizontal or cross brace
             if group == "corner":
+                segment = int(min(y1, y2) // mast_height) + 1
+                segment = min(max(segment, 1), n)
                 if opti_settings.get("multi_size_columns", True):
-                    segment = int(min(y1, y2) // mast_height) + 1
-                    segment = min(max(segment, 1), n)
                     corner_lines[segment-1].append(line_id)
                 else:
                     corner_lines.append(line_id)
+                segment_lines[segment-1].append(line_id)
                 ap.append(f"CM,COLUMN_{corner_id},LINE ")
                 corner_id += 1
                 CM_Column_dict += 1
             elif group == "horizontal":
+                segment = int(min(y1, y2) // mast_height) + 1
+                segment = min(max(segment, 1), n)
                 if opti_settings.get("multi_size_braces", True):
-                    segment = int(min(y1, y2) // mast_height) + 1
-                    segment = min(max(segment, 1), n)
                     horiz_lines[segment-1].append(line_id)
                 else:
                     horiz_lines.append(line_id)
+                segment_lines[segment-1].append(line_id)
                 ap.append(f"CM,HORIZ_{horiz_id},LINE ")
                 horiz_id += 1
                 CM_Brace_dict += 1
             else:  # cross
+                segment = int(min(y1, y2) // mast_height) + 1
+                segment = min(max(segment, 1), n)
                 if opti_settings.get("multi_size_braces", True):
-                    segment = int(min(y1, y2) // mast_height) + 1
-                    segment = min(max(segment, 1), n)
                     cross_lines[segment-1].append(line_id)
                 else:
                     cross_lines.append(line_id)
+                segment_lines[segment-1].append(line_id)
                 ap.append(f"CM,CROSS_{cross_id},LINE ")
                 cross_id += 1
                 CM_Brace_dict += 1
@@ -493,6 +497,36 @@ def InputFun(var,Misc,opti_settings):
     ap.append("*CFOPEN,MASS_assembly,txt  ")
     ap.append("   *VWRITE,Comp_mass  ")
     ap.append("   (F12.5)  ")
+    ap.append("*CFCLOS  ")
+    ap.append("FINISH  ")
+    ap.append("ALLSEL,ALL    ")
+
+    # Mass of Each Segment
+    for i in range(1, n+1):
+        ap.append(f"! Get Mass of Segment {i}  ")
+        ap.append("ALLSEL  ")
+        first = True
+        for lid in segment_lines[i-1]:
+            if first:
+                ap.append(f"LSEL,S,LINE,,{lid} ")
+                first = False
+            else:
+                ap.append(f"LSEL,A,LINE,,{lid} ")
+        ap.append("ESLL,S  ")
+        ap.append("*GET,ecnt,ELEM,0,COUNT  ")
+        ap.append("*GET,enum,ELEM,0,NUM,MIN  ")
+        ap.append("seg_vol = 0  ")
+        ap.append("*DO,j,1,ecnt,1  ")
+        ap.append("   *GET,ev,ELEM,enum,VOLU  ")
+        ap.append("   seg_vol = seg_vol + ev  ")
+        ap.append("   enum = ELNEXT(enum)  ")
+        ap.append("*ENDDO  ")
+        ap.append(f"seg_mass_{i} = dens*seg_vol  ")
+        
+    ap.append("*CFOPEN,MASS_segments,txt  ")    
+    for i in range(1, n+1):
+        ap.append(f"   *VWRITE,seg_mass_{i}  ")
+        ap.append("   (F20.6)  ")
     ap.append("*CFCLOS  ")
     ap.append("FINISH  ")
     ap.append("ALLSEL,ALL    ")
