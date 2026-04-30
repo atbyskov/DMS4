@@ -503,6 +503,16 @@ class PostProcessor:
             Di = 2 * df[Ri]
             A = math.pi * (df[Ro]**2 - df[Ri]**2)
 
+            # Plastic and elastic section modulus for CHS
+            W_el_y = (np.pi * (Do**4 - Di**4)) / (32 * Do)
+            W_el_z = W_el_y
+
+            W_pl_y = (Do**3 - Di**3) / 6
+            W_pl_z = W_pl_y
+            # Eurocode shape factors Annex A EN 1993-1-1 6.3.3; w = W_pl/W_el capped at 1.5
+            w_y = np.minimum(W_pl_y / W_el_y, 1.5)
+            w_z = np.minimum(W_pl_z / W_el_z, 1.5)
+
             N_raw = df["NF"].to_numpy(dtype=float)
             N_comp = np.maximum(-N_raw, 0.0)
 
@@ -531,20 +541,33 @@ class PostProcessor:
                 slen = np.sqrt(A[idx][active] * f_y / N_cr)
                 Phi = 0.5 * (1 + a_imp * (slen - 0.2) + slen**2)
                 Chi = 1.0 / (Phi + np.sqrt(Phi**2 - slen**2))
+                
 
                 # Annex A method 1 table A.1 (p. 76)
                 mu = (1 - N_c[active] / N_cr) / (1 - Chi * N_c[active] / N_cr)
-
                 # Annex A method 1 table A.2 (p. 78)
                 Cmy = 0.79 + 0.21 * Psi_y + 0.36 * (Psi_y - 0.33) * N_c[active] / N_cr
                 Cmz = 0.79 + 0.21 * Psi_z + 0.36 * (Psi_z - 0.33) * N_c[active] / N_cr
                 CmLT = 1.0
 
-                # Annex A method 1 table A.1 (p. 76)
-                k_yy = Cmy * CmLT * (mu / (1 - N_c[active] / N_cr))
-                k_yz = Cmz * CmLT * (mu / (1 - N_c[active] / N_cr))
-
+                # Design Normal Force Resistance
                 N_Rk = A[idx][active] * f_y
+                # Auxiliary variable for interaction formula Annex A Table A.1 (p. 76)
+                npl = N_c[active]/N_Rk
+                # Auxiliary variables for interaction formula Annex A Table A.1 (p. 76)
+                wy = np.asarray(w_y, dtype=float)[idx][active]
+                wz = np.asarray(w_z, dtype=float)[idx][active]
+                # Auxiliary variables for interaction formula Annex A Table A.1 (p. 76) 
+                Wel_over_Wpl_y = np.asarray(W_el_y, dtype=float)[idx][active] / np.asarray(W_pl_y, dtype=float)[idx][active]
+                Wel_over_Wpl_z = np.asarray(W_el_z, dtype=float)[idx][active] / np.asarray(W_pl_z, dtype=float)[idx][active]
+                # Interaction formula
+                Cyy = np.maximum(1+(wy-1)*((2-(1.6/wy) *Cmy**2*slen-1.6/wy *Cmy**2*slen**2)*npl),Wel_over_Wpl_y)
+                Czy = np.maximum(1+(wz-1)*((2-14* (Cmz**2*slen**2/wz**5))*npl),0.6*np.sqrt(wz/wy)*(Wel_over_Wpl_z))
+
+                # Annex A method 1 table A.1 (p. 76)
+                k_yy = Cmy * CmLT * (mu / (1 - N_c[active] / N_cr)) / Cyy
+                k_yz = Cmz * CmLT * (mu / (1 - N_c[active] / N_cr)) / Czy *0.6*np.sqrt(wz/wy)
+
                 M_Rk = (math.pi * (Do[idx][active]**4 - Di[idx][active]**4)) / (32 * Do[idx][active]) * f_y
 
                 My = df.loc[idx, "My"].abs().to_numpy()[active]
