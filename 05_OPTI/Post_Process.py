@@ -23,7 +23,6 @@ import math
 from io import StringIO
 import SW_Import as SW
 
-
 # Function to calculate the span of horizontal brace - It works, but i (Christian) don't understand this
 def _brace_span_mm(var, misc, tol=1e-3):
     co = SW.import_SW(str(Path("IGS") / misc["SW_filename"]))

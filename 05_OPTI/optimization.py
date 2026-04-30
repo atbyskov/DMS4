@@ -115,8 +115,6 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
 
         logger.log_evaluation(x, f,v_agg=v_agg,g_max=g_max)
 
-        
-        
         util_report = {
                 "Util_LB": pp.Util_LB(),
                 "Util_NF": pp.Util_NF(),
@@ -146,14 +144,12 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         _, c_val = evaluate_model(x) 
         return c_val 
 
-    
     def iteration_callback(x):
         logger.log_iteration(x)
 
         util = cache.get("util", None)
         if util is not None:
             logger.log_utilization(util)
-
 
     # Create Folder
     os.makedirs(Misc["save_folder"], exist_ok=True) 
@@ -187,7 +183,7 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         summary_filename=summary_filename, 
         #warm_start=True, # For restarting optimization from prior optimization runs
         #load_filename=save_filename, # Filename for restart file
-        visualize=False, 
+        visualize=True, 
         visualize_vars=['objective', 'optimality', 'feasibility', 'x[0]'], # Extra: 'gradient[0]', 'constraints[0]', 'multipliers[0]', 'jacobian[0,0]'
     ) 
     # return the result, the text path, and the csv path

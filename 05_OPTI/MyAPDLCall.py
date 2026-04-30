@@ -23,15 +23,11 @@
 
 # Import packages        
 import numpy as np
-import time
 
 # Import Functions
 from APDL_Input import InputFun
 
 def RunAPDL(mapdl,var,Misc,opti_settings):
-    # Start timer for APDL run
-    ans_time_tic = time.time()
-   
     # Handle List or Misc
     if isinstance(var, dict):
         var_dict = var
@@ -66,9 +62,6 @@ def RunAPDL(mapdl,var,Misc,opti_settings):
     # Open and Read Mass
     with open("Ansout/Mass_Assembly.txt","r") as f:
         Mass = [float(line.strip()) for line in f if line.strip()]
-
-    # Stop timer for APDL run
-    ans_time_toc = time.time()
 
     # Return Mass as float value
     return sum(Mass)
