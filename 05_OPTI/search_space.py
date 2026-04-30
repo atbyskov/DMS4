@@ -128,6 +128,7 @@ n_per_dim = {
 }
 
 n_per_dim_equal = 2
+
 # Call grid function with options
 grid, names = equal_spacing(var_bounds, n_per_dim=n_per_dim_equal)
 N = grid.shape[0]

@@ -42,33 +42,33 @@ def InputFun(var,Misc,opti_settings):
 
     # Convert to Radii
     if opti_settings.get("multi_size_columns", True):
-        R0_list = [round(var[f"d0_{i}"]["value"]/2 - var[f"t0_{i}"]["value"], 4) for i in range(1, n+1)]
-        R1_list = [round(var[f"d0_{i}"]["value"]/2, 4) for i in range(1, n+1)]
+        R0_list = [var[f"d0_{i}"]["value"]/2 - var[f"t0_{i}"]["value"] for i in range(1, n+1)]
+        R1_list = [var[f"d0_{i}"]["value"]/2 for i in range(1, n+1)]
     else:
-        R0 = round(var["d0"]["value"]/2 - var["t0"]["value"], 4)
-        R1 = round(var["d0"]["value"]/2, 4)
+        R0 = var["d0"]["value"]/2 - var["t0"]["value"]
+        R1 = var["d0"]["value"]/2
 
     if opti_settings.get("multi_size_braces", True):
         if opti_settings.get("brace_split", False):
             # Horizontal braces
-            R2_horiz_list = [round(var[f"d1_h_{i}"]["value"]/2 - var[f"t1_h_{i}"]["value"], 4) for i in range(1, n+1)]
-            R3_horiz_list = [round(var[f"d1_h_{i}"]["value"]/2, 4) for i in range(1, n+1)]
+            R2_horiz_list = [var[f"d1_h_{i}"]["value"]/2 - var[f"t1_h_{i}"]["value"] for i in range(1, n+1)]
+            R3_horiz_list = [var[f"d1_h_{i}"]["value"]/2 for i in range(1, n+1)]
             # Cross braces
-            R2_cross_list = [round(var[f"d1_c_{i}"]["value"]/2 - var[f"t1_c_{i}"]["value"], 4) for i in range(1, n+1)]
-            R3_cross_list = [round(var[f"d1_c_{i}"]["value"]/2, 4) for i in range(1, n+1)]
+            R2_cross_list = [var[f"d1_c_{i}"]["value"]/2 - var[f"t1_c_{i}"]["value"] for i in range(1, n+1)]
+            R3_cross_list = [var[f"d1_c_{i}"]["value"]/2 for i in range(1, n+1)]
         else:
             # Combined braces (same size for both horizontal and cross)
-            R2_list = [round(var[f"d1_{i}"]["value"]/2 - var[f"t1_{i}"]["value"], 4) for i in range(1, n+1)]
-            R3_list = [round(var[f"d1_{i}"]["value"]/2, 4) for i in range(1, n+1)]
+            R2_list = [var[f"d1_{i}"]["value"]/2 - var[f"t1_{i}"]["value"] for i in range(1, n+1)]
+            R3_list = [var[f"d1_{i}"]["value"]/2 for i in range(1, n+1)]
     else:
         if opti_settings.get("brace_split", False):
-            R2_horiz = round(var["d1_h"]["value"]/2 - var["t1_h"]["value"], 4)
-            R3_horiz = round(var["d1_h"]["value"]/2, 4)
-            R2_cross = round(var["d1_c"]["value"]/2 - var["t1_c"]["value"], 4)
-            R3_cross = round(var["d1_c"]["value"]/2, 4)
+            R2_horiz = var["d1_h"]["value"]/2 - var["t1_h"]["value"]
+            R3_horiz = var["d1_h"]["value"]/2
+            R2_cross = var["d1_c"]["value"]/2 - var["t1_c"]["value"]
+            R3_cross = var["d1_c"]["value"]/2
         else:
-            R2 = round(var["d1"]["value"]/2 - var["t1"]["value"], 4)
-            R3 = round(var["d1"]["value"]/2, 4)
+            R2 = var["d1"]["value"]/2 - var["t1"]["value"]
+            R3 = var["d1"]["value"]/2
 
     # Change Radius Logic
     if rad is not None:
