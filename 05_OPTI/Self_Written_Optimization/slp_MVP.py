@@ -157,7 +157,7 @@ def solve_slp_mvp(
 
     if display:
         print("*" * 80)
-        print("    SLP MVP Optimizer (No Slacks)")
+        print("    SLP MVP Optimizer (With Slacks)")
         print(f"    Initial constraints: {m}")
         print("*" * 80)
         print(f"  {'iter':>5s}  {'f':>12s}  {'viol':>12s}  {'P':>12s}  {'||dx||':>12s}  {'nfev':>6s}")
@@ -167,49 +167,60 @@ def solve_slp_mvp(
     if callback:
         callback(x.copy())
 
+    needs_gradients = True
+    g = None
+    J = None
+
     # 2. Optimization Loop
     for iter_no in range(1, maxiter + 1):
         
-        # Calculate Gradients using Forward Difference
-        g = _grad_obj_fd(obj, x, f, h, fd_type=fd_type)
-        nfev += n if fd_type != "central" else 2 * n
-        if m > 0:
-            J = _jac_con_fd(con, x, c, h, fd_type=fd_type)
+        if needs_gradients:
+            # Calculate Gradients using Forward Difference
+            g = _grad_obj_fd(obj, x, f, h, fd_type=fd_type)
             nfev += n if fd_type != "central" else 2 * n
-        else:
-            J = np.zeros((0, n))
+            if m > 0:
+                J = _jac_con_fd(con, x, c, h, fd_type=fd_type)
+                nfev += n if fd_type != "central" else 2 * n
+            else:
+                J = np.zeros((0, n))
+            
+            needs_gradients = False
 
         # Setup the Linear Programming (LP) Subproblem
-        c_lp = g
-        
-        # Subject to linearized constraints: c(x) + J * dx >= 0  =>  -J * dx <= c(x)
         if m > 0:
-            A_ub = -J
+            # Objective: minimize g*dx + penalty*sum(s)
+            c_lp = np.concatenate((g, np.full(m, infeasibility_penalty)))
+            # Constraints: -J*dx - I*s <= c(x)  =>  linearized c(x) + J*dx + s >= 0
+            A_ub = np.hstack((-J, -np.eye(m)))
             b_ub = c.copy()
         else:
+            c_lp = g
             A_ub = None
             b_ub = None
 
         # Set bounds for the LP variables (dx is bounded by both global bounds and local move limits)
         bounds = [(max(xl[i] - x[i], -delta[i]), min(xu[i] - x[i], delta[i])) for i in range(n)]
+        if m > 0:
+            # Slack variables are non-negative
+            bounds.extend([(0.0, None) for _ in range(m)])
 
         # Solve the LP
         res = linprog(c_lp, A_ub=A_ub, b_ub=b_ub, bounds=bounds, method="highs")
         
         if not res.success:
-            # LP solver failed (likely infeasible) -> shrink move limits and try again in next iteration
+            # This should now be very rare since slacks make the LP feasible
             delta *= 0.5
             if display:
-                print(f"  {iter_no:>5d}  {' ' * 12}  {' ' * 12}  {' ' * 12}  INFEASIBLE  {nfev:>6d}")
+                print(f"  {iter_no:>5d}  {' ' * 12}  {' ' * 12}  {' ' * 12}  LP FAILED   {nfev:>6d}")
             
             if np.max(delta) < xtol:
                 success = False
-                message = f"Stopped (LP infeasible and move limits shrunk < xtol: {xtol:.2e})."
+                message = f"Stopped (LP solver failed even with slacks and move limits shrunk < xtol: {xtol:.2e})."
                 break
             continue
             
-        # Extract the proposed step for design variables
-        dx = res.x
+        # Extract the proposed step for design variables (first n components)
+        dx = res.x[:n]
         deltanorm = np.linalg.norm(dx)
         
         # Evaluate the proposed step
@@ -226,6 +237,7 @@ def solve_slp_mvp(
             f = f_new
             c = c_new
             P = P_new
+            needs_gradients = True
             
             history.append({
                 "iter": iter_no,
