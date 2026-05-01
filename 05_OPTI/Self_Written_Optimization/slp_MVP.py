@@ -4,9 +4,19 @@ Minimum Viable Product (MVP) of a Sequential Linear Programming (SLP) solver.
 This implementation focuses on maximum readability and simplicity.
 It uses:
 - Forward difference gradients
-- A basic LP subproblem with strict linearized constraints
+- A basic LP subproblem with slack-relaxed linearized constraints
 - The simplest possible move limits (trust region) that shrink on rejection
 - Simple stopping criteria (step size / move limit size)
+
+Problem format:
+    min   f(x)
+    s.t.  c(x) >= 0
+          xl <= x <= xu
+
+At each SLP iteration the LP subproblem uses variables z = [dx, s]:
+    min   grad(f)^T dx + M sum(s)
+    s.t.  c(x_k) + J(x_k) dx + s >= 0
+          s >= 0
 """
 
 from __future__ import annotations
@@ -96,6 +106,12 @@ def _jac_con_fd(
             J[:, j] = (np.asarray(con(xp), dtype=float).ravel() - c0) / h[j]
     return J
 
+def _constraint_violation(c_val: np.ndarray) -> float:
+    """Total violation for the c(x) >= 0 convention."""
+    if c_val.size == 0:
+        return 0.0
+    return float(np.sum(np.maximum(0.0, -c_val)))
+
 def solve_slp_mvp(
     obj: ObjectiveFn, 
     con: Optional[ConstraintFn], 
@@ -139,8 +155,8 @@ def solve_slp_mvp(
     nfev = 1
 
     def merit(f_val, c_val):
-        """Merit function to evaluate step quality: Objective + Penalty * Violations"""
-        viol = np.sum(np.maximum(0.0, -c_val)) if c_val.size > 0 else 0.0
+        """Objective plus an exterior L1 penalty on true nonlinear violations."""
+        viol = _constraint_violation(c_val)
         return f_val + infeasibility_penalty * viol
 
     P = merit(f, c)
@@ -150,7 +166,14 @@ def solve_slp_mvp(
     delta = np.where(np.isinf(delta), 1.0, delta)
     delta = np.clip(delta, 1e-6, np.inf) # Prevent zero move limits if bounds are tight
 
-    history = [{"iter": 0, "f": f, "viol": float(np.sum(np.maximum(0.0, -c)) if m > 0 else 0.0), "P": P}]
+    history = [{
+        "iter": 0,
+        "f": f,
+        "viol": _constraint_violation(c),
+        "P": P,
+        "slack_sum": 0.0,
+        "slack_max": 0.0,
+    }]
     
     success = False
     message = "Maximum iterations reached"
@@ -160,8 +183,8 @@ def solve_slp_mvp(
         print("    SLP MVP Optimizer (With Slacks)")
         print(f"    Initial constraints: {m}")
         print("*" * 80)
-        print(f"  {'iter':>5s}  {'f':>12s}  {'viol':>12s}  {'P':>12s}  {'||dx||':>12s}  {'nfev':>6s}")
-        print(f"  {0:>5d}  {f:12.4e}  {history[-1]['viol']:12.4e}  {P:12.4e}  {'-':>12s}  {nfev:>6d}")
+        print(f"  {'iter':>5s}  {'f':>12s}  {'viol':>12s}  {'P':>12s}  {'||dx||':>12s}  {'sum(s)':>12s}  {'nfev':>6s}")
+        print(f"  {0:>5d}  {f:12.4e}  {history[-1]['viol']:12.4e}  {P:12.4e}  {'-':>12s}  {0.0:12.4e}  {nfev:>6d}")
 
     # Initial callback
     if callback:
@@ -188,9 +211,12 @@ def solve_slp_mvp(
 
         # Setup the Linear Programming (LP) Subproblem
         if m > 0:
-            # Objective: minimize g*dx + penalty*sum(s)
+            # LP variables are z = [dx (n), s (m)].
+            # Slack variables relax the linearized constraints but are
+            # penalized, so the LP remains feasible without making
+            # infeasibility free.
             c_lp = np.concatenate((g, np.full(m, infeasibility_penalty)))
-            # Constraints: -J*dx - I*s <= c(x)  =>  linearized c(x) + J*dx + s >= 0
+            # -J*dx - s <= c(x)  <=>  c(x) + J*dx + s >= 0
             A_ub = np.hstack((-J, -np.eye(m)))
             b_ub = c.copy()
         else:
@@ -221,6 +247,9 @@ def solve_slp_mvp(
             
         # Extract the proposed step for design variables (first n components)
         dx = res.x[:n]
+        slack = res.x[n:] if m > 0 else np.array([])
+        slack_sum = float(np.sum(slack)) if slack.size else 0.0
+        slack_max = float(np.max(slack)) if slack.size else 0.0
         deltanorm = np.linalg.norm(dx)
         
         # Evaluate the proposed step
@@ -242,13 +271,15 @@ def solve_slp_mvp(
             history.append({
                 "iter": iter_no,
                 "f": float(f),
-                "viol": float(np.sum(np.maximum(0.0, -c)) if m > 0 else 0.0),
+                "viol": _constraint_violation(c),
                 "P": float(P),
-                "step": float(deltanorm)
+                "step": float(deltanorm),
+                "slack_sum": slack_sum,
+                "slack_max": slack_max,
             })
 
             if display:
-                print(f"  {iter_no:>5d}  {f:12.4e}  {history[-1]['viol']:12.4e}  {P:12.4e}  {deltanorm:12.4e}  {nfev:>6d}")
+                print(f"  {iter_no:>5d}  {f:12.4e}  {history[-1]['viol']:12.4e}  {P:12.4e}  {deltanorm:12.4e}  {slack_sum:12.4e}  {nfev:>6d}")
             
             # Callback after accepting step
             if callback:
@@ -269,12 +300,14 @@ def solve_slp_mvp(
             history.append({
                 "iter": iter_no,
                 "f": float(f),
-                "viol": float(np.sum(np.maximum(0.0, -c)) if m > 0 else 0.0),
+                "viol": _constraint_violation(c),
                 "P": float(P),
-                "step": float(deltanorm)
+                "step": float(deltanorm),
+                "slack_sum": slack_sum,
+                "slack_max": slack_max,
             })
             if display:
-                print(f"  {iter_no:>5d}  {f:12.4e}  {history[-1]['viol']:12.4e}  {P:12.4e}  REJECTED  {nfev:>6d}")
+                print(f"  {iter_no:>5d}  {f:12.4e}  {history[-1]['viol']:12.4e}  {P:12.4e}  REJECTED      {slack_sum:12.4e}  {nfev:>6d}")
             
             # Simple stopping criteria: Converged if move limits become too small
             if np.max(delta) < xtol:
