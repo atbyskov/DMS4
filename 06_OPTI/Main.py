@@ -1,4 +1,5 @@
 ## MAIN BEAM ELEMENT DOCUMENT ##
+# Optimizing for Highest Load
 
 # Import packages
 import sys
@@ -12,9 +13,10 @@ from MyAPDLCall import RunAPDL
 
 # Variables. Choose which ones to include by setting "active": True or False.
 opti_settings = {
-    "n_mast_segments": 5,         # Number of mast segments
-    "mast_segment_height": 810,   # Height of each mast segment [mm]
-    "segment_mass_limit": 23,  # Limits for segment masses [kg]
+    "n_mast_segments": 5,          # Number of mast segments
+    "mast_segment_height": 810,    # Height of each mast segment [mm]
+    "total_mass_limit": 106.78,    # Mass Limit of Structure [kg]
+    "segment_mass_limit": 23,      # Limits for segment masses [kg]
     "multi_size_columns": False,   # Whether mast segments columns uses different dimensions (True) or not (False)
     "multi_size_braces": False,    # Whether mast segments braces uses different dimensions (True) or not (False)
     "brace_split": False,          # Whether braces are split between horiontal and cross (True) or not (False)
@@ -77,7 +79,7 @@ else:
 Misc = {
     "esize": 3,                           # Element Size [mm]
     "Hor_Force": 502.52,                  # Horizontal Force (P_Load_z) [N]
-    "Ver_Force": -25.13E+3,               # Vertical Force (P_Load_y)   [N]
+    "Ver_Force": -100.00E+3,               # Vertical Force (P_Load_y)   [N]
     "f_y": 700 ,                          # Column Yield Strength [MPa]
     "f_y_brace": 355,                     # Brace Yield Strength [MPa]
     "E_mod": 200*1E3,                     # Youngs Modulus [MPa]
@@ -95,15 +97,16 @@ Solver_Settings = {
     "rho_value": 100,            # rho value used in KS
     "relaxation": 0,             # Relaxation parameter used in aggregation
 }
-
+# Start License Timing
 tic_lic = time.time()
+
 # Launch MAPDL
 mapdl = launch_mapdl(
     run_location="Ansout",
     #log_apdl="apdl_log",
     override=True,
     nproc=8,
-    additional_switches="-p ansys -smp",
+    additional_switches="-p ansys -smp", # -smp (shared memory parallel)
 )
 toc_lic = time.time()
 print(f"License opened in: {toc_lic-tic_lic:.2f} s")

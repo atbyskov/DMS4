@@ -587,6 +587,7 @@ def InputFun(var,Misc,opti_settings):
     #ap.append("NEQIT,200")
 
     # Get top and bottom nodes
+    ap.append("ALLSEL,ALL")
     ap.append("*GET, NodeYMax, NODE, 0, MXLOC, Y  ")
     ap.append("*GET, NodeYMin, NODE, 0, MNLOC, Y  ")
     ap.append("*GET, NodeXMax, NODE, 0, MXLOC, X  ")

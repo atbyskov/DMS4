@@ -35,6 +35,7 @@ column_diameter = 76.1 # Column Diameter [mm]
 column_thickness = 3.0 # Column Thickness [mm]
 brace_diameter = 26.9  # Brace Diameter [mm]
 brace_thickness = 2.3  # Brace Thickness [mm]
+Ver_Force = -25.13E+3  # Vertical Load [N]
 
 # Bounds
 column_diameter_bounds = (50.0, 100)   # Column Diameter Bounds [mm]
@@ -42,8 +43,20 @@ column_thickness_bounds = (1.0, 7.0)   # Column Thickness Bounds [mm]
 brace_diameter_bounds = (10.0, 40.0)   # Brace Diameter Bounds [mm]
 brace_thickness_bounds = (1.0, 4.5)    # Brace Thickness Bounds [mm]
 
+# Create Misc as dict
+Misc = {
+    "esize": 3,                          # Element Size                      [mm]
+    "Hor_Force": 502.52,                 # Horizontal Force (P_Load_z)       [N]
+    "f_y": 700 ,                         # Column Yield Strength             [MPa]
+    "f_y_brace": 355,                    # Brace Yield Strength              [MPa]
+    "E_mod": 200*1E3,                    # Youngs Modulus                    [MPa]
+    "W_Force": -3.751E+3,                # Vertical Force COG (P_COG_y)      [N]
+    "SW_filename": "LWC_L1_LINES.IGS"    # Filename for IGS File
+}
+
 # Defining variables with bounds and active status
 var = {
+    "F_ver": {"value": Ver_Force, "bounds": (5E+3, 100E+3), "active": True},
     "rad": {"value": 202.03, "bounds": (150.0, 300.0), "active": True}, # Radius Structure [mm]
 }
 if opti_settings["multi_size_columns"]:
@@ -83,24 +96,14 @@ else:
             "t1": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True},       # Brace Thickness  [mm]
         })
     
-# Create Misc as dict
-Misc = {
-    "esize": 3,                          # Element Size                      [mm]
-    "Hor_Force": 502.52,                 # Horizontal Force (P_Load_z)       [N]
-    "Ver_Force": -25.13E+3,              # Vertical Force (P_Load_y)         [N]
-    "f_y": 700 ,                         # Column Yield Strength             [MPa]
-    "f_y_brace": 355,                    # Brace Yield Strength              [MPa]
-    "E_mod": 200*1E3,                    # Youngs Modulus                    [MPa]
-    "W_Force": -3.751E+3,                # Vertical Force COG (P_COG_y)      [N]
-    "SW_filename": "LWC_L1_LINES.IGS"    # Filename for IGS File
-}
+
 
 #C:\Program Files\ANSYS Inc\v251\ansys\bin\winx64
 # Start License Server
 tic_lic = time.time()
 mapdl = launch_mapdl(
     run_location="Ansout", 
-    #log_apdl="apdl_logging_test",
+    log_apdl="apdl_log_high_loads",
     override=True,
     nproc=6,
     additional_switches="-p ansys -smp"

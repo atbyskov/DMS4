@@ -114,12 +114,16 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         mass_limit = float(opti_settings["segment_mass_limit"])
         mass_constraint = mass_limit - arr(segment_masses)
 
+        # Total Mass Constraint
+        mass_tot_constraint = 106.78 - np.sum(segment_masses)
+
         # Collect them together
         c = np.concatenate([
             np.atleast_1d(c_util_agg),
             *map(arr, pp.Class_2()),
             arr(pp.Eigenvalue_1()),
-            mass_constraint
+            mass_constraint,
+            mass_tot_constraint
         ])
 
         print(f"Constraint vector length: {len(c)}")
@@ -146,8 +150,10 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
     # Objective function call that only returns mass
     def objective(x):
         """Objective function for PySLSQP."""
-        f_val, _ = evaluate_model(x) 
-        return f_val 
+        x = np.asarray
+        idx = var["Ver_Force"]["value"]
+        F_ver = x[idx]
+        return F_ver 
 
     # Constrain function call that only returns constraints
     def constraints(x):
