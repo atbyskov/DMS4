@@ -34,7 +34,7 @@ brace_thickness_bounds = (1.0, 5.0)    # Brace Thickness Bounds [mm]
 
 # Defining variables with bounds and active status
 var = {
-    "rad": {"value": 202.07, "bounds": (150.0, 300.0), "active": True}, # Radius Structure [mm]
+    "rad": {"value": 202.07, "bounds": (160.0, 400.0), "active": True}, # Radius Structure [mm]
 }
 if opti_settings["multi_size_columns"]:
     var.update({
@@ -89,9 +89,9 @@ Misc = {
 # Solver Settings
 Solver_Settings = {
     "acc": 1e-3,                 # Maximum objective function tolerance
-    "maxiter": 60,               # Maximum iterations
+    "maxiter": 80,               # Maximum iterations
     "Aggregate": "P-norm",       # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
-    "p_value": 16,               # Value for "P-norm" and "P-norm-mean"
+    "p_value": 8,               # Value for "P-norm" and "P-norm-mean"
     "rho_value": 100,            # rho value used in KS
     "relaxation": 0,             # Relaxation parameter used in aggregation
 }

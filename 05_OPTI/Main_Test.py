@@ -44,7 +44,7 @@ brace_thickness_bounds = (1.0, 4.5)    # Brace Thickness Bounds [mm]
 
 # Defining variables with bounds and active status
 var = {
-    "rad": {"value": 202.07, "bounds": (150.0, 300.0), "active": True}, # Radius Structure [mm]
+    "rad": {"value": 202.03, "bounds": (150.0, 300.0), "active": True}, # Radius Structure [mm]
 }
 if opti_settings["multi_size_columns"]:
     var.update({
@@ -102,7 +102,7 @@ mapdl = launch_mapdl(
     run_location="Ansout", 
     #log_apdl="apdl_logging_test",
     override=True,
-    nproc=10,
+    nproc=6,
     additional_switches="-p ansys -smp"
 )
 toc_lic = time.time()

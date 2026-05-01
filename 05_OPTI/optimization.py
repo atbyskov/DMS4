@@ -8,6 +8,7 @@ from MyAPDLCall import RunAPDL
 from opt_logger import OptimizationLogger
 from Post_Process import PostProcessor
 from aggregate import ConstraintAggregate
+from acs import ACSclass
 
 # Optimization Function
 def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
@@ -31,8 +32,13 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
 
     for name in names:
         xval = var[name]["value"]
-        step = 1E-3 * xval
+        step = 1E-4 * xval
         fd_step.append(step)
+
+    acs = ACSclass(
+        alpha=Solver_Settings.get("acs_alpha",1.0),
+        c0 = 1.0
+    )
 
     # Logger Options
     logger = OptimizationLogger(
@@ -99,10 +105,10 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
             method = Solver_Settings["Aggregate"],
             p_value = Solver_Settings["p_value"],
             rho_value = Solver_Settings["rho_value"],
-            relaxation = Solver_Settings["relaxation"]
+            relaxation = Solver_Settings["relaxation"],
         )
 
-        c_util_agg, v_agg, g_max = agg.agg_output(c_util)
+        c_util_agg, v_agg, g_max = agg.agg_output(c_util, c_scale=acs.c)
         
         # Segment Masses Constraint 
         mass_limit = float(opti_settings["segment_mass_limit"])
@@ -152,6 +158,9 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
     def iteration_callback(x):
         logger.log_iteration(x)
 
+        if cache["v_agg"] is not None and cache["g_max"] is not None:
+            acs.update(cache["v_agg"], cache["g_max"])
+
         util = cache.get("util", None)
         if util is not None:
             logger.log_utilization(util)
@@ -170,10 +179,11 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         xl=xl,
         xu=xu, 
         callback=iteration_callback,
-        finite_diff_abs_step=fd_step, 
+        finite_diff_rel_step=1E-4, 
         maxiter=Solver_Settings["maxiter"], 
         acc=Solver_Settings["acc"],     # Objective Function Tolerance
         iprint=2,                       # print iteration info
+        #obj_scaler=0.8,                # Scale objective function for stability
         save_itr="major",               # save major iterations
         save_vars=[
             "majiter",                  # major iteration
