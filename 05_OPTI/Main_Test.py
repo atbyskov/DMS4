@@ -34,10 +34,10 @@ opti_settings = {
 }
 
 # Initial Guess
-column_diameter = 76.1 # Column Diameter [mm]
-column_thickness = 3.0 # Column Thickness [mm]
-brace_diameter = 26.9 # Brace Diameter [mm]
-brace_thickness = 2.3 # Brace Thickness [mm]
+column_diameter = 30 # Column Diameter [mm]
+column_thickness = 1.28 # Column Thickness [mm]
+brace_diameter = 25.71 # Brace Diameter [mm]
+brace_thickness = 0.53 # Brace Thickness [mm]
 
 # Bounds
 column_diameter_bounds = (50.0, 100) # Column Diameter Bounds [mm]
@@ -47,7 +47,7 @@ brace_thickness_bounds = (1.0, 4.5)    # Brace Thickness Bounds [mm]
 
 # Defining variables with bounds and active status
 var = {
-    "rad": {"value": 202.07, "bounds": (150.0, 300.0), "active": True}, # Radius Structure [mm]
+    "rad": {"value": 202.03, "bounds": (150.0, 300.0), "active": True}, # Radius Structure [mm]
 }
 if opti_settings["multi_size_columns"]:
     var.update({
@@ -106,7 +106,7 @@ mapdl = launch_mapdl(
     run_location="Ansout", 
     #log_apdl="apdl_logging",
     override=True,
-    nproc=10,
+    nproc=6,
     additional_switches="-p ansys -smp"
 )
 toc_lic = time.time()
