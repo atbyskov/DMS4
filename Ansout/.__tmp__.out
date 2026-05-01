@@ -96,24 +96,10 @@
   BATCH MODE REQUESTED (-b)    = LIST
   INPUT FILE COPY MODE (-c)    = COPY
   SHARED MEMORY PARALLEL REQUESTED
-<<<<<<< HEAD
-    SINGLE PROCESS WITH   2 THREADS REQUESTED
-    TOTAL OF     2 CORES REQUESTED
-  INPUT FILE NAME              = C:\Users\boggy\OneDrive\Desktop\DMS4\Ansout\.__tmp__.inp
-  OUTPUT FILE NAME             = C:\Users\boggy\OneDrive\Desktop\DMS4\Ansout\.__tmp__.out
-=======
-<<<<<<< HEAD
-    SINGLE PROCESS WITH  10 THREADS REQUESTED
-    TOTAL OF    10 CORES REQUESTED
-  INPUT FILE NAME              = C:\Users\gusta\OneDrive\Uni\Kandidat\10. Semester\GitHub\Desktop\DMS4\Ansout\.__tmp__.inp
-  OUTPUT FILE NAME             = C:\Users\gusta\OneDrive\Uni\Kandidat\10. Semester\GitHub\Desktop\DMS4\Ansout\.__tmp__.out
-=======
     SINGLE PROCESS WITH   6 THREADS REQUESTED
     TOTAL OF     6 CORES REQUESTED
   INPUT FILE NAME              = C:\Users\atbys\Desktop\DMS4 Local\DMS4\Ansout\.__tmp__.inp
   OUTPUT FILE NAME             = C:\Users\atbys\Desktop\DMS4 Local\DMS4\Ansout\.__tmp__.out
->>>>>>> 8cdfcfb748f27b594e53a6686114f8ed0595cf32
->>>>>>> 9a758fe91ed1e3808e82a98ef7745792d38f3582
 
  PARAMETER STATUS-           (   1 PARAMETERS DEFINED)
 
@@ -121,15 +107,7 @@
  PORT                              50052.0000                    SCALAR
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
-<<<<<<< HEAD
- CURRENT JOBNAME=file  09:48:48  APR 30, 2026 CP=      0.078
-=======
-<<<<<<< HEAD
- CURRENT JOBNAME=file  09:44:50  APR 30, 2026 CP=      0.109
-=======
- CURRENT JOBNAME=file  10:05:44  APR 30, 2026 CP=      0.156
->>>>>>> 8cdfcfb748f27b594e53a6686114f8ed0595cf32
->>>>>>> 9a758fe91ed1e3808e82a98ef7745792d38f3582
+ CURRENT JOBNAME=file  08:16:01  MAY 01, 2026 CP=      0.172
 
      1  FINISH 
 
@@ -188,12 +166,6 @@
 
  /OUTPUT FILE=         
 
- CLEAR MAPDL DATABASE AND RESTART
-
- Ansys Mechanical Enterprise Academic Research     
-
- /OUTPUT FILE=         
-
  /OUTPUT FILE=         
 
  CLEAR MAPDL DATABASE AND RESTART
@@ -201,8 +173,10 @@
  Ansys Mechanical Enterprise Academic Research     
 
  /OUTPUT FILE=         
-<<<<<<< HEAD
-=======
+
+ /OUTPUT FILE=         
+
+ /OUTPUT FILE=         
 
  EXIT MAPDL WHILE IN SERVER MODE
 
@@ -231,13 +205,7 @@
  |                                                                             |
  |-----------------------------------------------------------------------------|
  |                                                                             |
-<<<<<<< HEAD
- |        CP Time      (sec) =          0.359       Time  =  09:48:49          |
- |        Elapsed Time (sec) =          6.000       Date  =  04/30/2026        |
-=======
- |        CP Time      (sec) =          0.297       Time  =  10:05:45          |
- |        Elapsed Time (sec) =          8.000       Date  =  04/30/2026        |
->>>>>>> 9a758fe91ed1e3808e82a98ef7745792d38f3582
+ |        CP Time      (sec) =          0.469       Time  =  08:16:03          |
+ |        Elapsed Time (sec) =          9.000       Date  =  05/01/2026        |
  |                                                                             |
  *-----------------------------------------------------------------------------*
->>>>>>> 8cdfcfb748f27b594e53a6686114f8ed0595cf32
