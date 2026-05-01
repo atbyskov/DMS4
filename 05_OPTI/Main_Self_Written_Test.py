@@ -36,7 +36,7 @@ brace_thickness_bounds = (1.0, 4.5)    # Brace Thickness Bounds [mm]
 
 # Defining variables with bounds and active status
 var = {
-    "rad": {"value": 202.07, "bounds": (150.0, 300.0), "active": True}, # Radius Structure [mm]
+    "rad": {"value": 252.07, "bounds": (150.0, 300.0), "active": True}, # Radius Structure [mm]
 }
 if opti_settings["multi_size_columns"]:
     var.update({
@@ -97,6 +97,22 @@ Solver_Settings = {
     "p_value": 8,                # Value for "P-norm" and "P-norm-mean"
     "rho_value": 100,            # rho value used in KS
     "relaxation": 0,             # Relaxation parameter used in aggregation
+    "finite_diff_rel_step": 1e-3, # PySLSQP-like absolute FD step: rel_step * max(1, abs(x))
+    "penalty_weight": 1e3,        # Initial L1 merit/slack penalty
+    "penalty_increase": 10.0,     # Increase penalty when slacks/infeasibility persist
+    "penalty_max": 1e9,           # Upper cap for adaptive penalty
+    "move_limit": 0.10,           # Initial/max scaled trust-region size
+    "move_limit_min": 1e-5,       # Stop after failed globalization below this scaled size
+    "move_limit_expand": 1.4,     # Expand trust region after good predicted-vs-actual agreement
+    "move_limit_shrink": 0.5,     # Shrink trust region after rejection or poor agreement
+    "backtrack_max": 8,           # Trial alphas along each LP step
+    "backtrack_shrink": 0.5,      # alpha <- alpha * shrink during SLP line search
+    "feasibility_tol": 1e-5,      # Required max nonlinear constraint violation for convergence
+    "slack_tol": 1e-8,            # Required LP slack size for convergence
+    "xtol": 1e-4,                 # Physical design step tolerance
+    "gtol": 1e-6,                 # Scaled gradient infinity-norm tolerance
+    "sufficient_decrease": 1e-4,  # Merit decrease fraction of predicted decrease
+    "feasibility_reduction": 1e-3,# Accept infeasible steps that reduce violation by this fraction
 }
 
 # Launch MAPDL
