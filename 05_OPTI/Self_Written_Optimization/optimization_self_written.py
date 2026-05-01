@@ -74,7 +74,7 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
         var_dict = dict(zip(names, x))
 
         # Run the Model
-        f = RunAPDL(mapdl, x, Misc, opti_settings)
+        f, mass_segments = RunAPDL(mapdl, x, Misc, opti_settings)
 
         # Initiate Post Processing
         pp = PostProcessor(var_dict, Misc, opti_settings)
