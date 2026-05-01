@@ -3,7 +3,7 @@
 # OUTPUT -> Ansys Coordinate File for Geometry Creation (Multiply for each section)
 
 import numpy as np
-
+# Bla bla bla, luise is cute
 nSegments = 8
 y_offset = 0.810
 
