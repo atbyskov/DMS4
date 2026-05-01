@@ -124,7 +124,7 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
 
         print(f"Constraint vector length: {len(c)}")
 
-        logger.log_evaluation(x, f, segment_masses,v_agg=v_agg,g_max=g_max)
+        logger.log_evaluation(x, f, segment_masses,v_agg=v_agg,g_max=g_max,c_value=acs.c)
 
         util_report = {
                 "Util_LB": pp.Util_LB(),
@@ -198,7 +198,7 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         summary_filename=summary_filename, 
         #warm_start=True, # For restarting optimization from prior optimization runs
         #load_filename=save_filename, # Filename for restart file
-        visualize=True, 
+        visualize=False, 
         visualize_vars=['objective', 'optimality', 'feasibility', 'x[0]'], # Extra: 'gradient[0]', 'constraints[0]', 'multipliers[0]', 'jacobian[0,0]'
     ) 
     # return the result, the text path, and the csv path

@@ -115,21 +115,21 @@ class OptimizationLogger:
         
 # Convert x into CSV format
 
-        c_str = f"{c_value:.5}" if c_value is not None else "NA"
-        x_csv = ",".join(f"{v:.2f}" for v in x)
+        c_str = f"{c_value:.4f}" if c_value is not None else "NA"
+        x_csv = " ,".join(f"{v:.2f}" for v in x)
 
         v_agg_str = f"{v_agg:.4f}" if v_agg is not None else "NA"
         g_max_str = f"{g_max:.4f}" if g_max is not None else "NA"
 
         with open(self.csv_path, "a", encoding="utf-8") as f:
             f.write(
-                f"{self.iter_counter},"
-                f"{self.eval_counter},"
-                f"{fun:.2f},"
-                f"{x_csv},"
-                f"{g_max_str},"
-                f"{v_agg_str},"
-                f"{c_value}"
+                f"{self.iter_counter}, "
+                f"{self.eval_counter}, "
+                f"{fun:.2f}, "
+                f"{x_csv}, "
+                f"{g_max_str}, "
+                f"{v_agg_str}, "
+                f"{c_str}, "
                 f"{seg_mass_str}\n"
             )
 
