@@ -156,17 +156,86 @@ units before any nonlinear evaluation.
           Without scaling, a single move limit cannot be appropriate for
           radii and thicknesses simultaneously.
     \item \textbf{Tolerances are unit-independent.} Convergence checks
-          based on $\|\Delta y\|$ or $\|g_y\|_\infty$ are invariant under
-          a change of physical units, which is essential for a structural
-          model whose variables come from different design domains.
+          based on $\|g_y\|_\infty$ are invariant under a change of
+          physical units, which is essential for a structural model
+          whose variables come from different design domains.
 \end{itemize}
+
+\subsection{Physical vs.\ Scaled Space --- Where Each Quantity Lives}
+\label{sec:phys_vs_scaled}
+
+The solver deliberately keeps two coordinate systems active at the same
+time: the LP subproblem and its move limits live in the scaled
+$y$-space, while the merit function, the line-search acceptance test,
+the trust-region ratio $\rho$, and the convergence tests are evaluated
+in the physical $x$-space. The bridge between the two is the chain
+rule $g_y = D g_x$ and $J_y = J_x D$, which guarantees that the
+linearized changes
+\begin{align}
+    g_y^{\!\top}\Delta y \;=\; g_x^{\!\top}\Delta x,
+    \qquad
+    J_y\,\Delta y \;=\; J_x\,\Delta x,
+\end{align}
+come out in physical units even though $\Delta y$ is scaled. The
+following table summarizes which quantity lives in which space and is
+referred to throughout the rest of this section.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{p{0.30\textwidth} p{0.32\textwidth} l}
+\toprule
+Quantity & Symbol & Space \\
+\midrule
+Design variable                       & $x$                                & physical \\
+Scaled design variable                & $y = D^{-1}(x - x^{\mathrm{off}})$ & scaled \\
+Bounds                                & $x^L, x^U$ \;/\; $y^L, y^U$        & physical / scaled \\
+Move limit (trust region)             & $\delta$                           & scaled \\
+LP step direction                     & $\Delta y$                         & scaled \\
+Equivalent physical step              & $\Delta x = D\,\Delta y$           & physical \\
+Slack variables                       & $s$                                & physical (constraint units) \\
+Penalty                               & $M$                                & $[f\text{-units}]/[c\text{-units}]$ \\
+Objective                             & $f(x_k)$                           & physical \\
+Constraint vector                     & $c(x_k)$                           & physical \\
+Physical gradients                    & $g_x = \nabla_x f,\; J_x = \nabla_x c$ & physical \\
+Scaled gradients                      & $g_y = D g_x,\; J_y = J_x D$       & scaled \\
+LP cost coefficient on $\Delta y$     & $g_y$                              & scaled gradient \\
+LP RHS of linearized constraint       & $c_k$                              & physical \\
+Linearized $f$-change                 & $g_y^{\!\top}\Delta y$             & physical (by chain rule) \\
+Linearized $c$-change                 & $J_y\,\Delta y$                    & physical (by chain rule) \\
+Merit function $\Phi(x;M)$            & $f + M\!\sum\!\max(0,-c_i)$        & physical \\
+Predicted / actual merit decrease     & $\Delta\Phi_{\mathrm{pred}}, \Delta\Phi_{\mathrm{act}}$ & physical \\
+Trust-region ratio                    & $\rho = \Delta\Phi_{\mathrm{act}}/\Delta\Phi_{\mathrm{pred}}$ & physical \\
+Step-norm convergence test            & $\|x_{k+1}-x_k\|_2$                & physical \\
+Gradient-norm convergence test        & $\|g_y\|_\infty$                   & scaled \\
+\bottomrule
+\end{tabular}
+\caption{Mapping of every algorithmic quantity to physical or scaled
+space. The LP is solved in scaled coordinates for conditioning; the
+nonlinear acceptance machinery is evaluated in physical coordinates so
+that decisions reflect the true engineering problem.}
+\label{tab:phys_vs_scaled}
+\end{table}
+
+A useful mnemonic is that everything related to \emph{building the
+LP step} (variables, gradients, move limits, bounds) is in
+$y$-space, while everything related to \emph{judging the step}
+(merit, $\rho$, feasibility check, step norm) is in $x$-space.
 
 \subsection{The Linearized Subproblem}
 
 At iteration $k$, write the trust-region (move-limit) constraint in
 scaled coordinates as $\Delta y \in [-\delta, \delta]$ and combine it with
-the global bounds $y^L \leq y_k + \Delta y \leq y^U$. A first attempt at
-the SLP subproblem is the pure LP
+the global bounds $y^L \leq y_k + \Delta y \leq y^U$. The decision
+variables of the LP, the move limits, and the gradient $g_{y,k}$ are
+all in \emph{scaled} space, but the right-hand side $c_k$ of the
+linearized inequality and the LP objective value
+$g_{y,k}^{\!\top}\Delta y$ are in physical units --- the chain-rule
+relation $g_y = D g_x$ guarantees that
+$g_{y,k}^{\!\top}\Delta y = g_{x,k}^{\!\top}\Delta x$, so the LP
+minimizes the same physical $f$-decrease as a hypothetical LP solved
+directly over $\Delta x$. A first attempt at the SLP subproblem is
+the pure LP
 \begin{align}
     \min_{\Delta y} \quad
         & g_{y,k}^{\!\top} \Delta y, \\
@@ -210,7 +279,12 @@ large. The resulting slack-relaxed LP solved by the implementation is
 The standard upper-bound form used by linear-programming solvers is
 recovered by writing the linearized constraint as
 $-J_{y,k}\,\Delta y - s \leq c_k$, which is exactly the inequality
-implemented in the code.
+implemented in the code. Note again the mixed bookkeeping: the LP
+decision variables $\Delta y$ and the scaled Jacobian $J_{y,k}$ live
+in $y$-space, while the right-hand side $c_k$ and the slack vector
+$s$ are in physical constraint units (so that $s_i$ literally
+absorbs as many physical units of violation as required to make the
+linearized residual non-negative).
 
 \subsubsection*{Why slacks are good}
 
@@ -255,7 +329,14 @@ This is the classical $\ell_1$ exact penalty function
 \citep[Sec.~17.3]{NocedalWright2006}. \citet[Sec.~5.5]{MartinsNing2021}
 discuss the merit function as the standard mechanism for transforming a
 constrained acceptance test into an unconstrained one in SQP/SLP
-globalization.
+globalization. The merit function and every quantity derived from it
+($\Delta\Phi_{\mathrm{pred}}$, $\Delta\Phi_{\mathrm{act}}$, $\rho$,
+$V$) is evaluated in \emph{physical} space: it takes physical $f(x)$
+and physical $c(x)$ as inputs and returns a value with physical
+$f$-units. The penalty $M$ therefore carries units of
+$[f\text{-units}]/[c\text{-units}]$ and is identical to the LP slack
+penalty introduced in Section~\ref{sec:slacks}, which keeps the LP
+and the line search consistent.
 
 \subsubsection*{Why the merit function matters}
 
@@ -280,16 +361,29 @@ globalization.
 \subsubsection*{Theory}
 
 A line search replaces the full LP step by a fraction of it. Given the
-direction $\Delta y$ from the LP, the trial point is
+direction $\Delta y$ from the LP, the trial point is constructed in
+\emph{scaled} coordinates and then mapped back to \emph{physical}
+coordinates before any nonlinear evaluation:
 \begin{align}
-    y_{\mathrm{trial}}(\alpha) = y_k + \alpha\, \Delta y,
+    y_{\mathrm{trial}}(\alpha)
+        &= \mathrm{clip}\!\bigl(y_k + \alpha\, \Delta y,\; y^L, y^U\bigr),
+        & \text{(scaled)} \\
+    x_{\mathrm{trial}}(\alpha)
+        &= \mathrm{clip}\!\bigl(x^{\mathrm{off}} + D\, y_{\mathrm{trial}}(\alpha),\; x^L, x^U\bigr),
+        & \text{(physical)}
 \end{align}
-with $\alpha \in (0, 1]$. A backtracking line search starts from
-$\alpha = 1$ and successively shrinks $\alpha \leftarrow \beta\,\alpha$
-with $\beta \in (0, 1)$ (typically $\beta = 0.5$) until an acceptance
-condition is met. The line search is called \emph{inexact} because it
-does not minimize $\Phi$ exactly along the direction; it only enforces a
-sufficient decrease.
+with $\alpha \in (0, 1]$. Because the transformation $y \mapsto x$ is
+affine, walking along $\alpha$ traces the same physical line
+$x_k + \alpha\,\Delta x$ regardless of which coordinate system one
+parameterizes; the scaled parameterization is simply the bookkeeping
+choice that makes the LP move limits unit-independent. A backtracking
+line search starts from $\alpha = 1$ and successively shrinks
+$\alpha \leftarrow \beta\,\alpha$ with $\beta \in (0, 1)$ (typically
+$\beta = 0.5$) until an acceptance condition is met. The line search
+is called \emph{inexact} because it does not minimize $\Phi$ exactly
+along the direction; it only enforces a sufficient decrease, and that
+decrease is measured on the \emph{physical} merit
+$\Phi(x_{\mathrm{trial}}; M)$.
 
 The implemented acceptance rule has two branches. The primary branch is
 the Armijo-like sufficient-decrease condition
@@ -360,8 +454,13 @@ function does not strictly satisfy~(\ref{eq:armijo}).
 \subsubsection*{Theory}
 
 The move limits $\delta$ act as a simple \emph{trust region}: they bound
-how far in scaled coordinates the LP is allowed to step. In trust-region
-theory \citep[Ch.~6]{Conn2000},\citep[Ch.~4]{NocedalWright2006},
+how far in \emph{scaled} coordinates the LP is allowed to step. The
+ratio that controls them, on the other hand, is built from
+\emph{physical} merit values: this asymmetry is essential, because the
+move limit must control LP conditioning (a scaled-space concern) while
+$\rho$ must measure the agreement between linear model and true
+nonlinear response (a physical-space concern). In trust-region theory
+\citep[Ch.~6]{Conn2000},\citep[Ch.~4]{NocedalWright2006},
 \citep[Sec.~4.5]{MartinsNing2021} the trust-region radius is updated by
 comparing the actual reduction of the merit function to the reduction
 predicted by the model, through the ratio
@@ -556,26 +655,34 @@ ingredient described above appears as a clearly identifiable step.
 \begin{table}[h]
 \centering
 \small
-\begin{tabular}{p{0.05\textwidth} p{0.85\textwidth}}
+\begin{tabular}{p{0.04\textwidth} p{0.74\textwidth} p{0.12\textwidth}}
 \toprule
-\multicolumn{2}{l}{\textbf{Algorithm 1: Self-written SLP iteration}}\\
+\multicolumn{3}{l}{\textbf{Algorithm 1: Self-written SLP iteration}}\\
 \midrule
-1.  & Evaluate $f(x_k)$ and $c(x_k)$. \\
-2.  & Estimate $g_x$, $J_x$ by bound-aware finite differences. \\
-3.  & Transform to scaled space: $g_y = D g_x,\; J_y = J_x D$. \\
-4.  & Build and solve the slack-relaxed LP for $(\Delta y, s)$. \\
-5.  & Compute the predicted merit decrease
-      $\Delta\Phi_{\mathrm{pred}}(\alpha)$. \\
-6.  & Backtrack on $\alpha = 1, \beta, \beta^2, \dots$ until either
-      Armijo merit decrease or feasibility-progress acceptance holds. \\
-7.  & If accepted, update $x_{k+1}, y_{k+1}, f_{k+1}, c_{k+1}$ and the
-      history. Otherwise, mark the iteration rejected. \\
-8.  & Compute $\rho_k$ and update $\delta$:
-      enlarge if $\rho > 0.75$, shrink if $\rho < 0.25$. \\
-9.  & If slacks were active or feasibility stalled, increase $M$. \\
-10. & Check primary and secondary convergence criteria. If a criterion
-      holds, terminate with success; if $\delta < \delta_{\min}$,
-      terminate with failure. \\
+\# & Step & Space \\
+\midrule
+1.  & Evaluate $f(x_k)$ and $c(x_k)$.                                                                  & physical \\
+2.  & Estimate $g_x$, $J_x$ by bound-aware finite differences.                                          & physical \\
+3.  & Transform gradients: $g_y = D g_x,\; J_y = J_x D$.                                                & scaled \\
+4.  & Build and solve the slack-relaxed LP for $(\Delta y, s)$;
+      decision variables and move limits in scaled space, RHS $c_k$
+      and slacks $s$ in physical units.                                                                & mixed \\
+5.  & Map step back: $\Delta x = D\,\Delta y$ for trial evaluations.                                    & physical \\
+6.  & Compute the predicted merit decrease
+      $\Delta\Phi_{\mathrm{pred}}(\alpha) = \Phi(x_k;M)
+      - \Phi^{\mathrm{lin}}_k(\alpha\Delta y;M)$.                                                       & physical \\
+7.  & Backtrack on $\alpha = 1, \beta, \beta^2, \dots$ until either
+      Armijo merit decrease or feasibility-progress acceptance holds;
+      tested on $\Phi(x_{\mathrm{trial}};M)$.                                                          & physical \\
+8.  & If accepted, update $x_{k+1}, y_{k+1}, f_{k+1}, c_{k+1}$ and the
+      history. Otherwise, mark the iteration rejected.                                                  & both \\
+9.  & Compute $\rho_k=\Delta\Phi_{\mathrm{act}}/\Delta\Phi_{\mathrm{pred}}$
+      and update $\delta$ in scaled space: enlarge if $\rho>0.75$,
+      shrink if $\rho<0.25$.                                                                            & $\rho$: physical, $\delta$: scaled \\
+10. & If slacks were active or feasibility stalled, increase $M$.                                       & physical \\
+11. & Check $\|x_{k+1}-x_k\|_2\leq\varepsilon_x$ in physical space and
+      $\|g_y\|_\infty\leq\varepsilon_g$ in scaled space at a feasible
+      point; terminate with success or, if $\delta<\delta_{\min}$, with failure. & mixed \\
 \bottomrule
 \end{tabular}
 \label{alg:slp}
@@ -606,7 +713,7 @@ $\eta$                            & $10^{-4}$ & Armijo sufficient-decrease const
 $\gamma$                          & $10^{-3}$ & feasibility-progress reduction fraction\\
 $\varepsilon_{\mathrm{feas}}$     & $10^{-5}$ & nonlinear feasibility tolerance\\
 $\varepsilon_{\mathrm{slack}}$    & $10^{-8}$ & LP slack tolerance\\
-$\varepsilon_{x}$                 & $10^{-4}$ & step-size tolerance (scaled)\\
+$\varepsilon_{x}$                 & $10^{-4}$ & step-size tolerance, physical $\|x_{k+1}-x_k\|_2$\\
 $\varepsilon_{f}$                 & $10^{-3}$ & objective-change tolerance\\
 $\varepsilon_{g}$                 & $10^{-6}$ & scaled-gradient tolerance\\
 \bottomrule
