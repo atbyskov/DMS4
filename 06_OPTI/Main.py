@@ -79,7 +79,7 @@ else:
 Misc = {
     "esize": 3,                           # Element Size [mm]
     "Hor_Force": 502.52,                  # Horizontal Force (P_Load_z) [N]
-    "Ver_Force": -100.00E+3,               # Vertical Force (P_Load_y)   [N]
+    "Ver_Force": -23.3+3,                 # Vertical Force (P_Load_y)   [N]
     "f_y": 700 ,                          # Column Yield Strength [MPa]
     "f_y_brace": 355,                     # Brace Yield Strength [MPa]
     "E_mod": 200*1E3,                     # Youngs Modulus [MPa]
