@@ -108,6 +108,15 @@ bounds = {
     "rad": (150.0, 350.0),
 }
 
+opti_settings = {
+    "n_mast_segments": 5,         # Number of mast segments
+    "mast_segment_height": 810,   # Height of each mast segment [mm]
+    "segment_mass_limit": 23,  # Limits for segment masses [kg]
+    "multi_size_columns": False,   # Whether mast segments columns uses different dimensions (True) or not (False)
+    "multi_size_braces": False,    # Whether mast segments braces uses different dimensions (True) or not (False)
+    "brace_split": False,          # Whether braces are split between horiontal and cross (True) or not (False)
+}
+
 for i, x0 in enumerate(initial_points, start=1):
     # Variables. Choose which ones to include by setting "active": True or False.
     # Include Bounds
@@ -120,8 +129,10 @@ for i, x0 in enumerate(initial_points, start=1):
         }
 
     # Ensures that MAPDL closes if something chrashes
-    f1 = RunAPDL(mapdl,var,Misc)
-    result, txt_path, csv_path = optimization.run_optimization(mapdl, var, Misc, Solver_Settings)
+
+    f1 = RunAPDL(mapdl,var,Misc,opti_settings)
+    result, txt_path, csv_path = optimization.run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings)
+
 
     # Append results
     final_x = result["x"]
