@@ -1,0 +1,812 @@
+% =====================================================================
+%  Master's Thesis Section: Self-Written SLP Solver
+%  --------------------------------------------------------------------
+%  Drop-in section for the "Optimization" chapter. Compile as a
+%  standalone document or \input{} the \section blocks into a chapter.
+%  --------------------------------------------------------------------
+%  Required preamble packages (already in most thesis templates):
+%      amsmath, amssymb, booktabs, enumitem, hyperref
+% =====================================================================
+
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=25mm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+\title{Self-Written Sequential Linear Programming Solver:\\
+       A Theoretical Background for the Master's Thesis}
+\author{DMS4 Optimization Chapter}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+% =====================================================================
+\section{Self-Written Sequential Linear Programming Solver}
+\label{sec:slp_solver}
+
+\subsection{Motivation and Project Context}
+
+In this thesis the structural mass of a wind-turbine support structure is
+minimized subject to load-, deflection-, and buckling-related inequality
+constraints. The design vector $x \in \mathbb{R}^n$ contains geometrical
+parameters with very different physical units --- diameters in the order of
+hundreds of millimetres next to wall thicknesses in the order of a few
+millimetres. The objective and constraints are evaluated by an external finite
+element model, so the solver only sees them as black boxes for which gradients
+must be approximated by finite differences.
+
+Off-the-shelf optimizers such as \textsc{PySLSQP} or \textsc{SciPy}'s
+\texttt{minimize} solve this class of problem efficiently, but they are
+opaque: when a structural step is rejected or a solution is locally
+infeasible, it is difficult to tell why. To gain a deeper understanding of
+the underlying mechanics --- and to be able to discuss them in this thesis ---
+a transparent Sequential Linear Programming (SLP) solver was implemented from
+scratch. The implementation deliberately keeps the algorithmic ingredients
+modular and observable: every iteration logs the predicted-versus-actual
+quality ratio, the linearization slacks, the active move limits, and the
+current penalty parameter. This makes the solver well suited for didactic use
+and ideal for the thesis discussion.
+
+The methods used in the solver are not new; they are textbook ideas
+\citep{MartinsNing2021,NocedalWright2006,Fletcher1987}. The contribution of
+this section is to present those ideas in a single, coherent framework and to
+explain \emph{why each ingredient is needed} for a robust SLP method to work
+on structural design problems.
+
+\subsection{Problem Formulation}
+
+The optimization problem solved in this work is written in the
+\textsc{PySLSQP} convention with non-negative inequality constraints:
+\begin{align}
+    \min_{x \in \mathbb{R}^n} \quad
+        & f(x), \\
+    \text{subject to} \quad
+        & c_i(x) \geq 0, \qquad i = 1, \dots, m, \\
+        & x^L \leq x \leq x^U,
+\end{align}
+where $f : \mathbb{R}^n \to \mathbb{R}$ is the structural mass and
+$c : \mathbb{R}^n \to \mathbb{R}^m$ is the vector of nonlinear inequality
+constraints. A constraint is feasible when its value is non-negative and
+violated otherwise. The bounds $x^L$ and $x^U$ enforce the physical limits of
+the geometric design variables.
+
+\subsection{Method Overview}
+
+Sequential Linear Programming approximates the nonlinear problem by a
+\emph{sequence of linear subproblems}. At iteration $k$ the objective and
+constraints are linearized around the current design $x_k$:
+\begin{align}
+    f(x_k + \Delta x) &\approx f(x_k) + g(x_k)^{\!\top} \Delta x, \\
+    c(x_k + \Delta x) &\approx c(x_k) + J(x_k) \Delta x,
+\end{align}
+where $g = \nabla f$ and $J$ is the constraint Jacobian. A linear program
+(LP) then proposes the next step $\Delta x$. Because a linear model is only
+locally accurate, every step must be globalized: it must be \emph{accepted}
+or \emph{rejected} based on what the true nonlinear functions do at the
+trial point. The implemented solver accomplishes this through six
+ingredients that we discuss in detail in the following subsections:
+
+\begin{enumerate}[nosep]
+    \item \textbf{Variable scaling} --- equalize the influence of variables
+          with very different units on the LP.
+    \item \textbf{Slack-relaxed LP subproblem} --- guarantee that the LP
+          always has a solution even when the linearized constraints cannot
+          be satisfied within the current move limits.
+    \item \textbf{$L_1$ merit function} --- combine objective and
+          constraint violation into a single scalar criterion.
+    \item \textbf{Inexact (backtracking) line search} --- accept only
+          trial steps that produce sufficient merit decrease.
+    \item \textbf{Adaptive move limits} --- adjust the local trust region
+          based on the agreement between linear model and nonlinear
+          response.
+    \item \textbf{Adaptive penalty update} --- increase the importance of
+          feasibility when constraints remain active.
+\end{enumerate}
+
+\subsection{Variable Scaling}
+\label{sec:scaling}
+
+\subsubsection*{Theory}
+
+In structural design the components of $x$ are physical lengths whose
+magnitudes can differ by several orders. A radius may be of order
+$200~\text{mm}$ while a wall thickness may be of order $2~\text{mm}$. The
+gradients of $f$ and $c$ inherit those magnitudes through the chain rule.
+If the LP is solved in the physical variables, a single ill-scaled
+variable can dominate the search direction purely because of its unit, not
+because it actually drives the design. \citet[Sec.~4.4]{MartinsNing2021}
+emphasize that variable scaling is one of the most consequential numerical
+practices in gradient-based design optimization, and \citet[Sec.~6.5]{NocedalWright2006}
+note that all gradient-based methods are sensitive to scaling because the
+geometry of the feasible set in scaled space drives the conditioning of the
+subproblem.
+
+The implemented solver uses a bound-based linear scaling that maps every
+bounded variable into the unit interval:
+\begin{align}
+    y_j = \frac{x_j - x^L_j}{x^U_j - x^L_j}, \qquad
+    x_j = x^L_j + (x^U_j - x^L_j)\, y_j.
+\end{align}
+For variables without finite bounds a fallback scale of
+$\max(1, |x_j|)$ is used. In compact notation,
+$x = x^{\mathrm{off}} + D\, y$, where $D$ is the diagonal scale matrix.
+By the chain rule, gradients in the scaled space are
+\begin{align}
+    g_y = D\, g_x, \qquad J_y = J_x\, D.
+\end{align}
+The LP step is then computed in $y$-space and converted back to physical
+units before any nonlinear evaluation.
+
+\subsubsection*{Why this matters in this project}
+
+\begin{itemize}[nosep,leftmargin=1.5em]
+    \item \textbf{Conditioning.} In scaled coordinates each design
+          variable has unit range; the LP no longer favours large
+          variables simply because they have a large coefficient in $g$
+          or $J$.
+    \item \textbf{Move limits become physically meaningful.} A move
+          limit of $\delta = 0.1$ in $y$-space corresponds to ten percent
+          of each variable's allowable physical range, regardless of unit.
+          Without scaling, a single move limit cannot be appropriate for
+          radii and thicknesses simultaneously.
+    \item \textbf{Tolerances are unit-independent.} Convergence checks
+          based on $\|g_y\|_\infty$ are invariant under a change of
+          physical units, which is essential for a structural model
+          whose variables come from different design domains.
+\end{itemize}
+
+\subsection{Physical vs.\ Scaled Space --- Where Each Quantity Lives}
+\label{sec:phys_vs_scaled}
+
+The solver deliberately keeps two coordinate systems active at the same
+time: the LP subproblem and its move limits live in the scaled
+$y$-space, while the merit function, the line-search acceptance test,
+the trust-region ratio $\rho$, and the convergence tests are evaluated
+in the physical $x$-space. The bridge between the two is the chain
+rule $g_y = D g_x$ and $J_y = J_x D$, which guarantees that the
+linearized changes
+\begin{align}
+    g_y^{\!\top}\Delta y \;=\; g_x^{\!\top}\Delta x,
+    \qquad
+    J_y\,\Delta y \;=\; J_x\,\Delta x,
+\end{align}
+come out in physical units even though $\Delta y$ is scaled. The
+following table summarizes which quantity lives in which space and is
+referred to throughout the rest of this section.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{p{0.30\textwidth} p{0.32\textwidth} l}
+\toprule
+Quantity & Symbol & Space \\
+\midrule
+Design variable                       & $x$                                & physical \\
+Scaled design variable                & $y = D^{-1}(x - x^{\mathrm{off}})$ & scaled \\
+Bounds                                & $x^L, x^U$ \;/\; $y^L, y^U$        & physical / scaled \\
+Move limit (trust region)             & $\delta$                           & scaled \\
+LP step direction                     & $\Delta y$                         & scaled \\
+Equivalent physical step              & $\Delta x = D\,\Delta y$           & physical \\
+Slack variables                       & $s$                                & physical (constraint units) \\
+Penalty                               & $M$                                & $[f\text{-units}]/[c\text{-units}]$ \\
+Objective                             & $f(x_k)$                           & physical \\
+Constraint vector                     & $c(x_k)$                           & physical \\
+Physical gradients                    & $g_x = \nabla_x f,\; J_x = \nabla_x c$ & physical \\
+Scaled gradients                      & $g_y = D g_x,\; J_y = J_x D$       & scaled \\
+LP cost coefficient on $\Delta y$     & $g_y$                              & scaled gradient \\
+LP RHS of linearized constraint       & $c_k$                              & physical \\
+Linearized $f$-change                 & $g_y^{\!\top}\Delta y$             & physical (by chain rule) \\
+Linearized $c$-change                 & $J_y\,\Delta y$                    & physical (by chain rule) \\
+Merit function $\Phi(x;M)$            & $f + M\!\sum\!\max(0,-c_i)$        & physical \\
+Predicted / actual merit decrease     & $\Delta\Phi_{\mathrm{pred}}, \Delta\Phi_{\mathrm{act}}$ & physical \\
+Trust-region ratio                    & $\rho = \Delta\Phi_{\mathrm{act}}/\Delta\Phi_{\mathrm{pred}}$ & physical \\
+Step-norm convergence test            & $\|x_{k+1}-x_k\|_2$                & physical \\
+Gradient-norm convergence test        & $\|g_y\|_\infty$                   & scaled \\
+\bottomrule
+\end{tabular}
+\caption{Mapping of every algorithmic quantity to physical or scaled
+space. The LP is solved in scaled coordinates for conditioning; the
+nonlinear acceptance machinery is evaluated in physical coordinates so
+that decisions reflect the true engineering problem.}
+\label{tab:phys_vs_scaled}
+\end{table}
+
+A useful mnemonic is that everything related to \emph{building the
+LP step} (variables, gradients, move limits, bounds) is in
+$y$-space, while everything related to \emph{judging the step}
+(merit, $\rho$, feasibility check, step norm) is in $x$-space.
+
+\subsection{The Linearized Subproblem}
+
+At iteration $k$, write the trust-region (move-limit) constraint in
+scaled coordinates as $\Delta y \in [-\delta, \delta]$ and combine it with
+the global bounds $y^L \leq y_k + \Delta y \leq y^U$. The decision
+variables of the LP, the move limits, and the gradient $g_{y,k}$ are
+all in \emph{scaled} space, but the right-hand side $c_k$ of the
+linearized inequality and the LP objective value
+$g_{y,k}^{\!\top}\Delta y$ are in physical units --- the chain-rule
+relation $g_y = D g_x$ guarantees that
+$g_{y,k}^{\!\top}\Delta y = g_{x,k}^{\!\top}\Delta x$, so the LP
+minimizes the same physical $f$-decrease as a hypothetical LP solved
+directly over $\Delta x$. A first attempt at the SLP subproblem is
+the pure LP
+\begin{align}
+    \min_{\Delta y} \quad
+        & g_{y,k}^{\!\top} \Delta y, \\
+    \text{subject to} \quad
+        & c_k + J_{y,k}\, \Delta y \geq 0, \\
+        & \max(y^L - y_k,\, -\delta) \leq \Delta y \leq
+          \min(y^U - y_k,\, \delta).
+\end{align}
+This subproblem has a major weakness: as soon as the linearized
+constraints $c_k + J_{y,k}\,\Delta y \geq 0$ cannot be satisfied within
+the move limits, the LP becomes infeasible and the solver stalls. This is
+not a hypothetical situation in structural design --- it occurs as soon as
+the current iterate is infeasible, which is normal in early iterations.
+The remedy is the introduction of slack variables.
+
+\subsection{Slack Variables and the Slack-Relaxed LP Subproblem}
+\label{sec:slacks}
+
+\subsubsection*{Theory}
+
+A slack variable is a non-negative auxiliary variable added to a constraint
+to absorb the amount by which the constraint cannot be satisfied. Slacks
+have a long history in linear programming and in the elastic-mode and
+$\ell_1$-penalty SQP literature
+\citep[Ch.~17--18]{NocedalWright2006},\citep{Fletcher1987}. The classical
+$\ell_1$ formulation introduces $s \geq 0$ such that
+\begin{align}
+    c_k + J_{y,k}\,\Delta y + s \geq 0,
+\end{align}
+and adds a penalty term $M \sum_i s_i$ to the LP objective with $M > 0$
+large. The resulting slack-relaxed LP solved by the implementation is
+\begin{align}
+    \min_{\Delta y, \, s} \quad
+        & g_{y,k}^{\!\top} \Delta y + M \sum_{i=1}^{m} s_i, \\
+    \text{subject to} \quad
+        & c_k + J_{y,k}\,\Delta y + s \geq 0, \\
+        & s_i \geq 0, \qquad i = 1, \dots, m, \\
+        & \max(y^L - y_k,\, -\delta) \leq \Delta y \leq
+          \min(y^U - y_k,\, \delta).
+\end{align}
+The standard upper-bound form used by linear-programming solvers is
+recovered by writing the linearized constraint as
+$-J_{y,k}\,\Delta y - s \leq c_k$, which is exactly the inequality
+implemented in the code. Note again the mixed bookkeeping: the LP
+decision variables $\Delta y$ and the scaled Jacobian $J_{y,k}$ live
+in $y$-space, while the right-hand side $c_k$ and the slack vector
+$s$ are in physical constraint units (so that $s_i$ literally
+absorbs as many physical units of violation as required to make the
+linearized residual non-negative).
+
+\subsubsection*{Why slacks are good}
+
+\begin{itemize}[nosep,leftmargin=1.5em]
+    \item \textbf{Always feasible LP.} The relaxed LP has at least the
+          trivial point $\Delta y = 0$, $s_i = \max(0, -c_{k,i})$ in its
+          feasible set. The optimizer therefore never breaks down because
+          of a momentarily infeasible iterate. This is essential in
+          structural problems where the starting design is rarely strictly
+          feasible.
+    \item \textbf{Slacks reveal information.} A large optimal slack
+          $s_i^\star$ is a quantitative signal that constraint $i$ cannot
+          be satisfied locally within the present move limits. The solver
+          uses $\sum s_i$ and $\max s_i$ as diagnostics: persistently
+          large slacks indicate that either the move limits should
+          shrink, the penalty should grow, or the linearization is poor
+          (see Sections~\ref{sec:adaptive_move}, \ref{sec:adaptive_penalty}).
+    \item \textbf{Penalty discourages artificial feasibility.} The term
+          $M \sum s_i$ in the LP objective makes the optimizer prefer
+          steps that satisfy the linearized constraints \emph{without}
+          using slack whenever possible, while still allowing slack to
+          be used when the alternative is no step at all. This is the
+          $\ell_1$-penalty principle of \citet{Fletcher1987} adapted to
+          the LP setting.
+    \item \textbf{Connection to the merit function.} The same penalty
+          $M$ appears in the nonlinear merit function defined in
+          Section~\ref{sec:merit}. This consistency means that the
+          subproblem and the acceptance test agree on how much
+          infeasibility is tolerable.
+\end{itemize}
+
+\subsection{The $L_1$ Merit Function}
+\label{sec:merit}
+
+To decide whether a candidate step from the LP should be taken, the
+nonlinear objective and the nonlinear constraint violation are combined
+into a single scalar:
+\begin{align}
+    \Phi(x; M) \;=\; f(x) \;+\; M \sum_{i=1}^{m} \max\bigl(0, -c_i(x)\bigr).
+\end{align}
+This is the classical $\ell_1$ exact penalty function
+\citep[Sec.~17.3]{NocedalWright2006}. \citet[Sec.~5.5]{MartinsNing2021}
+discuss the merit function as the standard mechanism for transforming a
+constrained acceptance test into an unconstrained one in SQP/SLP
+globalization. The merit function and every quantity derived from it
+($\Delta\Phi_{\mathrm{pred}}$, $\Delta\Phi_{\mathrm{act}}$, $\rho$,
+$V$) is evaluated in \emph{physical} space: it takes physical $f(x)$
+and physical $c(x)$ as inputs and returns a value with physical
+$f$-units. The penalty $M$ therefore carries units of
+$[f\text{-units}]/[c\text{-units}]$ and is identical to the LP slack
+penalty introduced in Section~\ref{sec:slacks}, which keeps the LP
+and the line search consistent.
+
+\subsubsection*{Why the merit function matters}
+
+\begin{itemize}[nosep,leftmargin=1.5em]
+    \item It produces a single number on which a line search can act.
+    \item It allows trade-offs: an objective decrease that worsens
+          feasibility is only accepted when it does not worsen feasibility
+          too much, weighted by $M$.
+    \item It is exact for sufficiently large $M$: in particular, if $M$
+          exceeds the largest absolute Lagrange multiplier of the
+          original problem, then a local minimizer of the merit function
+          coincides with a local minimizer of the constrained problem
+          \citep[Thm.~17.3]{NocedalWright2006}. This justifies the
+          adaptive penalty strategy in Section~\ref{sec:adaptive_penalty}:
+          we may not know the multipliers, but we can grow $M$ until the
+          merit function inherits this property.
+\end{itemize}
+
+\subsection{Inexact (Backtracking) Line Search}
+\label{sec:line_search}
+
+\subsubsection*{Theory}
+
+A line search replaces the full LP step by a fraction of it. Given the
+direction $\Delta y$ from the LP, the trial point is constructed in
+\emph{scaled} coordinates and then mapped back to \emph{physical}
+coordinates before any nonlinear evaluation:
+\begin{align}
+    y_{\mathrm{trial}}(\alpha)
+        &= \mathrm{clip}\!\bigl(y_k + \alpha\, \Delta y,\; y^L, y^U\bigr),
+        & \text{(scaled)} \\
+    x_{\mathrm{trial}}(\alpha)
+        &= \mathrm{clip}\!\bigl(x^{\mathrm{off}} + D\, y_{\mathrm{trial}}(\alpha),\; x^L, x^U\bigr),
+        & \text{(physical)}
+\end{align}
+with $\alpha \in (0, 1]$. Because the transformation $y \mapsto x$ is
+affine, walking along $\alpha$ traces the same physical line
+$x_k + \alpha\,\Delta x$ regardless of which coordinate system one
+parameterizes; the scaled parameterization is simply the bookkeeping
+choice that makes the LP move limits unit-independent. A backtracking
+line search starts from $\alpha = 1$ and successively shrinks
+$\alpha \leftarrow \beta\,\alpha$ with $\beta \in (0, 1)$ (typically
+$\beta = 0.5$) until an acceptance condition is met. The line search
+is called \emph{inexact} because it does not minimize $\Phi$ exactly
+along the direction; it only enforces a sufficient decrease, and that
+decrease is measured on the \emph{physical} merit
+$\Phi(x_{\mathrm{trial}}; M)$.
+
+The implemented acceptance rule has two branches. The primary branch is
+the Armijo-like sufficient-decrease condition
+\citep[Sec.~3.1]{NocedalWright2006},\citep[Sec.~4.3]{MartinsNing2021}:
+\begin{align}
+    \Phi(x_{\mathrm{trial}}; M) \;\leq\;
+    \Phi(x_k; M) \;-\; \eta\, \Delta\Phi_{\mathrm{pred}}(\alpha),
+    \label{eq:armijo}
+\end{align}
+where $\eta \in (0, 1)$ is small (the implementation uses
+$\eta = 10^{-4}$), and $\Delta\Phi_{\mathrm{pred}}(\alpha)$ is the merit
+decrease predicted by the linearized model:
+\begin{align}
+    \Delta\Phi_{\mathrm{pred}}(\alpha)
+    \;=\; \max\Bigl(0,\;
+        \Phi(x_k; M) - \Phi^{\mathrm{lin}}_k(\alpha\Delta y; M)
+    \Bigr),
+\end{align}
+with the linearized merit
+$\Phi^{\mathrm{lin}}_k(\Delta y; M) =
+ f_k + g_{y,k}^{\!\top}\Delta y + M \sum_i \max\bigl(0,
+ -(c_{k,i} + (J_{y,k}\Delta y)_i)\bigr)$.
+
+The secondary branch is a feasibility-progress condition. When the current
+iterate is infeasible, the trial step is also accepted if it reduces the
+total violation by at least a fraction $\gamma$:
+\begin{align}
+    V(x_{\mathrm{trial}}) \;\leq\; (1 - \gamma)\, V(x_k),
+    \quad
+    V(x) = \sum_i \max\bigl(0, -c_i(x)\bigr).
+\end{align}
+This rule comes from the filter and feasibility-restoration literature
+\citep{FletcherLeyfferToint2002}: when the design is infeasible, a step
+that meaningfully improves feasibility is useful even if the merit
+function does not strictly satisfy~(\ref{eq:armijo}).
+
+\subsubsection*{Why inexact line search makes the algorithm better}
+
+\begin{itemize}[nosep,leftmargin=1.5em]
+    \item \textbf{Globalization.} An LP step is built from a linear model
+          that is only valid in a neighborhood of $x_k$. A full step can
+          easily increase $f$ or worsen feasibility on the true
+          nonlinear functions. Backtracking gives the solver a way to
+          reduce the step until the nonlinear behavior catches up with
+          the linear model.
+    \item \textbf{Cheap.} Each backtrack step costs one nonlinear
+          evaluation. No additional gradient is required, which is
+          important here because gradients are obtained from finite
+          differences and are therefore expensive (one finite-difference
+          gradient costs $n$ evaluations of the structural model).
+    \item \textbf{Convergence guarantees.} The Armijo-like rule is the
+          mechanism by which classical line-search globalization theorems
+          deliver global convergence to a stationary point under mild
+          assumptions \citep[Thm.~3.2]{NocedalWright2006}. The same idea
+          applied to a merit function is the standard globalization
+          framework for SQP-type methods
+          \citep[Sec.~18.5]{NocedalWright2006}.
+    \item \textbf{Feasibility-progress branch.} Without it, the solver
+          may reject useful restoration steps that temporarily increase
+          $f$ but make the design feasible. This is the core idea of
+          filter methods reused in a simpler form
+          \citep{FletcherLeyfferToint2002}.
+\end{itemize}
+
+\subsection{Adaptive Move Limits --- A Trust-Region Strategy}
+\label{sec:adaptive_move}
+
+\subsubsection*{Theory}
+
+The move limits $\delta$ act as a simple \emph{trust region}: they bound
+how far in \emph{scaled} coordinates the LP is allowed to step. The
+ratio that controls them, on the other hand, is built from
+\emph{physical} merit values: this asymmetry is essential, because the
+move limit must control LP conditioning (a scaled-space concern) while
+$\rho$ must measure the agreement between linear model and true
+nonlinear response (a physical-space concern). In trust-region theory
+\citep[Ch.~6]{Conn2000},\citep[Ch.~4]{NocedalWright2006},
+\citep[Sec.~4.5]{MartinsNing2021} the trust-region radius is updated by
+comparing the actual reduction of the merit function to the reduction
+predicted by the model, through the ratio
+\begin{align}
+    \rho_k
+    \;=\;
+    \frac{\Delta\Phi_{\mathrm{act}}}
+         {\Delta\Phi_{\mathrm{pred}}}
+    \;=\;
+    \frac{\Phi(x_k; M) - \Phi(x_{k+1}; M)}
+         {\Phi(x_k; M) - \Phi^{\mathrm{lin}}_k(\Delta y; M)}.
+\end{align}
+The standard interpretation is:
+\begin{itemize}[nosep,leftmargin=1.5em]
+    \item $\rho \approx 1$: the linear model agrees well with the
+          nonlinear functions; the trust region can be enlarged.
+    \item $0 < \rho \ll 1$: the model is over-optimistic; the trust
+          region must be shrunk.
+    \item $\rho \leq 0$: the step did not improve the merit at all;
+          the step is rejected and the trust region is shrunk.
+\end{itemize}
+
+The implementation uses the classical update rule of
+\citet[Algo.~4.1]{NocedalWright2006}, adapted to the SLP move limit:
+\begin{align}
+    \delta_{k+1}
+    \;=\;
+    \begin{cases}
+        \min(a_{\mathrm{exp}}\, \delta_k,\; \delta_{\max}), & \rho > 0.75,\\
+        a_{\mathrm{shr}}\, \delta_k,                        & \rho < 0.25,\\
+        \delta_k,                                           & \text{otherwise},
+    \end{cases}
+\end{align}
+with $a_{\mathrm{exp}} > 1$ and $0 < a_{\mathrm{shr}} < 1$. If the LP fails
+or no backtracked trial point is acceptable, the move limit is reduced
+unconditionally.
+
+\subsubsection*{Why adaptive move limits are essential}
+
+\begin{itemize}[nosep,leftmargin=1.5em]
+    \item \textbf{Linear models are local.} The first-order model is
+          accurate only in a neighborhood of $x_k$. The size of that
+          neighborhood depends on the local curvature and on the
+          finite-difference noise --- both of which the solver does not
+          know in advance. The trust-region update infers this
+          neighborhood from observed model quality.
+    \item \textbf{Self-tuning.} Without adaptive move limits, the user
+          would have to manually pick a step size that is small enough to
+          be safe everywhere but large enough to converge in a reasonable
+          number of iterations. The $\rho$-based update removes this
+          manual tuning: the move limit shrinks automatically in
+          difficult regions and grows automatically in well-behaved
+          regions.
+    \item \textbf{Robustness near nonlinear constraints.} Active
+          structural constraints (buckling, stress) are highly nonlinear.
+          When the LP repeatedly proposes steps that the line search
+          rejects, the move limit shrinks and the LP is forced to operate
+          in a regime where its linear model is reliable.
+    \item \textbf{Theoretical foundation.} The $\rho$-based rule is part
+          of the classical proof of trust-region global convergence
+          \citep[Thm.~6.4.6]{Conn2000}. Although the present algorithm
+          is not a pure trust-region method, the same logic underlies
+          its globalization.
+\end{itemize}
+
+\subsection{Adaptive Penalty Update}
+\label{sec:adaptive_penalty}
+
+\subsubsection*{Theory}
+
+The penalty $M$ controls how strongly the algorithm cares about feasibility
+relative to the objective. In the slack-relaxed LP it discourages slack
+usage. In the merit function it discourages stepping into infeasible
+regions. The same parameter is used in both, which keeps the LP
+subproblem and the merit acceptance criterion consistent.
+
+A static value of $M$ is rarely satisfactory \citep[Sec.~17.3]{NocedalWright2006}:
+\begin{itemize}[nosep,leftmargin=1.5em]
+    \item too small: the optimizer prioritises objective reduction and
+          accepts persistent infeasibility,
+    \item too large: the LP is dominated by the slack penalty, the
+          objective barely shapes the search direction, and
+          ill-conditioning grows with $M$.
+\end{itemize}
+The classical adaptive rule increases $M$ whenever the current value
+is insufficient to drive feasibility. The implementation uses the simple
+monotone update
+\begin{align}
+    M_{k+1} \;=\; \min(a_M\, M_k,\, M_{\max}), \qquad a_M > 1,
+\end{align}
+triggered when either of the following holds after an iteration:
+\begin{itemize}[nosep,leftmargin=1.5em]
+    \item the LP needed non-negligible slack ($\sum s_i > \varepsilon_{\mathrm{slack}}$), or
+    \item the iterate is still infeasible and the violation did not drop
+          appreciably ($V(x_{k+1}) \geq 0.95\, V(x_k)$).
+\end{itemize}
+
+\subsubsection*{Why this is a good idea}
+
+\begin{itemize}[nosep,leftmargin=1.5em]
+    \item \textbf{Driving feasibility without manual tuning.}
+          \citet[Sec.~5.4]{MartinsNing2021} argue that adaptive penalty
+          methods are preferable to fixed penalties precisely because
+          the user typically does not know what value of $M$ is large
+          enough. The adaptive scheme grows $M$ until the LP and the
+          merit function force the iterates toward feasibility.
+    \item \textbf{Connection to exactness.} Increasing $M$ moves the
+          merit function toward the regime in which it is an exact
+          penalty function for the original problem
+          \citep[Thm.~17.4]{NocedalWright2006}. In other words, the
+          minimum of the merit function eventually coincides with the
+          minimum of the constrained problem.
+    \item \textbf{Diagnostic role of slacks.} Tying the penalty update to
+          the LP slacks gives the solver a measurable, automatic trigger
+          for ``the linearization cannot satisfy these constraints, so
+          push harder''. This is far more reliable than a fixed schedule
+          based on iteration count.
+    \item \textbf{Bounded growth.} The cap $M_{\max}$ prevents
+          ill-conditioning of the LP from running away in pathological
+          cases.
+\end{itemize}
+
+\subsection{Convergence Criteria}
+\label{sec:convergence}
+
+The solver uses two complementary first-order convergence tests, plus a
+graceful failure exit. Both tests require nonlinear feasibility ---
+satisfied by the true model, not merely the linearized one --- so that a
+collapsed move limit alone is never reported as success.
+
+\paragraph{Primary criterion (small step at a feasible point).}
+\begin{align}
+    \max_i v_i(x_k) &\leq \varepsilon_{\mathrm{feas}}, \\
+    \max_i s_i      &\leq \varepsilon_{\mathrm{slack}}, \\
+    \|x_k - x_{k-1}\|_2 &\leq \varepsilon_x.
+\end{align}
+This is the operational meaning of ``the optimizer can no longer find a
+useful improvement at a feasible iterate'' --- a standard step-norm test
+\citep[Sec.~3.5]{MartinsNing2021}.
+
+\paragraph{Secondary criterion (KKT-style first-order optimality).}
+\begin{align}
+    \max_i v_i(x_k) &\leq \varepsilon_{\mathrm{feas}}, \\
+    \max_i s_i      &\leq \varepsilon_{\mathrm{slack}}, \\
+    |f_k - f_{k-1}| &\leq \varepsilon_f, \\
+    \|g_{y,k}\|_\infty &\leq \varepsilon_g.
+\end{align}
+This is the standard first-order necessary-optimality check
+\citep[Sec.~12.3]{NocedalWright2006}: at a feasible local optimum, the
+projected gradient must vanish. The implementation evaluates the gradient
+norm in scaled space ($g_y$), which makes the tolerance $\varepsilon_g$
+unit-independent.
+
+\paragraph{Failure exit.}
+If the move limit shrinks below $\delta_{\min}$ without the algorithm ever
+satisfying either success criterion, the solver stops with a failure
+message. This case means the globalization machinery could not find a
+reliable step --- typically because the finite-difference gradient is
+noisy, an active constraint is highly nonlinear, or the design is
+trapped at a discontinuity. Importantly, the solver does \emph{not} report
+this case as success, even though the iterates have stopped moving.
+
+\subsubsection*{Why these criteria are appropriate}
+
+\begin{itemize}[nosep,leftmargin=1.5em]
+    \item \textbf{Feasibility is required.} Reporting an infeasible
+          design as ``converged'' would be incorrect for a structural
+          design problem, where every constraint corresponds to a
+          physical requirement (load, deflection, buckling).
+    \item \textbf{Two complementary checks.} The step-norm criterion
+          catches the empirical situation in which the optimizer cannot
+          move further. The first-order check captures the KKT-style
+          definition of a local optimum. Either suffices to declare
+          convergence; both must hold at the same feasible point in
+          theory.
+    \item \textbf{Scaled gradient.} Using $\|g_y\|_\infty$ instead of
+          $\|g_x\|_\infty$ avoids declaring convergence merely because
+          one variable has very small physical magnitude.
+    \item \textbf{Honest failure.} Distinguishing ``stuck'' from
+          ``optimal'' is essential for engineering decisions. The user
+          can react to a ``stuck'' message by inspecting the recorded
+          history (slacks, $\rho$, move limit), whereas a misleading
+          ``optimal'' label could result in the wrong design being
+          built.
+\end{itemize}
+
+\subsection{Algorithm Summary}
+
+The complete iteration is summarized in Algorithm~\ref{alg:slp}. Every
+ingredient described above appears as a clearly identifiable step.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{p{0.04\textwidth} p{0.74\textwidth} p{0.12\textwidth}}
+\toprule
+\multicolumn{3}{l}{\textbf{Algorithm 1: Self-written SLP iteration}}\\
+\midrule
+\# & Step & Space \\
+\midrule
+1.  & Evaluate $f(x_k)$ and $c(x_k)$.                                                                  & physical \\
+2.  & Estimate $g_x$, $J_x$ by bound-aware finite differences.                                          & physical \\
+3.  & Transform gradients: $g_y = D g_x,\; J_y = J_x D$.                                                & scaled \\
+4.  & Build and solve the slack-relaxed LP for $(\Delta y, s)$;
+      decision variables and move limits in scaled space, RHS $c_k$
+      and slacks $s$ in physical units.                                                                & mixed \\
+5.  & Map step back: $\Delta x = D\,\Delta y$ for trial evaluations.                                    & physical \\
+6.  & Compute the predicted merit decrease
+      $\Delta\Phi_{\mathrm{pred}}(\alpha) = \Phi(x_k;M)
+      - \Phi^{\mathrm{lin}}_k(\alpha\Delta y;M)$.                                                       & physical \\
+7.  & Backtrack on $\alpha = 1, \beta, \beta^2, \dots$ until either
+      Armijo merit decrease or feasibility-progress acceptance holds;
+      tested on $\Phi(x_{\mathrm{trial}};M)$.                                                          & physical \\
+8.  & If accepted, update $x_{k+1}, y_{k+1}, f_{k+1}, c_{k+1}$ and the
+      history. Otherwise, mark the iteration rejected.                                                  & both \\
+9.  & Compute $\rho_k=\Delta\Phi_{\mathrm{act}}/\Delta\Phi_{\mathrm{pred}}$
+      and update $\delta$ in scaled space: enlarge if $\rho>0.75$,
+      shrink if $\rho<0.25$.                                                                            & $\rho$: physical, $\delta$: scaled \\
+10. & If slacks were active or feasibility stalled, increase $M$.                                       & physical \\
+11. & Check $\|x_{k+1}-x_k\|_2\leq\varepsilon_x$ in physical space and
+      $\|g_y\|_\infty\leq\varepsilon_g$ in scaled space at a feasible
+      point; terminate with success or, if $\delta<\delta_{\min}$, with failure. & mixed \\
+\bottomrule
+\end{tabular}
+\label{alg:slp}
+\end{table}
+
+\subsection{Default Parameter Values and Their Interpretation}
+
+The solver exposes all numerical parameters as keyword arguments. The
+defaults used in this thesis correspond to widely accepted choices in the
+optimization literature \citep{NocedalWright2006,MartinsNing2021}.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lll}
+\toprule
+Parameter & Default & Interpretation \\
+\midrule
+$\delta_0 = \delta_{\max}$        & $0.10$    & initial / maximum scaled move limit\\
+$\delta_{\min}$                   & $10^{-5}$ & minimum scaled move limit before failure\\
+$a_{\mathrm{exp}}$                & $1.4$     & move-limit expansion factor\\
+$a_{\mathrm{shr}}$                & $0.5$     & move-limit shrink factor\\
+$M_0$                             & $10^{3}$  & initial merit / slack penalty\\
+$a_M$                             & $10$      & penalty growth factor\\
+$M_{\max}$                        & $10^{9}$  & penalty cap (avoids blow-up)\\
+$\beta$                           & $0.5$     & backtracking shrink factor\\
+$\eta$                            & $10^{-4}$ & Armijo sufficient-decrease constant\\
+$\gamma$                          & $10^{-3}$ & feasibility-progress reduction fraction\\
+$\varepsilon_{\mathrm{feas}}$     & $10^{-5}$ & nonlinear feasibility tolerance\\
+$\varepsilon_{\mathrm{slack}}$    & $10^{-8}$ & LP slack tolerance\\
+$\varepsilon_{x}$                 & $10^{-4}$ & step-size tolerance, physical $\|x_{k+1}-x_k\|_2$\\
+$\varepsilon_{f}$                 & $10^{-3}$ & objective-change tolerance\\
+$\varepsilon_{g}$                 & $10^{-6}$ & scaled-gradient tolerance\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Connection to the Project}
+
+In this thesis the solver is used to minimize the structural mass of a
+support-structure cross-section subject to design-load and stability
+inequality constraints. The choices made in the solver are motivated by
+the project context as follows:
+
+\begin{itemize}[nosep,leftmargin=1.5em]
+    \item \textbf{Variable scaling} (Section~\ref{sec:scaling}) is used
+          because the geometric variables of the cross-section span
+          orders of magnitude. Without it, the LP would consistently
+          favour the largest-magnitude variables irrespective of their
+          actual influence on mass.
+    \item \textbf{Slack-relaxed LP} (Section~\ref{sec:slacks}) is used
+          because the initial design is generally infeasible: the
+          designer typically starts from a guess that violates one or
+          more constraints. The slacks allow the LP to make progress
+          even from such a starting point.
+    \item \textbf{Inexact backtracking line search}
+          (Section~\ref{sec:line_search}) is used because finite-difference
+          gradients are noisy: a full LP step routinely overshoots in the
+          true nonlinear merit, and backtracking provides robustness at
+          the cost of only a few extra structural evaluations per
+          iteration.
+    \item \textbf{Adaptive move limits} (Section~\ref{sec:adaptive_move})
+          replace expensive manual tuning. The structural problem mixes
+          well-behaved regions (e.g.\ where mass varies smoothly with
+          radius) with strongly nonlinear regions (near buckling
+          constraints), and a single fixed move limit cannot handle both.
+    \item \textbf{Adaptive penalty}
+          (Section~\ref{sec:adaptive_penalty}) ensures that final
+          designs satisfy the structural constraints to engineering
+          tolerance, not merely the linearized constraints.
+    \item \textbf{Convergence criteria} (Section~\ref{sec:convergence})
+          require true nonlinear feasibility before declaring success,
+          which is a non-negotiable engineering requirement.
+\end{itemize}
+
+The recorded iteration history --- $\rho_k$, $\sum s_i$, $\delta_k$,
+$M_k$, the backtracking step length $\alpha_k$ --- provides quantitative
+feedback that is used in the results chapter to interpret the solver's
+behavior on the structural problem and to compare it against
+\textsc{PySLSQP}.
+
+\subsection{Summary}
+
+The implemented solver is a scaled, slack-relaxed Sequential Linear
+Programming method with merit-function-based globalization, adaptive
+move limits, and an adaptive penalty. Each ingredient corresponds to a
+well-established result in the optimization literature
+\citep{MartinsNing2021,NocedalWright2006,Conn2000,Fletcher1987,FletcherLeyfferToint2002}:
+scaling for conditioning, slacks for LP feasibility, the $\ell_1$
+merit function for acceptance, backtracking with Armijo for
+globalization, the trust-region $\rho$-rule for adaptive move limits,
+and an adaptive penalty for exactness. Together these mechanisms turn a
+single linearization, which is only locally trustworthy, into a robust
+nonlinear optimizer suitable for the structural design problem treated
+in this thesis.
+
+% =====================================================================
+\begin{thebibliography}{9}
+
+\bibitem{MartinsNing2021}
+Martins, J.\,R.\,R.\,A.\ and Ning, A.,
+\textit{Engineering Design Optimization}.
+Cambridge University Press, 2021.
+
+\bibitem{NocedalWright2006}
+Nocedal, J.\ and Wright, S.\,J.,
+\textit{Numerical Optimization}, 2nd ed.
+Springer, 2006.
+
+\bibitem{Fletcher1987}
+Fletcher, R.,
+\textit{Practical Methods of Optimization}, 2nd ed.
+John Wiley \& Sons, 1987.
+
+\bibitem{Conn2000}
+Conn, A.\,R., Gould, N.\,I.\,M.\ and Toint, P.\,L.,
+\textit{Trust-Region Methods}.
+SIAM, 2000.
+
+\bibitem{FletcherLeyfferToint2002}
+Fletcher, R., Leyffer, S.\ and Toint, P.\,L.,
+``On the global convergence of a filter-SQP algorithm,''
+\textit{SIAM Journal on Optimization}, 13(1):44--59, 2002.
+
+\end{thebibliography}
+
+\end{document}

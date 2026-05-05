@@ -18,6 +18,13 @@ The nonlinear step is globalized with backtracking on the LP direction and an
 L1 merit function. The history intentionally records predicted-vs-actual merit
 quality because that is the fastest way to debug rejected SLP steps.
 """
+# Information for scaling
+#  1. Evaluate gradient/Jacobian in physical space (g_x, J_x).
+#  2. Scale them into y-space by multiplying by scale.
+#  3. LP solves for a scaled step dy inside the scaled bound box and scaled trust region.
+#  4. Backtrack on α in scaled space: y_trial = y + α · dy.
+#  5. Unscale to evaluate: x_trial = offset + scale · y_trial, then call obj(x_trial) / con(x_trial).
+#  6. Accept/reject, update both y and x.
 
 from __future__ import annotations
 

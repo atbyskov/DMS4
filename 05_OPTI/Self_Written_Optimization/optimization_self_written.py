@@ -200,7 +200,6 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
         xl=xl,
         xu=xu,
         method=method,
-        line_search="golden",
         fd_step=fd_step,
         fd_type="forward",
         maxiter=Solver_Settings["maxiter"],

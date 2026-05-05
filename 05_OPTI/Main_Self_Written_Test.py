@@ -92,12 +92,12 @@ Misc = {
 # Solver Settings
 Solver_Settings = {
     "acc": 1e-3,                 # Maximum objective function tolerance
-    "maxiter": 60,               # Maximum iterations
+    "maxiter": 60,               # Maximum iterations                                                         #IMPORTANT TO TUNE FOR FEA
     "Aggregate": "P-norm",           # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
     "p_value": 8,                # Value for "P-norm" and "P-norm-mean"
     "rho_value": 100,            # rho value used in KS
     "relaxation": 0,             # Relaxation parameter used in aggregation
-    "finite_diff_rel_step": 1e-3, # PySLSQP-like absolute FD step: rel_step * max(1, abs(x))
+    "finite_diff_rel_step": 1e-3, # PySLSQP-like absolute FD step: rel_step * max(1, abs(x))                              #IMPORTANT TO TUNE FOR FEA
     "penalty_weight": 1e3,        # Initial L1 merit/slack penalty
     "penalty_increase": 10.0,     # Increase penalty when slacks/infeasibility persist
     "penalty_max": 1e9,           # Upper cap for adaptive penalty
@@ -112,7 +112,7 @@ Solver_Settings = {
     "xtol": 1e-4,                 # Physical design step tolerance
     "gtol": 1e-6,                 # Scaled gradient infinity-norm tolerance
     "sufficient_decrease": 1e-4,  # Merit decrease fraction of predicted decrease
-    "feasibility_reduction": 1e-3,# Accept infeasible steps that reduce violation by this fraction
+    "feasibility_reduction": 1e-3,# Accept infeasible steps that reduce violation by this fraction          #IMPORTANT TO TUNE FOR FEA
 }
 
 # Launch MAPDL
