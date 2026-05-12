@@ -579,7 +579,7 @@ def InputFun(var,Misc,opti_settings):
     ap.append("EQSLV,SPARSE")
     ap.append("NLGEOM,ON  ")
     #ap.append("cnvtol,f,,0.005,,0.01")
-    ap.append("ARCLEN,ON")
+    #ap.append("ARCLEN,ON")
     #ap.append("ARCTRM,L")
     #ap.append("AUTOTS,OFF  ")
     #ap.append("NSUBST,100,100,100") 

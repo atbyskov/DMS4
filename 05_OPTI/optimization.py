@@ -179,7 +179,7 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         xl=xl,
         xu=xu, 
         callback=iteration_callback,
-        finite_diff_rel_step=1E-4, 
+        finite_diff_rel_step=1E-3, 
         maxiter=Solver_Settings["maxiter"], 
         acc=Solver_Settings["acc"],     # Objective Function Tolerance
         iprint=2,                       # print iteration info

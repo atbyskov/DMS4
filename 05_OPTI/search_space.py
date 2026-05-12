@@ -24,7 +24,7 @@ var_bounds = {
     "d0":  (40.0,  100.0),
     "t0":  (1.0,     7.0),
     "d1":  (10.0,  50.0),
-    "t1":  (0.1,     4.0)
+    "t1":  (0.1,     7.0)
 }
 
 
@@ -161,7 +161,7 @@ print(f"SOBOL: {Sobol_m:.6f}")
 
 method_to_print = "LHS"
 # Write to file
-def read_to_file(var_bounds,method, method_key,n_per_dim_equal):
+def read_to_file(var_bounds, data, method_key, n_per_dim_equal):
     points = data[method_key]["points"]
     names = data[method_key]["names"]
     DS = data[method_key]["discrepancy"]
@@ -284,6 +284,7 @@ def plotting3D():
 
 # Aggregate Output
 # Make one for p = 2
+"""
 p_values = [4, 8, 16, 50, 100]
 ratio_pn = [1.66, 1.083, 1.04, 1.004, 1.004]
 ratio_pnmean = [0.193, 0.42, 0.632, 0.852, 0.923]
