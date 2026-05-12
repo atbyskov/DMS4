@@ -21,12 +21,15 @@
 #       3. Read Mass of assembly
 #   Return Mass
 
-# Import packages        
-import os
-import numpy as np
+# Import packages   
 
+import os
+import time
+import numpy as np
+ 
 # Import Functions
 from APDL_Input import InputFun
+
 
 def RunAPDL(mapdl,var,Misc,opti_settings):
     # Handle List or Misc
@@ -39,10 +42,15 @@ def RunAPDL(mapdl,var,Misc,opti_settings):
                     for name, val in zip(names, x)}
 
     # Clear everything in MAPDL
+
     mapdl.clear()
 
+
     # Create input file for Eigenvalue Analysis
+
     apdl_cmds = InputFun(var_dict,Misc,opti_settings)
+
+
 
     with mapdl.non_interactive:
         for cmd in apdl_cmds:
@@ -51,7 +59,9 @@ def RunAPDL(mapdl,var,Misc,opti_settings):
                 mapdl.run(cmd)
 
     # Clear APDL
+    
     mapdl.finish()
+
     
     # Read First eigenvalue:
     with open("Ansout/Eigenvalue1.txt") as f:
@@ -71,6 +81,8 @@ def RunAPDL(mapdl,var,Misc,opti_settings):
     if os.path.exists(segment_file):
         with open(segment_file, "r") as f:
             segment_masses = [float(line.strip()) for line in f if line.strip()]
+
+
 
     # Return Mass as float value
     return sum(Mass), segment_masses

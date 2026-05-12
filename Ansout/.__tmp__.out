@@ -104,7 +104,11 @@
  PORT                              50052.0000                    SCALAR
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
+<<<<<<< HEAD
+ CURRENT JOBNAME=file  10:23:39  MAY 12, 2026 CP=      0.141
+=======
  CURRENT JOBNAME=file  07:21:07  MAY 11, 2026 CP=      0.172
+>>>>>>> ca68851332b4813527f2f9b597260e48ec69e8a2
 
      1  FINISH 
 
@@ -176,3 +180,38 @@
  Ansys Mechanical Enterprise Academic Research     
 
  /OUTPUT FILE=         
+<<<<<<< HEAD
+
+ EXIT MAPDL WHILE IN SERVER MODE
+
+ SAVE ALL MODEL, SOLUTION AND POST DATA
+
+ ALL CURRENT MAPDL DATA WRITTEN TO FILE NAME= 
+  FOR POSSIBLE RESUME FROM THIS POINT
+
+
+ NUMBER OF WARNING MESSAGES ENCOUNTERED=          2
+ NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2025 R1         Build 25.1         UP20241202    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
+ |  Maximum Database Used       1 MB     Maximum Scratch Memory Used      8 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =          0.516       Time  =  10:23:42          |
+ |        Elapsed Time (sec) =          7.000       Date  =  05/12/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*
+=======
+>>>>>>> ca68851332b4813527f2f9b597260e48ec69e8a2
