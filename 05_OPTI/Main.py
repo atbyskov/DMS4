@@ -15,26 +15,27 @@ opti_settings = {
     "n_mast_segments": 5,         # Number of mast segments
     "mast_segment_height": 810,   # Height of each mast segment [mm]
     "segment_mass_limit": 23,  # Limits for segment masses [kg]
-    "multi_size_columns": True,   # Whether mast segments columns uses different dimensions (True) or not (False)
-    "multi_size_braces": True,    # Whether mast segments braces uses different dimensions (True) or not (False)
-    "brace_split": True,          # Whether braces are split between horiontal and cross (True) or not (False)
+    "multi_size_columns": False,   # Whether mast segments columns uses different dimensions (True) or not (False)
+    "multi_size_braces": False,    # Whether mast segments braces uses different dimensions (True) or not (False)
+    "brace_split": False,          # Whether braces are split between horiontal and cross (True) or not (False)
 }
 
 # Initial Guess
-column_diameter = 76.1 # Column Diameter [mm]
-column_thickness = 3.0 # Column Thickness [mm]
-brace_diameter = 26.9  # Brace Diameter [mm]
-brace_thickness = 2.3  # Brace Thickness [mm]
+column_diameter = 46.0778 # Column Diameter [mm]
+column_thickness = 4.7900 # Column Thickness [mm]
+brace_diameter = 18.8836  # Brace Diameter [mm]
+brace_thickness = 2.7922  # Brace Thickness [mm]
+         
 
 # Bounds
-column_diameter_bounds = (60.0, 100)   # Column Diameter Bounds [mm]
-column_thickness_bounds = (3.0, 5.0)   # Column Thickness Bounds [mm]
-brace_diameter_bounds = (10.0, 40.0)   # Brace Diameter Bounds [mm]
-brace_thickness_bounds = (1.0, 5.0)    # Brace Thickness Bounds [mm]
+column_diameter_bounds = (40.0, 100)   # Column Diameter Bounds [mm]
+column_thickness_bounds = (1.0, 7.0)   # Column Thickness Bounds [mm]
+brace_diameter_bounds = (10.0, 50.0)   # Brace Diameter Bounds [mm]
+brace_thickness_bounds = (1.0, 4.0)    # Brace Thickness Bounds [mm]
 
 # Defining variables with bounds and active status
 var = {
-    "rad": {"value": 202.07, "bounds": (150.0, 300.0), "active": True}, # Radius Structure [mm]
+    "rad": {"value": 338.5857, "bounds": (150.0, 350.0), "active": True}, # Radius Structure [mm]
 }
 if opti_settings["multi_size_columns"]:
     var.update({
@@ -89,9 +90,9 @@ Misc = {
 # Solver Settings
 Solver_Settings = {
     "acc": 1e-3,                 # Maximum objective function tolerance
-    "maxiter": 60,               # Maximum iterations
+    "maxiter": 80,               # Maximum iterations
     "Aggregate": "P-norm",       # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
-    "p_value": 16,               # Value for "P-norm" and "P-norm-mean"
+    "p_value": 8,               # Value for "P-norm" and "P-norm-mean"
     "rho_value": 100,            # rho value used in KS
     "relaxation": 0,             # Relaxation parameter used in aggregation
 }
@@ -100,9 +101,9 @@ tic_lic = time.time()
 # Launch MAPDL
 mapdl = launch_mapdl(
     run_location="Ansout",
-    #log_apdl="apdl_log",
+    log_apdl="apdl_log",
     override=True,
-    nproc=10,
+    nproc=6,
     additional_switches="-p ansys -smp",
 )
 toc_lic = time.time()

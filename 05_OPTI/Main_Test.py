@@ -9,6 +9,10 @@ print(sys.version, flush=True)
 import time 
 import numpy as np
 import pandas as pd
+from functools import wraps
+
+# Start timing
+tic_lic = time.time()
 
 # PyMAPDL Package
 from ansys.mapdl.core import launch_mapdl
@@ -18,8 +22,7 @@ from ansys.mapdl.core.errors import MapdlRuntimeError
 from Post_Process import PostProcessor
 from MyAPDLCall import RunAPDL
 
-# Start timing
-tic = time.time()
+
 
 # Collect opti settings
 opti_settings = {
@@ -97,16 +100,17 @@ Misc = {
 
 #C:\Program Files\ANSYS Inc\v251\ansys\bin\winx64
 # Start License Server
-tic_lic = time.time()
+time_license = time.time()
 mapdl = launch_mapdl(
     run_location="Ansout", 
     #log_apdl="apdl_logging_test",
     override=True,
-    nproc=10,
+    nproc=6,
     additional_switches="-p ansys -smp"
 )
-toc_lic = time.time()
-print(f"License opened in: {toc_lic-tic_lic:.2f} s")
+time_license2 = time.time()
+print(f"Total Time: {time_license2-time_license:.4f} s")
+
 
 # Run Environment
 f = None  # Initialize f to None
@@ -124,6 +128,7 @@ finally:
 print(f" -> Mass of Assembly: {f:.2f} kg")
 
 # Pack specifically for compability
+
 active = [(name,data["value"]) for name,data in var.items() if data.get("active", True)]
 names = [name for name,_ in active]
 x0 = np.array([var[name]["value"] for name, _ in active], dtype=float)
@@ -131,6 +136,7 @@ var_dict = dict(zip(names, x0))
 
 utils = PostProcessor(var_dict, Misc, opti_settings)
 Util_list = utils.Util_list()  
+
 
 print("\n--- UTILIZATION REPORT ---")
 
@@ -167,3 +173,6 @@ for key, util in Util_list.items():
     brc_str = f"{brc_val:8.3f}" if brc_val is not None else "   N/A  "
 
     print(f"{key:15s}  Column: {col_str}  Brace: {brc_str}")
+
+toc_lic = time.time()
+print(f"Total Time: {toc_lic-tic_lic:.2f} s")

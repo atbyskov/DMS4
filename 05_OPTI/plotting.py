@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import matplotlib.pyplot as plt
 
-
+# Function for plotting Aggregate
 def plot_aggregate(csv_path):
     aggregate = "Unknown"
     rho_value = "N/A"
@@ -71,19 +71,112 @@ def plot_aggregate(csv_path):
     plt.tight_layout()
     plt.show()
 
-# With KS
-plot_aggregate("Optimization_Logs/objective_history_2026-04-28_12-54-09.csv")
-plot_aggregate("Optimization_Logs/objective_history_2026-04-28_14-08-22.csv")
-plot_aggregate("Optimization_Logs/objective_history_2026-04-28_15-22-39.csv")
-plot_aggregate("Optimization_Logs/objective_history_2026-04-28_16-49-51.csv")
-plot_aggregate("Optimization_Logs/objective_history_2026-04-28_17-59-45.csv")
+# Function to handle various optimization results
+def time_step():
+    # Reads "ResultsOptimization.xlsx" 
+    # Selects Time step page and gatheres information for each step size
+    exc_file = r"C:\Users\atbys\OneDrive - Aalborg Universitet\DMS4 - General\03_Subjects\05_Optimization\ResultsOptimization.xlsx"
+
+    df = pd.read_excel(exc_file,sheet_name="Time Step", header=None)
+
+    start_row1 = 37
+    end_row1 = 1250
+    start_col1 = 5
+
+    cols = ["it", "eval", "ob", "rad", "d0", "t0", "d1", "t1", "gmax", "vagg"]
+    data1 = df.iloc[start_row1:end_row1,start_col1:start_col1+10]
+
+    data_out1 = {
+    f"{name}_1": data1.iloc[:, i]
+    for i, name in enumerate(cols)
+}
+    return data_out1
+def plot_ts3D(x_key="d0_1", y_key="rad_1", z_key="ob_1"):
+    data = time_step()
+
+    df_plot = pd.DataFrame({
+        "it": pd.to_numeric(data["it_1"], errors="coerce"),
+        "x": pd.to_numeric(data[x_key], errors="coerce"),
+        "y": pd.to_numeric(data[y_key], errors="coerce"),
+        "z": pd.to_numeric(data[z_key], errors="coerce"),
+    })
+
+    df_plot = df_plot.dropna()
+    df_plot = df_plot.sort_values("it")
+
+    # 👇 THIS is the key line
+    df_first = df_plot.groupby("it", as_index=False).first()
+
+    x = df_first["x"]
+    y = df_first["y"]
+    z = df_first["z"]
+
+    fig = plt.figure()
+    ax = fig.add_subplot(projection="3d")
+
+    sc = ax.scatter(x, y, z, c=z)
+    for xi, yi, zi, iti in zip(x, y, z, df_first["it"]):
+        ax.text(xi, yi, zi, f"{int(iti)}", fontsize=8)
+
+    fig.colorbar(sc, label=z_key)
+
+    ax.set_xlabel(x_key)
+    ax.set_ylabel(y_key)
+    ax.set_zlabel(z_key)
+
+    ax.set_title("3D Optimization Plot (First per Iteration)")
+
+    plt.show()
+
+#plot_ts3D("d0_1", "rad_1", "ob_1")
 
 
-# With KS Stable
-plot_aggregate("Optimization_Logs/objective_history_2026-04-28_19-17-51.csv")
-plot_aggregate("Optimization_Logs/objective_history_2026-04-28_20-32-20.csv")
-plot_aggregate("Optimization_Logs/objective_history_2026-04-28_21-53-59.csv")
-plot_aggregate("Optimization_Logs/objective_history_2026-04-28_23-11-02.csv")
-plot_aggregate("Optimization_Logs/objective_history_2026-04-29_00-22-51.csv")
+def plot_constraints(csv_path):
+
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    # ----- Read file safely -----
+    with open(csv_path, "r") as f:
+        lines = f.readlines()
+
+    start_idx = None
+    for i, line in enumerate(lines):
+        if line.strip().startswith("iteration"):
+            start_idx = i
+            break
+
+    df = pd.read_csv(csv_path, skiprows=start_idx, skipinitialspace=True)
+    df.columns = df.columns.str.strip()
+
+    # ----- Extract -----
+    x = df["iteration"]
+    g_max = df["g_max"]
+    v_agg = df["v_agg"]
+
+    # ----- Relative difference -----
+    rel_diff = np.abs(g_max - v_agg) / np.maximum(np.abs(g_max), np.abs(v_agg))
+
+    # ----- Plot -----
+    fig, ax = plt.subplots(figsize=(7, 4))
+
+    ax.plot(x, rel_diff, label="Relative Difference", linewidth=2)
+
+    # Optional reference line
+    ax.axhline(0.0, color="black", linestyle="--", linewidth=1)
+
+    ax.set_xlabel("Evaluations")
+    ax.set_ylabel("Relative Difference")
+
+    ax.grid(True)
+    ax.legend()
+
+    ax.set_title("Relative Difference: $|g_{max} - v_{agg}|$")
+
+    plt.tight_layout()
+    plt.show()
 
 
+
+plot_constraints("Optimization_Logs/objective_history_2026-05-11_09-45-29.csv")

@@ -97,14 +97,14 @@ def _jac_con_fd(
     return J
 
 def solve_slp_mvp(
-    obj: ObjectiveFn, 
-    con: Optional[ConstraintFn], 
-    x0: ArrayLike, 
-    xl: Optional[ArrayLike] = None, 
-    xu: Optional[ArrayLike] = None, 
+    obj: ObjectiveFn,
+    con: Optional[ConstraintFn],
+    x0: ArrayLike,
+    xl: Optional[ArrayLike] = None,
+    xu: Optional[ArrayLike] = None,
     fd_step=None,
     fd_type: str = "forward",
-    maxiter: int = 50, 
+    maxiter: int = 50,
     move_limit: float = 0.1,
     infeasibility_penalty: float = 1000.0,
     xtol: float = 1e-4,
@@ -128,7 +128,7 @@ def solve_slp_mvp(
         xu = np.full(n, np.inf)
     else:
         xu = np.array(xu, dtype=float).ravel()
-    
+
     # Finite difference step sizes
     h = _fd_step_array(fd_step, n)
 
@@ -151,7 +151,7 @@ def solve_slp_mvp(
     delta = np.clip(delta, 1e-6, np.inf) # Prevent zero move limits if bounds are tight
 
     history = [{"iter": 0, "f": f, "viol": float(np.sum(np.maximum(0.0, -c)) if m > 0 else 0.0), "P": P}]
-    
+
     success = False
     message = "Maximum iterations reached"
 
@@ -173,7 +173,7 @@ def solve_slp_mvp(
 
     # 2. Optimization Loop
     for iter_no in range(1, maxiter + 1):
-        
+
         if needs_gradients:
             # Calculate Gradients using Forward Difference
             g = _grad_obj_fd(obj, x, f, h, fd_type=fd_type)
@@ -183,7 +183,7 @@ def solve_slp_mvp(
                 nfev += n if fd_type != "central" else 2 * n
             else:
                 J = np.zeros((0, n))
-            
+
             needs_gradients = False
 
         # Setup the Linear Programming (LP) Subproblem
@@ -206,30 +206,30 @@ def solve_slp_mvp(
 
         # Solve the LP
         res = linprog(c_lp, A_ub=A_ub, b_ub=b_ub, bounds=bounds, method="highs")
-        
+
         if not res.success:
             # This should now be very rare since slacks make the LP feasible
             delta *= 0.5
             if display:
                 print(f"  {iter_no:>5d}  {' ' * 12}  {' ' * 12}  {' ' * 12}  LP FAILED   {nfev:>6d}")
-            
+
             if np.max(delta) < xtol:
                 success = False
                 message = f"Stopped (LP solver failed even with slacks and move limits shrunk < xtol: {xtol:.2e})."
                 break
             continue
-            
+
         # Extract the proposed step for design variables (first n components)
         dx = res.x[:n]
         deltanorm = np.linalg.norm(dx)
-        
+
         # Evaluate the proposed step
         x_new = np.clip(x + dx, xl, xu)
         f_new = float(obj(x_new))
         c_new = np.array(con(x_new), dtype=float).ravel() if con else np.array([])
         nfev += 1
         P_new = merit(f_new, c_new)
-        
+
         # Accept/Reject Step and Update Move Limits
         if P_new < P:
             # Improvement found -> Accept the step
@@ -238,7 +238,7 @@ def solve_slp_mvp(
             c = c_new
             P = P_new
             needs_gradients = True
-            
+
             history.append({
                 "iter": iter_no,
                 "f": float(f),
@@ -249,7 +249,7 @@ def solve_slp_mvp(
 
             if display:
                 print(f"  {iter_no:>5d}  {f:12.4e}  {history[-1]['viol']:12.4e}  {P:12.4e}  {deltanorm:12.4e}  {nfev:>6d}")
-            
+
             # Callback after accepting step
             if callback:
                 callback(x.copy())
@@ -259,13 +259,13 @@ def solve_slp_mvp(
                 success = True
                 message = f"Converged successfully (Step size < xtol: {xtol:.2e})."
                 break
-                
+
             # Slightly expand move limits on success
             delta = np.minimum(delta * 1.2, move_limit * np.where(np.isinf(xu - xl), 1.0, xu - xl))
         else:
             # No improvement -> Reject the step and shrink move limits
             delta *= 0.5
-            
+
             history.append({
                 "iter": iter_no,
                 "f": float(f),
@@ -275,7 +275,7 @@ def solve_slp_mvp(
             })
             if display:
                 print(f"  {iter_no:>5d}  {f:12.4e}  {history[-1]['viol']:12.4e}  {P:12.4e}  REJECTED  {nfev:>6d}")
-            
+
             # Simple stopping criteria: Converged if move limits become too small
             if np.max(delta) < xtol:
                 success = False

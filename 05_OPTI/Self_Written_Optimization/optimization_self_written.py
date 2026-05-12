@@ -26,17 +26,28 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
     bounds = [bnds for _, bnds in active]
     xl, xu = np.array(bounds).T
 
-    # Minimum thickness specification
-    eps_geom = Misc.get("eps_geom", 0.1)
+    # Use the same absolute finite-difference convention as the PySLSQP path.
+    # This keeps both optimizers comparing the same local model quality.
+    fd_step = [
+        Solver_Settings.get("finite_diff_rel_step", 1e-3) * max(1.0, abs(var[name]["value"]))
+        for name in names
+    ]
 
-    # Step Options for each variable
-    fd_step_options = {
-        name: 0.01 for name, _ in active
+    slp_options = {
+        "move_limit": Solver_Settings.get("move_limit", 0.10),
+        "move_limit_min": Solver_Settings.get("move_limit_min", 1e-5),
+        "move_limit_expand": Solver_Settings.get("move_limit_expand", 1.4),
+        "move_limit_shrink": Solver_Settings.get("move_limit_shrink", 0.5),
+        "backtrack_max": Solver_Settings.get("backtrack_max", 8),
+        "backtrack_shrink": Solver_Settings.get("backtrack_shrink", 0.5),
+        "feasibility_tol": Solver_Settings.get("feasibility_tol", 1e-5),
+        "slack_tol": Solver_Settings.get("slack_tol", 1e-8),
+        "penalty_increase": Solver_Settings.get("penalty_increase", 10.0),
+        "penalty_max": Solver_Settings.get("penalty_max", 1e9),
+        "sufficient_decrease": Solver_Settings.get("sufficient_decrease", 1e-4),
+        "feasibility_reduction": Solver_Settings.get("feasibility_reduction", 1e-3),
+        "algorithm": Solver_Settings.get("algorithm", "merit"),
     }
-    # Set separate step size for 'rad' if it's an active variable
-    if "rad" in fd_step_options:
-        fd_step_options["rad"] = 0.5
-    fd_step = [fd_step_options[name] for name in names]
 
     # Logger Options
     logger = OptimizationLogger(
@@ -52,12 +63,24 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
             "p_value": Solver_Settings.get("p_value", 1),
             "rho_value": Solver_Settings.get("rho_value", 100),
             "relaxation": Solver_Settings.get("relaxation", 0),
+            "move_limit": slp_options["move_limit"],
+            "backtrack_max": slp_options["backtrack_max"],
+            "feasibility_tol": slp_options["feasibility_tol"],
+            "penalty_weight": Solver_Settings.get("penalty_weight", 1e3),
         },
         save_folder=save_folder,
     )
 
     # Internal cache so RunAPDL is only executed once per unique x
-    cache = {"x": None, "f": None, "c": None, "util": None, "v_agg": None, "g_max": None}
+    cache = {
+        "x": None,
+        "f": None,
+        "c": None,
+        "util": None,
+        "v_agg": None,
+        "g_max": None,
+        "segment_masses": None,
+    }
 
     # Helper
     def arr(v):
@@ -74,7 +97,7 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
         var_dict = dict(zip(names, x))
 
         # Run the Model
-        f = RunAPDL(mapdl, x, Misc, opti_settings)
+        f, segment_masses = RunAPDL(mapdl, x, Misc, opti_settings)
 
         # Initiate Post Processing
         pp = PostProcessor(var_dict, Misc, opti_settings)
@@ -107,16 +130,21 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
 
         c_util_agg, v_agg, g_max = agg.agg_output(c_util)
         
+        # Segment mass constraints use the same c(x) >= 0 convention.
+        mass_limit = float(opti_settings["segment_mass_limit"])
+        mass_constraint = mass_limit - arr(segment_masses)
+
         # Collect them together
         c = np.concatenate([
             np.atleast_1d(c_util_agg),
             *map(arr, pp.Class_2()),
-            arr(pp.Eigenvalue_1())
+            arr(pp.Eigenvalue_1()),
+            mass_constraint,
         ])
 
         print(f"Constraint vector length: {len(c)}")
 
-        logger.log_evaluation(x, f, v_agg=v_agg, g_max=g_max)
+        logger.log_evaluation(x, f, segment_masses, v_agg=v_agg, g_max=g_max)
         
         util_report = {
                 "Util_LB": pp.Util_LB(),
@@ -131,7 +159,15 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
             }
 
         # Update design variables and constraints
-        cache.update(x=x.copy(), f=float(f), c=c, util=util_report, v_agg=v_agg, g_max=g_max)
+        cache.update(
+            x=x.copy(),
+            f=float(f),
+            c=c,
+            util=util_report,
+            v_agg=v_agg,
+            g_max=g_max,
+            segment_masses=segment_masses,
+        )
 
         return f, c
     
@@ -165,12 +201,14 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
         xl=xl,
         xu=xu,
         method=method,
-        line_search="golden",
         fd_step=fd_step,
         fd_type="forward",
         maxiter=Solver_Settings["maxiter"],
         ftol=Solver_Settings["acc"],
-        penalty_weight=1e3,
+        xtol=Solver_Settings.get("xtol", 1e-4),
+        gtol=Solver_Settings.get("gtol", 1e-6),
+        penalty_weight=Solver_Settings.get("penalty_weight", 1e3),
+        slp_options=slp_options,
         callback=iteration_callback,
         display=True,
     )

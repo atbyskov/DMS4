@@ -1,0 +1,455 @@
+% =====================================================================
+%  Thesis appendix: Sequential Linear Programming -- Implementation
+%  --------------------------------------------------------------------
+%  Expands the 10-line summary given in the main thesis section
+%  \ref{sec:SLP}.  The body documents the merit-variant SLP solver
+%  ported from \cite{sorensen2026fminslp}, coupled to the MAPDL
+%  pipeline of the code-implementation chapter.
+%  --------------------------------------------------------------------
+%  Required preamble packages (already in most thesis templates):
+%      amsmath, amssymb, booktabs, enumitem, hyperref, algorithm,
+%      algpseudocode
+% =====================================================================
+
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=25mm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\title{Sequential Linear Programming -- Implementation Details\\
+       \large Appendix supporting Section~\ref{sec:SLP}}
+\author{DMS4 Optimization Appendix}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+% =====================================================================
+\section{Sequential Linear Programming -- Implementation Details}
+\label{sec:SLP_appendix}
+
+This appendix expands the summary given in Section~\ref{sec:SLP}.
+The solver is a Python port of the merit-function variant of the
+MATLAB framework of \citet{sorensen2026fminslp}, coupled to the
+MAPDL beam model.  Each subsection below corresponds to one bullet
+of the main-chapter summary: the linearisation and
+finite-difference gradients (Section~\ref{sec:slpA:linearise}), the
+slack-relaxed linear subproblem (Section~\ref{sec:slpA:lp}), the
+merit function (Section~\ref{sec:slpA:merit}), the filter and
+sufficient-decrease acceptance test (Section~\ref{sec:slpA:accept})
+and the adaptive move limits acting as a trust region
+(Section~\ref{sec:slpA:movelim}).  The adaptive slack penalty
+(Section~\ref{sec:slpA:penalty}) and termination criteria
+(Section~\ref{sec:slpA:termination}) close the description, and the
+full iteration is collected in Algorithm~\ref{alg:slp}.
+Section~\ref{sec:slpA:settings} lists the numerical values used in
+the present study.
+
+\subsection{Problem statement and sign convention}
+\label{sec:slpA:problem}
+
+The minimization problem is stated with non-negative inequality
+constraints,
+\begin{align}
+    \min_{x \in \mathbb{R}^n} \;\; f(x),
+    \qquad
+    \text{s.t.} \;\;
+    c_i(x) \geq 0,\; i = 1,\dots,m,
+    \qquad
+    x^L \leq x \leq x^U,
+    \label{eq:appA_problem}
+\end{align}
+where $f$ is the structural mass returned by MAPDL and $c$ collects
+the utilization, cross-section class, eigenvalue and segment-mass
+constraints of the design problem.  The reference solver of
+\citet{sorensen2026fminslp} works in the dual convention
+$g(x) \leq 0$, and the two are bridged in the implementation by a
+single sign flip applied at the constraint callback,
+\begin{align}
+    g(x) \;=\; -c(x).
+    \label{eq:appA_sign_flip}
+\end{align}
+All algorithmic quantities below are therefore defined in
+$g(x) \leq 0$.
+
+\subsection{Linearisation and finite-difference gradients}
+\label{sec:slpA:linearise}
+
+At every iteration~$k$ the nonlinear objective and constraints are
+expanded to first order around the current iterate $x_k$,
+\begin{align}
+    f(x_k + \Delta x) &\approx f(x_k) + \nabla f(x_k)^{\!\top}\Delta x,
+    \label{eq:appA_lin_f}
+    \\
+    g(x_k + \Delta x) &\approx g(x_k) + J(x_k)\, \Delta x,
+    \label{eq:appA_lin_g}
+\end{align}
+with $J(x) = \nabla g(x)^{\!\top}$ the constraint Jacobian.  Because
+the MAPDL model is a black box, $\nabla f$ and $J$ are obtained by
+forward finite differences with the absolute step
+\begin{align}
+    h_i \;=\; h_{\text{rel}}\,\cdot\,
+              \max\bigl(1,\,|x_{k,i}|\bigr),
+    \label{eq:appA_fd}
+\end{align}
+with $h_{\text{rel}}$ a fixed relative step size.  Each gradient
+evaluation costs $n$ extra FEA calls per outer iteration and is the
+dominant cost of the run.
+
+\subsection{The slack-relaxed linear subproblem}
+\label{sec:slpA:lp}
+
+A direct linearisation gives the LP
+\begin{align*}
+    \min_{\Delta x}\;\;
+    \nabla f(x_k)^{\!\top}\Delta x
+    \quad \text{s.t.} \quad
+    g(x_k) + J(x_k)\,\Delta x \leq 0,
+    \quad
+    x^{L,\text{cur}} \leq x_k + \Delta x \leq x^{U,\text{cur}},
+\end{align*}
+which is infeasible whenever $x_k$ violates any linearised
+constraint.  Because the initial LT1292 design is typically
+infeasible against several stability checks, the inequalities are
+relaxed by a non-negative slack vector
+$y \in \mathbb{R}_{\geq 0}^m$,
+\begin{align}
+    g_i(x) - y_i \leq 0, \qquad i = 1,\dots,m,
+    \label{eq:appA_slack}
+\end{align}
+initialised at $y_i = \max(0,\,g_i(x_0))$ and bounded above by
+$10^{6}\,\max(1,\,\|g(x_0)\|_\infty)$ so the LP polytope stays
+bounded.  With the augmented decision vector $z = [x,\,y]$, the
+linear subproblem solved at every outer iteration is
+\begin{align}
+    \min_{\Delta z} \;\;
+        & \nabla_z \Phi(x_k, y_k)^{\!\top} \Delta z,
+    \label{eq:appA_lp_obj} \\
+    \text{s.t.} \;\;
+        & g(x_k) + J(x_k)\, \Delta x - (y_k + \Delta y) \leq 0,
+    \label{eq:appA_lp_ineq} \\
+        & x^{L,\text{cur}} \leq x_k + \Delta x \leq x^{U,\text{cur}},
+        \qquad
+          0 \leq y_k + \Delta y \leq y^{U},
+        \label{eq:appA_lp_box}
+\end{align}
+where the trust-region box for $\Delta x$ comes from
+Section~\ref{sec:slpA:movelim}.  Inequality~\eqref{eq:appA_lp_ineq}
+is rewritten in standard form as $A_\text{ub}\,\Delta z \leq b_\text{ub}$
+with $A_\text{ub} = [J(x_k)\; -I_m]$ and
+$b_\text{ub} = -(g(x_k) - y_k)$, and the LP is solved by a standard
+interior-point/simplex routine.  Because $y$ enters with $-I_m$ and
+is bounded below by zero, the LP is feasible at every iteration
+regardless of the current $g(x_k)$.
+
+\subsection{Quadratic merit function}
+\label{sec:slpA:merit}
+
+The slacks must be discouraged from being permanently active, and
+the algorithm needs a single scalar on which to backtrack when a
+trial step disagrees with the linear model.  Both roles are served
+by the quadratic merit of \citet{sorensen2026fminslp},
+\begin{align}
+    \Phi(x, y)
+    \;=\; f(x) + a_F
+        \sum_{i=1}^{m}
+        \Bigl(\, R\, y_i + \tfrac{1}{2}\, y_i^2 \Bigr),
+    \label{eq:appA_merit}
+\end{align}
+where $R > 0$ is the slack penalty (Section~\ref{sec:slpA:penalty})
+and $a_F = \max(|f(x_0)|,\,1)$ is an objective normalisation fixed
+at the first FEA evaluation.  The merit gradient with respect to
+$z = [x,y]$ is
+\begin{align}
+    \nabla_z \Phi(x, y) \;=\;
+    \begin{bmatrix}
+        \nabla f(x) \\[2pt]
+        a_F\,(R + y)
+    \end{bmatrix},
+    \label{eq:appA_merit_grad}
+\end{align}
+and this is exactly the cost vector used in the LP
+objective~\eqref{eq:appA_lp_obj}.  Reusing the merit gradient as the
+LP cost couples the linear subproblem to the nonlinear acceptance
+test of Section~\ref{sec:slpA:accept}.
+
+\subsection{Step acceptance: filter, sufficient decrease and feasibility restoration}
+\label{sec:slpA:accept}
+
+The LP produces a candidate $\Delta z = [\Delta x,\,\Delta y]$, but
+does not decide whether the step should be taken.  Acceptance is
+handled by three classical mechanisms.
+
+\paragraph{Convergence filter.}
+Following \citet{sorensen2015thicknessfilters} and the global filter
+of Fletcher–Leyffer–Toint, define
+\begin{align}
+    h(x, y) \;=\; \max_i \max\bigl(0,\; g_i(x) - y_i\bigr),
+    \qquad
+    f_{\text{filter}}(x, y) \;=\; \Phi(x, y) / \Phi_0,
+    \label{eq:appA_filter_pair}
+\end{align}
+with $\Phi_0 = \Phi(x_0, y_0)$ used to scale the merit.  A trial
+$(h^{*},\,f^{*})$ is accepted by the filter $\mathcal{F}_k$ when,
+for every stored pair $(h_j,\,f_j) \in \mathcal{F}_k$,
+\begin{align}
+    h^{*} \leq \beta\, h_j
+    \quad\text{or}\quad
+    f^{*} + \gamma\, h^{*} \leq f_j,
+    \qquad \beta,\gamma \in (0,1).
+    \label{eq:appA_filter_accept}
+\end{align}
+After an accepted step with $h^{*} > 0$ the new pair is inserted and
+any entry it Pareto-dominates is removed; iterates with $h^{*} = 0$
+are not stored.  The filter is monotone in the Pareto sense and
+does not depend on $R$, so it suppresses the merit-function
+oscillations that can otherwise occur when the penalty is poorly
+scaled.
+
+\paragraph{Sufficient decrease.}
+Filter acceptance is necessary but not sufficient.  Let
+\begin{align}
+    \Delta\Phi_{\text{act}}
+    &= \Phi(x_k,y_k) - \Phi(x_k+\Delta x,\, y_k+\Delta y),
+    \\
+    \Delta\Phi_{\text{pred}}
+    &= -\nabla_z \Phi(x_k,y_k)^{\!\top}\Delta z;
+    \label{eq:appA_pred}
+\end{align}
+the implementation requires the Armijo-type condition
+\begin{align}
+    \Delta\Phi_{\text{act}}
+    \;\geq\; \sigma\, \Delta\Phi_{\text{pred}}
+    \quad\text{or}\quad
+    \Delta\Phi_{\text{pred}} \leq 0,
+    \qquad \sigma \in (0,1).
+    \label{eq:appA_armijo}
+\end{align}
+
+\paragraph{Feasibility restoration.}
+If $x_k$ is infeasible ($V(x) := \sum_i \max(0,g_i(x)) > \varepsilon_\text{feas}$)
+and either~\eqref{eq:appA_filter_accept}
+or~\eqref{eq:appA_armijo} fails, the trial is still accepted when
+it reduces the total violation by at least a fraction $\gamma_v$,
+\begin{align}
+    V(x_{\text{trial}}) \;\leq\; (1 - \gamma_v)\, V(x_k).
+    \label{eq:appA_feas}
+\end{align}
+This is the restoration phase of filter-SQP methods and fires early
+in the LT1292 run, when several utilization constraints are violated
+simultaneously.
+
+\paragraph{Backtracking.}
+When neither acceptance route succeeds the implementation does
+\emph{not} take a fractional step along $\Delta z$, since the LP
+already returns the extremum of the linear model on the trust
+region.  Instead the move-limit box is contracted
+(Section~\ref{sec:slpA:movelim}) and the LP is re-solved, up to a
+maximum of $N_{\text{bt}}$ inner trials per outer iteration.
+
+\subsection{Adaptive move limits (trust region)}
+\label{sec:slpA:movelim}
+
+The trust-region box
+$\bigl(x^{L,\text{cur}},\,x^{U,\text{cur}}\bigr)$ used in
+\eqref{eq:appA_lp_box} is updated per component by a history-based
+rule.  For each variable~$i$ the velocity sign is
+\begin{align}
+    s_i \;=\;
+    \frac{x_{i,k-1} - x_{i,k-2}}{x_{i,k} - x_{i,k-1}},
+    \qquad |x_{i,k} - x_{i,k-1}| > 10^{-10}.
+    \label{eq:appA_vel_sign}
+\end{align}
+If $s_i < 0$ the variable is oscillating between iterates and its
+move limit is multiplied by $a_{\text{shr}} < 1$;  if $s_i > 0$ the
+variable moves coherently and its move limit is multiplied by
+$a_{\text{exp}} > 1$.  When the denominator is too small to be
+trustworthy, the move limit is reset to the base value $\delta$.
+After the per-variable update, the box is intersected with the
+global bounds $x^L, x^U$ and capped at
+$\delta \cdot (x^U - x^L)$, so every component is allowed to move
+at most a fraction $\delta$ of its physically admissible range.
+A floor $\delta_{\min}$ prevents the box from collapsing.  When
+the inner search of Section~\ref{sec:slpA:accept} rejects a trial,
+the same routine is called with $a_{\text{exp}} = a_{\text{shr}}$,
+forcing every component to shrink regardless of its velocity sign.
+
+A per-variable rule is appropriate here because the LT1292 design
+variables span more than an order of magnitude --- chord diameters
+of order $75~\text{mm}$ alongside brace wall thicknesses of order
+$2~\text{mm}$ --- so a single scalar trust radius cannot remain
+appropriate for both.
+
+\subsection{Adaptive slack penalty}
+\label{sec:slpA:penalty}
+
+The slack penalty $R$ appears both in the LP cost vector
+\eqref{eq:appA_merit_grad} and in the merit
+\eqref{eq:appA_merit}: in the LP it discourages slack usage and in
+the merit it discourages stepping into infeasible regions.  A
+static value is rarely satisfactory, so $R$ is grown monotonically
+by
+\begin{align}
+    R_{k+1} \;=\; \min\bigl(a_M\, R_k,\; R_{\max}\bigr),
+    \qquad a_M > 1,
+    \label{eq:appA_penalty}
+\end{align}
+whenever the LP slacks remain active
+($\sum_i y_i > \varepsilon_{\text{slack}}$), the feasibility
+violation stalls ($V(x_{k+1}) \geq 0.95\, V(x_k)$), or every inner
+trial of Section~\ref{sec:slpA:accept} is rejected.  The cap
+$R_{\max}$ prevents the LP cost from becoming dominated by the
+slack term in pathological cases.
+
+\subsection{Termination criteria}
+\label{sec:slpA:termination}
+
+Termination is checked at every LP trial point inside the inner
+loop.  Three success criteria are evaluated,
+\begin{align}
+    \|\nabla f(x_k)\|_2 &\leq \varepsilon_g
+    && (\text{first-order optimality}),
+    \\
+    \bigl|\Phi(x_k, y_k) - \Phi(x_{\text{trial}})\bigr|
+        &\leq \varepsilon_f
+    && (\text{merit-change tolerance}),
+    \\
+    \|x_{\text{trial}} - x_k\|_2 &\leq \varepsilon_x
+    && (\text{step tolerance}),
+\end{align}
+together with a safeguard $N_{\max}$ on the number of outer
+iterations.  Success is reported only when the accepted iterate is
+feasible, i.e.\ $\max_i \max(0,g_i) \leq \varepsilon_{\text{feas}}$
+and $\max_i y_i \leq \max(\varepsilon_{\text{slack}},
+\varepsilon_{\text{feas}})$; reporting success at an infeasible
+design would violate the engineering contract of the LT1292
+problem.  If the trust-region box collapses below $\delta_{\min}$
+without satisfying any of the success criteria, the solver reports
+failure: such a stop typically signals finite-difference noise or
+a strongly nonlinear active constraint that requires further
+attention.
+
+\subsection{Algorithm summary}
+\label{sec:slpA:algo}
+
+Algorithm~\ref{alg:slp} collects every ingredient above into one
+outer iteration.
+
+\begin{algorithm}[h]
+\caption{One outer iteration of the implemented SLP solver.}
+\label{alg:slp}
+\begin{algorithmic}[1]
+\State Evaluate $f(x_k)$ and $g(x_k) = -c(x_k)$ from MAPDL
+       (Eq.~\ref{eq:appA_sign_flip}).
+\State Estimate $\nabla f(x_k)$ and $J(x_k)$ by forward FD with
+       step~\eqref{eq:appA_fd}.
+\State Form the merit gradient $\nabla_z \Phi$
+       via~\eqref{eq:appA_merit_grad}.
+\State Update the trust-region box via the velocity-sign
+       rule~\eqref{eq:appA_vel_sign}.
+\For{$j = 1, \dots, N_{\text{bt}}$}
+    \State Solve LP \eqref{eq:appA_lp_obj}--\eqref{eq:appA_lp_box}
+           for $(\Delta x, \Delta y)$.
+    \State Evaluate $f(x_k+\Delta x)$ and $g(x_k+\Delta x)$.
+    \State Compute filter pair~\eqref{eq:appA_filter_pair} and
+           predicted/actual merit decrease~\eqref{eq:appA_pred}.
+    \If{any termination criterion in
+        Section~\ref{sec:slpA:termination} holds at a feasible
+        current iterate}
+        \State \Return \textbf{success}.
+    \EndIf
+    \If{filter accepts~\eqref{eq:appA_filter_accept} \textbf{and}
+        Armijo holds~\eqref{eq:appA_armijo}, \textbf{or}
+        feasibility restoration~\eqref{eq:appA_feas} holds}
+        \State Accept trial; update $x_{k+1}, y_{k+1}$ and the
+               filter; \textbf{break}.
+    \Else
+        \State Shrink trust region
+               (Section~\ref{sec:slpA:movelim}); continue.
+    \EndIf
+\EndFor
+\If{slacks active \textbf{or} feasibility stalled \textbf{or} trial
+    rejected}
+    \State Grow penalty:
+           $R \leftarrow \min(a_M R, R_{\max})$
+           \eqref{eq:appA_penalty}.
+\EndIf
+\If{trust region collapsed without success}
+    \State \Return \textbf{failure}
+           (Section~\ref{sec:slpA:termination}).
+\EndIf
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Numerical settings}
+\label{sec:slpA:settings}
+
+Table~\ref{tab:slp_settings} lists the numerical values used in the
+present study.  Each entry maps directly to a parameter introduced
+above; the rightmost column gives the cross-reference.  The
+worst-case FEA cost per outer iteration is bounded by
+$1 + n + N_{\text{bt}}$ function evaluations: one baseline,
+$n$ forward-FD perturbations, and up to $N_{\text{bt}}$ inner LP
+trial points.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lll}
+\toprule
+Parameter & Value & Defined in \\
+\midrule
+$\delta_0 = \delta_{\max}$        & $0.10$        & Section~\ref{sec:slpA:movelim} \\
+$\delta_{\min}$                   & $10^{-5}$     & Section~\ref{sec:slpA:movelim} \\
+$a_{\text{exp}}$                  & $1.4$         & Section~\ref{sec:slpA:movelim} \\
+$a_{\text{shr}}$                  & $0.5$         & Section~\ref{sec:slpA:movelim} \\
+$R_0$                             & $10^{3}$      & Section~\ref{sec:slpA:merit} \\
+$a_M$                             & $10$          & Eq.~\eqref{eq:appA_penalty} \\
+$R_{\max}$                        & $10^{9}$      & Eq.~\eqref{eq:appA_penalty} \\
+$\beta$                           & $1 - 10^{-6}$ & Eq.~\eqref{eq:appA_filter_accept} \\
+$\gamma$                          & $10^{-6}$     & Eq.~\eqref{eq:appA_filter_accept} \\
+$\sigma$                          & $10^{-4}$     & Eq.~\eqref{eq:appA_armijo} \\
+$\gamma_v$                        & $10^{-3}$     & Eq.~\eqref{eq:appA_feas} \\
+$N_{\text{bt}}$                   & $8$           & Section~\ref{sec:slpA:accept} \\
+$\eta_{\text{bt}}$                & $0.5$         & Section~\ref{sec:slpA:accept} \\
+$\varepsilon_{\text{feas}}$       & $10^{-5}$     & Section~\ref{sec:slpA:termination} \\
+$\varepsilon_{\text{slack}}$      & $10^{-8}$     & Section~\ref{sec:slpA:termination} \\
+$\varepsilon_x$                   & $10^{-4}$     & Section~\ref{sec:slpA:termination} \\
+$\varepsilon_f$                   & $10^{-3}$     & Section~\ref{sec:slpA:termination} \\
+$\varepsilon_g$                   & $10^{-6}$     & Section~\ref{sec:slpA:termination} \\
+$N_{\max}$                        & $60$          & Section~\ref{sec:slpA:termination} \\
+$h_{\text{rel}}$                  & $10^{-3}$     & Eq.~\eqref{eq:appA_fd} \\
+\bottomrule
+\end{tabular}
+\caption{Numerical parameters used on the LT1292 mast problem,
+cross-referenced to the equation or subsection that introduces
+them.}
+\label{tab:slp_settings}
+\end{table}
+
+% =====================================================================
+\begin{thebibliography}{9}
+
+\bibitem{sorensen2026fminslp}
+S{\o}rensen, R.,
+\textit{fminslp: A Sequential Linear Programming Framework with a
+Global Convergence Filter}.
+MATLAB implementation, Aalborg University.
+
+\bibitem{sorensen2015thicknessfilters}
+S{\o}rensen, R.\ and Lund, E.,
+``Thickness filters for gradient-based multi-material and thickness
+optimization of laminated composite structures,''
+\textit{Structural and Multidisciplinary Optimization},
+52(2):227--250, 2015.
+
+\end{thebibliography}
+
+\end{document}

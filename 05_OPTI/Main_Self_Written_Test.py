@@ -16,6 +16,7 @@ from MyAPDLCall import RunAPDL
 opti_settings = {
     "n_mast_segments": 5,         # Number of mast segments
     "mast_segment_height": 810,   # Height of each mast segment [mm]
+    "segment_mass_limit": 23,     # Limits for segment masses [kg]
     "multi_size_columns": False,   # Whether mast segments columns uses different dimensions (True) or not (False)
     "multi_size_braces": False,    # Whether mast segments braces uses different dimensions (True) or not (False)
     "brace_split": False,          # Whether braces are split between horiontal and cross (True) or not (False)
@@ -28,14 +29,14 @@ brace_diameter = 26.9 # Brace Diameter [mm]
 brace_thickness = 2.3 # Brace Thickness [mm]
 
 # Bounds
-column_diameter_bounds = (50.0, 100) # Column Diameter Bounds [mm]
+column_diameter_bounds = (40.0, 100) # Column Diameter Bounds [mm]
 column_thickness_bounds = (1.0, 7.0)   # Column Thickness Bounds [mm]
-brace_diameter_bounds = (10.0, 40.0)   # Brace Diameter Bounds [mm]
-brace_thickness_bounds = (1.0, 4.5)    # Brace Thickness Bounds [mm]
+brace_diameter_bounds = (10.0, 100.0)   # Brace Diameter Bounds [mm]
+brace_thickness_bounds = (0.1, 7.0)    # Brace Thickness Bounds [mm]
 
 # Defining variables with bounds and active status
 var = {
-    "rad": {"value": 202.07, "bounds": (150.0, 300.0), "active": True}, # Radius Structure [mm]
+    "rad": {"value": 202.07, "bounds": (150.0, 350.0), "active": True}, # Radius Structure [mm]
 }
 if opti_settings["multi_size_columns"]:
     var.update({
@@ -91,11 +92,28 @@ Misc = {
 # Solver Settings
 Solver_Settings = {
     "acc": 1e-3,                 # Maximum objective function tolerance
-    "maxiter": 60,               # Maximum iterations
+    "maxiter": 800,               # Maximum iterations                                                         #IMPORTANT TO TUNE FOR FEA
     "Aggregate": "P-norm",           # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
     "p_value": 8,                # Value for "P-norm" and "P-norm-mean"
     "rho_value": 100,            # rho value used in KS
     "relaxation": 0,             # Relaxation parameter used in aggregation
+    "finite_diff_rel_step": 1e-3, # PySLSQP-like absolute FD step: rel_step * max(1, abs(x))                              #IMPORTANT TO TUNE FOR FEA
+    "algorithm": "al",            # 'merit' (quadratic merit) or 'al' (augmented Lagrangian)
+    "penalty_weight": 1e2,        # Initial L1 merit/slack penalty
+    "penalty_increase": 2.0,      # Increase penalty when slacks/infeasibility persist
+    "penalty_max": 1e6,           # Upper cap for adaptive penalty
+    "move_limit": 0.10,           # Initial/max scaled trust-region size
+    "move_limit_min": 1e-5,       # Stop after failed globalization below this scaled size
+    "move_limit_expand": 1.4,     # Expand trust region after good predicted-vs-actual agreement
+    "move_limit_shrink": 0.5,     # Shrink trust region after rejection or poor agreement
+    "backtrack_max": 8,           # Trial alphas along each LP step
+    "backtrack_shrink": 0.5,      # alpha <- alpha * shrink during SLP line search
+    "feasibility_tol": 1e-5,      # Required max nonlinear constraint violation for convergence
+    "slack_tol": 1e-8,            # Required LP slack size for convergence
+    "xtol": 1e-4,                 # Physical design step tolerance
+    "gtol": 1e-6,                 # Scaled gradient infinity-norm tolerance
+    "sufficient_decrease": 1e-4,  # Merit decrease fraction of predicted decrease
+    "feasibility_reduction": 1e-3,# Accept infeasible steps that reduce violation by this fraction          #IMPORTANT TO TUNE FOR FEA
 }
 
 # Launch MAPDL
