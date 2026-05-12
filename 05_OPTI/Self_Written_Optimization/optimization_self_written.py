@@ -46,6 +46,7 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
         "penalty_max": Solver_Settings.get("penalty_max", 1e9),
         "sufficient_decrease": Solver_Settings.get("sufficient_decrease", 1e-4),
         "feasibility_reduction": Solver_Settings.get("feasibility_reduction", 1e-3),
+        "algorithm": Solver_Settings.get("algorithm", "merit"),
     }
 
     # Logger Options
