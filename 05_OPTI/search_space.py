@@ -24,7 +24,7 @@ var_bounds = {
     "d0":  (40.0,  100.0),
     "t0":  (1.0,     7.0),
     "d1":  (10.0,  50.0),
-    "t1":  (0.1,     7.0)
+    "t1":  (0.1,     4.0)
 }
 
 
@@ -283,104 +283,3 @@ def plotting3D():
 #plotting2D()
 
 # Aggregate Output
-# Make one for p = 2
-"""
-p_values = [4, 8, 16, 50, 100]
-ratio_pn = [1.66, 1.083, 1.04, 1.004, 1.004]
-ratio_pnmean = [0.193, 0.42, 0.632, 0.852, 0.923]
-
-
-plt.figure(figsize=(8,5))
-plt.plot(p_values, ratio_pn, label="P-norm")
-plt.plot(p_values,ratio_pnmean, label="P-norm-mean")
-plt.grid(True)
-plt.title("Aggretate P Methods Comparison (highest utiliation/aggregation output)")
-plt.xlabel("p-value")
-plt.ylabel("Aggregation Output")
-plt.legend()
-
-plt.show()
-
-
-def read_results(filename="search_results.txt"):
-    """
-    Reads your search_results.txt and returns:
-    list of dicts: [{"initial": {...}, "final": {...}}, ...]
-    """
-    runs = []
-
-    with open(filename, "r") as f:
-        lines = f.readlines()
-
-    current = {}
-    mode = None
-
-    for line in lines:
-        line = line.strip()
-
-        if "Initial Guess" in line:
-            current = {"initial": {}, "final": {}}
-            mode = "init"
-            continue
-
-        if "Final Result" in line:
-            mode = "final"
-            continue
-
-        if "====" in line:
-            if current:
-                runs.append(current)
-            continue
-
-        if ":" in line:
-            name, val = line.split(":")
-            name = name.strip()
-            val = float(val.strip())
-
-            if mode == "init":
-                current["initial"][name] = val
-            elif mode == "final":
-                current["final"][name] = val
-
-    return runs
-
-
-def plot_variable_tracking(filename="search_results.txt"):
-    
-    runs = read_results(filename)
-
-    # Get variable names (from first run)
-    var_names = list(runs[0]["initial"].keys())
-
-    n_vars = len(var_names)
-
-    fig, axs = plt.subplots(1, n_vars, figsize=(4*n_vars, 4), sharex=True)
-
-    if n_vars == 1:
-        axs = [axs]
-
-    for i, var in enumerate(var_names):
-        ax = axs[i]
-
-        for run in runs:
-            y = [run["initial"][var], run["final"][var]]
-            x = [0, 1]
-
-            ax.plot(x, y, marker="o", alpha=0.7)
-
-        ax.set_title(var)
-        ax.set_xlim(0, 1)
-        ax.set_xticks([0, 1])
-        ax.set_xticklabels(["Start", "Final"])
-        ax.grid(True)
-
-    axs[0].set_ylabel("Value")
-
-    fig.suptitle("Design Variable Evolution (Start → Final)", fontsize=14)
-
-    plt.tight_layout()
-    plt.show()
-
-
-# Run
-plot_variable_tracking()
