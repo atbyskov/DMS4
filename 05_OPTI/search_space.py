@@ -23,20 +23,10 @@ var_bounds = {
     "rad": (150.0,  350.0),
     "d0":  (40.0,  100.0),
     "t0":  (1.0,     7.0),
-    "d1":  (10.0,  100.0),
-    "t1":  (0.1,     7.0)
+    "d1":  (10.0,  50.0),
+    "t1":  (0.1,     4.0)
 }
 
-# Timer Decorator
-def timer(fn):
-    @wraps(fn)
-    def wrapper(*args, **kwargs):
-        tic = time.perf_counter()
-        result = fn(*args, **kwargs)
-        toc = time.perf_counter()
-        print(f"Time for {fn.__name__}: {toc - tic:.6f} s")
-        return result
-    return wrapper
 
 # Equal Spacing
 def equal_spacing(var_bounds,n_per_dim):
@@ -87,7 +77,7 @@ def latin_spacing(var_bounds, n_points, seed=None, scramble=True):
     d = len(names)
 
     # LHS in the unit hypercube [0,1]^d
-    sampler = qmc.LatinHypercube(d=d, scramble=scramble, seed=seed)
+    sampler = qmc.LatinHypercube(d=d, scramble=scramble, seed=seed,optimization="random-cd")
     sample_unit = sampler.random(n=n_points)
 
     # Scale to physical bounds
@@ -118,14 +108,6 @@ def sobol_spacing(var_bounds, n_points, seed=None, scramble=True, power2=True):
 
     return points, names
 
-# Use non-equal spacing (remove =2 from n_per_dim=2 in)
-n_per_dim = {
-    "d0": 3,
-    "t0": 3, 
-    #"d1": 3,
-    #"t1": 3,
-    #"rad": 3,
-}
 
 n_per_dim_equal = 2
 
@@ -141,7 +123,6 @@ lhs_points, _ = latin_spacing(var_bounds, n_points=N, seed=42, scramble=True)
 
 # Use Sobol
 sobol_points, _ = sobol_spacing(var_bounds, n_points=N, seed=42, scramble=True, power2=True)
-
 
 
 # Evaluate Discrepancy Function
@@ -299,7 +280,7 @@ def plotting3D():
     plt.show()
 """
 
-plotting2D()
+#plotting2D()
 
 # Aggregate Output
 # Make one for p = 2
@@ -318,3 +299,87 @@ plt.ylabel("Aggregation Output")
 plt.legend()
 
 plt.show()
+
+
+def read_results(filename="search_results.txt"):
+    """
+    Reads your search_results.txt and returns:
+    list of dicts: [{"initial": {...}, "final": {...}}, ...]
+    """
+    runs = []
+
+    with open(filename, "r") as f:
+        lines = f.readlines()
+
+    current = {}
+    mode = None
+
+    for line in lines:
+        line = line.strip()
+
+        if "Initial Guess" in line:
+            current = {"initial": {}, "final": {}}
+            mode = "init"
+            continue
+
+        if "Final Result" in line:
+            mode = "final"
+            continue
+
+        if "====" in line:
+            if current:
+                runs.append(current)
+            continue
+
+        if ":" in line:
+            name, val = line.split(":")
+            name = name.strip()
+            val = float(val.strip())
+
+            if mode == "init":
+                current["initial"][name] = val
+            elif mode == "final":
+                current["final"][name] = val
+
+    return runs
+
+
+def plot_variable_tracking(filename="search_results.txt"):
+    
+    runs = read_results(filename)
+
+    # Get variable names (from first run)
+    var_names = list(runs[0]["initial"].keys())
+
+    n_vars = len(var_names)
+
+    fig, axs = plt.subplots(1, n_vars, figsize=(4*n_vars, 4), sharex=True)
+
+    if n_vars == 1:
+        axs = [axs]
+
+    for i, var in enumerate(var_names):
+        ax = axs[i]
+
+        for run in runs:
+            y = [run["initial"][var], run["final"][var]]
+            x = [0, 1]
+
+            ax.plot(x, y, marker="o", alpha=0.7)
+
+        ax.set_title(var)
+        ax.set_xlim(0, 1)
+        ax.set_xticks([0, 1])
+        ax.set_xticklabels(["Start", "Final"])
+        ax.grid(True)
+
+    axs[0].set_ylabel("Value")
+
+    fig.suptitle("Design Variable Evolution (Start → Final)", fontsize=14)
+
+    plt.tight_layout()
+    plt.show()
+
+
+# Run
+plot_variable_tracking()
