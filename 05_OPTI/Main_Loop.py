@@ -54,16 +54,30 @@ def read_initial_guesses(filename="search_space.txt"):
 
     return names, points
 
-def write_search_result(initial, final, names, filename="search_results.txt"):
+def write_search_result(initial, final, names, obj_start, obj_final, filename="search_results.txt"):
+    # Ensure scalar objective values
+    if isinstance(obj_start, (list, tuple)):
+        obj_start = obj_start[0]
+    if hasattr(obj_start, "item"):  # handles numpy scalars
+        obj_start = obj_start.item()
+
+    if isinstance(obj_final, (list, tuple)):
+        obj_final = obj_final[0]
+    if hasattr(obj_final, "item"):  # handles numpy scalars
+        obj_final = obj_final.item()
+
     with open(filename, "a") as f:
         f.write("\n===============================\n")
+
         f.write("Initial Guess:\n")
         for n, v in zip(names, initial):
             f.write(f"  {n}: {v:.6f}\n")
+        f.write(f"  Objective: {obj_start:.3f}\n")
 
         f.write("Final Result:\n")
         for n, v in zip(names, final):
             f.write(f"  {n}: {v:.6f}\n")
+        f.write(f"  Objective: {obj_final:.3f}\n")
 
 var_names, initial_points = read_initial_guesses("search_space.txt")
 
@@ -83,12 +97,12 @@ Misc = {
     "esize": 3,                     # Element Size [mm]
     "Hor_Force": 502.52,            # Horizontal Force (P_Load_z) [N]
     "Ver_Force": -25.13E+3,         # Vertical Force (P_Load_y)   [N]
-    "f_y": 690 ,                    # Column Yield Strength [MPa]
+    "f_y": 700 ,                    # Column Yield Strength [MPa]
     "f_y_brace": 355,               # Brace Yield Strength [MPa]
     "E_mod": 200*1E3,               # Youngs Modulus [MPa]
     "W_Force": -3.751E+3,           # Vertical Force COG (P_COG_y) [N]
     "eps_geom": 0.1,    # Minimum thickness specification for geometry updates [mm]
-    "SW_filename": "LWC_LC1.IGS",    # Filename for IGS File
+    "SW_filename": "LWC_L1_LINES.IGS",    # Filename for IGS File
     "save_folder": "Optimization_Logs" # Save Folder
 }
 # Launch MAPDL
@@ -103,9 +117,18 @@ mapdl = launch_mapdl(
 bounds = {
     "d0": (40.0, 100.0),
     "t0": (1.0, 7.0),
-    "d1": (10.0, 100.0),
-    "t1": (0.1, 7.0),
+    "d1": (10.0, 50.0),
+    "t1": (0.1, 4.0),
     "rad": (150.0, 350.0),
+}
+
+opti_settings = {
+    "n_mast_segments": 5,         # Number of mast segments
+    "mast_segment_height": 810,   # Height of each mast segment [mm]
+    "segment_mass_limit": 23,  # Limits for segment masses [kg]
+    "multi_size_columns": False,   # Whether mast segments columns uses different dimensions (True) or not (False)
+    "multi_size_braces": False,    # Whether mast segments braces uses different dimensions (True) or not (False)
+    "brace_split": False,          # Whether braces are split between horiontal and cross (True) or not (False)
 }
 
 for i, x0 in enumerate(initial_points, start=1):
@@ -120,13 +143,21 @@ for i, x0 in enumerate(initial_points, start=1):
         }
 
     # Ensures that MAPDL closes if something chrashes
-    f1 = RunAPDL(mapdl,var,Misc)
-    result, txt_path, csv_path = optimization.run_optimization(mapdl, var, Misc, Solver_Settings)
+
+    f1 = RunAPDL(mapdl,var,Misc,opti_settings)
+    result, txt_path, csv_path = optimization.run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings)
+
 
     # Append results
     final_x = result["x"]
+    print(result)
+    obj_final = result["objective"]
+    if isinstance(obj_final, (list, tuple)):
+        obj_final = obj_final[0]
 
-    write_search_result(x0, final_x, var_names)
+    obj_start = f1
+
+    write_search_result(x0, final_x, var_names, obj_start, obj_final)
         
 
 mapdl.exit()

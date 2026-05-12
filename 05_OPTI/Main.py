@@ -21,20 +21,21 @@ opti_settings = {
 }
 
 # Initial Guess
-column_diameter = 76.1 # Column Diameter [mm]
-column_thickness = 3.0 # Column Thickness [mm]
-brace_diameter = 26.9  # Brace Diameter [mm]
-brace_thickness = 2.3  # Brace Thickness [mm]
+column_diameter = 46.0778 # Column Diameter [mm]
+column_thickness = 4.7900 # Column Thickness [mm]
+brace_diameter = 18.8836  # Brace Diameter [mm]
+brace_thickness = 2.7922  # Brace Thickness [mm]
+         
 
 # Bounds
-column_diameter_bounds = (50.0, 100)   # Column Diameter Bounds [mm]
+column_diameter_bounds = (40.0, 100)   # Column Diameter Bounds [mm]
 column_thickness_bounds = (1.0, 7.0)   # Column Thickness Bounds [mm]
-brace_diameter_bounds = (10.0, 40.0)   # Brace Diameter Bounds [mm]
-brace_thickness_bounds = (1.0, 4.5)    # Brace Thickness Bounds [mm]
+brace_diameter_bounds = (10.0, 50.0)   # Brace Diameter Bounds [mm]
+brace_thickness_bounds = (1.0, 4.0)    # Brace Thickness Bounds [mm]
 
 # Defining variables with bounds and active status
 var = {
-    "rad": {"value": 252.07, "bounds": (150.0, 300.0), "active": True}, # Radius Structure [mm]
+    "rad": {"value": 338.5857, "bounds": (150.0, 350.0), "active": True}, # Radius Structure [mm]
 }
 if opti_settings["multi_size_columns"]:
     var.update({
@@ -100,9 +101,9 @@ tic_lic = time.time()
 # Launch MAPDL
 mapdl = launch_mapdl(
     run_location="Ansout",
-    #log_apdl="apdl_log",
+    log_apdl="apdl_log",
     override=True,
-    nproc=8,
+    nproc=6,
     additional_switches="-p ansys -smp",
 )
 toc_lic = time.time()

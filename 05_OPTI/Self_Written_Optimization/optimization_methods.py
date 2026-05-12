@@ -2,12 +2,14 @@
 
 Public entry point
 ------------------
-``minimize(obj, con, x0, xl, xu, method=..., line_search=..., ...)`` dispatches
-to one of:
+``minimize(obj, con, x0, xl, xu, method=..., ...)`` dispatches to one of:
 
-- ``method='steepest_descent'`` : exterior quadratic penalty + projected line search
+- ``method='steepest_descent'`` : exterior quadratic penalty + Armijo line search
 - ``method='conjugate_gradient'`` : same, with nonlinear CG direction (FR/PR/PR+/HS)
 - ``method='slp'``               : Sequential Linear Programming (see ``slp.py``)
+
+The line-search rule is fixed to Armijo backtracking
+(:func:`line_search_methods.armijo_backtracking`).
 
 Problem format (PySLSQP convention)
 -----------------------------------
@@ -35,14 +37,9 @@ from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 import numpy as np
 
-from .line_search_methods import (
-    armijo_backtracking,
-    bisection,
-    golden_section,
-    quadratic_interpolation,
-)
+from .line_search_methods import armijo_backtracking
 from .search_direction_methods import conjugate_gradient, steepest_descent
-from .slp_MVP import solve_slp_mvp, SLPResult
+from .misc.slp_MVP_advanced import solve_slp_mvp, SLPResult
 
 ArrayLike = Union[Sequence[float], np.ndarray]
 ObjectiveFn = Callable[[np.ndarray], float]
@@ -105,7 +102,6 @@ def minimize(
     xu: Optional[ArrayLike] = None,
     *,
     method: str = "steepest_descent",
-    line_search: str = "armijo",
     fd_step=None,
     fd_type: str = "forward",
     maxiter: int = 40,
@@ -126,7 +122,6 @@ def minimize(
     See module docstring for the full convention.
     """
     method_l = (method or "").lower()
-    line_search_l = (line_search or "").lower()
     ls_options = ls_options or {}
 
     # ------------------------------------------------------------------
@@ -257,7 +252,7 @@ def minimize(
 
     if display:
         print("*" * 80)
-        print(f"    Custom optimizer: method={method_l}, line_search={line_search_l}, "
+        print(f"    Custom optimizer: method={method_l}, line_search=armijo, "
               f"penalty={mu:g}")
         print("*" * 80)
         print(f"  {'iter':>5s}  {'f':>12s}  {'viol':>12s}  {'P':>12s}  "
@@ -324,45 +319,13 @@ def minimize(
             P_try, _, _ = P_at(x_try)
             return P_try
 
-        if line_search_l == "armijo":
-            alpha = armijo_backtracking(
-                phi, P, dphi0,
-                alpha0=alpha0,
-                c1=ls_options.get("c1", 1e-4),
-                rho=ls_options.get("rho", 0.5),
-                max_iter=ls_options.get("max_iter", 50),
-            )
-        elif line_search_l in {"golden", "golden_section"}:
-            alpha = golden_section(
-                phi,
-                a=ls_options.get("a"), b=ls_options.get("b"),
-                tol=ls_options.get("tol", 1e-5),
-                max_iter=ls_options.get("max_iter", 100),
-                alpha0_bracket=alpha0,
-            )
-        elif line_search_l == "bisection":
-            alpha = bisection(
-                phi,
-                a=ls_options.get("a"), b=ls_options.get("b"),
-                tol=ls_options.get("tol", 1e-5),
-                max_iter=ls_options.get("max_iter", 100),
-                fd_h=ls_options.get("fd_h", 1e-4),
-                alpha0_bracket=alpha0,
-            )
-        elif line_search_l in {"quadratic", "quadratic_interpolation", "quad"}:
-            alpha = quadratic_interpolation(
-                phi, P, dphi0,
-                alpha0=alpha0,
-                c1=ls_options.get("c1", 1e-4),
-                max_iter=ls_options.get("max_iter", 20),
-                alpha_min=ls_options.get("alpha_min", 1e-10),
-                shrink=ls_options.get("shrink", 0.5),
-            )
-        else:
-            raise ValueError(
-                f"Unknown line_search '{line_search}'. Choose 'armijo', "
-                f"'golden', 'bisection', or 'quadratic'."
-            )
+        alpha = armijo_backtracking(
+            phi, P, dphi0,
+            alpha0=alpha0,
+            c1=ls_options.get("c1", 1e-4),
+            rho=ls_options.get("rho", 0.5),
+            max_iter=ls_options.get("max_iter", 50),
+        )
 
         x_new = np.clip(x + alpha * d, xL, xU)
         P_new, f_new, c_new = P_at(x_new)
@@ -447,20 +410,15 @@ if __name__ == "__main__":
             x[0] + x[1] - 1.0,
         ])
 
-    for m, ls in [
-        ("steepest_descent", "armijo"),
-        ("conjugate_gradient", "armijo"),
-        ("steepest_descent", "quadratic"),
-        ("slp", None),
-    ]:
-        kwargs = dict(method=m, maxiter=40, fd_step=1e-5, penalty_weight=1e3)
-        if ls is not None:
-            kwargs["line_search"] = ls
+    for m in ["steepest_descent", "conjugate_gradient", "slp"]:
         res = minimize(
             f, c,
             x0=np.array([0.5, 0.5]),
             xl=np.array([-5.0, -5.0]),
             xu=np.array([5.0, 5.0]),
-            **kwargs,
+            method=m,
+            maxiter=40,
+            fd_step=1e-5,
+            penalty_weight=1e3,
         )
-        print(f"\n{m} / {ls}: x*={res.x}, f*={res.fun:.4e}, nfev={res.nfev}")
+        print(f"\n{m}: x*={res.x}, f*={res.fun:.4e}, nfev={res.nfev}")

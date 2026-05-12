@@ -1,29 +1,74 @@
 # ACS.py
-# Script for handling Adaptive Constraint Scaling Method
-# Is only called per iteration
 
 class ACSclass:
     def __init__(self, alpha=1.0, c0=1.0):
-        self.alpha = alpha
-        self.c = c0
-        self.prev_v = None
-        self.prev_gmax = None
+        self.alpha = float(alpha)
+        self.c = float(c0)
+
+        self.c_old = None
+        self.c_oldold = None
+
         self.iter = 0
 
+    def update(self, g, gmax):
+        """
+        g     : aggregated constraint (scalar)
+        gmax  : max constraint before aggregation (scalar)
+        """
 
-    def update(self,v,gmax):
-        # Called once per major iteration
-        if self.prev_v is not None and self.prev_v > 0.0:
-            ratio = self.prev_gmax / self.prev_v
-            self.c = self.alpha * ratio + (1.0 - self.alpha) * self.c
+        # Safety
+        g = max(float(g), 1e-12)
+        gmax = float(gmax)
 
-        self.prev_v = v
-        self.prev_gmax = gmax
+        # ---- Iteration 0 ----
+        if self.iter == 0:
+            self.c = gmax / g
+            self.alpha = 1.0
+
+        # ---- Iteration 1 ----
+        elif self.iter == 1:
+            self.c_old = self.c
+            self.c = gmax / g
+
+        # ---- Iteration > 1 ----
+        else:
+            self.c_oldold = self.c_old
+            self.c_old = self.c
+
+            scale_up = 1.20
+            scale_down = 0.80
+            decimal = 2
+
+            ratio = gmax / g
+
+            # Temporary c
+            c_new = self.alpha * ratio + (1 - self.alpha) * self.c_old
+
+            # Rounded for oscillation detection
+            c_oldold_r = round(self.c_oldold, decimal)
+            c_old_r = round(self.c_old, decimal)
+            c_new_r = round(c_new, decimal)
+
+            oscillating = (
+                (c_oldold_r < c_old_r and c_old_r > c_new_r) or
+                (c_oldold_r > c_old_r and c_old_r < c_new_r)
+            )
+
+            if oscillating:
+                self.alpha = max(0.5, self.alpha * scale_down)
+            else:
+                self.alpha = min(1.0, self.alpha * scale_up)
+
+            # Final update
+            self.c = self.alpha * ratio + (1 - self.alpha) * self.c_old
+
         self.iter += 1
 
+        # Debug print
         print(
-            f"[ACS] iter= {self.iter:3d} |"
-            f"g_max = {gmax:.4f} |"
-            f"v = {v:.4f} |"
-            f"c={self.c:.4f}"
+            f"[ACS] iter={self.iter:3d} | "
+            f"g={g:.4f} | gmax={gmax:.4f} | "
+            f"alpha={self.alpha:.3f} | c={self.c:.4f}"
         )
+
+        return self.c
