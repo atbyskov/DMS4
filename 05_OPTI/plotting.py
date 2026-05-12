@@ -128,4 +128,55 @@ def plot_ts3D(x_key="d0_1", y_key="rad_1", z_key="ob_1"):
 
     plt.show()
 
-plot_ts3D("d0_1", "rad_1", "ob_1")
+#plot_ts3D("d0_1", "rad_1", "ob_1")
+
+
+def plot_constraints(csv_path):
+
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    # ----- Read file safely -----
+    with open(csv_path, "r") as f:
+        lines = f.readlines()
+
+    start_idx = None
+    for i, line in enumerate(lines):
+        if line.strip().startswith("iteration"):
+            start_idx = i
+            break
+
+    df = pd.read_csv(csv_path, skiprows=start_idx, skipinitialspace=True)
+    df.columns = df.columns.str.strip()
+
+    # ----- Extract -----
+    x = df["iteration"]
+    g_max = df["g_max"]
+    v_agg = df["v_agg"]
+
+    # ----- Relative difference -----
+    rel_diff = np.abs(g_max - v_agg) / np.maximum(np.abs(g_max), np.abs(v_agg))
+
+    # ----- Plot -----
+    fig, ax = plt.subplots(figsize=(7, 4))
+
+    ax.plot(x, rel_diff, label="Relative Difference", linewidth=2)
+
+    # Optional reference line
+    ax.axhline(0.0, color="black", linestyle="--", linewidth=1)
+
+    ax.set_xlabel("Evaluations")
+    ax.set_ylabel("Relative Difference")
+
+    ax.grid(True)
+    ax.legend()
+
+    ax.set_title("Relative Difference: $|g_{max} - v_{agg}|$")
+
+    plt.tight_layout()
+    plt.show()
+
+
+
+plot_constraints("Optimization_Logs/objective_history_2026-05-11_09-45-29.csv")

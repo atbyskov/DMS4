@@ -24,19 +24,9 @@ var_bounds = {
     "d0":  (40.0,  100.0),
     "t0":  (1.0,     7.0),
     "d1":  (10.0,  50.0),
-    "t1":  (0.1,     7.0)
+    "t1":  (0.1,     4.0)
 }
 
-# Timer Decorator
-def timer(fn):
-    @wraps(fn)
-    def wrapper(*args, **kwargs):
-        tic = time.perf_counter()
-        result = fn(*args, **kwargs)
-        toc = time.perf_counter()
-        print(f"Time for {fn.__name__}: {toc - tic:.6f} s")
-        return result
-    return wrapper
 
 # Equal Spacing
 def equal_spacing(var_bounds,n_per_dim):
@@ -87,7 +77,7 @@ def latin_spacing(var_bounds, n_points, seed=None, scramble=True):
     d = len(names)
 
     # LHS in the unit hypercube [0,1]^d
-    sampler = qmc.LatinHypercube(d=d, scramble=scramble, seed=seed)
+    sampler = qmc.LatinHypercube(d=d, scramble=scramble, seed=seed,optimization="random-cd")
     sample_unit = sampler.random(n=n_points)
 
     # Scale to physical bounds
@@ -118,14 +108,6 @@ def sobol_spacing(var_bounds, n_points, seed=None, scramble=True, power2=True):
 
     return points, names
 
-# Use non-equal spacing (remove =2 from n_per_dim=2 in)
-n_per_dim = {
-    "d0": 3,
-    "t0": 3, 
-    #"d1": 3,
-    #"t1": 3,
-    #"rad": 3,
-}
 
 n_per_dim_equal = 2
 
@@ -141,7 +123,6 @@ lhs_points, _ = latin_spacing(var_bounds, n_points=N, seed=42, scramble=True)
 
 # Use Sobol
 sobol_points, _ = sobol_spacing(var_bounds, n_points=N, seed=42, scramble=True, power2=True)
-
 
 
 # Evaluate Discrepancy Function
@@ -302,21 +283,3 @@ def plotting3D():
 #plotting2D()
 
 # Aggregate Output
-# Make one for p = 2
-"""
-p_values = [4, 8, 16, 50, 100]
-ratio_pn = [1.66, 1.083, 1.04, 1.004, 1.004]
-ratio_pnmean = [0.193, 0.42, 0.632, 0.852, 0.923]
-
-
-plt.figure(figsize=(8,5))
-plt.plot(p_values, ratio_pn, label="P-norm")
-plt.plot(p_values,ratio_pnmean, label="P-norm-mean")
-plt.grid(True)
-plt.title("Aggretate P Methods Comparison (highest utiliation/aggregation output)")
-plt.xlabel("p-value")
-plt.ylabel("Aggregation Output")
-plt.legend()
-
-plt.show()
-"""
