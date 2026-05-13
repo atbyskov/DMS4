@@ -28,16 +28,16 @@ from MyAPDLCall import RunAPDL
 opti_settings = {
     "n_mast_segments": 5,         # Number of mast segments
     "mast_segment_height": 810,   # Height of each mast segment [mm]
-    "multi_size_columns": True,   # Whether mast segments columns uses different dimensions (True) or not (False)
-    "multi_size_braces": True,    # Whether mast segments braces uses different dimensions (True) or not (False)
-    "brace_split": True,          # Whether braces are split between horiontal and cross (True) or not (False)
+    "multi_size_columns": False,   # Whether mast segments columns uses different dimensions (True) or not (False)
+    "multi_size_braces": False,    # Whether mast segments braces uses different dimensions (True) or not (False)
+    "brace_split": False,          # Whether braces are split between horiontal and cross (True) or not (False)
 }
 
 # Initial Guess
-column_diameter = 76.1 # Column Diameter [mm]
-column_thickness = 3.0 # Column Thickness [mm]
-brace_diameter = 26.9  # Brace Diameter [mm]
-brace_thickness = 2.3  # Brace Thickness [mm]
+column_diameter = 48.3 # Column Diameter [mm]
+column_thickness = 2.5 # Column Thickness [mm]
+brace_diameter = 25  # Brace Diameter [mm]
+brace_thickness = 2  # Brace Thickness [mm]
 
 # Bounds
 column_diameter_bounds = (50.0, 100)   # Column Diameter Bounds [mm]
@@ -47,7 +47,7 @@ brace_thickness_bounds = (1.0, 4.5)    # Brace Thickness Bounds [mm]
 
 # Defining variables with bounds and active status
 var = {
-    "rad": {"value": 202.07, "bounds": (150.0, 300.0), "active": True}, # Radius Structure [mm]
+    "rad": {"value": 337.46, "bounds": (150.0, 300.0), "active": True}, # Radius Structure [mm]
 }
 if opti_settings["multi_size_columns"]:
     var.update({

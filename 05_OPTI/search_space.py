@@ -21,10 +21,10 @@ from mpl_toolkits.mplot3d import Axes3D
 # Write Bounds, must match exacly Main.py
 var_bounds = {
     "rad": (150.0,  350.0),
-    "d0":  (40.0,  100.0),
-    "t0":  (1.0,     7.0),
-    "d1":  (10.0,  50.0),
-    "t1":  (0.1,     4.0)
+    "d0":  (48.3,  108),
+    "t0":  (2.5,   5),
+    "d1":  (25,    60),
+    "t1":  (2,     6)
 }
 
 

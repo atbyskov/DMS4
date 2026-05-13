@@ -37,7 +37,8 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
 
     acs = ACSclass(
         alpha=Solver_Settings.get("acs_alpha",1.0),
-        c0 = 1.0
+        c0 = 1.0,
+        enabled = Solver_Settings.get("use_acs",True)
     )
 
     # Logger Options
