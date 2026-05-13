@@ -1,0 +1,33 @@
+================================================================================
+OPTIMIZATION LOG
+================================================================================
+Run start date/time : 2026-05-11 22:57:59
+Log file            : Optimization_Logs\optimization_log_2026-05-11_22-57-59.txt
+Objective CSV       : Optimization_Logs\objective_history_2026-05-11_22-57-59.csv
+
+Initial design variables:
+x0 = [252.07,  76.1 ,   3.  ,  26.9 ,   2.3 ]
+
+Bounds:
+  x[0] in [150.0, 300.0]
+  x[1] in [50.0, 100]
+  x[2] in [1.0, 7.0]
+  x[3] in [10.0, 40.0]
+  x[4] in [1.0, 4.5]
+
+Optimizer settings:
+  Method  : Self-Written-slp_mvp
+  acc     : 0.001
+  finite_diff_abs_step: [0.25207, 0.0761, 0.003, 0.0269, 0.0023]
+  maxiter : 800
+  Aggregate: P-norm
+  p_value : 8
+  rho_value: 100
+  relaxation: 0
+  move_limit: 0.1
+  backtrack_max: 8
+  feasibility_tol: 1e-05
+  penalty_weight: 1000.0
+
+================================================================================
+

@@ -1,0 +1,27 @@
+Optimization Data
+ 
+Start time: 2026-05-13 08:31:47 
+ 
+Solver Options:
+Method: Self-Written-slp_mvp 
+# acc: 0.001 
+# finite_diff_abs_step: [0.20207, 0.0761, 0.003, 0.0269, 0.0023] 
+# maxiter: 800 
+# Aggregate: P-norm 
+# p_value: 8 
+# rho_value: 100 
+# relaxation: 0 
+# move_limit: 0.1 
+# backtrack_max: 8 
+# feasibility_tol: 1e-05 
+# penalty_weight: 100.0 
+Design Variables and Bounds 
+# x0 = [202.07, 76.10, 3.00, 26.90, 2.30]
+ x[0] (rad) bounds = [150.0, 350.0] 
+ x[1] (d0) bounds = [40.0, 100] 
+ x[2] (t0) bounds = [1.0, 7.0] 
+ x[3] (d1) bounds = [10.0, 100.0] 
+ x[4] (t1) bounds = [0.1, 4.5] 
+
+
+iteration,eval_index,objective,x0,x1,x2,x3,x4,g_max,v_agg,c_val,seg_mass1,seg_mass2,seg_mass3,seg_mass4,seg_mass5
