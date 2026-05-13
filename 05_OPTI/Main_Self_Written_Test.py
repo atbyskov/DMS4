@@ -23,16 +23,16 @@ opti_settings = {
 }
 
 # Initial Guess
-column_diameter = 76.1 # Column Diameter [mm]
-column_thickness = 3.0 # Column Thickness [mm]
-brace_diameter = 26.9 # Brace Diameter [mm]
-brace_thickness = 2.3 # Brace Thickness [mm]
+column_diameter = 75.0720 # Column Diameter [mm]
+column_thickness = 3.7764 # Column Thickness [mm]
+brace_diameter = 54.1896 # Brace Diameter [mm]
+brace_thickness = 4.3015 # Brace Thickness [mm]
 
 # Bounds
-column_diameter_bounds = (40.0, 100) # Column Diameter Bounds [mm]
-column_thickness_bounds = (1.0, 7.0)   # Column Thickness Bounds [mm]
-brace_diameter_bounds = (10.0, 100.0)   # Brace Diameter Bounds [mm]
-brace_thickness_bounds = (1.0, 4.5)    # Brace Thickness Bounds [mm]
+column_diameter_bounds = (48.3, 108) # Column Diameter Bounds [mm]
+column_thickness_bounds = (2.5, 5.0)   # Column Thickness Bounds [mm]
+brace_diameter_bounds = (25.0, 60.0)   # Brace Diameter Bounds [mm]
+brace_thickness_bounds = (2.0, 6.0)    # Brace Thickness Bounds [mm]
 
 # Defining variables with bounds and active status
 var = {
