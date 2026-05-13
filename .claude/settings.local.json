@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python -c \"import ast; ast.parse\\(open\\('05_OPTI/Self_Written_Optimization/line_search_methods.py'\\).read\\(\\)\\); ast.parse\\(open\\('05_OPTI/Self_Written_Optimization/optimization_methods.py'\\).read\\(\\)\\); ast.parse\\(open\\('05_OPTI/Self_Written_Optimization/optimization_self_written.py'\\).read\\(\\)\\); print\\('OK: all three files parse'\\)\")"
+      "Bash(python -c \"import ast; ast.parse\\(open\\('05_OPTI/Self_Written_Optimization/line_search_methods.py'\\).read\\(\\)\\); ast.parse\\(open\\('05_OPTI/Self_Written_Optimization/optimization_methods.py'\\).read\\(\\)\\); ast.parse\\(open\\('05_OPTI/Self_Written_Optimization/optimization_self_written.py'\\).read\\(\\)\\); print\\('OK: all three files parse'\\)\")",
+      "Bash(python -m 05_OPTI.Self_Written_Optimization.misc.slp_MVP_advanced)"
     ]
   }
 }
