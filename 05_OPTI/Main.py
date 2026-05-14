@@ -21,11 +21,11 @@ opti_settings = {
 }
 
 # Initial Guess
-column_diameter = 46.0778 # Column Diameter [mm]
-column_thickness = 4.79 # Column Thickness [mm]
-brace_diameter = 18.8836  # Brace Diameter [mm]
-brace_thickness = 3.7922  # Brace Thickness [mm]
-         
+column_diameter = 99.72 # Column Diameter [mm]
+column_thickness = 2.98 # Column Thickness [mm]
+brace_diameter = 25.33  # Brace Diameter [mm]
+brace_thickness = 3.66  # Brace Thickness [mm]
+
 
 # Bounds
 column_diameter_bounds = (48.3, 108)   # Column Diameter Bounds [mm]
@@ -35,7 +35,7 @@ brace_thickness_bounds = (2, 6.0)    # Brace Thickness Bounds [mm]
 
 # Defining variables with bounds and active status
 var = {
-    "rad": {"value": 202.07, "bounds": (100.0, 400.0), "active": True}, # Radius Structure [mm]
+    "rad": {"value": 259.41, "bounds": (150.0, 350.0), "active": True}, # Radius Structure [mm]
 }
 if opti_settings["multi_size_columns"]:
     var.update({
@@ -91,11 +91,11 @@ Misc = {
 Solver_Settings = {
     "acc": 1e-3,                 # Maximum objective function tolerance
     "maxiter": 80,               # Maximum iterations
-    "Aggregate": "P-norm",       # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
+    "Aggregate": None,       # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
     "p_value": 8,               # Value for "P-norm" and "P-norm-mean"
     "rho_value": 100,            # rho value used in KS
     "relaxation": 0,             # Relaxation parameter used in aggregation
-    "use_acs": True,              # Toggle ACS to on (True) or off (False)
+    "use_acs": False,              # Toggle ACS to on (True) or off (False)
 }
 
 tic_lic = time.time()

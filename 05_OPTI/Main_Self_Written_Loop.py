@@ -121,12 +121,12 @@ Solver_Settings = {
     "relaxation": 0,              # Relaxation parameter used in aggregation
     "finite_diff_rel_step": 5e-3, # PySLSQP-like absolute FD step: rel_step * max(1, abs(x))                   # IMPORTANT TO TUNE FOR FEA
     "algorithm": "merit",         # 'merit' (quadratic merit) or 'al' (augmented Lagrangian)
-    "penalty_weight": 1e2,        # Initial L1 merit/slack penalty
+    "penalty_weight": 1,          # Initial L1 merit/slack penalty                                               # 1
     "penalty_increase": 2.0,      # Increase penalty when slacks/infeasibility persist
     "penalty_max": 1e6,           # Upper cap for adaptive penalty
     "move_limit": 0.10,           # Initial/max scaled trust-region size
     "move_limit_min": 1e-3,       # Stop after failed globalization below this scaled size
-    "move_limit_expand": 1.4,     # Expand trust region after good predicted-vs-actual agreement
+    "move_limit_expand": 1.1,     # Expand trust region after good predicted-vs-actual agreement
     "move_limit_shrink": 0.5,     # Shrink trust region after rejection or poor agreement
     "backtrack_max": 8,           # Trial alphas along each LP step
     "backtrack_shrink": 0.5,      # alpha <- alpha * shrink during SLP line search

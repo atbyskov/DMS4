@@ -51,30 +51,50 @@ def plot_ACS():
 
 # Objective functions over iterations
 def plot_obj():
-    csv_files = [f for f in os.listdir("Optimization_Logs") if f.endswith(".csv")]
+    csv_files = [f for f in os.listdir("LHS_results") if f.endswith(".csv")]
 
     cols = ["objective"]
     x_col = "iteration"
 
     fig = plt.figure(figsize=(8,4))
 
-
     for file in csv_files:
-        path = os.path.join("Optimization_Logs", file)
+        path = os.path.join("LHS_results", file)
         df = pd.read_csv(path, skiprows=lambda x: x < 20)
         df.columns = df.columns.str.strip()
 
-        for i, col in enumerate(cols):
-            plt.plot(df[x_col].astype(float),
-                        df[col].astype(float),
-                        label=file)
-            
+        # Ensure numeric
+        df["iteration"] = df["iteration"].astype(int)
+        df["eval_index"] = df["eval_index"].astype(int)
+        df["objective"] = df["objective"].astype(float)
+
+        # 🔥 Move last evaluation to next iteration
+        last_idx = df.groupby("iteration")["eval_index"].idxmax()
+        df.loc[last_idx, "iteration"] += 1
+
+        # Sort
+        df = df.sort_values(by=["iteration", "eval_index"])
+
+        # Plot line
+        plt.plot(df[x_col], df["objective"], label=file)
+
+        # ✅ Add marker at final point
+        x_last = df[x_col].iloc[-1]
+        y_last = df["objective"].iloc[-1]
+
+        plt.scatter(x_last, y_last, s=50, marker="x")  # marker
+
+        # ✅ Add value label
+        #plt.text(x_last, y_last, f"{y_last:.1f}", fontsize=8,
+        #         ha='left', va='bottom')
+
     plt.grid(True)
     plt.xlabel("Iterations")
     plt.ylabel("Mass [kg]")
-    plt.title("Objective functions for n=32 sampling points")
+    plt.title("Objective functions")
+    #plt.legend()
     plt.show()
-#plot_obj()
+
 
 # Plot all simulation design variables and objective function over evaluations
 def plot_D_O_All(x_axis):
@@ -90,18 +110,16 @@ def plot_D_O_All(x_axis):
     else:
         raise ValueError("x_axis must be either 'eval' or 'iter'")
 
-    folder = "Optimization_Logs"
+    folder = "LHS_results"
     csv_files = [f for f in os.listdir(folder) if f.endswith(".csv")]
 
     fig = plt.figure(figsize=(14, 8))
 
-    # ✅ Create centered layout (your idea, cleaned up)
-    ax1 = plt.subplot2grid((2, 6), (0, 0), colspan=2)  # rad
-    ax2 = plt.subplot2grid((2, 6), (0, 2), colspan=2)  # d1
-    ax3 = plt.subplot2grid((2, 6), (0, 4), colspan=2)  # t1
-
-    ax4 = plt.subplot2grid((2, 6), (1, 1), colspan=2)  # d0 (centered left)
-    ax5 = plt.subplot2grid((2, 6), (1, 3), colspan=2)  # t0 (centered right)
+    ax1 = plt.subplot2grid((2, 6), (0, 0), colspan=2)
+    ax2 = plt.subplot2grid((2, 6), (0, 2), colspan=2)
+    ax3 = plt.subplot2grid((2, 6), (0, 4), colspan=2)
+    ax4 = plt.subplot2grid((2, 6), (1, 1), colspan=2)
+    ax5 = plt.subplot2grid((2, 6), (1, 3), colspan=2)
 
     axes = [ax1, ax2, ax3, ax4, ax5]
 
@@ -114,6 +132,17 @@ def plot_D_O_All(x_axis):
         df = pd.read_csv(path, skiprows=lambda x: x < 20)
         df.columns = df.columns.str.strip()
 
+        # ✅ Ensure numeric types
+        df["iteration"] = df["iteration"].astype(int)
+        df["eval_index"] = df["eval_index"].astype(int)
+
+        # 🔥 Move last evaluation to next iteration
+        last_idx = df.groupby("iteration")["eval_index"].idxmax()
+        df.loc[last_idx, "iteration"] += 1
+
+        # Optional (recommended for clean plots)
+        df = df.sort_values(by=["iteration", "eval_index"])
+
         for i, col in enumerate(cols):
             axes[i].plot(df[x_col].astype(float),
                          df[col].astype(float),
@@ -125,18 +154,15 @@ def plot_D_O_All(x_axis):
         ax.set_xlabel(x_col_lab)
         ax.grid(True)
 
-    # ✅ Title with spacing fix
     fig.suptitle(title)
     plt.tight_layout(rect=[0, 0, 1, 0.95])
 
     plt.show()
-#plot_D_O_All(x_axis="iter")
 
 # Select "eval" or "iter" for x-axis and mode = "all" or "start_end" to plot all or only start/end values
-
 def plot_D_O_start_end_simple():
 
-    folder = "Optimization_Logs"
+    folder = "LHS_results"
     csv_files = [f for f in os.listdir(folder) if f.endswith(".csv")]
 
     title = "Start vs End Design Variables and Objective"
@@ -181,10 +207,8 @@ def plot_D_O_start_end_simple():
 
     plt.tight_layout()
     plt.show()
-#plot_D_O_start_end_simple()
 
-
-def plot_max_util(folder="Optimization_Logs"):
+def plot_max_util(folder="LHS_results"):
 
     txt_files = [f for f in os.listdir(folder) if f.endswith(".txt")]
 
@@ -208,26 +232,19 @@ def plot_max_util(folder="Optimization_Logs"):
             # Detect iteration
             match = re.search(r"\[ITERATION (\d+)\]", line)
             if match:
-                # Save previous iteration
                 if current_iter is not None and util_values:
                     iterations.append(current_iter)
                     max_utils.append(max(util_values))
 
-                # Start new iteration
                 current_iter = int(match.group(1))
                 collecting = True
                 util_values = []
                 continue
 
-            # If inside iteration block, extract utilizations
+            # Extract utilizations
             if collecting and "Util_" in line:
-
-                # Extract all numbers in line (ignore N/A automatically)
                 nums = re.findall(r"\d+\.\d+", line)
-
-                # Convert to float
                 nums = [float(n) for n in nums]
-
                 util_values.extend(nums)
 
         # Save last iteration
@@ -235,17 +252,128 @@ def plot_max_util(folder="Optimization_Logs"):
             iterations.append(current_iter)
             max_utils.append(max(util_values))
 
-        # Plot for this file
+        # 🔥 Shift iteration index (final value belongs to next iteration)
+        iterations = [i + 1 for i in iterations]
+
+        # Plot
         plt.plot(iterations, max_utils, marker='o', label=file)
 
-    # Formatting
     plt.xlabel("Iterations")
     plt.ylabel("Maximum Utilization")
     plt.title("Maximum Utilization per Iteration")
     plt.grid(True)
-    #plt.legend(fontsize=7)
 
     plt.tight_layout()
     plt.show()
 
+# Select what plots to use
+plot_obj()
+plot_D_O_All(x_axis="iter")
+plot_D_O_start_end_simple()
 plot_max_util()
+
+
+
+def objective_summary_table(folder="LHS_results", start_mass=107.89):
+
+    csv_files = [f for f in os.listdir(folder) if f.endswith(".csv")]
+
+    results = []
+
+    for file in csv_files:
+        path = os.path.join(folder, file)
+
+        # Load data
+        df = pd.read_csv(path, skiprows=lambda x: x < 20)
+        df.columns = df.columns.str.strip()
+
+        # Ensure numeric types
+        df["iteration"] = df["iteration"].astype(int)
+        df["eval_index"] = df["eval_index"].astype(int)
+        df["objective"] = df["objective"].astype(float)
+
+        # Design variables
+        design_cols = ["x0", "x1", "x2", "x3", "x4"]
+        for col in design_cols:
+            df[col] = df[col].astype(float)
+
+
+
+def objective_summary_table(folder="LHS_results",
+                            start_mass=107.89,
+                            output_file="objective_summary.txt"):
+
+    csv_files = [f for f in os.listdir(folder) if f.endswith(".csv")]
+
+    results = []
+
+    for file in csv_files:
+        path = os.path.join(folder, file)
+
+        # Load data
+        df = pd.read_csv(path, skiprows=lambda x: x < 20)
+        df.columns = df.columns.str.strip()
+
+        # Ensure numeric types
+        df["iteration"] = df["iteration"].astype(int)
+        df["eval_index"] = df["eval_index"].astype(int)
+        df["objective"] = df["objective"].astype(float)
+
+        design_cols = ["x0", "x1", "x2", "x3", "x4"]
+        for col in design_cols:
+            df[col] = df[col].astype(float)
+
+        # 🔥 Move last evaluation to next iteration
+        last_idx = df.groupby("iteration")["eval_index"].idxmax()
+        df.loc[last_idx, "iteration"] += 1
+
+        # Sort
+        df = df.sort_values(by=["iteration", "eval_index"]).reset_index(drop=True)
+
+        # Extract designs
+        initial_design = df.iloc[0][design_cols].values
+        final_design = df.iloc[-1][design_cols].values
+
+        # Objectives
+        start_val = start_mass
+        end_val = df["objective"].iloc[-1]
+        improvement = 100 * (start_val - end_val) / start_val
+
+        results.append(
+            [file, start_val, end_val, improvement] +
+            list(initial_design) +
+            list(final_design)
+        )
+
+    # Column names
+    columns = (
+        ["Run", "Start [kg]", "End [kg]", "Improvement [%]"] +
+        [f"{c}_start" for c in design_cols] +
+        [f"{c}_end" for c in design_cols]
+    )
+
+    summary = pd.DataFrame(results, columns=columns)
+
+    # Sort by best result
+    summary = summary.sort_values("End [kg]").reset_index(drop=True)
+
+    # Round values
+    summary = summary.round(3)
+
+    # ✅ Convert to string
+    table_str = summary.to_string(index=False)
+
+    # ✅ Write to txt file
+    with open(output_file, "w") as f:
+        f.write("=== Objective + Design Summary ===\n\n")
+        f.write(table_str)
+
+    # Also print to console (optional)
+    print("\n=== Objective + Design Summary (saved to file) ===")
+    print(table_str)
+
+    return summary
+
+
+
+objective_summary_table()
