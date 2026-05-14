@@ -756,13 +756,16 @@ def solve_slp_mvp(
                 and viol_trial <= viol_now * (1.0 - feasibility_reduction)
             )
 
-            if filter_accepts and (sufficient or feasibility_progress):
+            if (filter_accepts and sufficient) or feasibility_progress:
                 rho_val = (
                     actual_decrease / predicted_decrease
                     if predicted_decrease > 1.0e-14
                     else float("nan")
                 )
-                add_to_filter = h_trial > 0.0
+                # Sub-tolerance violations act as if they were exactly feasible
+                # for filter bookkeeping, so a near-feasible point cannot trap
+                # later trials with marginally worse f via strict dominance.
+                add_to_filter = h_trial > feasibility_tol
                 accepted = True
                 break
 
