@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       07:20:52
-=======
-/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       08:31:41
+/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       18:35:36
 
  *** WARNING ***                         CP =       0.000   TIME= 00:00:00
  The geometry is not available.  Issue the RESUME command to restore the 
@@ -9,4 +6,3 @@
 
  *** WARNING ***                         CP =       0.000   TIME= 00:00:00
  Altering the abort level key is not recommended.                        
->>>>>>> 543f99d96ca4f7217f3500c1303daebd7801b0fc
