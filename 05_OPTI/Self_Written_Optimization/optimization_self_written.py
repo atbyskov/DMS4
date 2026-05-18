@@ -5,6 +5,7 @@ from MyAPDLCall import RunAPDL
 from opt_logger import OptimizationLogger
 from Post_Process import PostProcessor
 from aggregate import ConstraintAggregate
+from acs import ACSclass
 
 # Optimization Function
 def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="slp_mvp"):
@@ -33,6 +34,16 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
         for name in names
     ]
 
+    # ACS adaptive constraint scaling is only meaningful when an aggregation
+    # method is active. If Aggregate is None/"None", agg_output returns the
+    # raw constraint vector and ACS has nothing to scale.
+    aggregate_method = Solver_Settings.get("Aggregate", "None")
+    acs_active = aggregate_method not in (None, "None")
+    acs = ACSclass(
+        alpha=Solver_Settings.get("acs_alpha", 1.0),
+        c0=1.0,
+    ) if acs_active else None
+
     slp_options = {
         "move_limit": Solver_Settings.get("move_limit", 0.10),
         "move_limit_min": Solver_Settings.get("move_limit_min", 1e-5),
@@ -44,8 +55,8 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
         "slack_tol": Solver_Settings.get("slack_tol", 1e-8),
         "penalty_increase": Solver_Settings.get("penalty_increase", 10.0),
         "penalty_max": Solver_Settings.get("penalty_max", 1e9),
-        "sufficient_decrease": Solver_Settings.get("sufficient_decrease", 1e-4),
-        "feasibility_reduction": Solver_Settings.get("feasibility_reduction", 1e-3),
+        "sufficient_decrease": Solver_Settings.get("sufficient_decrease", 1e-6),        # 1e-4
+        "feasibility_reduction": Solver_Settings.get("feasibility_reduction", 1e-2),    # 1e-3
         "algorithm": Solver_Settings.get("algorithm", "merit"),
     }
 
@@ -128,7 +139,10 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
             relaxation = Solver_Settings.get("relaxation", 0)
         )
 
-        c_util_agg, v_agg, g_max = agg.agg_output(c_util)
+        if acs_active:
+            c_util_agg, v_agg, g_max = agg.agg_output(c_util, c_scale=acs.c)
+        else:
+            c_util_agg, v_agg, g_max = agg.agg_output(c_util)
         
         # Segment mass constraints use the same c(x) >= 0 convention.
         mass_limit = float(opti_settings["segment_mass_limit"])
@@ -144,7 +158,12 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
 
         print(f"Constraint vector length: {len(c)}")
 
-        logger.log_evaluation(x, f, segment_masses, v_agg=v_agg, g_max=g_max)
+        logger.log_evaluation(
+            x, f, segment_masses,
+            v_agg=v_agg,
+            g_max=g_max,
+            c_value=(acs.c if acs_active else None),
+        )
         
         util_report = {
                 "Util_LB": pp.Util_LB(),
@@ -185,6 +204,8 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
 
     def iteration_callback(x):
         logger.log_iteration(x)
+        if acs_active and cache["v_agg"] is not None and cache["g_max"] is not None:
+            acs.update(cache["v_agg"], cache["g_max"])
         util = cache.get("util", None)
         if util is not None:
             logger.log_utilization(util)

@@ -66,6 +66,9 @@
  Ansys, Inc. License Manager 2025 R1 
  Discovery (reduced install) 2025 R1 
  Core WB Files 2025 R1   
+ CFD-Post only 2025 R1   
+ Fluent (includes CFD-Post) 2025 R1  
+ Polyflow (includes CFD-Post) 2025 R1
  Remote Solve Manager Standalone Services 2025 R1
  Additive 2025 R1
  Autodyn 2025 R1 
@@ -106,7 +109,8 @@
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
  CURRENT JOBNAME=file  12:09:27  MAY 15, 2026 CP=      0.062
 
-     1  FINISH 
+     1  FINISH
+ 
 
  RUN SETUP PROCEDURE FROM FILE= C:\Program Files\ANSYS Inc\v251\ANSYS\apdl\start.ans
  Start GRPC Server

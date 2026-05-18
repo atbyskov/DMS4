@@ -29,10 +29,10 @@ brace_diameter = 26.9 # Brace Diameter [mm]
 brace_thickness = 2.3 # Brace Thickness [mm]
 
 # Bounds
-column_diameter_bounds = (40.0, 100) # Column Diameter Bounds [mm]
-column_thickness_bounds = (1.0, 7.0)   # Column Thickness Bounds [mm]
-brace_diameter_bounds = (10.0, 100.0)   # Brace Diameter Bounds [mm]
-brace_thickness_bounds = (0.1, 7.0)    # Brace Thickness Bounds [mm]
+column_diameter_bounds = (48.3, 114.3) # Column Diameter Bounds [mm]
+column_thickness_bounds = (2.5, 5.0)   # Column Thickness Bounds [mm]
+brace_diameter_bounds = (25.0, 60.0)   # Brace Diameter Bounds [mm]
+brace_thickness_bounds = (2.0, 6.0)    # Brace Thickness Bounds [mm]
 
 # Defining variables with bounds and active status
 var = {
@@ -80,7 +80,7 @@ Misc = {
     "esize": 3,                     # Element Size [mm]
     "Hor_Force": 502.52,            # Horizontal Force (P_Load_z) [N]
     "Ver_Force": -25.13E+3,         # Vertical Force (P_Load_y)   [N]
-    "f_y": 690 ,                    # Column Yield Strength [MPa]
+    "f_y": 700 ,                    # Column Yield Strength [MPa]
     "f_y_brace": 355,               # Brace Yield Strength [MPa]
     "E_mod": 200*1E3,               # Youngs Modulus [MPa]
     "W_Force": -3.751E+3,           # Vertical Force COG (P_COG_y) [N]
@@ -93,12 +93,12 @@ Misc = {
 Solver_Settings = {
     "acc": 1e-3,                 # Maximum objective function tolerance
     "maxiter": 800,               # Maximum iterations                                                         #IMPORTANT TO TUNE FOR FEA
-    "Aggregate": "P-norm",           # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
+    "Aggregate": None,           # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
     "p_value": 8,                # Value for "P-norm" and "P-norm-mean"
     "rho_value": 100,            # rho value used in KS
     "relaxation": 0,             # Relaxation parameter used in aggregation
     "finite_diff_rel_step": 1e-3, # PySLSQP-like absolute FD step: rel_step * max(1, abs(x))                              #IMPORTANT TO TUNE FOR FEA
-    "algorithm": "al",            # 'merit' (quadratic merit) or 'al' (augmented Lagrangian)
+    "algorithm": "merit",         # 'merit' (quadratic merit) or 'al' (augmented Lagrangian)
     "penalty_weight": 1e2,        # Initial L1 merit/slack penalty
     "penalty_increase": 2.0,      # Increase penalty when slacks/infeasibility persist
     "penalty_max": 1e6,           # Upper cap for adaptive penalty

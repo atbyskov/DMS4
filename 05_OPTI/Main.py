@@ -95,6 +95,7 @@ Solver_Settings = {
     "p_value": 8,                # Value for "P-norm" and "P-norm-mean"
     "rho_value": 100,            # rho value used in KS
     "relaxation": 0,             # Relaxation parameter used in aggregation
+    "use_acs": False,              # Toggle ACS to on (True) or off (False)
 }
 
 tic_lic = time.time()
