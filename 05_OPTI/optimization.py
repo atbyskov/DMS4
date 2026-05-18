@@ -184,7 +184,7 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         acc=Solver_Settings["acc"],     # Objective Function Tolerance
         iprint=2,                       # print iteration info
         #obj_scaler=0.8,                # Scale objective function for stability
-        save_itr="major",               # save major iterations
+        save_itr="all",               # save major iterations
         save_vars=[
             "majiter",                  # major iteration
             "x",                        # design variables
@@ -193,12 +193,15 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
             "optimality",               # optimality
             "feasibility",              # feasibility
             "step",                     # step
+            "gradient",                 # gradient
+            "jacobian",                 # jacobian
         ],
         save_filename=save_filename, 
         summary_filename=summary_filename, 
-        #warm_start=True, # For restarting optimization from prior optimization runs
-        #load_filename=save_filename, # Filename for restart file
-        visualize=False, 
+        warm_start=False, # For restarting optimization from prior optimization runs
+        hot_start=False, # For restarting optimization from prior optimization runs without re-evaluating the initial point
+        load_filename=save_filename, # Filename for restart file
+        visualize=True, 
         visualize_vars=['objective', 'optimality', 'feasibility', 'x[0]'], # Extra: 'gradient[0]', 'constraints[0]', 'multipliers[0]', 'jacobian[0,0]'
     ) 
     # return the result, the text path, and the csv path
