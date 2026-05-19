@@ -15,9 +15,9 @@ opti_settings = {
     "n_mast_segments": 5,         # Number of mast segments
     "mast_segment_height": 810,   # Height of each mast segment [mm]
     "segment_mass_limit": 23,  # Limits for segment masses [kg]
-    "multi_size_columns": True,   # Whether mast segments columns uses different dimensions (True) or not (False)
-    "multi_size_braces": True,    # Whether mast segments braces uses different dimensions (True) or not (False)
-    "brace_split": True,          # Whether braces are split between horiontal and cross (True) or not (False)
+    "multi_size_columns": False,   # Whether mast segments columns uses different dimensions (True) or not (False)
+    "multi_size_braces": False,    # Whether mast segments braces uses different dimensions (True) or not (False)
+    "brace_split": False,          # Whether braces are split between horiontal and cross (True) or not (False)
 }
 
 # Initial Guess

@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "Bash(python -c \"import ast; ast.parse\\(open\\('05_OPTI/Self_Written_Optimization/line_search_methods.py'\\).read\\(\\)\\); ast.parse\\(open\\('05_OPTI/Self_Written_Optimization/optimization_methods.py'\\).read\\(\\)\\); ast.parse\\(open\\('05_OPTI/Self_Written_Optimization/optimization_self_written.py'\\).read\\(\\)\\); print\\('OK: all three files parse'\\)\")",
-      "Bash(python -m 05_OPTI.Self_Written_Optimization.misc.slp_MVP_advanced)"
+      "Bash(python -m 05_OPTI.Self_Written_Optimization.misc.slp_MVP_advanced)",
+      "Bash(python -c 'from Self_Written_Optimization.misc.slp_MVP_advanced import solve_slp_mvp; import numpy as np; *)",
+      "Bash(python -c ' *)",
+      "Bash(rm -f fminslp_Renes_Code_From_Matlab.py line_search_methods.py search_direction_methods.py slp.py slp_MVP.py optimization_methods.py misc/slp_MVP_old_15018672.py plans/custom_optimization_methods_4b96af30.plan.md)",
+      "Bash(rmdir plans *)",
+      "Bash(ls Self_Written_Optimization)",
+      "Bash(git mv *)"
     ]
   }
 }
