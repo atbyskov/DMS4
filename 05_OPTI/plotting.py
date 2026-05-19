@@ -17,7 +17,7 @@ def plot_ACS():
     filename = "Optimization_Logs/objective_history_2026-05-12_14-46-23.csv"
     #filename = "Optimization_Logs/objective_history_2026-05-12_14-59-18.csv"
     
-    df = pd.read_csv(filename, comment='#', skiprows=20)   
+    df = pd.read_csv(filename, comment='#', skiprows=26)   
     df.columns = df.columns.str.strip()                         # Clean 
     # ---- Extract relevant columns ----
     iter_col = df["eval_index"]
@@ -78,8 +78,8 @@ def plot_obj(inp):
     fig = plt.figure(figsize=(8,4))
 
     for file in csv_files:
-        path = os.path.join("LHS_results", file)
-        df = pd.read_csv(path, skiprows=lambda x: x < 20)
+        path = os.path.join("LHS_results_SLP_Self_written", file)
+        df = pd.read_csv(path, skiprows=lambda x: x < 26)
         df.columns = df.columns.str.strip()
 
         # Ensure numeric
@@ -128,7 +128,7 @@ def plot_D_O_All(x_axis):
     else:
         raise ValueError("x_axis must be either 'eval' or 'iter'")
 
-    folder = "LHS_results"
+    folder = "LHS_results_SLP_Self_written"
     csv_files = [f for f in os.listdir(folder) if f.endswith(".csv")]
 
     fig = plt.figure(figsize=(14, 8))
@@ -147,7 +147,7 @@ def plot_D_O_All(x_axis):
     for file in csv_files:
         path = os.path.join(folder, file)
 
-        df = pd.read_csv(path, skiprows=lambda x: x < 20)
+        df = pd.read_csv(path, skiprows=lambda x: x < 26)
         df.columns = df.columns.str.strip()
 
         # ✅ Ensure numeric types
@@ -182,7 +182,7 @@ def plot_D_O_All(x_axis):
 # Select "eval" or "iter" for x-axis and mode = "all" or "start_end" to plot all or only start/end values
 def plot_D_O_start_end_simple():
 
-    folder = "LHS_results"
+    folder = "LHS_results_SLP_Self_written"
     csv_files = [f for f in os.listdir(folder) if f.endswith(".csv")]
 
     title = "Start vs End Design Variables and Objective"
@@ -197,7 +197,7 @@ def plot_D_O_start_end_simple():
     for file in csv_files:
         path = os.path.join(folder, file)
 
-        df = pd.read_csv(path, skiprows=lambda x: x < 20)
+        df = pd.read_csv(path, skiprows=lambda x: x < 26)
         df.columns = df.columns.str.strip()
 
         # ✅ Extract start and end values
@@ -229,7 +229,7 @@ def plot_D_O_start_end_simple():
     plt.tight_layout()
     plt.show()
 
-def plot_max_util(folder="LHS_results"):
+def plot_max_util(folder="LHS_results_SLP_Self_written"):
 
     txt_files = [f for f in os.listdir(folder) if f.endswith(".txt")]
 
@@ -296,7 +296,7 @@ plot_max_util()
 
 
 
-def objective_summary_table(folder="LHS_results", start_mass=107.89):
+def objective_summary_table(folder="LHS_results_SLP_Self_written", start_mass=107.89):
 
     csv_files = [f for f in os.listdir(folder) if f.endswith(".csv")]
 
@@ -306,7 +306,7 @@ def objective_summary_table(folder="LHS_results", start_mass=107.89):
         path = os.path.join(folder, file)
 
         # Load data
-        df = pd.read_csv(path, skiprows=lambda x: x < 20)
+        df = pd.read_csv(path, skiprows=lambda x: x < 26)
         df.columns = df.columns.str.strip()
 
         # Ensure numeric types
@@ -321,7 +321,7 @@ def objective_summary_table(folder="LHS_results", start_mass=107.89):
 
 
 
-def objective_summary_table(folder="LHS_results",
+def objective_summary_table(folder="LHS_results_SLP_Self_written",
                             start_mass=107.89,
                             output_file="objective_summary.txt"):
 
@@ -333,7 +333,7 @@ def objective_summary_table(folder="LHS_results",
         path = os.path.join(folder, file)
 
         # Load data
-        df = pd.read_csv(path, skiprows=lambda x: x < 20)
+        df = pd.read_csv(path, skiprows=lambda x: x < 26)
         df.columns = df.columns.str.strip()
 
         # Ensure numeric types

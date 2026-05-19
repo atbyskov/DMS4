@@ -96,10 +96,10 @@
   BATCH MODE REQUESTED (-b)    = LIST
   INPUT FILE COPY MODE (-c)    = COPY
   SHARED MEMORY PARALLEL REQUESTED
-    SINGLE PROCESS WITH   8 THREADS REQUESTED
-    TOTAL OF     8 CORES REQUESTED
-  INPUT FILE NAME              = C:\Users\atbys\Desktop\DMS4 Local\DMS4\Ansout\.__tmp__.inp
-  OUTPUT FILE NAME             = C:\Users\atbys\Desktop\DMS4 Local\DMS4\Ansout\.__tmp__.out
+    SINGLE PROCESS WITH  10 THREADS REQUESTED
+    TOTAL OF    10 CORES REQUESTED
+  INPUT FILE NAME              = C:\Users\gusta\OneDrive\Uni\Kandidat\10. Semester\GitHub\Desktop\DMS4\Ansout\.__tmp__.inp
+  OUTPUT FILE NAME             = C:\Users\gusta\OneDrive\Uni\Kandidat\10. Semester\GitHub\Desktop\DMS4\Ansout\.__tmp__.out
 
  PARAMETER STATUS-           (   1 PARAMETERS DEFINED)
 
@@ -107,9 +107,10 @@
  PORT                              50052.0000                    SCALAR
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
- CURRENT JOBNAME=file  18:35:44  MAY 13, 2026 CP=      0.172
+ CURRENT JOBNAME=file  12:09:27  MAY 15, 2026 CP=      0.062
 
-     1  FINISH 
+     1  FINISH
+ 
 
  RUN SETUP PROCEDURE FROM FILE= C:\Program Files\ANSYS Inc\v251\ANSYS\apdl\start.ans
  Start GRPC Server
@@ -166,8 +167,6 @@
 
  /OUTPUT FILE=         
 
- /OUTPUT FILE=         
-
  CLEAR MAPDL DATABASE AND RESTART
 
  Ansys Mechanical Enterprise Academic Research     
@@ -176,36 +175,8 @@
 
  /OUTPUT FILE=         
 
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
  /OUTPUT FILE=         
-
- EXIT MAPDL WHILE IN SERVER MODE
-
- SAVE ALL MODEL, SOLUTION AND POST DATA
-
- ALL CURRENT MAPDL DATA WRITTEN TO FILE NAME= 
-  FOR POSSIBLE RESUME FROM THIS POINT
-
-
- NUMBER OF WARNING MESSAGES ENCOUNTERED=          2
- NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
-
-
- *-----------------------------------------------------------------------------*
- |                                                                             |
- |                               RUN COMPLETED                                 |
- |                                                                             |
- |-----------------------------------------------------------------------------|
- |                                                                             |
- |  Ansys MAPDL 2025 R1         Build 25.1         UP20241202    WINDOWS x64   |
- |                                                                             |
- |-----------------------------------------------------------------------------|
- |                                                                             |
- |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
- |  Maximum Database Used       1 MB     Maximum Scratch Memory Used      8 MB |
- |                                                                             |
- |-----------------------------------------------------------------------------|
- |                                                                             |
- |        CP Time      (sec) =          0.578       Time  =  18:35:45          |
- |        Elapsed Time (sec) =         12.000       Date  =  05/13/2026        |
- |                                                                             |
- *-----------------------------------------------------------------------------*
