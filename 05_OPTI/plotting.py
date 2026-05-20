@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import re
+from matplotlib.ticker import MaxNLocator
 
 # Plotting ACS
 #   Plots ACS development over time
@@ -16,7 +17,7 @@ def plot_ACS():
     filename = "Optimization_Logs/objective_history_2026-05-12_14-46-23.csv"
     #filename = "Optimization_Logs/objective_history_2026-05-12_14-59-18.csv"
     
-    df = pd.read_csv(filename, comment='#', skiprows=20)   
+    df = pd.read_csv(filename, comment='#', skiprows=26)   
     df.columns = df.columns.str.strip()                         # Clean 
     # ---- Extract relevant columns ----
     iter_col = df["eval_index"]
@@ -50,23 +51,41 @@ def plot_ACS():
 #plot_ACS()
 
 # Objective functions over iterations
-def plot_obj():
+
+def plot_obj(inp):
     csv_files = [f for f in os.listdir("LHS_results") if f.endswith(".csv")]
 
-    cols = ["objective"]
+    # ✅ Mapping from user input → column in CSV + label
+    
+
+    col_map = {
+        "objective": ("objective", "Mass [kg]", "objective"),
+        "d0": ("x1", r"$d_0$", r"$d_0$"),
+        "t0": ("x2", r"$t_0$", r"$t_0$"),
+        "d1": ("x3", r"$d_1$", r"$d_1$"),
+        "t1": ("x4", r"$t_1$", r"$t_1$"),
+        "rad": ("x0", "rad", "rad"),
+    }
+
+
+
+    if inp not in col_map:
+        raise ValueError("Choose from: obj, d0, t0, d1, t1, rad")
+
+    y_col, ylabel, title_label = col_map[inp]
     x_col = "iteration"
 
     fig = plt.figure(figsize=(8,4))
 
     for file in csv_files:
-        path = os.path.join("LHS_results", file)
-        df = pd.read_csv(path, skiprows=lambda x: x < 20)
+        path = os.path.join("LHS_results_SLP_Self_written", file)
+        df = pd.read_csv(path, skiprows=lambda x: x < 26)
         df.columns = df.columns.str.strip()
 
         # Ensure numeric
         df["iteration"] = df["iteration"].astype(int)
         df["eval_index"] = df["eval_index"].astype(int)
-        df["objective"] = df["objective"].astype(float)
+        df[y_col] = pd.to_numeric(df[y_col], errors="coerce")
 
         # 🔥 Move last evaluation to next iteration
         last_idx = df.groupby("iteration")["eval_index"].idxmax()
@@ -75,24 +94,23 @@ def plot_obj():
         # Sort
         df = df.sort_values(by=["iteration", "eval_index"])
 
-        # Plot line
-        plt.plot(df[x_col], df["objective"], label=file)
+        # Plot
+        plt.plot(df[x_col], df[y_col], label=file)
 
-        # ✅ Add marker at final point
+        # Mark final point
         x_last = df[x_col].iloc[-1]
-        y_last = df["objective"].iloc[-1]
+        y_last = df[y_col].iloc[-1]
 
-        plt.scatter(x_last, y_last, s=50, marker="x")  # marker
 
-        # ✅ Add value label
-        #plt.text(x_last, y_last, f"{y_last:.1f}", fontsize=8,
-        #         ha='left', va='bottom')
+        plt.scatter(x_last, y_last, s=50, marker="x")
 
     plt.grid(True)
     plt.xlabel("Iterations")
-    plt.ylabel("Mass [kg]")
-    plt.title("Objective functions")
-    #plt.legend()
+    plt.ylabel(f"{ylabel} [mm]")
+    #title_label = title_label.replace("_", r"\_")
+    plt.title(f"{title_label} for 32 sampling points")
+    # plt.legend()
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
     plt.show()
 
 
@@ -110,7 +128,7 @@ def plot_D_O_All(x_axis):
     else:
         raise ValueError("x_axis must be either 'eval' or 'iter'")
 
-    folder = "LHS_results"
+    folder = "LHS_results_SLP_Self_written"
     csv_files = [f for f in os.listdir(folder) if f.endswith(".csv")]
 
     fig = plt.figure(figsize=(14, 8))
@@ -129,7 +147,7 @@ def plot_D_O_All(x_axis):
     for file in csv_files:
         path = os.path.join(folder, file)
 
-        df = pd.read_csv(path, skiprows=lambda x: x < 20)
+        df = pd.read_csv(path, skiprows=lambda x: x < 26)
         df.columns = df.columns.str.strip()
 
         # ✅ Ensure numeric types
@@ -153,16 +171,18 @@ def plot_D_O_All(x_axis):
         ax.set_title(plot_labels[i])
         ax.set_xlabel(x_col_lab)
         ax.grid(True)
+        ax.set_ylabel("[mm]")
 
     fig.suptitle(title)
     plt.tight_layout(rect=[0, 0, 1, 0.95])
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 
     plt.show()
 
 # Select "eval" or "iter" for x-axis and mode = "all" or "start_end" to plot all or only start/end values
 def plot_D_O_start_end_simple():
 
-    folder = "LHS_results"
+    folder = "LHS_results_SLP_Self_written"
     csv_files = [f for f in os.listdir(folder) if f.endswith(".csv")]
 
     title = "Start vs End Design Variables and Objective"
@@ -177,7 +197,7 @@ def plot_D_O_start_end_simple():
     for file in csv_files:
         path = os.path.join(folder, file)
 
-        df = pd.read_csv(path, skiprows=lambda x: x < 20)
+        df = pd.read_csv(path, skiprows=lambda x: x < 26)
         df.columns = df.columns.str.strip()
 
         # ✅ Extract start and end values
@@ -204,11 +224,12 @@ def plot_D_O_start_end_simple():
 
     # ✅ FIX: put BEFORE show()
     fig.suptitle(title)
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 
     plt.tight_layout()
     plt.show()
 
-def plot_max_util(folder="LHS_results"):
+def plot_max_util(folder="LHS_results_SLP_Self_written"):
 
     txt_files = [f for f in os.listdir(folder) if f.endswith(".txt")]
 
@@ -264,17 +285,18 @@ def plot_max_util(folder="LHS_results"):
     plt.grid(True)
 
     plt.tight_layout()
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
     plt.show()
 
 # Select what plots to use
-plot_obj()
-plot_D_O_All(x_axis="iter")
-plot_D_O_start_end_simple()
+#plot_obj("rad")                          # objective, d0, t0, d1, t1, rad
+#plot_D_O_All(x_axis="iter")
+#plot_D_O_start_end_simple()
 plot_max_util()
 
 
 
-def objective_summary_table(folder="LHS_results", start_mass=107.89):
+def objective_summary_table(folder="LHS_results_SLP_Self_written", start_mass=107.89):
 
     csv_files = [f for f in os.listdir(folder) if f.endswith(".csv")]
 
@@ -284,7 +306,7 @@ def objective_summary_table(folder="LHS_results", start_mass=107.89):
         path = os.path.join(folder, file)
 
         # Load data
-        df = pd.read_csv(path, skiprows=lambda x: x < 20)
+        df = pd.read_csv(path, skiprows=lambda x: x < 26)
         df.columns = df.columns.str.strip()
 
         # Ensure numeric types
@@ -299,7 +321,7 @@ def objective_summary_table(folder="LHS_results", start_mass=107.89):
 
 
 
-def objective_summary_table(folder="LHS_results",
+def objective_summary_table(folder="LHS_results_SLP_Self_written",
                             start_mass=107.89,
                             output_file="objective_summary.txt"):
 
@@ -311,7 +333,7 @@ def objective_summary_table(folder="LHS_results",
         path = os.path.join(folder, file)
 
         # Load data
-        df = pd.read_csv(path, skiprows=lambda x: x < 20)
+        df = pd.read_csv(path, skiprows=lambda x: x < 26)
         df.columns = df.columns.str.strip()
 
         # Ensure numeric types
@@ -340,14 +362,14 @@ def objective_summary_table(folder="LHS_results",
         improvement = 100 * (start_val - end_val) / start_val
 
         results.append(
-            [file, start_val, end_val, improvement] +
+            [start_val, end_val, improvement] +
             list(initial_design) +
             list(final_design)
         )
 
     # Column names
     columns = (
-        ["Run", "Start [kg]", "End [kg]", "Improvement [%]"] +
+        ["Start [kg]", "End [kg]", "Improvement [%]"] +
         [f"{c}_start" for c in design_cols] +
         [f"{c}_end" for c in design_cols]
     )

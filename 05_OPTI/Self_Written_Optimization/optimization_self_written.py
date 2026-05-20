@@ -44,20 +44,18 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
         c0=1.0,
     ) if acs_active else None
 
+    # fminslp.m-equivalent options forwarded to solve_slp_mvp via slp_options.
+    # Names match fminslp.slpoptions (lines 794-849).  Extra keys not in
+    # fminslp.m are intentionally absent -- the solver accepts and ignores
+    # legacy keys for backward compatibility.
     slp_options = {
-        "move_limit": Solver_Settings.get("move_limit", 0.10),
-        "move_limit_min": Solver_Settings.get("move_limit_min", 1e-5),
-        "move_limit_expand": Solver_Settings.get("move_limit_expand", 1.4),
+        "algorithm":         Solver_Settings.get("algorithm", "merit"),
+        "move_limit":        Solver_Settings.get("move_limit", 0.10),
+        "move_limit_expand": Solver_Settings.get("move_limit_expand", 1.1),
         "move_limit_shrink": Solver_Settings.get("move_limit_shrink", 0.5),
-        "backtrack_max": Solver_Settings.get("backtrack_max", 8),
-        "backtrack_shrink": Solver_Settings.get("backtrack_shrink", 0.5),
-        "feasibility_tol": Solver_Settings.get("feasibility_tol", 1e-5),
-        "slack_tol": Solver_Settings.get("slack_tol", 1e-8),
-        "penalty_increase": Solver_Settings.get("penalty_increase", 10.0),
-        "penalty_max": Solver_Settings.get("penalty_max", 1e9),
-        "sufficient_decrease": Solver_Settings.get("sufficient_decrease", 1e-6),        # 1e-4
-        "feasibility_reduction": Solver_Settings.get("feasibility_reduction", 1e-2),    # 1e-3
-        "algorithm": Solver_Settings.get("algorithm", "merit"),
+        "max_fun_evals":     Solver_Settings.get("max_fun_evals", 1000),
+        "objective_limit":   Solver_Settings.get("objective_limit", -1e20),
+        "max_infeasibility": Solver_Settings.get("max_infeasibility", float("inf")),
     }
 
     # Logger Options
@@ -67,17 +65,22 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
         method="Self-Written-" + method,
         var_names=names,
         options={
+            "algorithm": slp_options["algorithm"],
             "acc": Solver_Settings["acc"],
+            "xtol": Solver_Settings.get("xtol", 1e-8),
+            "gtol": Solver_Settings.get("gtol", 1e-6),
             "finite_diff_abs_step": fd_step,
             "maxiter": Solver_Settings["maxiter"],
+            "max_fun_evals": slp_options["max_fun_evals"],
             "Aggregate": Solver_Settings.get("Aggregate", "None"),
             "p_value": Solver_Settings.get("p_value", 1),
             "rho_value": Solver_Settings.get("rho_value", 100),
             "relaxation": Solver_Settings.get("relaxation", 0),
             "move_limit": slp_options["move_limit"],
-            "backtrack_max": slp_options["backtrack_max"],
-            "feasibility_tol": slp_options["feasibility_tol"],
-            "penalty_weight": Solver_Settings.get("penalty_weight", 1e3),
+            "move_limit_expand": slp_options["move_limit_expand"],
+            "move_limit_shrink": slp_options["move_limit_shrink"],
+            "penalty_weight": Solver_Settings.get("penalty_weight", 1000.0),
+            "max_infeasibility": slp_options["max_infeasibility"],
         },
         save_folder=save_folder,
     )
@@ -213,25 +216,27 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
     # Create Folder
     os.makedirs(save_folder, exist_ok=True) 
 
-    # Run custom optimizer (see optimization_methods.minimize)
-    from .optimization_methods import minimize
-    result = minimize(
+    # Run the fminslp port (Python translation of fminslp.m).  `method` is
+    # accepted as a positional argument for backward compatibility but is
+    # ignored -- the only available solver is the fminslp port.
+    _ = method
+    from .slp_MVP_advanced import solve_slp_mvp
+    result = solve_slp_mvp(
         obj=objective,
         con=constraints,
         x0=x0,
         xl=xl,
         xu=xu,
-        method=method,
         fd_step=fd_step,
         fd_type="forward",
         maxiter=Solver_Settings["maxiter"],
         ftol=Solver_Settings["acc"],
-        xtol=Solver_Settings.get("xtol", 1e-4),
+        xtol=Solver_Settings.get("xtol", 1e-8),
         gtol=Solver_Settings.get("gtol", 1e-6),
-        penalty_weight=Solver_Settings.get("penalty_weight", 1e3),
-        slp_options=slp_options,
+        infeasibility_penalty=Solver_Settings.get("penalty_weight", 1000.0),
         callback=iteration_callback,
         display=True,
+        **slp_options,
     )
 
     # return the result, the text path, and the csv path

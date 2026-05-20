@@ -89,7 +89,8 @@ Misc = {
     "save_folder": "Optimization_Logs" # Save Folder
 }
 
-# Solver Settings
+# Solver Settings -- match fminslp.m defaults (slpoptions, lines 794-849).
+# MATLAB-equivalent option names are noted in the comments.
 Solver_Settings = {
     "acc": 1e-3,                   # Maximum objective function tolerance
     "maxiter": 500,                # Maximum iterations                                                         #IMPORTANT TO TUNE FOR FEA
