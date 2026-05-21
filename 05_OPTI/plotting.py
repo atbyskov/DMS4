@@ -229,11 +229,11 @@ def plot_D_O_start_end_simple():
     plt.tight_layout()
     plt.show()
 
-def plot_max_util(folder="LHS_results_SLP_Self_written"):
+def plot_max_util(folder="LHS_results"):
 
     txt_files = [f for f in os.listdir(folder) if f.endswith(".txt")]
 
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(8, 4))
 
     for file in txt_files:
         path = os.path.join(folder, file)
@@ -273,13 +273,13 @@ def plot_max_util(folder="LHS_results_SLP_Self_written"):
             iterations.append(current_iter)
             max_utils.append(max(util_values))
 
-        # 🔥 Shift iteration index (final value belongs to next iteration)
-        iterations = [i + 1 for i in iterations]
+        # 🤖 Shift iteration index (final value belongs to next iteration)
+        # iterations = [i + 1 for i in iterations]
 
         # Plot
         plt.plot(iterations, max_utils, marker='o', label=file)
 
-    plt.xlabel("Iterations")
+    plt.xlabel("Iteration")
     plt.ylabel("Maximum Utilization")
     plt.title("Maximum Utilization per Iteration")
     plt.grid(True)
