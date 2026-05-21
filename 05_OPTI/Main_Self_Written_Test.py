@@ -17,9 +17,9 @@ opti_settings = {
     "n_mast_segments": 5,         # Number of mast segments
     "mast_segment_height": 810,   # Height of each mast segment [mm]
     "segment_mass_limit": 23,     # Limits for segment masses [kg]
-    "multi_size_columns": False,   # Whether mast segments columns uses different dimensions (True) or not (False)
-    "multi_size_braces": False,    # Whether mast segments braces uses different dimensions (True) or not (False)
-    "brace_split": False,          # Whether braces are split between horiontal and cross (True) or not (False)
+    "multi_size_columns": True,   # Whether mast segments columns uses different dimensions (True) or not (False)
+    "multi_size_braces": True,    # Whether mast segments braces uses different dimensions (True) or not (False)
+    "brace_split": True,          # Whether braces are split between horiontal and cross (True) or not (False)
 }
 
 # Initial Guess
@@ -31,8 +31,8 @@ brace_thickness = 2.3 # Brace Thickness [mm]
 # Bounds
 column_diameter_bounds = (48.3, 114.3) # Column Diameter Bounds [mm]
 column_thickness_bounds = (2.5, 5.0)   # Column Thickness Bounds [mm]
-brace_diameter_bounds = (10, 50.0)   # Brace Diameter Bounds [mm]
-brace_thickness_bounds = (1.0, 4.0)    # Brace Thickness Bounds [mm]
+brace_diameter_bounds = (25, 60.0)   # Brace Diameter Bounds [mm]
+brace_thickness_bounds = (2.0, 6.0)    # Brace Thickness Bounds [mm]
 
 # Defining variables with bounds and active status
 var = {
@@ -81,7 +81,7 @@ Misc = {
     "Hor_Force": 502.52,            # Horizontal Force (P_Load_z) [N]
     "Ver_Force": -25.13E+3,         # Vertical Force (P_Load_y)   [N]
     "f_y": 700 ,                    # Column Yield Strength [MPa]
-    "f_y_brace": 235,               # Brace Yield Strength [MPa]
+    "f_y_brace": 355,               # Brace Yield Strength [MPa]
     "E_mod": 200*1E3,               # Youngs Modulus [MPa]
     "W_Force": -3.751E+3,           # Vertical Force COG (P_COG_y) [N]
     "eps_geom": 0.1,    # Minimum thickness specification for geometry updates [mm]
@@ -98,22 +98,22 @@ Solver_Settings = {
     "rho_value": 100,             # KS sharpness
     "relaxation": 0,              # aggregation relaxation
     # ---- Finite differences (MATLAB default: sqrt(eps); too small for FEA)
-    "finite_diff_rel_step": 1e-4, # absolute step = rel_step * max(1, |x_i|)                                   #IMPORTANT TO TUNE FOR FEA
+    "finite_diff_rel_step": 1e-3, # absolute step = rel_step * max(1, |x_i|)                                   #IMPORTANT TO TUNE FOR FEA
 
     # ---- Algorithm
     "algorithm": "merit",         # 'merit' (quadratic) or 'al' (augmented Lagrangian)
-    "penalty_weight": 15,     # InfeasibilityPenalization R (fixed, never grows)
+    "penalty_weight": 1000,     # InfeasibilityPenalization R (fixed, never grows)
 
     # ---- Convergence (MATLAB names)
     "acc": 1e-3,                  # FunctionTolerance       -> |delta f_merit|
-    "xtol": 5e-4,                 # StepTolerance           -> ||dx||
-    "gtol": 5e-4,                 # OptimalityTolerance     -> ||grad f_merit|| over x part
+    "xtol": 1e-6,                 # StepTolerance           -> ||dx||
+    "gtol": 1e-6,                 # OptimalityTolerance     -> ||grad f_merit|| over x part
     "maxiter": 5000,              # MaxIterations
     "max_fun_evals": 5000,        # MaxFunctionEvaluations  -- counts LP trial points, mirrors MATLAB nFeval
     "objective_limit": -1e20,     # ObjectiveLimit          -- early stop if f_merit <= this
 
     # ---- Move limits
-    "move_limit": 0.20,           # MoveLimit
+    "move_limit": 0.10,           # MoveLimit
     "move_limit_expand": 1.1,     # MoveLimitExpand
     "move_limit_shrink": 0.5,     # MoveLimitReduce
     "use_acs": True,              # Toggle ACS to on (True) or off (False)
