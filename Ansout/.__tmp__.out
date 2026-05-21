@@ -67,11 +67,14 @@
  Discovery (reduced install) 2025 R1 
  Core WB Files 2025 R1   
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
  CFD-Post only 2025 R1   
  Fluent (includes CFD-Post) 2025 R1  
  Polyflow (includes CFD-Post) 2025 R1
 =======
 >>>>>>> 8e9ddb60a83417be6b2c10dc022747e20c5d0afb
+>>>>>>> e1b9bc15f933e8b06b40cfc4159eaf9566b3d0aa
  Remote Solve Manager Standalone Services 2025 R1
  Additive 2025 R1
  Autodyn 2025 R1 
@@ -102,6 +105,12 @@
 <<<<<<< HEAD
     SINGLE PROCESS WITH   8 THREADS REQUESTED
     TOTAL OF     8 CORES REQUESTED
+  INPUT FILE NAME              = C:\Users\boggy\OneDrive\Desktop\DMS4\Ansout\.__tmp__.inp
+  OUTPUT FILE NAME             = C:\Users\boggy\OneDrive\Desktop\DMS4\Ansout\.__tmp__.out
+=======
+<<<<<<< HEAD
+    SINGLE PROCESS WITH   8 THREADS REQUESTED
+    TOTAL OF     8 CORES REQUESTED
   INPUT FILE NAME              = C:\Users\atbys\Desktop\DMS4 Local\DMS4\Ansout\.__tmp__.inp
   OUTPUT FILE NAME             = C:\Users\atbys\Desktop\DMS4 Local\DMS4\Ansout\.__tmp__.out
 =======
@@ -110,6 +119,7 @@
   INPUT FILE NAME              = C:\Users\gusta\OneDrive\Uni\Kandidat\10. Semester\GitHub\Desktop\DMS4\Ansout\.__tmp__.inp
   OUTPUT FILE NAME             = C:\Users\gusta\OneDrive\Uni\Kandidat\10. Semester\GitHub\Desktop\DMS4\Ansout\.__tmp__.out
 >>>>>>> 8e9ddb60a83417be6b2c10dc022747e20c5d0afb
+>>>>>>> e1b9bc15f933e8b06b40cfc4159eaf9566b3d0aa
 
  PARAMETER STATUS-           (   1 PARAMETERS DEFINED)
 
@@ -118,10 +128,14 @@
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
 <<<<<<< HEAD
+ CURRENT JOBNAME=file  14:01:10  MAY 19, 2026 CP=      0.141
+=======
+<<<<<<< HEAD
  CURRENT JOBNAME=file  11:23:53  MAY 20, 2026 CP=      0.094
 =======
  CURRENT JOBNAME=file  08:32:40  MAY 19, 2026 CP=      0.047
 >>>>>>> 8e9ddb60a83417be6b2c10dc022747e20c5d0afb
+>>>>>>> e1b9bc15f933e8b06b40cfc4159eaf9566b3d0aa
 
      1  FINISH 
 
@@ -181,17 +195,30 @@
  /OUTPUT FILE=         
 
 <<<<<<< HEAD
+ /OUTPUT FILE=         
+
 =======
+<<<<<<< HEAD
+=======
+>>>>>>> e1b9bc15f933e8b06b40cfc4159eaf9566b3d0aa
  CLEAR MAPDL DATABASE AND RESTART
 
  Ansys Mechanical Enterprise Academic Research     
 
+<<<<<<< HEAD
+=======
 >>>>>>> 8e9ddb60a83417be6b2c10dc022747e20c5d0afb
+>>>>>>> e1b9bc15f933e8b06b40cfc4159eaf9566b3d0aa
  /OUTPUT FILE=         
 
  /OUTPUT FILE=         
 
 <<<<<<< HEAD
+ /OUTPUT FILE=         
+
+=======
+<<<<<<< HEAD
+>>>>>>> e1b9bc15f933e8b06b40cfc4159eaf9566b3d0aa
  EXIT MAPDL WHILE IN SERVER MODE
 
  SAVE ALL MODEL, SOLUTION AND POST DATA
@@ -219,6 +246,12 @@
  |                                                                             |
  |-----------------------------------------------------------------------------|
  |                                                                             |
+<<<<<<< HEAD
+ |        CP Time      (sec) =          0.562       Time  =  14:01:17          |
+ |        Elapsed Time (sec) =         15.000       Date  =  05/19/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*
+=======
  |        CP Time      (sec) =          0.406       Time  =  11:24:00          |
  |        Elapsed Time (sec) =         12.000       Date  =  05/20/2026        |
  |                                                                             |
@@ -230,3 +263,4 @@
 
  /OUTPUT FILE=         
 >>>>>>> 8e9ddb60a83417be6b2c10dc022747e20c5d0afb
+>>>>>>> e1b9bc15f933e8b06b40cfc4159eaf9566b3d0aa
