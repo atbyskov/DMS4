@@ -1,55 +1,58 @@
 # Aggregate.py
-# This script handles the aggregation of utilization constraints for optimization
+# P-norm / P-norm-mean aggregation of constraint *values* (e.g. utilization
+# ratios), paired with the ACS scaling factor c from acs.py.
+#
+# Follows Le et al. (2010) Eq. 8-9 and Oest & Lund (2017) Eq. 15:
+#     sigma_PN(x)  = ( sum  u_i(x)^p )^(1/p)         (or (1/n * sum)^(1/p) for mean)
+#     sigma_max(x) = max  u_i(x)
+#     aggregated constraint:  c * sigma_PN(x) <= 1
+#                  in c(x) >= 0 form:   1 - c * sigma_PN(x) >= 0
+#
+# This is *NOT* a P-norm of violations -- it is a P-norm of the actual
+# utilization values themselves.  That is what makes ACS well defined in the
+# feasible region (the ratio sigma_max/sigma_PN stays bounded away from 0/0).
 # ----------------------------------------------------
-# INPUT  <- Utilization Constraints as list (c_util_agg)
-#        <- Method: is chosen in Main
-#        <- P-value: is chosen in Main
-# OUTPUT -> Aggregated Utilization Constraints 
+# INPUT  <- raw utilization values u (non-negative array)
+#        <- method, p_value chosen in Main_Self_Written_Test.py
+#        <- c_scale: the ACS scaling factor (default 1.0)
+# OUTPUT -> c_row     : scalar 1 - c_scale*sigma_PN (or per-element 1-u when method=None)
+#        -> sigma_PN  : the unscaled P-norm value
+#        -> sigma_max : the true max of u
 # ----------------------------------------------------
 import numpy as np
 
-# Define the class
+
 class ConstraintAggregate:
-    def __init__(self, method=None, p_value = None, rho_value = None, relaxation = None):
-        # Read Method
+    def __init__(self, method=None, p_value=None, rho_value=None, relaxation=None):
         self.method = method
-        self.rho = rho_value
-
-        # Read P value
         self.p = p_value
+        self.rho = rho_value
+        # relaxation kept for backward compatibility but not used here.
 
-    # Function for handling aggregation
-    def agg_output(self,g, c_scale = 1.0):
-        # Relaxation parameter for P-norm methods (0<eps<1)
-        relaxation = 0
-        g = np.asarray(g, dtype = float)                            # Read constraints
-        g_k = np.maximum(-(g - relaxation), 0.0)                    # Only violated
-        g_max = np.max(g_k)                                         # Maximum
+    def agg_output(self, u, c_scale=1.0):
+        u = np.asarray(u, dtype=float).ravel()
+        # Negative utilization values are not physical; clamp at zero so the
+        # P-norm is well defined and faithful to the Le et al. formulation.
+        u_pos = np.maximum(u, 0.0)
+        sigma_max = float(np.max(u_pos)) if u_pos.size else 0.0
 
-        # No Aggregate Method 
-        if self.method is None:
-            return g, None, None
-        
-        # P-norm method
+        # ---- No aggregation: pass through per-element 1 - u in c(x)>=0 form ----
+        if self.method is None or self.method == "None":
+            return 1.0 - u_pos, None, sigma_max
+
+        # ---- P-norm of values ----
         if self.method == "P-norm":
-            p = float(self.p)                                       # Read p-value
-            v = (np.sum(g_k**p))**(1/p)                             # Formula
-            print(f"Max Const: {g_max:.3f} | P-norm: {v:.3}")       # Print
-
-        # P-norm mean method
-        if self.method == "P-norm-mean":
             p = float(self.p)
-            n = np.size(g)
-            g_k = np.maximum(-(g - relaxation), 0.0)
-            v = (1/n*np.sum(g_k**p))**(1/p)
+            sigma_PN = float(np.sum(u_pos ** p) ** (1.0 / p))
 
+        elif self.method == "P-norm-mean":
+            p = float(self.p)
+            n = max(int(u_pos.size), 1)
+            sigma_PN = float((np.sum(u_pos ** p) / n) ** (1.0 / p))
 
-            print(f"Max Const: {g_max:.3f} | P-norm-mean: {v:.3}")
+        else:
+            raise ValueError(f"Unknown aggregation method: {self.method!r}")
 
-    
-        
-        v_scaled = c_scale * v
-        
-        return -v_scaled, v, g_max
-  
-
+        # Aggregated constraint in c(x) >= 0 form:  1 - c_scale * sigma_PN >= 0
+        c_row = 1.0 - float(c_scale) * sigma_PN
+        return c_row, sigma_PN, sigma_max
