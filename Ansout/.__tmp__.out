@@ -66,9 +66,12 @@
  Ansys, Inc. License Manager 2025 R1 
  Discovery (reduced install) 2025 R1 
  Core WB Files 2025 R1   
+<<<<<<< HEAD
  CFD-Post only 2025 R1   
  Fluent (includes CFD-Post) 2025 R1  
  Polyflow (includes CFD-Post) 2025 R1
+=======
+>>>>>>> 8e9ddb60a83417be6b2c10dc022747e20c5d0afb
  Remote Solve Manager Standalone Services 2025 R1
  Additive 2025 R1
  Autodyn 2025 R1 
@@ -96,10 +99,17 @@
   BATCH MODE REQUESTED (-b)    = LIST
   INPUT FILE COPY MODE (-c)    = COPY
   SHARED MEMORY PARALLEL REQUESTED
+<<<<<<< HEAD
     SINGLE PROCESS WITH   8 THREADS REQUESTED
     TOTAL OF     8 CORES REQUESTED
   INPUT FILE NAME              = C:\Users\atbys\Desktop\DMS4 Local\DMS4\Ansout\.__tmp__.inp
   OUTPUT FILE NAME             = C:\Users\atbys\Desktop\DMS4 Local\DMS4\Ansout\.__tmp__.out
+=======
+    SINGLE PROCESS WITH  10 THREADS REQUESTED
+    TOTAL OF    10 CORES REQUESTED
+  INPUT FILE NAME              = C:\Users\gusta\OneDrive\Uni\Kandidat\10. Semester\GitHub\Desktop\DMS4\Ansout\.__tmp__.inp
+  OUTPUT FILE NAME             = C:\Users\gusta\OneDrive\Uni\Kandidat\10. Semester\GitHub\Desktop\DMS4\Ansout\.__tmp__.out
+>>>>>>> 8e9ddb60a83417be6b2c10dc022747e20c5d0afb
 
  PARAMETER STATUS-           (   1 PARAMETERS DEFINED)
 
@@ -107,7 +117,11 @@
  PORT                              50052.0000                    SCALAR
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
+<<<<<<< HEAD
  CURRENT JOBNAME=file  11:23:53  MAY 20, 2026 CP=      0.094
+=======
+ CURRENT JOBNAME=file  08:32:40  MAY 19, 2026 CP=      0.047
+>>>>>>> 8e9ddb60a83417be6b2c10dc022747e20c5d0afb
 
      1  FINISH 
 
@@ -166,10 +180,18 @@
 
  /OUTPUT FILE=         
 
+<<<<<<< HEAD
+=======
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+>>>>>>> 8e9ddb60a83417be6b2c10dc022747e20c5d0afb
  /OUTPUT FILE=         
 
  /OUTPUT FILE=         
 
+<<<<<<< HEAD
  EXIT MAPDL WHILE IN SERVER MODE
 
  SAVE ALL MODEL, SOLUTION AND POST DATA
@@ -201,3 +223,10 @@
  |        Elapsed Time (sec) =         12.000       Date  =  05/20/2026        |
  |                                                                             |
  *-----------------------------------------------------------------------------*
+=======
+ CLEAR MAPDL DATABASE AND RESTART
+
+ Ansys Mechanical Enterprise Academic Research     
+
+ /OUTPUT FILE=         
+>>>>>>> 8e9ddb60a83417be6b2c10dc022747e20c5d0afb
