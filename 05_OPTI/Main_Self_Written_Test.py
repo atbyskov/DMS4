@@ -10,16 +10,16 @@ from ansys.mapdl.core import launch_mapdl
 import Self_Written_Optimization.optimization_self_written as optimization_self_written
 from MyAPDLCall import RunAPDL
 
-
+start = time.time()
 # Variables. Choose which ones to include by setting "active": True or False.
 # Include Bounds
 opti_settings = {
     "n_mast_segments": 5,         # Number of mast segments
     "mast_segment_height": 810,   # Height of each mast segment [mm]
     "segment_mass_limit": 23,     # Limits for segment masses [kg]
-    "multi_size_columns": False,   # Whether mast segments columns uses different dimensions (True) or not (False)
-    "multi_size_braces": False,    # Whether mast segments braces uses different dimensions (True) or not (False)
-    "brace_split": False,          # Whether braces are split between horiontal and cross (True) or not (False)
+    "multi_size_columns": True,   # Whether mast segments columns uses different dimensions (True) or not (False)
+    "multi_size_braces": True,    # Whether mast segments braces uses different dimensions (True) or not (False)
+    "brace_split": True,          # Whether braces are split between horiontal and cross (True) or not (False)
 }
 
 # Initial Guess
@@ -126,7 +126,7 @@ mapdl = launch_mapdl(
     run_location="Ansout",
     log_apdl="apdl_log",
     override=True,
-    nproc=8,
+    nproc=10,
     additional_switches="-p ansys -smp",
 )
 
@@ -136,6 +136,9 @@ try:
     result, txt_path, csv_path = optimization_self_written.run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="slp_mvp")
 finally:
     mapdl.exit()
+
+end = time.time()
+print(f"Optimization completed in {end - start:.2f} seconds.")
 
 # Print Information
 print("\nOptimal x:", result.x)
