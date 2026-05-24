@@ -164,7 +164,7 @@ class OptimizationLogger:
         self.log_line(f"Run end date/time   : {end.strftime('%Y-%m-%d %H:%M:%S')}") # Writes the end date and time to the optimization log file.
         self.log_line(f"Total runtime [s]   : {dt_sec:.3f}") # Writes the total runtime to the optimization log file.
         self.log_line(f"Success             : {result.success}") # Writes the success status to the optimization log file.
-        self.log_line(f"Status              : {result.status}") # Writes the status to the optimization log file.
+        self.log_line(f"Status              : {getattr(result, 'status', 'N/A')}") # SLPResult has no status field; fall back gracefully.
         self.log_line(f"Message             : {result.message}") # Writes the message to the optimization log file.
         self.log_line(f"Iterations          : {result.nit}") # Writes the number of iterations to the optimization log file.
         self.log_line(f"Function evaluations: {result.nfev}") # Writes the number of function evaluations to the optimization log file.

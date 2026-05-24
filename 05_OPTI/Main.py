@@ -91,11 +91,11 @@ Misc = {
 Solver_Settings = {
     "acc": 1e-3,                 # Maximum objective function tolerance
     "maxiter": 120,              # Maximum iterations
-    "Aggregate": None,           # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
+    "Aggregate": "P-norm",           # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
     "p_value": 8,                # Value for "P-norm" and "P-norm-mean"
     "rho_value": 100,            # rho value used in KS
     "relaxation": 0,             # Relaxation parameter used in aggregation
-    "use_acs": False,              # Toggle ACS to on (True) or off (False)
+    "use_acs": True,              # Toggle ACS to on (True) or off (False)
 }
 
 tic_lic = time.time()
@@ -104,7 +104,7 @@ mapdl = launch_mapdl(
     run_location="Ansout",
     log_apdl="apdl_log",
     override=True,
-    nproc=10,
+    nproc=7,
     additional_switches="-p ansys -smp",
 )
 toc_lic = time.time()

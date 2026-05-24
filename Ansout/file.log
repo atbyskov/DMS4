@@ -42,3 +42,10 @@
 /BATCH  
 /COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       18:35:45
 /COM,ANSYS RELEASE                   BUILD  0.0      UP00000000       00:00:00
+/BATCH  
+<<<<<<< HEAD
+/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       14:01:11
+/COM,ANSYS RELEASE                   BUILD  0.0      UP00000000       00:00:00
+=======
+/COM,ANSYS RELEASE 2025 R1           BUILD 25.1      UP20241202       11:23:56
+>>>>>>> e1b9bc15f933e8b06b40cfc4159eaf9566b3d0aa

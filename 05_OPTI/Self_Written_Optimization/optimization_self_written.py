@@ -239,5 +239,8 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
         **slp_options,
     )
 
+    # Write a clean FINAL RESULT block (converged x, objective, message) to the TXT log.
+    logger.finalize(result)
+
     # return the result, the text path, and the csv path
     return result, logger.txt_path, logger.csv_path
