@@ -49,7 +49,6 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
     # fminslp.m are intentionally absent -- the solver accepts and ignores
     # legacy keys for backward compatibility.
     slp_options = {
-        "algorithm":         Solver_Settings.get("algorithm", "merit"),
         "move_limit":        Solver_Settings.get("move_limit", 0.10),
         "move_limit_expand": Solver_Settings.get("move_limit_expand", 1.1),
         "move_limit_shrink": Solver_Settings.get("move_limit_shrink", 0.5),
@@ -65,7 +64,6 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
         method="Self-Written-" + method,
         var_names=names,
         options={
-            "algorithm": slp_options["algorithm"],
             "acc": Solver_Settings["acc"],
             "xtol": Solver_Settings.get("xtol", 1e-8),
             "gtol": Solver_Settings.get("gtol", 1e-6),

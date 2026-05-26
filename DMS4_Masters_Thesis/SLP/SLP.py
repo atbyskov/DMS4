@@ -7,8 +7,7 @@ matches the MATLAB reference:
 
     * Slack variables ``y >= 0`` that relax the linearized inequality
       constraints so the LP subproblem is always feasible.
-    * Quadratic merit objective  ``f(x) + a_F * sum(y*R + 0.5*y^2)`` (merit)
-      or the augmented-Lagrangian variant ``f(x) + a_F * sum(y*lambda + 0.5*R*y^2)``.
+    * Quadratic merit objective  ``f(x) + a_F * sum(y*R + 0.5*y^2)``.
     * LP subproblem in the augmented vector ``z = [x, y]``.
     * Fletcher--Leyffer--Toint global convergence filter
       (``beta = 1 - 1e-6``, ``gamma = 1e-6``, ``sigma = 2e-6``).
@@ -364,7 +363,6 @@ def solve_slp_mvp(
     move_limit_expand: float = 1.1,               # MoveLimitExpand
     move_limit_shrink: float = 0.5,               # MoveLimitReduce
     max_infeasibility: float = np.inf,            # MaxInfeasibility
-    algorithm: str = "merit",                     # Algorithm  ('merit' or 'al')
     display: bool = False,
     callback: Optional[Callable[[np.ndarray], None]] = None,
     # ------- Tolerated for backward compatibility (silently ignored) ----
@@ -377,10 +375,6 @@ def solve_slp_mvp(
 
     Solves ``min f(x) s.t. c(x) >= 0, xl <= x <= xu``.
     """
-    algorithm = str(algorithm).lower()
-    if algorithm not in {"merit", "al"}:
-        raise ValueError("algorithm must be 'merit' or 'al'.")
-
     # ---------------- Setup (MATLAB lines 196-305) ----------------
     x = np.asarray(x0, dtype=float).ravel().copy()
     n = x.size
@@ -432,36 +426,24 @@ def solve_slp_mvp(
         ylb = np.empty(0, dtype=float)
         yub = np.empty(0, dtype=float)
 
-    # Lines 275-284: AL multipliers
     R = float(infeasibility_penalty)  # InfeasibilityPenalization, never grows
-    if algorithm == "al" and m > 0:
-        # Lines 279-281
-        lambda_vec = np.ones(m, dtype=float)
-        lambda_vec = np.maximum(lambda_vec + R * y, 1.0)
-    else:
-        lambda_vec = np.empty(0, dtype=float)
 
     # Lines 287-289: merit scaling factor a_F is set once
     a_F = max(abs(float(f_cur)), 1.0)
 
     # ---------- Merit helpers (mirror getMeritObj lines 503-531) ----------
-    def merit_val(f_v: float, y_v: np.ndarray, lam: np.ndarray) -> float:
+    def merit_val(f_v: float, y_v: np.ndarray) -> float:
         if y_v.size == 0:
             return float(f_v)
-        if algorithm == "merit":
-            return float(f_v) + a_F * float(np.sum(y_v * R + 0.5 * y_v * y_v))
-        # algorithm == 'al'
-        return float(f_v) + a_F * float(np.sum(y_v * lam + 0.5 * R * y_v * y_v))
+        return float(f_v) + a_F * float(np.sum(y_v * R + 0.5 * y_v * y_v))
 
-    def merit_grad_y(y_v: np.ndarray, lam: np.ndarray) -> np.ndarray:
+    def merit_grad_y(y_v: np.ndarray) -> np.ndarray:
         if y_v.size == 0:
             return np.empty(0, dtype=float)
-        if algorithm == "merit":
-            return a_F * (R + y_v)
-        return a_F * (lam + R * y_v)
+        return a_F * (R + y_v)
 
     # Lines 292-296: initialize filter
-    fmerit = merit_val(f_cur, y, lambda_vec)
+    fmerit = merit_val(f_cur, y)
     filt = _init_filter(max_iter=maxiter, max_infeasibility=max_infeasibility)
     filt.init_f = fmerit
     f_old = fmerit
@@ -492,7 +474,7 @@ def solve_slp_mvp(
         print("*" * 105)
         print("                          fminslp optimizer with global convergence filter")
         print("*" * 105)
-        print(f"    Algorithm: {algorithm}   nDV: {n}   nConstraints: {m}")
+        print(f"    nDV: {n}   nConstraints: {m}")
         print(f"    a_F = {a_F:.4e}   R = {R:.4e}   sigma = {filt.sigma:.2e}   "
               f"sqrt(eps) = {float(np.sqrt(np.finfo(float).eps)):.2e}")
         print(f"    StepTol={xtol:.2e}  FunTol={ftol:.2e}  OptTol={gtol:.2e}  "
@@ -538,7 +520,7 @@ def solve_slp_mvp(
 
         # --- Gradients at current x (MATLAB lines 312-314) ---
         df, dg = _fd_grad_and_jac(obj_and_g, x, f_cur, g_cur, h_fd, fd_type)
-        dy = merit_grad_y(y, lambda_vec)
+        dy = merit_grad_y(y)
         dfmerit = np.concatenate([df, dy]) if m > 0 else df.copy()
 
         # --- LP linearization (MATLAB lines 316-326) ---
@@ -599,7 +581,7 @@ def solve_slp_mvp(
                 # MATLAB lines 365-370: evaluate constraints + objective at trial
                 f_new, g_new = obj_and_g(x_new)
                 n_trials += 1
-                fmerit_new = merit_val(f_new, y_new, lambda_vec)
+                fmerit_new = merit_val(f_new, y_new)
                 delta_f = f_old - fmerit_new
 
                 # MATLAB lines 376-378: build filter candidate (h, f)
@@ -702,10 +684,6 @@ def solve_slp_mvp(
             f_cur = f_new
             g_cur = g_new.copy()
             fmerit = fmerit_new
-
-            # MATLAB lines 459-462: AL multiplier update
-            if algorithm == "al" and m > 0:
-                lambda_vec = np.maximum(lambda_vec + R * y, 1.0)
 
             # MATLAB lines 465-471: history
             f_old = fmerit
