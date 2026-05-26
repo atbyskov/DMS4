@@ -93,7 +93,7 @@ Misc = {
 # MATLAB-equivalent option names are noted in the comments.
 Solver_Settings = {
     # ---- Aggregation (NOT a solver parameter; consumed by ConstraintAggregate)
-    "Aggregate": "P-norm",            # None | "P-norm" | "P-norm-mean" | "KS" | "KS_shift"
+    "Aggregate": None,            # None | "P-norm" | "P-norm-mean" | "KS" | "KS_shift"
     "p_value": 8,                 # P-norm exponent
     "rho_value": 100,             # KS sharpness
     "relaxation": 0,              # aggregation relaxation
@@ -102,7 +102,7 @@ Solver_Settings = {
 
     # ---- Algorithm
     "algorithm": "merit",         # 'merit' (quadratic) or 'al' (augmented Lagrangian)
-    "penalty_weight": 1000,     # InfeasibilityPenalization R (fixed, never grows)
+    "penalty_weight": 15,     # InfeasibilityPenalization R (fixed, never grows)
 
     # ---- Convergence (MATLAB names)
     "acc": 1e-3,                  # FunctionTolerance       -> |delta f_merit|
@@ -116,7 +116,7 @@ Solver_Settings = {
     "move_limit": 0.10,           # MoveLimit
     "move_limit_expand": 1.1,     # MoveLimitExpand
     "move_limit_shrink": 0.5,     # MoveLimitReduce
-    "use_acs": True,              # Toggle ACS to on (True) or off (False)
+    "use_acs": False,              # Toggle ACS to on (True) or off (False)
     # ---- Filter
     "max_infeasibility": float("inf"),  # MaxInfeasibility  (inf => filter starts unconstrained)
 }
