@@ -220,7 +220,7 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
     # accepted as a positional argument for backward compatibility but is
     # ignored -- the only available solver is the fminslp port.
     _ = method
-    from .slp_MVP_advanced import solve_slp_mvp
+    from .SLP import solve_slp_mvp
     result = solve_slp_mvp(
         obj=objective,
         con=constraints,
