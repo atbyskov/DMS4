@@ -1,4 +1,30 @@
+"""
+opt_logger.py
+-------------
 
+This module provides structured logging functionality for the optimization workflow.
+It records both high-level iteration progress and detailed objective evaluations,
+creating optimization history.
+
+Inputs:
+-------
+- x0           : Initial design variable vector
+- bounds       : Variable bounds for each design variable
+- method       : Optimization method name (e.g., "PySLSQP")
+- options      : Dictionary of solver settings
+- var_names    : Names of design variables
+- save_folder  : Directory where logs are stored
+
+Outputs:
+--------
+- Text log file:
+      optimization_log_<timestamp>.txt
+
+- CSV data file:
+      objective_history_<timestamp>.csv
+
+
+"""
 
 import os
 from datetime import datetime
