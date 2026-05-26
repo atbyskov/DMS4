@@ -1,0 +1,55 @@
+================================================================================
+OPTIMIZATION LOG
+================================================================================
+Run start date/time : 2026-05-26 15:37:32
+Log file            : Optimization_Logs\optimization_log_2026-05-26_15-37-32.txt
+Objective CSV       : Optimization_Logs\objective_history_2026-05-26_15-37-32.csv
+
+Initial design variables:
+x0 = [202.07,  76.1 ,   3.  ,  26.9 ,   2.3 ]
+
+Bounds:
+  x[0] in [150.0, 350.0]
+  x[1] in [48.3, 114.3]
+  x[2] in [2.5, 5.0]
+  x[3] in [25, 60.0]
+  x[4] in [2.0, 6.0]
+
+Optimizer settings:
+  Method  : Self-Written-slp_mvp
+  algorithm: merit
+  acc     : 0.001
+  xtol    : 1e-06
+  gtol    : 1e-06
+  finite_diff_abs_step: [0.20207, 0.0761, 0.003, 0.0269, 0.0023]
+  maxiter : 5000
+  max_fun_evals: 5000
+  Aggregate: None
+  p_value : 8
+  rho_value: 100
+  relaxation: 0
+  move_limit: 0.1
+  move_limit_expand: 1.1
+  move_limit_shrink: 0.5
+  penalty_weight: 15
+  max_infeasibility: inf
+
+================================================================================
+
+[EVALUATION 1]
+  Date/time : 2026-05-26 15:37:37
+  x         : [202.07, 76.10, 3.00, 26.90, 2.30]
+  Objective : 106.788
+
+[ITERATION 1]
+  Date/time : 2026-05-26 15:37:38
+  x         : [202.07,  76.1 ,   3.  ,  26.9 ,   2.3 ]
+
+Util_LB     Column:    0.035  Brace:    0.002
+Util_NF     Column:    0.500  Brace:    0.126
+Util_S      Column:    0.028  Brace:    0.006
+Util_T      Column:    0.024  Brace:    0.024
+Util_BR     Column:    0.565  Brace:    0.198
+Util_IN     Column:    0.658  Brace:    0.248
+Util_BS_sig  Column:    N/A    Brace:    0.184
+Util_BS_defl  Column:    N/A    Brace:    0.069
