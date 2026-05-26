@@ -1,4 +1,37 @@
-## MAIN BEAM ELEMENT DOCUMENT ##
+"""
+MAIN BEAM ELEMENT OPTIMIZATION PROGRAM (SLP)
+--------------------------------------------
+
+This script serves as the primary driver for structural optimization of a
+beam-based mast model using Sequential Linear Programming (SLP) coupled
+with ANSYS MAPDL for finite element analysis.
+
+Inputs:
+-------
+- opti_settings    : Structural configuration parameters
+- var              : Design variables (values, bounds, activity flags)
+- Misc             : Constants (loads, materials, geometry file, etc.)
+- Solver_Settings  : SLP solver configuration
+
+Outputs:
+--------
+- result           : Optimization result object
+- txt_path         : Path to detailed log file
+- csv_path         : Path to evaluation history file
+
+External Dependencies:
+----------------------
+- ansys.mapdl.core        : MAPDL interface (PyMAPDL)
+- RunAPDL                 : FE model execution
+- optimization_SLP        : SLP optimization engine
+- Supporting modules:
+    • APDL_Input
+    • Post_Process
+    • ConstraintAggregate
+    • ACS (optional)
+    • opt_logger
+
+"""
 
 # Import packages
 import sys
