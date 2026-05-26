@@ -1,3 +1,30 @@
+
+"""
+SW_Import.py
+------------
+
+This module handles the extraction of geometric data from IGES files exported
+from SolidWorks. Specifically, it parses line entities (Type 110) to retrieve
+beam coordinates used for structural modeling.
+
+Inputs:
+-------
+- filename : Path to IGES (.igs / .iges) file exported from SolidWorks
+
+Outputs:
+--------
+- coords : List of line segments
+           [
+               [x1, y1, z1, x2, y2, z2],
+               ...
+           ]
+
+Notes:
+------
+- Coordinates are returned in the original unit system of the IGES file.
+
+"""
+
 import os
 
 

@@ -1,14 +1,36 @@
-# Search_space.py
-# This script creates quasi-random points for inital values to the design variables
-# These points can then be transfered and run in main_loop.py or similar.
-# Pseudocode for the script:
-#   1. Write design variable names and bounds
-#   2. Create Grid sampling
-#   3. Create Random sampling
-#   4. Create Latin Hypercube sampling
-#   5. Create Sobol samplint
-#   6. Calculate Disceptancy for each method and print
-#   7. write Latin Hypercube sampling points to a .txt file: "seach_space.txt"
+
+"""
+Search_space.py
+----------------
+
+This module generates quasi-random and structured sampling points for initializing
+design variables in an optimization problem. It enables exploration of the design
+space prior to or alongside optimization, improving robustness and reducing the
+risk of local minima.
+
+Sampling Methods:
+   - Grid Sampling (Equal Spacing):
+        Structured, deterministic grid across all dimensions.
+   - Random Sampling:
+        Uniform random distribution within bounds.
+   - Latin Hypercube Sampling (LHS):
+        Stratified sampling ensuring better space coverage.
+   - Sobol Sampling:
+        Quasi-random low-discrepancy sequence for optimal uniformity.
+
+
+Outputs:
+--------
+- search_space.txt : Text file containing sampled design points
+- Console output   : Discrepancy scores for all sampling methods
+- Plots            : Visual comparison of sampling distributions
+
+Notes:
+------
+- Bounds must match those used in the main optimization script.
+- This module is intended for pre-processing and is not part of the main optimization loop.
+
+"""
 
 # Import Tools 
 import numpy as np

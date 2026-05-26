@@ -1,11 +1,43 @@
-# Aggregate.py
-# This script handles the aggregation of utilization constraints for optimization
-# ----------------------------------------------------
-# INPUT  <- Utilization Constraints as list (c_util_agg)
-#        <- Method: is chosen in Main
-#        <- P-value: is chosen in Main
-# OUTPUT -> Aggregated Utilization Constraints 
-# ----------------------------------------------------
+
+"""
+Aggregate.py
+------------
+
+This module provides functionality for aggregating multiple constraint values
+into a single representative constraint for use in gradient-based optimization.
+
+Implemented Methods:
+-------------------
+1. None (No Aggregation):
+   - Returns all constraints directly (no reduction).
+
+2. P-norm:
+   - Smooth approximation of the maximum violated constraint.
+   - Defined as:
+         v = (Σ g_k^p)^(1/p)
+   - As p → ∞, approaches max(g_k).
+
+3. P-norm-mean:
+   - Normalized version of P-norm:
+         v = (1/n * Σ g_k^p)^(1/p)
+   - Reduces sensitivity to number of constraints.
+
+Inputs:
+-------
+- g         : Array-like constraint vector (g_i ≥ 0 formulation)
+- method    : Aggregation method ("P-norm", "P-norm-mean", or None)
+- p_value   : Order of P-norm (controls smoothness vs. max approximation)
+- rho_value : (Reserved for KS-type methods, not currently implemented)
+- c_scale   : External scaling factor (typically from ACS)
+
+Outputs:
+--------
+- c_agg     : Aggregated constraint value (scalar)
+- v         : Raw aggregated violation measure
+- g_max     : Maximum individual violation
+
+"""
+
 import numpy as np
 
 # Define the class
