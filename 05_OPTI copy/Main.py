@@ -1,7 +1,24 @@
-## MAIN Optimization program ##
-# Uses PySLSQP to optimize .IGS structure through Ansys
-# Calls MAPDL in non-interactive mode
-# Requires ansys.mapdl.core
+
+## MAIN Optimization Program ##
+"""
+This script performs parametric structural optimization of an .IGS-based mast geometry 
+using ANSYS MAPDL coupled with a Python-based optimization workflow.
+
+Workflow Overview:
+1. Define optimization settings, variables, bounds, and material/load parameters.
+2. Launch ANSYS MAPDL session.
+3. Perform an initial analysis run to initialize the optimizer.
+4. Execute iterative optimization loop to improve structural performance.
+5. Save results and terminate the MAPDL session.
+
+Dependencies:
+- ansys.mapdl.core
+
+Output:
+- Optimized design variables
+- Log files and result summaries stored in the specified output folder
+"""
+
 
 # Import packages
 import sys
@@ -13,7 +30,7 @@ from ansys.mapdl.core import launch_mapdl
 import optimization
 from MyAPDLCall import RunAPDL
 
-# Variables. Choose which ones to include by setting "active": True or False.
+# Optimizer Settings
 opti_settings = {
     "n_mast_segments": 5,         # Number of mast segments
     "mast_segment_height": 810,   # Height of each mast segment [mm]
@@ -29,12 +46,36 @@ column_thickness = 3   # Column Thickness [mm]
 brace_diameter = 26.9  # Brace Diameter [mm]
 brace_thickness = 2.3  # Brace Thickness [mm]
          
-
 # Bounds
 column_diameter_bounds = (48.3, 114.3)   # Column Diameter Bounds [mm]
 column_thickness_bounds = (2.5, 5.0)     # Column Thickness Bounds [mm]
 brace_diameter_bounds = (10.0, 50.0)     # Brace Diameter Bounds [mm]
 brace_thickness_bounds = (1.0, 4.0)      # Brace Thickness Bounds [mm]
+
+# Static variables
+Misc = {
+    "esize": 3,                           # Element number of subdivisions [mm]
+    "Hor_Force": 502.52,                  # Horizontal Force (P_Load_z) [N]
+    "Ver_Force": -25.13E+3,               # Vertical Force (P_Load_y)   [N]
+    "f_y": 700 ,                          # Column Yield Strength [MPa]
+    "f_y_brace": 235,                     # Brace Yield Strength [MPa]
+    "E_mod": 200*1E3,                     # Youngs Modulus [MPa]
+    "W_Force": -3.751E+3,                 # Vertical Force COG (P_COG_y) [N]
+    "SW_filename": "LWC_L1_LINES.IGS",    # Filename for IGS File
+    "save_folder": "Optimization_Logs"    # Save Folder
+}
+
+# Solver Settings
+Solver_Settings = {
+    "acc": 1e-3,                 # Maximum objective function tolerance
+    "maxiter": 120,              # Maximum iterations
+    "Aggregate": "P-norm",       # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
+    "p_value": 8,                # Value for "P-norm" and "P-norm-mean"
+    "rho_value": 100,            # rho value used in KS
+    "relaxation": 0,             # Relaxation parameter used in aggregation
+    "use_acs": True,             # Toggle ACS to on (True) or off (False)
+}
+
 
 # Defining variables with bounds and active status
 var = {
@@ -77,29 +118,7 @@ else:
             "t1": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True},       # Brace Thickness  [mm]
         })
 
-# Static variables
-Misc = {
-    "esize": 3,                           # Element Size [mm]
-    "Hor_Force": 502.52,                  # Horizontal Force (P_Load_z) [N]
-    "Ver_Force": -25.13E+3,               # Vertical Force (P_Load_y)   [N]
-    "f_y": 700 ,                          # Column Yield Strength [MPa]
-    "f_y_brace": 235,                     # Brace Yield Strength [MPa]
-    "E_mod": 200*1E3,                     # Youngs Modulus [MPa]
-    "W_Force": -3.751E+3,                 # Vertical Force COG (P_COG_y) [N]
-    "SW_filename": "LWC_L1_LINES.IGS",    # Filename for IGS File
-    "save_folder": "Optimization_Logs"    # Save Folder
-}
 
-# Solver Settings
-Solver_Settings = {
-    "acc": 1e-3,                 # Maximum objective function tolerance
-    "maxiter": 120,              # Maximum iterations
-    "Aggregate": "P-norm",       # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
-    "p_value": 8,                # Value for "P-norm" and "P-norm-mean"
-    "rho_value": 100,            # rho value used in KS
-    "relaxation": 0,             # Relaxation parameter used in aggregation
-    "use_acs": True,             # Toggle ACS to on (True) or off (False)
-}
 # Time linence opening (non essential)
 tic_lic = time.time()
 
