@@ -1,18 +1,35 @@
-# Post_Process.py
-    # Takes [var], [Misc], "APDL_Eigen_Internal.txt", "APDL_Nonlin_Internal" as input
-    # 6 Functions for calculating:
-        # 1. Local Buckling                 [LB]
-        # 2. Normal Force                   [NF]
-        # 3. Shear                          [S]
-        # 4. Torsion                        [T]
-        # 5. Bending, Normal and Shear      [BNS]
-        # 6. Buckling Resistance            [BR]
-        # 7. Interaction                    [IN]
-        # 8. Brace-Step                     [BS]
-    # Outputs this as a .txt file for evaluation
-    # Output highest utilization factor as list
-    #   FORMAT:
-    #   [Column NF, Brace NF]
+"""
+Post_Process.py
+----------------
+
+This script handles all post-processing of the beam MAPDL Model
+Evaluates structure through utilization checks based on Eurocode 3 
+
+Inputs:
+-------
+- var               : Dictionary of design variables
+- Misc              : Static parameters (material, files, etc.)
+- opti_settings     : Configuration flags for model structure
+
+
+Outputs:
+--------
+- Utilization ratios per check 
+- Constraint arrays for optimization
+
+8 Functions for calculating:
+    # 1. Local Buckling                 [LB]
+    # 2. Normal Force                   [NF]
+    # 3. Shear                          [S]
+    # 4. Torsion                        [T]
+    # 6. Buckling Resistance            [BR]
+    # 7. Interaction                    [IN]
+    # 8. Brace-Step                     [BS]
+Outputs this as a .txt file for evaluation
+Output highest utilization factor as list
+   FORMAT:
+   [Column NF, Brace NF]
+"""
 
 # Import tools
 from pathlib import Path
@@ -70,14 +87,16 @@ def _brace_span_mm(var, misc, tol=1e-3):
         if is_horizontal and has_horizontal_span:
             return math.sqrt((x2 - x1)**2 + (y2 - y1)**2 + (z2 - z1)**2)
 
+# Create PostProcesser Class
+# More convinent with class for passing information to functions
 class PostProcessor:
 
+    # Initial traits of PostProcessor
     def __init__(self,var,Misc,opti_settings):
         # Store inputs
         self.var = var
         self.Misc = Misc
         self.opti_settings = opti_settings
-
         self.n = int(opti_settings.get("n_mast_segments"))
         self.mast_height = float(opti_settings.get("mast_segment_height"))
         self.multi_size_columns = bool(opti_settings.get("multi_size_columns"))
@@ -227,7 +246,6 @@ class PostProcessor:
         return func(self.df_brace, "R3", "R2", self.f_y_brace)
 
     # Function to read and parse forces 
-    # NOTE: I have used Copilot for most of this function, so understanding is low ...
     def read_forces(self,filepath: str) -> pd.DataFrame:
         blocks = []
         current_member = None
@@ -289,7 +307,6 @@ class PostProcessor:
                 "Util_NF": self.Util_NF(),
                 "Util_S": self.Util_S(),
                 "Util_T": self.Util_T(),
-                #"Util_BNS": self.Util_BNS(),
                 "Util_BR": self.Util_BR(),
                 "Util_IN": self.Util_IN(),
                 "Util_BS_sig": self.Util_BS()[0], # stress
@@ -681,7 +698,7 @@ class PostProcessor:
 
     def Eigenvalue_1(self):
 
-        # We implement a constrain, such that the first positive eigenvalue is greater than or equal to 4.0
+        # We implement a constraint, such that the first positive eigenvalue is greater than or equal to 4.0
         # And for the optimization scheme we need to implement the form:
         # c(x) >= 0 "Inequality Constraint"
         # Therefore we get:
