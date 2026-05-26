@@ -7,7 +7,7 @@ import time
 from ansys.mapdl.core import launch_mapdl
 
 # Import Functions
-import Self_Written_Optimization.optimization_self_written as optimization_self_written
+import SLP.optimization_SLP as optimization_SLP
 from MyAPDLCall import RunAPDL
 
 start = time.time()
@@ -133,7 +133,7 @@ mapdl = launch_mapdl(
 # Ensures that MAPDL closes if something chrashes
 try:
     # f1 = RunAPDL(mapdl,var,Misc,opti_settings) # Test call
-    result, txt_path, csv_path = optimization_self_written.run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="slp_mvp")
+    result, txt_path, csv_path = optimization_SLP.run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="slp_mvp")
 finally:
     mapdl.exit()
 
