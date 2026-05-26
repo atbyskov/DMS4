@@ -133,8 +133,7 @@ Solver_Settings = {
     # ---- Finite differences (MATLAB default: sqrt(eps); too small for FEA)
     "finite_diff_rel_step": 1e-3, # absolute step = rel_step * max(1, |x_i|)                                   #IMPORTANT TO TUNE FOR FEA
 
-    # ---- Algorithm
-    "algorithm": "merit",         # 'merit' (quadratic) or 'al' (augmented Lagrangian)
+    # ---- Penalty
     "penalty_weight": 15,     # InfeasibilityPenalization R (fixed, never grows)
 
     # ---- Convergence (MATLAB names)
