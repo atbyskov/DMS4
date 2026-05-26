@@ -1,0 +1,564 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=25mm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+\title{Self-Written Sequential Linear Programming Method}
+\author{DMS4 Optimization Notes}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Purpose}
+
+This document describes the optimization method used in the self-written
+Sequential Linear Programming (SLP) solver. The purpose of the implementation is
+not to reproduce every feature of PySLSQP, but to expose the main numerical
+ideas clearly:
+
+\begin{itemize}[nosep]
+    \item finite-difference sensitivity estimation,
+    \item variable scaling,
+    \item linearized constrained subproblems,
+    \item slack variables for local feasibility,
+    \item a merit function for nonlinear step acceptance,
+    \item inexact backtracking line search,
+    \item adaptive move limits,
+    \item adaptive infeasibility penalty,
+    \item convergence checks based on feasibility and step size.
+\end{itemize}
+
+The implemented method solves nonlinear constrained optimization problems of the
+form
+\begin{align}
+    \min_{x \in \mathbb{R}^n} \quad & f(x) \\
+    \text{subject to} \quad & c_i(x) \geq 0, \qquad i = 1,\dots,m, \\
+    & x^L \leq x \leq x^U.
+\end{align}
+
+Here, \(f(x)\) is the objective function, typically structural mass, and
+\(c_i(x)\) are inequality constraints written in the PySLSQP convention:
+positive means feasible and negative means violated.
+
+\section{Notation}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ll}
+\toprule
+Symbol & Meaning \\
+\midrule
+\(x\) & physical design-variable vector \\
+\(x^L, x^U\) & lower and upper bounds on physical variables \\
+\(y\) & scaled design-variable vector \\
+\(f(x)\) & objective function \\
+\(c(x)\) & vector of nonlinear inequality constraints \\
+\(g_x = \nabla_x f(x)\) & objective gradient with respect to physical variables \\
+\(J_x = \nabla_x c(x)\) & constraint Jacobian with respect to physical variables \\
+\(g_y = \nabla_y f(x(y))\) & objective gradient with respect to scaled variables \\
+\(J_y = \nabla_y c(x(y))\) & constraint Jacobian with respect to scaled variables \\
+\(\Delta y\) & SLP step in scaled variables \\
+\(s\) & nonnegative LP slack variables \\
+\(M\) & infeasibility/slack penalty parameter \\
+\(\delta\) & scaled move-limit vector \\
+\(\alpha\) & line-search step length \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Variable Scaling}
+
+The design variables have different physical units and magnitudes. For example,
+a radius may be around \(200\) mm, while a wall thickness may be around \(2\) mm.
+Solving the LP directly in the physical variables can make the subproblem poorly
+scaled. Therefore, the SLP subproblem is solved in scaled variables.
+
+For variables with finite bounds, the scaling is
+\begin{align}
+    y_j &= \frac{x_j - x^L_j}{x^U_j - x^L_j}, \\
+    x_j &= x^L_j + (x^U_j - x^L_j)y_j.
+\end{align}
+
+For variables without a finite range, a fallback scale is used:
+\begin{align}
+    \text{scale}_j = \max(1, |x_j|).
+\end{align}
+
+In compact form,
+\begin{align}
+    x = x^{\text{off}} + D y,
+\end{align}
+where \(D\) is a diagonal matrix of variable scales.
+
+Gradients are transformed by the chain rule:
+\begin{align}
+    g_y &= D g_x, \\
+    J_y &= J_x D.
+\end{align}
+
+The LP step is computed in \(y\)-space, then converted back to the physical
+design space before evaluating the true nonlinear model.
+
+\section{Finite-Difference Sensitivities}
+
+The solver estimates gradients by finite differences. The self-written driver
+uses a PySLSQP-like relative finite-difference convention:
+\begin{align}
+    h_j = r \max(1, |x_j|),
+\end{align}
+where \(r\) is the relative finite-difference step, normally \(10^{-3}\).
+
+For a forward difference, the objective derivative is approximated as
+\begin{align}
+    \frac{\partial f}{\partial x_j}
+    \approx
+    \frac{f(x + h_j e_j) - f(x)}{h_j}.
+\end{align}
+
+The constraint derivative is approximated as
+\begin{align}
+    \frac{\partial c_i}{\partial x_j}
+    \approx
+    \frac{c_i(x + h_j e_j) - c_i(x)}{h_j}.
+\end{align}
+
+Near bounds, the method avoids evaluating outside the allowed box. If a forward
+step would violate an upper bound, a backward step is used instead:
+\begin{align}
+    \frac{\partial f}{\partial x_j}
+    \approx
+    \frac{f(x) - f(x - h_j e_j)}{h_j}.
+\end{align}
+
+If central differences are requested and both forward and backward perturbations
+fit within the bounds, the derivative is
+\begin{align}
+    \frac{\partial f}{\partial x_j}
+    \approx
+    \frac{f(x + h_j e_j) - f(x - h_j e_j)}{2h_j}.
+\end{align}
+
+The bound-aware rule is important for structural design variables such as wall
+thicknesses, where evaluating outside the allowed interval may create invalid
+geometry or misleading derivatives.
+
+\section{Constraint Violation and Merit Function}
+
+The inequality convention is \(c_i(x) \geq 0\). The violation of one constraint
+is therefore
+\begin{align}
+    v_i(x) = \max(0, -c_i(x)).
+\end{align}
+
+The total violation is the \(L_1\) sum
+\begin{align}
+    V(x) = \sum_{i=1}^{m} v_i(x)
+         = \sum_{i=1}^{m} \max(0, -c_i(x)).
+\end{align}
+
+The merit function combines objective value and nonlinear infeasibility:
+\begin{align}
+    \Phi(x; M) = f(x) + M V(x).
+\end{align}
+
+Here, \(M > 0\) is the infeasibility penalty. A step is accepted primarily based
+on whether it reduces this merit function sufficiently. The merit function is
+the bridge between the constrained nonlinear problem and the scalar acceptance
+test used by the line search.
+
+\section{SLP Linearization}
+
+At iteration \(k\), the nonlinear objective and constraints are approximated
+locally around the current design \(x_k\), or equivalently \(y_k\).
+
+The first-order objective model is
+\begin{align}
+    f(x(y_k + \Delta y))
+    \approx
+    f_k + g_{y,k}^T \Delta y.
+\end{align}
+
+The first-order constraint model is
+\begin{align}
+    c(x(y_k + \Delta y))
+    \approx
+    c_k + J_{y,k} \Delta y.
+\end{align}
+
+The linearization is only locally accurate. This is why the method also needs
+move limits and backtracking. The LP step is a proposal, not a step that can be
+trusted unconditionally.
+
+\section{Move Limits}
+
+The SLP step is restricted by scaled move limits:
+\begin{align}
+    -\delta_j \leq \Delta y_j \leq \delta_j.
+\end{align}
+
+The global variable bounds also restrict the step:
+\begin{align}
+    y^L_j - y_{k,j} \leq \Delta y_j \leq y^U_j - y_{k,j}.
+\end{align}
+
+The final LP bounds for each design variable are
+\begin{align}
+    \max(y^L_j - y_{k,j}, -\delta_j)
+    \leq
+    \Delta y_j
+    \leq
+    \min(y^U_j - y_{k,j}, \delta_j).
+\end{align}
+
+The move limit acts as a simple trust region. It prevents the LP from using the
+linear model too far away from the current nonlinear evaluation point.
+
+\section{Slack-Relaxed LP Subproblem}
+
+The LP subproblem includes nonnegative slack variables \(s_i\). The slacks relax
+the linearized constraints so that the LP remains feasible even if the current
+linearization cannot satisfy every constraint exactly.
+
+The subproblem is
+\begin{align}
+    \min_{\Delta y, s} \quad
+        & g_{y,k}^T \Delta y + M \sum_{i=1}^{m} s_i \\
+    \text{subject to} \quad
+        & c_k + J_{y,k}\Delta y + s \geq 0, \\
+        & s_i \geq 0, \qquad i = 1,\dots,m, \\
+        & \max(y^L - y_k, -\delta)
+          \leq \Delta y \leq
+          \min(y^U - y_k, \delta).
+\end{align}
+
+The equivalent standard upper-bound inequality form used by linear programming
+solvers is
+\begin{align}
+    -J_{y,k}\Delta y - s \leq c_k.
+\end{align}
+
+The slack penalty \(M\sum s_i\) discourages artificial feasibility. Large slacks
+indicate that the LP cannot satisfy the linearized constraints within the
+current move limits, or that the penalty is too weak compared with the objective
+gradient.
+
+\section{Predicted Merit Decrease}
+
+The LP produces a proposed step \(\Delta y\). Before evaluating the nonlinear
+model, the solver estimates the merit value predicted by the linear model.
+
+The predicted objective is
+\begin{align}
+    f_k^{\text{lin}}(\Delta y) = f_k + g_{y,k}^T \Delta y.
+\end{align}
+
+The predicted constraints are
+\begin{align}
+    c_k^{\text{lin}}(\Delta y) = c_k + J_{y,k}\Delta y.
+\end{align}
+
+The predicted merit is
+\begin{align}
+    \Phi_k^{\text{lin}}(\Delta y; M)
+    =
+    f_k^{\text{lin}}(\Delta y)
+    +
+    M \sum_{i=1}^{m}
+    \max\left(0, -c_{k,i}^{\text{lin}}(\Delta y)\right).
+\end{align}
+
+The predicted decrease is
+\begin{align}
+    \Delta \Phi_{\text{pred}}
+    =
+    \max\left(
+        0,
+        \Phi(x_k; M) - \Phi_k^{\text{lin}}(\Delta y; M)
+    \right).
+\end{align}
+
+This quantity measures what the LP expected to gain.
+
+\section{Inexact Line Search}
+
+The solver uses an inexact backtracking line search along the LP step. The LP
+gives a direction \(\Delta y\), and the line search tests
+\begin{align}
+    y_{\text{trial}} = y_k + \alpha \Delta y,
+\end{align}
+with
+\begin{align}
+    \alpha \in \{1, \beta, \beta^2, \beta^3,\dots\},
+\end{align}
+where \(0 < \beta < 1\). The default value is \(\beta = 0.5\).
+
+The physical trial design is
+\begin{align}
+    x_{\text{trial}} = x^{\text{off}} + D y_{\text{trial}},
+\end{align}
+clipped to the physical bounds as a final safeguard.
+
+\subsection{Armijo-like Merit Acceptance}
+
+The main acceptance rule is an Armijo-like sufficient decrease condition:
+\begin{align}
+    \Phi(x_{\text{trial}}; M)
+    \leq
+    \Phi(x_k; M)
+    -
+    \eta \Delta \Phi_{\text{pred}}(\alpha),
+\end{align}
+where \(\eta\) is a small sufficient-decrease parameter, typically \(10^{-4}\).
+
+This is called inexact because the line search does not try to minimize the
+merit function exactly along the direction. It only asks for enough improvement
+to justify accepting the step.
+
+\subsection{Feasibility-Progress Acceptance}
+
+When the current design is infeasible, the solver may also accept a step that
+significantly reduces total nonlinear violation, even if the merit condition is
+not ideal. The condition is
+\begin{align}
+    V(x_{\text{trial}})
+    \leq
+    (1-\gamma)V(x_k),
+\end{align}
+where \(\gamma\) is a small positive reduction fraction.
+
+This protects the method from rejecting useful feasibility-restoration steps
+just because the objective temporarily worsens.
+
+\section{Actual-vs-Predicted Quality Ratio}
+
+After evaluating the nonlinear model at the trial point, the actual merit
+decrease is
+\begin{align}
+    \Delta \Phi_{\text{act}}
+    =
+    \Phi(x_k; M) - \Phi(x_{\text{trial}}; M).
+\end{align}
+
+The quality ratio is
+\begin{align}
+    \rho =
+    \frac{\Delta \Phi_{\text{act}}}
+         {\Delta \Phi_{\text{pred}}}.
+\end{align}
+
+The interpretation is:
+\begin{itemize}[nosep]
+    \item \(\rho \approx 1\): the linear model predicted the nonlinear response well,
+    \item \(\rho > 0\): the step improved the merit function,
+    \item \(\rho \leq 0\): the step failed to improve the true nonlinear merit,
+    \item small \(\rho\): the linear model was too optimistic.
+\end{itemize}
+
+The solver records \(\rho\) in the iteration history. This is one of the most
+important diagnostics for understanding why an SLP method rejects steps.
+
+\section{Adaptive Move-Limit Update}
+
+The move limits are updated using the quality ratio:
+\begin{align}
+    \delta_{k+1}
+    =
+    \begin{cases}
+        \min(a_{\text{exp}}\delta_k, \delta_{\max}),
+        & \rho > 0.75, \\
+        a_{\text{shr}}\delta_k,
+        & \rho < 0.25, \\
+        \delta_k,
+        & \text{otherwise}.
+    \end{cases}
+\end{align}
+
+Here,
+\begin{align}
+    a_{\text{exp}} > 1, \qquad 0 < a_{\text{shr}} < 1.
+\end{align}
+
+The idea is simple:
+\begin{itemize}[nosep]
+    \item if the linear model is reliable, allow larger future steps,
+    \item if the linear model is unreliable, reduce the local trust region,
+    \item if the model is acceptable but not excellent, keep the same move limit.
+\end{itemize}
+
+If the LP fails or no backtracked trial step is acceptable, the move limits are
+also reduced.
+
+\section{Adaptive Penalty Update}
+
+The same penalty \(M\) is used in both the LP slack penalty and the nonlinear
+merit function. A fixed value of \(M\) can be too weak or too strong depending
+on the scaling of the objective and constraints.
+
+The implementation increases \(M\) when constraint slacks or nonlinear
+infeasibility persist:
+\begin{align}
+    M_{k+1} = \min(a_M M_k, M_{\max}),
+\end{align}
+where \(a_M > 1\).
+
+The purpose is to make future LP subproblems and merit tests place more emphasis
+on feasibility when the optimizer keeps trying to improve the objective while
+leaving constraints unresolved.
+
+\section{Convergence Criteria}
+
+The solver does not treat a collapsed move limit alone as successful
+convergence. Successful convergence requires nonlinear feasibility and a small
+design step.
+
+The main success condition is
+\begin{align}
+    \max_i v_i(x_k) &\leq \varepsilon_{\text{feas}}, \\
+    \max_i s_i &\leq \varepsilon_{\text{slack}}, \\
+    \|x_k - x_{k-1}\|_2 &\leq \varepsilon_x.
+\end{align}
+
+A secondary success condition allows convergence when the design is feasible,
+the objective change is small, and the scaled gradient is small:
+\begin{align}
+    \max_i v_i(x_k) &\leq \varepsilon_{\text{feas}}, \\
+    \max_i s_i &\leq \varepsilon_{\text{slack}}, \\
+    |f_k - f_{k-1}| &\leq \varepsilon_f, \\
+    \|g_{y,k}\|_\infty &\leq \varepsilon_g.
+\end{align}
+
+If repeated rejections shrink the move limits below the minimum allowed size,
+the solver stops with a failure message. This means the globalization strategy
+could not find a reliable step, not that the optimum was necessarily reached.
+
+\section{Complete Algorithm}
+
+At iteration \(k\), the method is:
+
+\begin{enumerate}
+    \item Evaluate \(f(x_k)\) and \(c(x_k)\).
+    \item Estimate \(g_x\) and \(J_x\) using bound-aware finite differences.
+    \item Transform sensitivities to scaled coordinates:
+    \[
+        g_y = Dg_x, \qquad J_y = J_xD.
+    \]
+    \item Build and solve the slack-relaxed LP subproblem for \(\Delta y\).
+    \item Compute the LP model's predicted merit decrease.
+    \item Try backtracking step lengths
+    \[
+        \alpha = 1, \beta, \beta^2, \dots
+    \]
+    until the nonlinear trial point satisfies sufficient merit decrease or
+    feasibility progress.
+    \item If accepted, update \(x\), \(y\), objective, constraints, and history.
+    \item Update the move limit using \(\rho\).
+    \item Increase the penalty \(M\) if slacks or infeasibility persist.
+    \item Check convergence.
+    \item If no acceptable step is found, shrink the move limit and try again.
+\end{enumerate}
+
+\section{How the Components Connect}
+
+The method components are connected as follows:
+
+\begin{itemize}
+    \item Finite differences provide the local sensitivities \(g_x\) and \(J_x\).
+    \item Scaling converts those sensitivities to \(g_y\) and \(J_y\), improving
+    the numerical balance of the LP.
+    \item The LP uses the scaled linear model to propose a constrained search
+    direction \(\Delta y\).
+    \item Slacks keep the LP solvable and reveal when the linearized constraints
+    cannot be satisfied within the current move limit.
+    \item The merit function converts objective and constraint violation into a
+    scalar value for accepting or rejecting nonlinear trial points.
+    \item Backtracking prevents the method from blindly taking a full LP step
+    when the nonlinear model disagrees with the linearized model.
+    \item The ratio \(\rho\) measures the quality of the linear model and drives
+    the move-limit update.
+    \item The adaptive penalty increases pressure toward feasibility when
+    constraints remain problematic.
+    \item The convergence criteria require actual nonlinear feasibility, not
+    merely LP feasibility.
+\end{itemize}
+
+\section{Important Practical Notes}
+
+\subsection{SLP Versus SLSQP}
+
+SLP solves a sequence of linear programming subproblems. SLSQP solves a sequence
+of quadratic programming subproblems, where the quadratic model contains
+curvature information. Because the self-written method uses only a linear model,
+it relies heavily on scaling, move limits, and line search to avoid poor steps.
+
+\subsection{Why Rejections Happen}
+
+A rejection means the LP's linearized prediction did not produce an acceptable
+improvement when checked on the true nonlinear functions. Common causes are:
+
+\begin{itemize}[nosep]
+    \item move limits are too large,
+    \item finite-difference gradients are noisy,
+    \item active constraints are highly nonlinear,
+    \item the penalty \(M\) is too low,
+    \item the LP is dominated by objective reduction instead of feasibility,
+    \item the current design is close to a bound and derivatives are one-sided.
+\end{itemize}
+
+\subsection{Useful Diagnostics}
+
+The most useful recorded quantities are:
+
+\begin{itemize}[nosep]
+    \item \(\alpha\): accepted line-search step length,
+    \item \(\rho\): actual-vs-predicted merit quality,
+    \item \(V(x)\): total nonlinear constraint violation,
+    \item \(\max_i v_i(x)\): worst nonlinear constraint violation,
+    \item \(\sum_i s_i\): total LP slack,
+    \item \(\max_i s_i\): worst LP slack,
+    \item \(\max_j \delta_j\): current scaled move-limit size,
+    \item \(M\): current merit/slack penalty.
+\end{itemize}
+
+If \(\rho\) is often low or negative, the linear model is too optimistic and the
+move limits or finite-difference steps should be reviewed. If slacks remain
+large, the constraints are difficult to satisfy locally or the penalty is too
+weak.
+
+\section{Default Parameter Interpretation}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lll}
+\toprule
+Parameter & Typical value & Interpretation \\
+\midrule
+\(r\) & \(10^{-3}\) & relative finite-difference step \\
+\(M_0\) & \(10^3\) & initial infeasibility/slack penalty \\
+\(\delta_{\max}\) & \(0.10\) & maximum scaled move limit \\
+\(\delta_{\min}\) & \(10^{-5}\) & minimum scaled move limit before failure stop \\
+\(\beta\) & \(0.5\) & backtracking shrink factor \\
+\(\eta\) & \(10^{-4}\) & sufficient-decrease fraction \\
+\(\varepsilon_{\text{feas}}\) & \(10^{-5}\) & nonlinear feasibility tolerance \\
+\(\varepsilon_{\text{slack}}\) & \(10^{-8}\) & LP slack tolerance \\
+\(\varepsilon_x\) & \(10^{-4}\) & physical step-size tolerance \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Summary}
+
+The self-written optimizer is a scaled, slack-relaxed SLP method with
+merit-based globalization. The LP subproblem proposes a locally constrained
+direction. The nonlinear merit function and backtracking line search decide how
+much of that direction can be trusted. The actual-vs-predicted ratio updates the
+move limits, while the adaptive penalty increases focus on feasibility when
+needed. These pieces are necessary because a linearized LP is only a local
+approximation of the true nonlinear structural optimization problem.
+
+\end{document}

@@ -8,21 +8,7 @@
 # -> OUTPUT:
 #       [Mass]      -> Mass of total assembly
 
-# Pseudo code
-#   Import [SWcoor], [var] and [Misc]
-#   Remove content from "AnsoutEigen" and "AnsoutNonlin" folders
-#   Call APDL_Eigen to create .txt input file
-#       1. Run Analysis via os.system
-#       2. Read first positive eigenvalue
-#       3. Calculate Imperfection Force
-#   Call APDL_Nonlin to create .txt input file
-#       1. Add Imperfection force as input 
-#       2. Run Analysis via os.system
-#       3. Read Mass of assembly
-#   Return Mass
-
 # Import packages   
-
 import os
 import time
 import numpy as np
@@ -30,9 +16,10 @@ import numpy as np
 # Import Functions
 from APDL_Input import InputFun
 
-
+# RunAPDL function
 def RunAPDL(mapdl,var,Misc,opti_settings):
-    # Handle List or Misc
+
+    # Handle List and Misc
     if isinstance(var, dict):
         var_dict = var
     else:
@@ -42,30 +29,27 @@ def RunAPDL(mapdl,var,Misc,opti_settings):
                     for name, val in zip(names, x)}
 
     # Clear everything in MAPDL
-
     mapdl.clear()
 
-
     # Create input file for Eigenvalue Analysis
-
     apdl_cmds = InputFun(var_dict,Misc,opti_settings)
 
-
-
+    # Run commands written in InputFun in non-interactive mode
+    # NOTE: Some commands do not work in in interactive vs non-interactive mode
     with mapdl.non_interactive:
         for cmd in apdl_cmds:
             cmd = cmd.strip()
             if cmd:
                 mapdl.run(cmd)
 
-    # Clear APDL
-    
+    # Clear APDL again
     mapdl.finish()
 
     
-    # Read First eigenvalue:
+    # Read eigenvalues:
     with open("Ansout/Eigenvalue1.txt") as f:
         eigenvalues = [float(line.strip()) for line in f if line.strip()]
+    
     # Retrieve first positive eigenvalue
     alpha_crit = next(v for v in eigenvalues if v > 0) 
     print(f"Critical Alpha: {alpha_crit}")
@@ -74,8 +58,7 @@ def RunAPDL(mapdl,var,Misc,opti_settings):
     with open("Ansout/Mass_Assembly.txt","r") as f:
         Mass = [float(line.strip()) for line in f if line.strip()]
 
-    # Return Mass as float value (evt. flyt)
-    # Read per-segment mass if available
+    # Read per-segment mass
     segment_masses = []
     segment_file = "Ansout/MASS_segments.txt"
     if os.path.exists(segment_file):
@@ -83,6 +66,5 @@ def RunAPDL(mapdl,var,Misc,opti_settings):
             segment_masses = [float(line.strip()) for line in f if line.strip()]
 
 
-
-    # Return Mass as float value
+    # Return total and segment masses
     return sum(Mass), segment_masses

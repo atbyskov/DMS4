@@ -6,26 +6,11 @@
 # -> OUTPUT:
 #       - .txt Input file for APDL Analysis (Eigenbuckling and Nonlinear)
 
-# Pseudo Code
-    # Input is coordinate list with format [(x1,y1,z1),(x2,y2,z3)]
-    # Create Two Keypoints with these coordinates and create a line with them
-    #   K,ID,X,Y,Z
-    #   L,P1,P2
-    # Sort lines into two groups:
-    #   1. Vertical / Corner beams, that only varies in y direction
-    #   2. Brace beams, so everyone else
-    # Define element type with ET,1,BEAM189
-    # Define Cross Section
-    # Define material properties
-    # Apply SECTYPE,1 to vertical beams
-    # Apply SECTYPE,2 to brace beams
-    # Apply SECTYPE,3 to Top (constant)
-
 # Import packages
 import os
 import SW_Import as SW
 
-
+# MAPDL Input Function
 def InputFun(var,Misc,opti_settings):
     SW_filename = Misc["SW_filename"]
 
@@ -70,7 +55,7 @@ def InputFun(var,Misc,opti_settings):
             R2 = var["d1"]["value"]/2 - var["t1"]["value"]
             R3 = var["d1"]["value"]/2
 
-    # Change Radius Logic
+    # Radius Logic
     if rad is not None:
 
         import math

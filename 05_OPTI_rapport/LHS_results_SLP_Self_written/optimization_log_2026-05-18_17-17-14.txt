@@ -1,0 +1,925 @@
+================================================================================
+OPTIMIZATION LOG
+================================================================================
+Run start date/time : 2026-05-18 17:17:14
+Log file            : Optimization_Logs\optimization_log_2026-05-18_17-17-14.txt
+Objective CSV       : Optimization_Logs\objective_history_2026-05-18_17-17-14.csv
+
+Initial design variables:
+x0 = [259.4126,  99.7187,   2.9802,  25.331 ,   3.6646]
+
+Bounds:
+  x[0] in [150.0, 350.0]
+  x[1] in [48.3, 108.0]
+  x[2] in [2.5, 5.0]
+  x[3] in [25.0, 60.0]
+  x[4] in [2.0, 6.0]
+
+Optimizer settings:
+  Method  : Self-Written-slp_mvp
+  acc     : 0.001
+  finite_diff_abs_step: [1.297063, 0.4985935, 0.014901, 0.126655, 0.018323000000000002]
+  maxiter : 150
+  Aggregate: None
+  p_value : 8
+  rho_value: 100
+  relaxation: 0
+  move_limit: 0.1
+  backtrack_max: 8
+  feasibility_tol: 1e-05
+  penalty_weight: 1
+
+================================================================================
+
+[EVALUATION 1]
+  Date/time : 2026-05-18 17:17:18
+  x         : [259.41, 99.72, 2.98, 25.33, 3.66]
+  Objective : 157.475
+
+[ITERATION 1]
+  Date/time : 2026-05-18 17:17:18
+  x         : [259.4126,  99.7187,   2.9802,  25.331 ,   3.6646]
+
+Util_LB     Column:    0.028  Brace:    0.001
+Util_NF     Column:    0.294  Brace:    0.061
+Util_S      Column:    0.016  Brace:    0.001
+Util_T      Column:    0.013  Brace:    0.011
+Util_BR     Column:    0.323  Brace:    0.095
+Util_IN     Column:    0.379  Brace:    0.118
+Util_BS_sig  Column:    N/A    Brace:    0.198
+Util_BS_defl  Column:    N/A    Brace:    0.103
+[EVALUATION 2]
+  Date/time : 2026-05-18 17:17:22
+  x         : [260.71, 99.72, 2.98, 25.33, 3.66]
+  Objective : 157.783
+
+[EVALUATION 3]
+  Date/time : 2026-05-18 17:17:25
+  x         : [259.41, 100.22, 2.98, 25.33, 3.66]
+  Objective : 157.921
+
+[EVALUATION 4]
+  Date/time : 2026-05-18 17:17:29
+  x         : [259.41, 99.72, 3.00, 25.33, 3.66]
+  Objective : 157.894
+
+[EVALUATION 5]
+  Date/time : 2026-05-18 17:17:33
+  x         : [259.41, 99.72, 2.98, 25.46, 3.66]
+  Objective : 157.890
+
+[EVALUATION 6]
+  Date/time : 2026-05-18 17:17:37
+  x         : [259.41, 99.72, 2.98, 25.33, 3.68]
+  Objective : 157.769
+
+[EVALUATION 7]
+  Date/time : 2026-05-18 17:17:41
+  x         : [249.41, 96.73, 2.86, 25.00, 3.46]
+  Objective : 144.886
+
+[ITERATION 2]
+  Date/time : 2026-05-18 17:17:41
+  x         : [249.4126,  96.7337,   2.8552,  25.    ,   3.4646]
+
+Util_LB     Column:    0.031  Brace:    0.001
+Util_NF     Column:    0.329  Brace:    0.069
+Util_S      Column:    0.019  Brace:    0.002
+Util_T      Column:    0.014  Brace:    0.012
+Util_BR     Column:    0.363  Brace:    0.108
+Util_IN     Column:    0.425  Brace:    0.134
+Util_BS_sig  Column:    N/A    Brace:    0.203
+Util_BS_defl  Column:    N/A    Brace:    0.103
+[EVALUATION 8]
+  Date/time : 2026-05-18 17:17:45
+  x         : [250.71, 96.73, 2.86, 25.00, 3.46]
+  Objective : 145.175
+
+[EVALUATION 9]
+  Date/time : 2026-05-18 17:17:48
+  x         : [249.41, 97.23, 2.86, 25.00, 3.46]
+  Objective : 145.313
+
+[EVALUATION 10]
+  Date/time : 2026-05-18 17:17:52
+  x         : [249.41, 96.73, 2.87, 25.00, 3.46]
+  Objective : 145.293
+
+[EVALUATION 11]
+  Date/time : 2026-05-18 17:17:56
+  x         : [249.41, 96.73, 2.86, 25.13, 3.46]
+  Objective : 145.265
+
+[EVALUATION 12]
+  Date/time : 2026-05-18 17:18:00
+  x         : [249.41, 96.73, 2.86, 25.00, 3.48]
+  Objective : 145.172
+
+[EVALUATION 13]
+  Date/time : 2026-05-18 17:18:04
+  x         : [238.41, 93.45, 2.72, 25.00, 3.24]
+  Objective : 132.660
+
+[ITERATION 3]
+  Date/time : 2026-05-18 17:18:04
+  x         : [238.4126,  93.4502,   2.7177,  25.    ,   3.2446]
+
+Util_LB     Column:    0.036  Brace:    0.001
+Util_NF     Column:    0.374  Brace:    0.079
+Util_S      Column:    0.021  Brace:    0.002
+Util_T      Column:    0.016  Brace:    0.015
+Util_BR     Column:    0.414  Brace:    0.124
+Util_IN     Column:    0.484  Brace:    0.154
+Util_BS_sig  Column:    N/A    Brace:    0.202
+Util_BS_defl  Column:    N/A    Brace:    0.098
+[EVALUATION 14]
+  Date/time : 2026-05-18 17:18:08
+  x         : [239.71, 93.45, 2.72, 25.00, 3.24]
+  Objective : 132.931
+
+[EVALUATION 15]
+  Date/time : 2026-05-18 17:18:12
+  x         : [238.41, 93.95, 2.72, 25.00, 3.24]
+  Objective : 133.066
+
+[EVALUATION 16]
+  Date/time : 2026-05-18 17:18:16
+  x         : [238.41, 93.45, 2.73, 25.00, 3.24]
+  Objective : 133.053
+
+[EVALUATION 17]
+  Date/time : 2026-05-18 17:18:20
+  x         : [238.41, 93.45, 2.72, 25.13, 3.24]
+  Objective : 133.001
+
+[EVALUATION 18]
+  Date/time : 2026-05-18 17:18:24
+  x         : [238.41, 93.45, 2.72, 25.00, 3.26]
+  Objective : 132.941
+
+[EVALUATION 19]
+  Date/time : 2026-05-18 17:18:28
+  x         : [226.31, 89.84, 2.57, 25.00, 3.00]
+  Objective : 119.739
+
+[ITERATION 4]
+  Date/time : 2026-05-18 17:18:28
+  x         : [226.3126 ,  89.83835,   2.56645,  25.     ,   3.0026 ]
+
+Util_LB     Column:    0.043  Brace:    0.001
+Util_NF     Column:    0.434  Brace:    0.093
+Util_S      Column:    0.025  Brace:    0.003
+Util_T      Column:    0.019  Brace:    0.018
+Util_BR     Column:    0.482  Brace:    0.147
+Util_IN     Column:    0.563  Brace:    0.182
+Util_BS_sig  Column:    N/A    Brace:    0.202
+Util_BS_defl  Column:    N/A    Brace:    0.092
+[EVALUATION 20]
+  Date/time : 2026-05-18 17:18:32
+  x         : [227.61, 89.84, 2.57, 25.00, 3.00]
+  Objective : 119.992
+
+[EVALUATION 21]
+  Date/time : 2026-05-18 17:18:36
+  x         : [226.31, 90.34, 2.57, 25.00, 3.00]
+  Objective : 120.123
+
+[EVALUATION 22]
+  Date/time : 2026-05-18 17:18:41
+  x         : [226.31, 89.84, 2.58, 25.00, 3.00]
+  Objective : 120.118
+
+[EVALUATION 23]
+  Date/time : 2026-05-18 17:18:46
+  x         : [226.31, 89.84, 2.57, 25.13, 3.00]
+  Objective : 120.042
+
+[EVALUATION 24]
+  Date/time : 2026-05-18 17:18:51
+  x         : [226.31, 89.84, 2.57, 25.00, 3.02]
+  Objective : 120.016
+
+[EVALUATION 25]
+  Date/time : 2026-05-18 17:18:56
+  x         : [213.00, 85.87, 2.73, 25.00, 2.74]
+  Objective : 114.242
+
+[ITERATION 5]
+  Date/time : 2026-05-18 17:18:56
+  x         : [213.0026  ,  85.865315,   2.732825,  25.      ,   2.7364  ]
+
+Util_LB     Column:    0.040  Brace:    0.001
+Util_NF     Column:    0.454  Brace:    0.107
+Util_S      Column:    0.026  Brace:    0.004
+Util_T      Column:    0.021  Brace:    0.019
+Util_BR     Column:    0.508  Brace:    0.167
+Util_IN     Column:    0.595  Brace:    0.206
+Util_BS_sig  Column:    N/A    Brace:    0.202
+Util_BS_defl  Column:    N/A    Brace:    0.087
+[EVALUATION 26]
+  Date/time : 2026-05-18 17:19:00
+  x         : [214.30, 85.87, 2.73, 25.00, 2.74]
+  Objective : 114.473
+
+[EVALUATION 27]
+  Date/time : 2026-05-18 17:19:04
+  x         : [213.00, 86.36, 2.73, 25.00, 2.74]
+  Objective : 114.651
+
+[EVALUATION 28]
+  Date/time : 2026-05-18 17:19:09
+  x         : [213.00, 85.87, 2.75, 25.00, 2.74]
+  Objective : 114.601
+
+[EVALUATION 29]
+  Date/time : 2026-05-18 17:19:13
+  x         : [213.00, 85.87, 2.73, 25.13, 2.74]
+  Objective : 114.504
+
+[EVALUATION 30]
+  Date/time : 2026-05-18 17:19:18
+  x         : [213.00, 85.87, 2.73, 25.00, 2.75]
+  Objective : 114.512
+
+[EVALUATION 31]
+  Date/time : 2026-05-18 17:19:23
+  x         : [198.36, 81.49, 2.79, 25.00, 2.44]
+  Objective : 105.245
+
+[ITERATION 6]
+  Date/time : 2026-05-18 17:19:23
+  x         : [198.3616  ,  81.494976,   2.791031,  25.      ,   2.44358 ]
+
+Util_LB     Column:    0.041  Brace:    0.002
+Util_NF     Column:    0.505  Brace:    0.128
+Util_S      Column:    0.028  Brace:    0.005
+Util_T      Column:    0.024  Brace:    0.023
+Util_BR     Column:    0.570  Brace:    0.200
+Util_IN     Column:    0.666  Brace:    0.246
+Util_BS_sig  Column:    N/A    Brace:    0.204
+Util_BS_defl  Column:    N/A    Brace:    0.081
+[EVALUATION 32]
+  Date/time : 2026-05-18 17:19:28
+  x         : [199.66, 81.49, 2.79, 25.00, 2.44]
+  Objective : 105.453
+
+[EVALUATION 33]
+  Date/time : 2026-05-18 17:19:32
+  x         : [198.36, 81.99, 2.79, 25.00, 2.44]
+  Objective : 105.663
+
+[EVALUATION 34]
+  Date/time : 2026-05-18 17:19:36
+  x         : [198.36, 81.49, 2.81, 25.00, 2.44]
+  Objective : 105.585
+
+[EVALUATION 35]
+  Date/time : 2026-05-18 17:19:41
+  x         : [198.36, 81.49, 2.79, 25.13, 2.44]
+  Objective : 105.466
+
+[EVALUATION 36]
+  Date/time : 2026-05-18 17:19:45
+  x         : [198.36, 81.49, 2.79, 25.00, 2.46]
+  Objective : 105.508
+
+[EVALUATION 37]
+  Date/time : 2026-05-18 17:19:50
+  x         : [182.26, 76.69, 2.86, 25.00, 2.12]
+  Objective : 95.636
+
+[ITERATION 7]
+  Date/time : 2026-05-18 17:19:50
+  x         : [182.2565  ,  76.687604,   2.855058,  25.      ,   2.121478]
+
+Util_LB     Column:    0.043  Brace:    0.003
+Util_NF     Column:    0.574  Brace:    0.161
+Util_S      Column:    0.030  Brace:    0.008
+Util_T      Column:    0.029  Brace:    0.027
+Util_BR     Column:    0.655  Brace:    0.250
+Util_IN     Column:    0.765  Brace:    0.306
+Util_BS_sig  Column:    N/A    Brace:    0.209
+Util_BS_defl  Column:    N/A    Brace:    0.076
+[EVALUATION 38]
+  Date/time : 2026-05-18 17:19:55
+  x         : [183.55, 76.69, 2.86, 25.00, 2.12]
+  Objective : 95.816
+
+[EVALUATION 39]
+  Date/time : 2026-05-18 17:19:59
+  x         : [182.26, 77.19, 2.86, 25.00, 2.12]
+  Objective : 96.063
+
+[EVALUATION 40]
+  Date/time : 2026-05-18 17:20:03
+  x         : [182.26, 76.69, 2.87, 25.00, 2.12]
+  Objective : 95.953
+
+[EVALUATION 41]
+  Date/time : 2026-05-18 17:20:08
+  x         : [182.26, 76.69, 2.86, 25.13, 2.12]
+  Objective : 95.815
+
+[EVALUATION 42]
+  Date/time : 2026-05-18 17:20:12
+  x         : [182.26, 76.69, 2.86, 25.00, 2.14]
+  Objective : 95.889
+
+[EVALUATION 43]
+  Date/time : 2026-05-18 17:20:17
+  x         : [164.54, 71.40, 2.93, 25.00, 2.00]
+  Objective : 88.484
+
+[ITERATION 8]
+  Date/time : 2026-05-18 17:20:18
+  x         : [164.54089 ,  71.399495,   2.925488,  25.      ,   2.      ]
+
+Util_LB     Column:    0.045  Brace:    0.003
+Util_NF     Column:    0.672  Brace:    0.199
+Util_S      Column:    0.035  Brace:    0.012
+Util_T      Column:    0.035  Brace:    0.035
+Util_BR     Column:    0.776  Brace:    0.313
+Util_IN     Column:    0.915  Brace:    0.388
+Util_BS_sig  Column:    N/A    Brace:    0.198
+Util_BS_defl  Column:    N/A    Brace:    0.065
+[EVALUATION 44]
+  Date/time : 2026-05-18 17:20:22
+  x         : [165.84, 71.40, 2.93, 25.00, 2.00]
+  Objective : 88.652
+
+[EVALUATION 45]
+  Date/time : 2026-05-18 17:20:27
+  x         : [164.54, 71.90, 2.93, 25.00, 2.00]
+  Objective : 88.922
+
+[EVALUATION 46]
+  Date/time : 2026-05-18 17:20:31
+  x         : [164.54, 71.40, 2.94, 25.00, 2.00]
+  Objective : 88.777
+
+[EVALUATION 47]
+  Date/time : 2026-05-18 17:20:36
+  x         : [164.54, 71.40, 2.93, 25.13, 2.00]
+  Objective : 88.640
+
+[EVALUATION 48]
+  Date/time : 2026-05-18 17:20:41
+  x         : [164.54, 71.40, 2.93, 25.00, 2.02]
+  Objective : 88.721
+
+[EVALUATION 49]
+  Date/time : 2026-05-18 17:20:46
+  x         : [168.43, 65.58, 2.85, 25.00, 2.00]
+  Objective : 82.491
+
+[ITERATION 9]
+  Date/time : 2026-05-18 17:20:46
+  x         : [168.4251  ,  65.582574,   2.848015,  25.      ,   2.      ]
+
+Util_LB     Column:    0.048  Brace:    0.004
+Util_NF     Column:    0.747  Brace:    0.211
+Util_S      Column:    0.042  Brace:    0.014
+Util_T      Column:    0.038  Brace:    0.038
+Util_BR     Column:    0.862  Brace:    0.337
+Util_IN     Column:    1.008  Brace:    0.421
+Util_BS_sig  Column:    N/A    Brace:    0.203
+Util_BS_defl  Column:    N/A    Brace:    0.068
+[EVALUATION 50]
+  Date/time : 2026-05-18 17:20:51
+  x         : [169.72, 65.58, 2.85, 25.00, 2.00]
+  Objective : 82.660
+
+[EVALUATION 51]
+  Date/time : 2026-05-18 17:20:56
+  x         : [168.43, 66.08, 2.85, 25.00, 2.00]
+  Objective : 82.917
+
+[EVALUATION 52]
+  Date/time : 2026-05-18 17:21:01
+  x         : [168.43, 65.58, 2.86, 25.00, 2.00]
+  Objective : 82.759
+
+[EVALUATION 53]
+  Date/time : 2026-05-18 17:21:05
+  x         : [168.43, 65.58, 2.85, 25.13, 2.00]
+  Objective : 82.650
+
+[EVALUATION 54]
+  Date/time : 2026-05-18 17:21:10
+  x         : [168.43, 65.58, 2.85, 25.00, 2.02]
+  Objective : 82.732
+
+[EVALUATION 55]
+  Date/time : 2026-05-18 17:21:16
+  x         : [176.93, 63.27, 2.81, 25.00, 2.00]
+  Objective : 80.959
+
+[ITERATION 10]
+  Date/time : 2026-05-18 17:21:16
+  x         : [176.932115,  63.273779,   2.809279,  25.      ,   2.      ]
+
+Util_LB     Column:    0.047  Brace:    0.003
+Util_NF     Column:    0.753  Brace:    0.204
+Util_S      Column:    0.044  Brace:    0.013
+Util_T      Column:    0.037  Brace:    0.036
+Util_BR     Column:    0.865  Brace:    0.329
+Util_IN     Column:    1.002  Brace:    0.413
+Util_BS_sig  Column:    N/A    Brace:    0.212
+Util_BS_defl  Column:    N/A    Brace:    0.075
+[EVALUATION 56]
+  Date/time : 2026-05-18 17:21:20
+  x         : [178.23, 63.27, 2.81, 25.00, 2.00]
+  Objective : 81.129
+
+[EVALUATION 57]
+  Date/time : 2026-05-18 17:21:25
+  x         : [176.93, 63.77, 2.81, 25.00, 2.00]
+  Objective : 81.379
+
+[EVALUATION 58]
+  Date/time : 2026-05-18 17:21:30
+  x         : [176.93, 63.27, 2.82, 25.00, 2.00]
+  Objective : 81.217
+
+[EVALUATION 59]
+  Date/time : 2026-05-18 17:21:35
+  x         : [176.93, 63.27, 2.81, 25.13, 2.00]
+  Objective : 81.124
+
+[EVALUATION 60]
+  Date/time : 2026-05-18 17:21:40
+  x         : [176.93, 63.27, 2.81, 25.00, 2.02]
+  Objective : 81.209
+
+[EVALUATION 61]
+  Date/time : 2026-05-18 17:21:45
+  x         : [186.29, 60.58, 2.77, 25.00, 2.00]
+  Objective : 79.215
+
+[ITERATION 11]
+  Date/time : 2026-05-18 17:21:45
+  x         : [186.289832,  60.578574,   2.766669,  25.      ,   2.      ]
+
+Util_LB     Column:    0.046  Brace:    0.003
+Util_NF     Column:    0.764  Brace:    0.198
+Util_S      Column:    0.046  Brace:    0.013
+Util_T      Column:    0.036  Brace:    0.035
+Util_BR     Column:    0.875  Brace:    0.321
+Util_IN     Column:    1.002  Brace:    0.409
+Util_BS_sig  Column:    N/A    Brace:    0.223
+Util_BS_defl  Column:    N/A    Brace:    0.083
+[EVALUATION 62]
+  Date/time : 2026-05-18 17:21:50
+  x         : [187.59, 60.58, 2.77, 25.00, 2.00]
+  Objective : 79.387
+
+[EVALUATION 63]
+  Date/time : 2026-05-18 17:21:55
+  x         : [186.29, 61.08, 2.77, 25.00, 2.00]
+  Objective : 79.629
+
+[EVALUATION 64]
+  Date/time : 2026-05-18 17:22:00
+  x         : [186.29, 60.58, 2.78, 25.00, 2.00]
+  Objective : 79.461
+
+[EVALUATION 65]
+  Date/time : 2026-05-18 17:22:05
+  x         : [186.29, 60.58, 2.77, 25.13, 2.00]
+  Objective : 79.387
+
+[EVALUATION 66]
+  Date/time : 2026-05-18 17:22:09
+  x         : [186.29, 60.58, 2.77, 25.00, 2.02]
+  Objective : 79.476
+
+[EVALUATION 67]
+  Date/time : 2026-05-18 17:22:15
+  x         : [195.91, 58.17, 2.72, 25.00, 2.00]
+  Objective : 77.747
+
+[ITERATION 12]
+  Date/time : 2026-05-18 17:22:15
+  x         : [195.905848,  58.167098,   2.719798,  25.      ,   2.      ]
+
+Util_LB     Column:    0.046  Brace:    0.003
+Util_NF     Column:    0.775  Brace:    0.190
+Util_S      Column:    0.049  Brace:    0.012
+Util_T      Column:    0.035  Brace:    0.035
+Util_BR     Column:    0.884  Brace:    0.313
+Util_IN     Column:    1.002  Brace:    0.403
+Util_BS_sig  Column:    N/A    Brace:    0.234
+Util_BS_defl  Column:    N/A    Brace:    0.092
+[EVALUATION 68]
+  Date/time : 2026-05-18 17:22:19
+  x         : [197.20, 58.17, 2.72, 25.00, 2.00]
+  Objective : 77.920
+
+[EVALUATION 69]
+  Date/time : 2026-05-18 17:22:24
+  x         : [195.91, 58.67, 2.72, 25.00, 2.00]
+  Objective : 78.154
+
+[EVALUATION 70]
+  Date/time : 2026-05-18 17:22:29
+  x         : [195.91, 58.17, 2.73, 25.00, 2.00]
+  Objective : 77.983
+
+[EVALUATION 71]
+  Date/time : 2026-05-18 17:22:34
+  x         : [195.91, 58.17, 2.72, 25.13, 2.00]
+  Objective : 77.926
+
+[EVALUATION 72]
+  Date/time : 2026-05-18 17:22:38
+  x         : [195.91, 58.17, 2.72, 25.00, 2.02]
+  Objective : 78.019
+
+[EVALUATION 73]
+  Date/time : 2026-05-18 17:22:43
+  x         : [207.23, 55.74, 2.67, 25.00, 2.00]
+  Objective : 76.500
+
+[ITERATION 13]
+  Date/time : 2026-05-18 17:22:44
+  x         : [207.228685,  55.739796,   2.66824 ,  25.      ,   2.      ]
+
+Util_LB     Column:    0.045  Brace:    0.003
+Util_NF     Column:    0.783  Brace:    0.181
+Util_S      Column:    0.051  Brace:    0.011
+Util_T      Column:    0.033  Brace:    0.035
+Util_BR     Column:    0.890  Brace:    0.302
+Util_IN     Column:    1.003  Brace:    0.393
+Util_BS_sig  Column:    N/A    Brace:    0.247
+Util_BS_defl  Column:    N/A    Brace:    0.103
+[EVALUATION 74]
+  Date/time : 2026-05-18 17:22:48
+  x         : [208.53, 55.74, 2.67, 25.00, 2.00]
+  Objective : 76.674
+
+[EVALUATION 75]
+  Date/time : 2026-05-18 17:22:53
+  x         : [207.23, 56.24, 2.67, 25.00, 2.00]
+  Objective : 76.900
+
+[EVALUATION 76]
+  Date/time : 2026-05-18 17:22:58
+  x         : [207.23, 55.74, 2.68, 25.00, 2.00]
+  Objective : 76.726
+
+[EVALUATION 77]
+  Date/time : 2026-05-18 17:23:03
+  x         : [207.23, 55.74, 2.67, 25.13, 2.00]
+  Objective : 76.688
+
+[EVALUATION 78]
+  Date/time : 2026-05-18 17:23:07
+  x         : [207.23, 55.74, 2.67, 25.00, 2.02]
+  Objective : 76.784
+
+[EVALUATION 79]
+  Date/time : 2026-05-18 17:23:12
+  x         : [219.68, 53.49, 2.61, 25.00, 2.00]
+  Objective : 75.553
+
+[ITERATION 14]
+  Date/time : 2026-05-18 17:23:13
+  x         : [219.683807,  53.486861,   2.611526,  25.      ,   2.      ]
+
+Util_LB     Column:    0.045  Brace:    0.003
+Util_NF     Column:    0.791  Brace:    0.171
+Util_S      Column:    0.053  Brace:    0.011
+Util_T      Column:    0.032  Brace:    0.035
+Util_BR     Column:    0.896  Brace:    0.291
+Util_IN     Column:    1.004  Brace:    0.382
+Util_BS_sig  Column:    N/A    Brace:    0.261
+Util_BS_defl  Column:    N/A    Brace:    0.115
+[EVALUATION 80]
+  Date/time : 2026-05-18 17:23:17
+  x         : [220.98, 53.49, 2.61, 25.00, 2.00]
+  Objective : 75.729
+
+[EVALUATION 81]
+  Date/time : 2026-05-18 17:23:22
+  x         : [219.68, 53.99, 2.61, 25.00, 2.00]
+  Objective : 75.944
+
+[EVALUATION 82]
+  Date/time : 2026-05-18 17:23:26
+  x         : [219.68, 53.49, 2.63, 25.00, 2.00]
+  Objective : 75.769
+
+[EVALUATION 83]
+  Date/time : 2026-05-18 17:23:31
+  x         : [219.68, 53.49, 2.61, 25.13, 2.00]
+  Objective : 75.750
+
+[EVALUATION 84]
+  Date/time : 2026-05-18 17:23:36
+  x         : [219.68, 53.49, 2.61, 25.00, 2.02]
+  Objective : 75.852
+
+[EVALUATION 85]
+  Date/time : 2026-05-18 17:23:41
+  x         : [233.38, 51.41, 2.55, 25.00, 2.00]
+  Objective : 74.918
+
+[ITERATION 15]
+  Date/time : 2026-05-18 17:23:41
+  x         : [233.38444 ,  51.409165,   2.549141,  25.      ,   2.      ]
+
+Util_LB     Column:    0.044  Brace:    0.003
+Util_NF     Column:    0.796  Brace:    0.161
+Util_S      Column:    0.054  Brace:    0.010
+Util_T      Column:    0.030  Brace:    0.034
+Util_BR     Column:    0.901  Brace:    0.280
+Util_IN     Column:    1.004  Brace:    0.370
+Util_BS_sig  Column:    N/A    Brace:    0.277
+Util_BS_defl  Column:    N/A    Brace:    0.130
+[EVALUATION 86]
+  Date/time : 2026-05-18 17:23:46
+  x         : [234.68, 51.41, 2.55, 25.00, 2.00]
+  Objective : 75.095
+
+[EVALUATION 87]
+  Date/time : 2026-05-18 17:23:50
+  x         : [233.38, 51.91, 2.55, 25.00, 2.00]
+  Objective : 75.300
+
+[EVALUATION 88]
+  Date/time : 2026-05-18 17:23:55
+  x         : [233.38, 51.41, 2.56, 25.00, 2.00]
+  Objective : 75.125
+
+[EVALUATION 89]
+  Date/time : 2026-05-18 17:24:00
+  x         : [233.38, 51.41, 2.55, 25.13, 2.00]
+  Objective : 75.125
+
+[EVALUATION 90]
+  Date/time : 2026-05-18 17:24:04
+  x         : [233.38, 51.41, 2.55, 25.00, 2.02]
+  Objective : 75.232
+
+[EVALUATION 91]
+  Date/time : 2026-05-18 17:24:09
+  x         : [248.46, 49.23, 2.50, 25.00, 2.00]
+  Objective : 74.662
+
+[ITERATION 16]
+  Date/time : 2026-05-18 17:24:10
+  x         : [248.455136,  49.232029,   2.5     ,  25.      ,   2.      ]
+
+Util_LB     Column:    0.043  Brace:    0.003
+Util_NF     Column:    0.800  Brace:    0.150
+Util_S      Column:    0.056  Brace:    0.009
+Util_T      Column:    0.028  Brace:    0.034
+Util_BR     Column:    0.905  Brace:    0.272
+Util_IN     Column:    1.005  Brace:    0.359
+Util_BS_sig  Column:    N/A    Brace:    0.294
+Util_BS_defl  Column:    N/A    Brace:    0.148
+[EVALUATION 92]
+  Date/time : 2026-05-18 17:24:14
+  x         : [249.75, 49.23, 2.50, 25.00, 2.00]
+  Objective : 74.840
+
+[EVALUATION 93]
+  Date/time : 2026-05-18 17:24:19
+  x         : [248.46, 49.73, 2.50, 25.00, 2.00]
+  Objective : 75.036
+
+[EVALUATION 94]
+  Date/time : 2026-05-18 17:24:23
+  x         : [248.46, 49.23, 2.51, 25.00, 2.00]
+  Objective : 74.859
+
+[EVALUATION 95]
+  Date/time : 2026-05-18 17:24:28
+  x         : [248.46, 49.23, 2.50, 25.13, 2.00]
+  Objective : 74.880
+
+[EVALUATION 96]
+  Date/time : 2026-05-18 17:24:32
+  x         : [248.46, 49.23, 2.50, 25.00, 2.02]
+  Objective : 74.992
+
+[EVALUATION 97]
+  Date/time : 2026-05-18 17:24:37
+  x         : [231.88, 52.44, 2.50, 25.00, 2.00]
+  Objective : 74.805
+
+[EVALUATION 98]
+  Date/time : 2026-05-18 17:24:42
+  x         : [248.80, 49.38, 2.50, 25.00, 2.00]
+  Objective : 74.820
+
+[ITERATION 17]
+  Date/time : 2026-05-18 17:24:42
+  x         : [248.800939,  49.380168,   2.5     ,  25.      ,   2.      ]
+
+Util_LB     Column:    0.043  Brace:    0.003
+Util_NF     Column:    0.796  Brace:    0.149
+Util_S      Column:    0.055  Brace:    0.009
+Util_T      Column:    0.028  Brace:    0.033
+Util_BR     Column:    0.900  Brace:    0.270
+Util_IN     Column:    1.000  Brace:    0.358
+Util_BS_sig  Column:    N/A    Brace:    0.294
+Util_BS_defl  Column:    N/A    Brace:    0.148
+[EVALUATION 99]
+  Date/time : 2026-05-18 17:24:47
+  x         : [250.10, 49.38, 2.50, 25.00, 2.00]
+  Objective : 74.998
+
+[EVALUATION 100]
+  Date/time : 2026-05-18 17:24:51
+  x         : [248.80, 49.88, 2.50, 25.00, 2.00]
+  Objective : 75.194
+
+[EVALUATION 101]
+  Date/time : 2026-05-18 17:24:56
+  x         : [248.80, 49.38, 2.51, 25.00, 2.00]
+  Objective : 75.019
+
+[EVALUATION 102]
+  Date/time : 2026-05-18 17:25:00
+  x         : [248.80, 49.38, 2.50, 25.13, 2.00]
+  Objective : 75.038
+
+[EVALUATION 103]
+  Date/time : 2026-05-18 17:25:05
+  x         : [248.80, 49.38, 2.50, 25.00, 2.02]
+  Objective : 75.151
+
+[EVALUATION 104]
+  Date/time : 2026-05-18 17:25:10
+  x         : [248.37, 49.45, 2.50, 25.00, 2.00]
+  Objective : 74.817
+
+[ITERATION 18]
+  Date/time : 2026-05-18 17:25:11
+  x         : [248.374865,  49.454238,   2.5     ,  25.      ,   2.      ]
+
+Util_LB     Column:    0.043  Brace:    0.003
+Util_NF     Column:    0.796  Brace:    0.150
+Util_S      Column:    0.055  Brace:    0.009
+Util_T      Column:    0.028  Brace:    0.033
+Util_BR     Column:    0.900  Brace:    0.271
+Util_IN     Column:    1.000  Brace:    0.358
+Util_BS_sig  Column:    N/A    Brace:    0.294
+Util_BS_defl  Column:    N/A    Brace:    0.147
+[EVALUATION 105]
+  Date/time : 2026-05-18 17:25:15
+  x         : [249.67, 49.45, 2.50, 25.00, 2.00]
+  Objective : 74.995
+
+[EVALUATION 106]
+  Date/time : 2026-05-18 17:25:20
+  x         : [248.37, 49.95, 2.50, 25.00, 2.00]
+  Objective : 75.191
+
+[EVALUATION 107]
+  Date/time : 2026-05-18 17:25:24
+  x         : [248.37, 49.45, 2.51, 25.00, 2.00]
+  Objective : 75.016
+
+[EVALUATION 108]
+  Date/time : 2026-05-18 17:25:29
+  x         : [248.37, 49.45, 2.50, 25.13, 2.00]
+  Objective : 75.035
+
+[EVALUATION 109]
+  Date/time : 2026-05-18 17:25:34
+  x         : [248.37, 49.45, 2.50, 25.00, 2.02]
+  Objective : 75.148
+
+[EVALUATION 110]
+  Date/time : 2026-05-18 17:25:39
+  x         : [247.92, 49.53, 2.50, 25.00, 2.00]
+  Objective : 74.815
+
+[ITERATION 19]
+  Date/time : 2026-05-18 17:25:39
+  x         : [247.918976,  49.534835,   2.5     ,  25.      ,   2.      ]
+
+Util_LB     Column:    0.043  Brace:    0.003
+Util_NF     Column:    0.796  Brace:    0.150
+Util_S      Column:    0.055  Brace:    0.009
+Util_T      Column:    0.028  Brace:    0.033
+Util_BR     Column:    0.900  Brace:    0.271
+Util_IN     Column:    1.000  Brace:    0.358
+Util_BS_sig  Column:    N/A    Brace:    0.293
+Util_BS_defl  Column:    N/A    Brace:    0.147
+[EVALUATION 111]
+  Date/time : 2026-05-18 17:25:43
+  x         : [249.22, 49.53, 2.50, 25.00, 2.00]
+  Objective : 74.993
+
+[EVALUATION 112]
+  Date/time : 2026-05-18 17:25:48
+  x         : [247.92, 50.03, 2.50, 25.00, 2.00]
+  Objective : 75.189
+
+[EVALUATION 113]
+  Date/time : 2026-05-18 17:25:52
+  x         : [247.92, 49.53, 2.51, 25.00, 2.00]
+  Objective : 75.014
+
+[EVALUATION 114]
+  Date/time : 2026-05-18 17:25:57
+  x         : [247.92, 49.53, 2.50, 25.13, 2.00]
+  Objective : 75.033
+
+[EVALUATION 115]
+  Date/time : 2026-05-18 17:26:01
+  x         : [247.92, 49.53, 2.50, 25.00, 2.02]
+  Objective : 75.146
+
+[EVALUATION 116]
+  Date/time : 2026-05-18 17:26:06
+  x         : [247.42, 49.62, 2.50, 25.00, 2.00]
+  Objective : 74.813
+
+[ITERATION 20]
+  Date/time : 2026-05-18 17:26:07
+  x         : [247.417499,  49.623968,   2.5     ,  25.      ,   2.      ]
+
+Util_LB     Column:    0.043  Brace:    0.003
+Util_NF     Column:    0.796  Brace:    0.150
+Util_S      Column:    0.055  Brace:    0.009
+Util_T      Column:    0.028  Brace:    0.033
+Util_BR     Column:    0.900  Brace:    0.271
+Util_IN     Column:    1.000  Brace:    0.358
+Util_BS_sig  Column:    N/A    Brace:    0.293
+Util_BS_defl  Column:    N/A    Brace:    0.146
+[EVALUATION 117]
+  Date/time : 2026-05-18 17:26:11
+  x         : [248.71, 49.62, 2.50, 25.00, 2.00]
+  Objective : 74.991
+
+[EVALUATION 118]
+  Date/time : 2026-05-18 17:26:15
+  x         : [247.42, 50.12, 2.50, 25.00, 2.00]
+  Objective : 75.187
+
+[EVALUATION 119]
+  Date/time : 2026-05-18 17:26:20
+  x         : [247.42, 49.62, 2.51, 25.00, 2.00]
+  Objective : 75.013
+
+[EVALUATION 120]
+  Date/time : 2026-05-18 17:26:25
+  x         : [247.42, 49.62, 2.50, 25.13, 2.00]
+  Objective : 75.031
+
+[EVALUATION 121]
+  Date/time : 2026-05-18 17:26:29
+  x         : [247.42, 49.62, 2.50, 25.00, 2.02]
+  Objective : 75.143
+
+[EVALUATION 122]
+  Date/time : 2026-05-18 17:26:34
+  x         : [246.91, 49.72, 2.50, 25.00, 2.00]
+  Objective : 74.812
+
+[ITERATION 21]
+  Date/time : 2026-05-18 17:26:34
+  x         : [246.908612,  49.715435,   2.5     ,  25.      ,   2.      ]
+
+Util_LB     Column:    0.043  Brace:    0.003
+Util_NF     Column:    0.796  Brace:    0.151
+Util_S      Column:    0.055  Brace:    0.009
+Util_T      Column:    0.028  Brace:    0.033
+Util_BR     Column:    0.900  Brace:    0.271
+Util_IN     Column:    1.000  Brace:    0.359
+Util_BS_sig  Column:    N/A    Brace:    0.292
+Util_BS_defl  Column:    N/A    Brace:    0.146
+[EVALUATION 123]
+  Date/time : 2026-05-18 17:26:39
+  x         : [248.21, 49.72, 2.50, 25.00, 2.00]
+  Objective : 74.990
+
+[EVALUATION 124]
+  Date/time : 2026-05-18 17:26:43
+  x         : [246.91, 50.21, 2.50, 25.00, 2.00]
+  Objective : 75.186
+
+[EVALUATION 125]
+  Date/time : 2026-05-18 17:26:48
+  x         : [246.91, 49.72, 2.51, 25.00, 2.00]
+  Objective : 75.012
+
+[EVALUATION 126]
+  Date/time : 2026-05-18 17:26:53
+  x         : [246.91, 49.72, 2.50, 25.13, 2.00]
+  Objective : 75.029
+
+[EVALUATION 127]
+  Date/time : 2026-05-18 17:26:58
+  x         : [246.91, 49.72, 2.50, 25.00, 2.02]
+  Objective : 75.141
+
+[EVALUATION 128]
+  Date/time : 2026-05-18 17:27:03
+  x         : [246.92, 49.71, 2.50, 25.00, 2.00]
+  Objective : 74.812
+

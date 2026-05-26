@@ -1,3 +1,8 @@
+# Optimization.py
+# Called from main.py
+# Runs optimization with PySLSQP
+# Calls MyAPDLCall.py
+
 # Import packages
 import os
 import numpy as np
@@ -30,11 +35,13 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
     # Step Options for each variable (uniform step size for all, except rad)
     fd_step = []
 
+    # Absoulutte step (only for print)
     for name in names:
         xval = var[name]["value"]
         step = 1E-4 * xval
         fd_step.append(step)
 
+    # Adaptive Constraint Scaling ACS call
     acs = ACSclass(
         alpha=Solver_Settings.get("acs_alpha",1.0),
         c0 = 1.0,
@@ -83,16 +90,15 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         pp = PostProcessor(var_dict,Misc,opti_settings)
 
         # Call Utlization Ratios
-        #### FIX DOUBLE utils CALL !
         utils = [
             pp.Util_LB(),
             pp.Util_NF(),
             pp.Util_S(),
             pp.Util_T(),
-            #pp.Util_BNS(),
             pp.Util_BR(),
             pp.Util_IN(),
         ]
+        # Set up for optimizer
         col_brace = [(1-arr(c), 1-arr(b)) for c,b in utils]
 
         # Set up the constraints      
@@ -109,13 +115,14 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
             relaxation = Solver_Settings["relaxation"],
         )
 
+        # Get aggregated output
         c_util_agg, v_agg, g_max = agg.agg_output(c_util, c_scale=acs.c)
         
         # Segment Masses Constraint 
         mass_limit = float(opti_settings["segment_mass_limit"])
         mass_constraint = mass_limit - arr(segment_masses)
 
-        # Collect them together
+        # Concatenate all constraints 
         c = np.concatenate([
             np.atleast_1d(c_util_agg),
             *map(arr, pp.Class_2()),
@@ -123,8 +130,10 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
             mass_constraint
         ])
 
+        # Print constraint length
         print(f"Constraint vector length: {len(c)}")
 
+        # Call logger
         logger.log_evaluation(x, f, segment_masses,v_agg=v_agg,g_max=g_max,c_value=acs.c)
 
         util_report = {
@@ -132,7 +141,6 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
                 "Util_NF": pp.Util_NF(),
                 "Util_S":  pp.Util_S(),
                 "Util_T":  pp.Util_T(),
-                #"Util_BNS": pp.Util_BNS(),
                 "Util_BR": pp.Util_BR(),
                 "Util_IN": pp.Util_IN(),
                 "Util_BS_sig": pp.Util_BS()[0], # stress
@@ -142,6 +150,7 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         # Update design variables and constraints
         cache.update(x=x.copy(), f=float(f), c=c, util = util_report, v_agg = v_agg, g_max=g_max)
 
+        # Return objective and constraints
         return f, c
     
     # Objective function call that only returns mass
@@ -156,6 +165,7 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         _, c_val = evaluate_model(x) 
         return c_val 
 
+    # Get iteration number information (Used in ACS)
     def iteration_callback(x):
         logger.log_iteration(x)
 
@@ -166,14 +176,14 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         if util is not None:
             logger.log_utilization(util)
 
-    # Create Folder
+    # Create Folder for saving data
     os.makedirs(Misc["save_folder"], exist_ok=True) 
     save_filename = os.path.join(Misc["save_folder"], "pyslsqp_history.hdf5") # Save File
     summary_filename = os.path.join(Misc["save_folder"], "slsqp_summary.out") # Summary File
 
     # Run PySLSQP
     result = pyslsqp_optimize( 
-        x0=x0, 
+        x0=x0,                  
         obj=objective, 
         con=constraints, 
         meq=0,                          # all constraints are inequalities
@@ -185,7 +195,7 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         acc=Solver_Settings["acc"],     # Objective Function Tolerance
         iprint=2,                       # print iteration info
         #obj_scaler=0.8,                # Scale objective function for stability
-        save_itr="all",               # save major iterations
+        save_itr="all",                 # save major iterations
         save_vars=[
             "majiter",                  # major iteration
             "x",                        # design variables
@@ -199,9 +209,9 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         ],
         save_filename=save_filename, 
         summary_filename=summary_filename, 
-        warm_start=False, # For restarting optimization from prior optimization runs
-        hot_start=False, # For restarting optimization from prior optimization runs without re-evaluating the initial point
-        load_filename=save_filename, # Filename for restart file
+        warm_start=False,               # For restarting optimization from prior optimization runs
+        hot_start=False,                # For restarting optimization from prior optimization runs without re-evaluating the initial point
+        load_filename=save_filename,    # Filename for restart file
         visualize=True, 
         visualize_vars=['objective', 'optimality', 'feasibility', 'x[0]'], # Extra: 'gradient[0]', 'constraints[0]', 'multipliers[0]', 'jacobian[0,0]'
     ) 

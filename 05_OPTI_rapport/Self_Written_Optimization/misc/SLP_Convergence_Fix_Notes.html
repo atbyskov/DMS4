@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SLP solver convergence fixes (2026-05-12)</title>
+<style>
+  body { font-family: -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
+         max-width: 920px; margin: 2em auto; padding: 0 1em; color: #1c1c1c;
+         line-height: 1.5; }
+  h1 { border-bottom: 2px solid #333; padding-bottom: 0.2em; }
+  h2 { margin-top: 1.8em; border-bottom: 1px solid #ccc; padding-bottom: 0.15em; }
+  h3 { margin-top: 1.2em; }
+  code, pre { font-family: Consolas, Menlo, monospace; }
+  pre { background: #f4f4f4; padding: 0.8em 1em; border-left: 4px solid #888;
+        overflow-x: auto; }
+  code { background: #f1f1f1; padding: 0.05em 0.3em; border-radius: 3px; }
+  table { border-collapse: collapse; margin: 1em 0; }
+  th, td { border: 1px solid #bbb; padding: 0.35em 0.7em; text-align: left; }
+  th { background: #eee; }
+  .note { background: #fff7d6; border-left: 4px solid #d9a82a; padding: 0.6em 1em;
+          margin: 1em 0; }
+  .bad { color: #b00020; }
+  .good { color: #15803d; }
+  .path { font-family: Consolas, Menlo, monospace; font-size: 0.95em; }
+</style>
+</head>
+<body>
+
+<h1>SLP solver convergence fixes</h1>
+<p><strong>Date:</strong> 2026-05-12 &nbsp; | &nbsp; <strong>Solver:</strong>
+<span class="path">slp_MVP_advanced.py</span> (fminslp merit/AL variant)</p>
+
+<h2>1. Failure that triggered the fix</h2>
+<p>Run of <span class="path">Main_Self_Written_Test.py</span> terminated at iteration 62
+with the following last log row and exit message:</p>
+<pre>     62    5.0352e+01    2.3161e-01    2.6667e+10   5.629e-04   1.893e+01  REJECT   2.316e-01   1.000e+09     382
+--------------------------------------------------------------------------------------------------------------
+  Done: success=False  iters=62  nfev=382  f=5.035224e+01  viol=2.316e-01  accepted=61  rejected=10
+  Message: Stopped: no acceptable step and trust region is below move_limit_min (1.00e-05).</pre>
+
+<h3>1.1 Diagnosis</h3>
+<p>Three coupled symptoms:</p>
+<ol>
+  <li><strong>Penalty <code>R</code> saturated at <code>penalty_max = 1e9</code>.</strong>
+      The accepted-step update at <span class="path">slp_MVP_advanced.py:793&ndash;797</span>
+      grows <code>R</code> by <code>penalty_increase = 10</code> whenever violation
+      does not drop by &ge;5% in one step. For an FEA-driven problem starting
+      infeasible this fires almost every iteration, so <code>R</code> walks
+      <code>1e3&nbsp;&rarr;&nbsp;1e4&nbsp;&rarr;&nbsp;&hellip;&nbsp;&rarr;&nbsp;1e9</code>
+      in roughly six accepted steps.</li>
+  <li><strong>LP cost vector becomes degenerate.</strong> With <code>R = 1e9</code>
+      and <code>a_F &asymp; 50</code>, the merit gradient w.r.t. <code>y</code> is
+      <code>a_F &middot; (R + y) &asymp; 5e10</code>, while <code>df</code> is O(1).
+      HiGHS still solves the LP, but every search direction is "minimize slacks at
+      any cost," driven by linearizations the noisy FEA cannot honour.</li>
+  <li><strong>Trust region collapsed despite the <code>min_dv_box_limit</code>
+      floor.</strong> <code>_adaptive_move_limit</code> correctly floors each box
+      at <code>max(2&middot;xtol, move_limit_min) = 2e-4</code>, but the
+      <em>manual</em> shrinks at <span class="path">slp_MVP_advanced.py:640&ndash;641,
+      733&ndash;734</span> are applied <em>after</em> the floor:
+      <pre>xLcur = x - (x - xLcur) * backtrack_shrink
+xUcur = x + (xUcur - x) * backtrack_shrink</pre>
+      These bypass the floor. A handful of rejections (10 in this run) multiplies
+      the box width by <code>0.5<sup>k</sup></code> below <code>1e-5</code>. This
+      is the proximate cause of the termination message.</li>
+</ol>
+
+<h2>2. Fixes applied (bundled)</h2>
+
+<h3>2.1 Slow down and cap the penalty growth</h3>
+<p>File: <span class="path">05_OPTI/Main_Self_Written_Test.py</span> &mdash;
+<code>Solver_Settings</code> dict.</p>
+<table>
+<tr><th>Key</th><th>Old</th><th>New</th></tr>
+<tr><td><code>penalty_weight</code></td><td>1e3</td><td><strong>1e2</strong></td></tr>
+<tr><td><code>penalty_increase</code></td><td>10.0</td><td><strong>2.0</strong></td></tr>
+<tr><td><code>penalty_max</code></td><td>1e9</td><td><strong>1e6</strong></td></tr>
+</table>
+<p>With <code>R &le; 1e6</code>, the merit gradient on slacks
+(<code>a_F&middot;R &asymp; 5e7</code>) is still dominant over <code>df</code> but
+not condition-destroying, so the LP can balance <code>f</code> versus slack
+reduction.</p>
+
+<h3>2.2 Switch to the augmented-Lagrangian variant</h3>
+<p>The pure merit variant relies on <code>R&nbsp;&rarr;&nbsp;&infin;</code> to
+drive slacks to zero. AL uses multipliers
+(<code>&lambda;&nbsp;&larr;&nbsp;max(&lambda; + R&middot;y, 1)</code>) so the
+slacks shrink at fixed moderate <code>R</code>. The merit becomes</p>
+<pre>&Phi;(x, y) = f(x) + a_F &middot; &sum;<sub>i</sub> (y<sub>i</sub>&middot;&lambda;<sub>i</sub> + &frac12;&middot;R&middot;y<sub>i</sub><sup>2</sup>).</pre>
+<p>Plumbed through three places:</p>
+<ul>
+  <li><span class="path">Main_Self_Written_Test.py</span> &mdash; new key
+      <code>"algorithm": "al"</code> in <code>Solver_Settings</code>.</li>
+  <li><span class="path">optimization_self_written.py:36&ndash;50</span> &mdash;
+      added <code>"algorithm": Solver_Settings.get("algorithm", "merit")</code>
+      to the <code>slp_options</code> dict that is forwarded to
+      <code>solve_slp_mvp</code>.</li>
+  <li><span class="path">slp_MVP_advanced.py</span> &mdash; no change; the
+      <code>algorithm="al"</code> code path already existed (see
+      <code>merit_val</code> / <code>merit_grad_y</code> and the multiplier update
+      at line 787).</li>
+</ul>
+
+<h3>2.3 Enforce <code>min_dv_box_limit</code> after manual shrinks</h3>
+<p>This is a real bug in <span class="path">slp_MVP_advanced.py</span>: the two
+manual shrinks (LP-failure branch and rejection branch) divide the box width by
+2 without consulting the floor that <code>_adaptive_move_limit</code> maintains.
+Fixed by introducing a small helper and calling it right after each manual
+shrink.</p>
+
+<h4>New helper</h4>
+<pre>def _enforce_box_floor(
+    x: np.ndarray,
+    xLcur: np.ndarray,
+    xUcur: np.ndarray,
+    xLorg: np.ndarray,
+    xUorg: np.ndarray,
+    min_dv_box_limit: float,
+) -&gt; Tuple[np.ndarray, np.ndarray]:
+    """Re-impose ``min_dv_box_limit`` after manual trust-region shrinks.
+
+    The backtracking branches multiply ``(xUcur - xLcur)`` by ``backtrack_shrink``
+    directly, bypassing the floor that ``_adaptive_move_limit`` keeps.  Without
+    this re-clip the trust region can collapse to zero and the solver reports
+    "no acceptable step and trust region is below move_limit_min" spuriously.
+    """
+    if min_dv_box_limit &lt;= 0.0:
+        return xLcur, xUcur
+    xLcur = xLcur.copy()
+    xUcur = xUcur.copy()
+    for i in range(x.size):
+        width = xUcur[i] - xLcur[i]
+        if width &gt;= min_dv_box_limit:
+            continue
+        deficit = min_dv_box_limit - width
+        grow_left  = min(0.5 * deficit, max(0.0, xLcur[i] - xLorg[i]))
+        grow_right = min(0.5 * deficit, max(0.0, xUorg[i] - xUcur[i]))
+        xLcur[i] -= grow_left
+        xUcur[i] += grow_right
+        remaining = min_dv_box_limit - (xUcur[i] - xLcur[i])
+        if remaining &gt; 0:
+            extra_right = min(remaining, max(0.0, xUorg[i] - xUcur[i]))
+            xUcur[i] += extra_right
+            remaining = min_dv_box_limit - (xUcur[i] - xLcur[i])
+        if remaining &gt; 0:
+            extra_left = min(remaining, max(0.0, xLcur[i] - xLorg[i]))
+            xLcur[i] -= extra_left
+        xLcur[i] = max(xLcur[i], xLorg[i])
+        xUcur[i] = min(xUcur[i], xUorg[i])
+    return xLcur, xUcur</pre>
+
+<h4>Call sites</h4>
+<p>LP-failure branch (around former line 640):</p>
+<pre>xLcur = x - (x - xLcur) * backtrack_shrink
+xUcur = x + (xUcur - x) * backtrack_shrink
+xLcur, xUcur = _enforce_box_floor(
+    x, xLcur, xUcur, xL, xU, min_dv_box_limit,
+)
+if float(np.max(xUcur - xLcur)) &lt; min_dv_box_limit:
+    break
+continue</pre>
+<p>Trial-rejection branch (around former line 733):</p>
+<pre>xLcur = x - (x - xLcur) * backtrack_shrink
+xUcur = x + (xUcur - x) * backtrack_shrink
+xLcur, xUcur = _enforce_box_floor(
+    x, xLcur, xUcur, xL, xU, min_dv_box_limit,
+)
+
+if float(np.max(xUcur - xLcur)) &lt; min_dv_box_limit:
+    break</pre>
+
+<h2>3. Effective <code>Solver_Settings</code> after the fix</h2>
+<pre>Solver_Settings = {
+    "acc": 1e-3,
+    "maxiter": 800,
+    "Aggregate": "P-norm",
+    "p_value": 8,
+    "rho_value": 100,
+    "relaxation": 0,
+    "finite_diff_rel_step": 1e-3,
+    "algorithm": "al",          # NEW
+    "penalty_weight": 1e2,      # was 1e3
+    "penalty_increase": 2.0,    # was 10.0
+    "penalty_max": 1e6,         # was 1e9
+    "move_limit": 0.10,
+    "move_limit_min": 1e-5,
+    "move_limit_expand": 1.4,
+    "move_limit_shrink": 0.5,
+    "backtrack_max": 8,
+    "backtrack_shrink": 0.5,
+    "feasibility_tol": 1e-5,
+    "slack_tol": 1e-8,
+    "xtol": 1e-4,
+    "gtol": 1e-6,
+    "sufficient_decrease": 1e-4,
+    "feasibility_reduction": 1e-3,
+}</pre>
+
+<h2>4. What to watch on the next run</h2>
+<ul>
+  <li><strong><code>M</code> column (penalty <code>R</code>)</strong> should stay
+      &le; <code>1e6</code> and grow slowly. If it still saturates, the AL
+      multipliers are not catching up &mdash; lower <code>penalty_increase</code>
+      further or raise the AL multiplier floor in
+      <span class="path">slp_MVP_advanced.py:787</span>.</li>
+  <li><strong><code>viol</code> column</strong> should trend downward. With AL,
+      this is the multiplier doing the work, not <code>R</code>.</li>
+  <li>If the run still terminates with "trust region is below
+      <code>move_limit_min</code>," it is now a <em>real</em> trust-region
+      collapse (not the floor bug) &mdash; likely linearizations too inaccurate
+      at your scale. Try <code>finite_diff_rel_step = 1e-2</code> or
+      <code>fd_type = "central"</code>.</li>
+</ul>
+
+<h2>5. Files touched</h2>
+<table>
+<tr><th>File</th><th>Change</th></tr>
+<tr><td><span class="path">05_OPTI/Main_Self_Written_Test.py</span></td>
+    <td>New <code>algorithm: "al"</code>; reduced
+        <code>penalty_weight</code>, <code>penalty_increase</code>,
+        <code>penalty_max</code>.</td></tr>
+<tr><td><span class="path">05_OPTI/Self_Written_Optimization/optimization_self_written.py</span></td>
+    <td>Added <code>"algorithm"</code> to the <code>slp_options</code> dict
+        forwarded to <code>solve_slp_mvp</code>.</td></tr>
+<tr><td><span class="path">05_OPTI/Self_Written_Optimization/misc/slp_MVP_advanced.py</span></td>
+    <td>New <code>_enforce_box_floor</code> helper; called after both manual
+        <code>backtrack_shrink</code> multiplies in the LP-failure and
+        trial-rejection branches.</td></tr>
+<tr><td><span class="path">CLAUDE.md</span></td>
+    <td>Documented the new <code>algorithm</code> setting passthrough and the
+        <code>_enforce_box_floor</code> guarantee.</td></tr>
+</table>
+
+<div class="note">
+The pure-merit code path is still intact &mdash; switching back to the previous
+behaviour is just <code>"algorithm": "merit"</code> with the old
+<code>penalty_*</code> values.
+</div>
+
+</body>
+</html>
