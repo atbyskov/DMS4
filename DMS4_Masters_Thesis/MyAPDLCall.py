@@ -1,12 +1,24 @@
-# MyAPDLCall.py
-# When called, this document runs Eigenbuckling Analysis and Nonlinear and Returns mass
+"""
+MyAPDLCall.py
+--------------
 
-# -> INPUT:
-#       [SWcoor]    -> Coordinates from Solidworks IGES
-#       [var]       -> Radii variables
-#       [Misc]      -> Miscellaneous Data (force, mesh etc.) 
-# -> OUTPUT:
-#       [Mass]      -> Mass of total assembly
+This module provides the interface between the optimization framework and
+ANSYS MAPDL. It executes finite element analyses using APDL commands and
+returns key structural response quantities required for optimization.
+
+Inputs:
+-------
+- mapdl         : Active MAPDL session
+- var           : Design variables (dict or array)
+- Misc          : Static parameters (loads, material properties, filenames)
+- opti_settings : Structural configuration (segments, sizing options)
+
+Outputs:
+--------
+- total_mass     : Total mass of the structure (objective function)
+- segment_masses : List of masses per mast segment (constraint evaluation)
+
+"""
 
 # Import packages   
 import os

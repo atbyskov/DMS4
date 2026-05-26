@@ -1,7 +1,42 @@
-## MAIN Optimization program ##
-# Uses PySLSQP to optimize .IGS structure through Ansys
-# Calls MAPDL in non-interactive mode
-# Requires ansys.mapdl.core
+
+"""
+opt_logger.py
+-------------
+
+This module provides structured logging functionality for the optimization workflow.
+It records both high-level iteration progress and detailed objective evaluations,
+creating a transparent and traceable optimization history.
+
+Purpose:
+--------
+- Track optimization progress in real-time.
+- Store evaluation data for post-analysis and debugging.
+- Provide reproducibility and documentation of optimization runs.
+
+Core Functionality:
+-------------------
+1. Dual-Level Logging:
+   - Iteration Logging:
+        Captures optimizer iterations (design updates).
+   - Evaluation Logging:
+        Records every objective function call (FEA execution).
+
+-------
+- x0           : Initial design variable vector
+- bounds       : Variable bounds for each design variable
+- method       : Optimization method name (e.g., "PySLSQP")
+- options      : Dictionary of solver settings
+- var_names    : Names of design variables
+- save_folder  : Directory where logs are stored
+
+Outputs:
+--------
+- Text log file:
+      optimization_log_<timestamp>.txt
+
+- CSV data file:
+      objective_history_<timestamp>.csv
+"""
 
 # Import packages
 import sys
