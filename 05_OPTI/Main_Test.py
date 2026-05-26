@@ -32,22 +32,21 @@ opti_settings = {
     "multi_size_braces": False,    # Whether mast segments braces uses different dimensions (True) or not (False)
     "brace_split": False,          # Whether braces are split between horiontal and cross (True) or not (False)
 }
-
+# x0 = [194.3214, 101.0977,   3.5106,  54.8785,   2.8011]
 # Initial Guess
-column_diameter = 48.3 # Column Diameter [mm]
-column_thickness = 2.5 # Column Thickness [mm]
-brace_diameter = 24.0  # Brace Diameter [mm]
-brace_thickness = 1.0  # Brace Thickness [mm]
-
+column_diameter = 101.0977 # Column Diameter [mm]
+column_thickness = 3.5106 # Column Thickness [mm]
+brace_diameter = 54.8785 # Brace Diameter [mm]
+brace_thickness = 2.8011 # Brace Thickness [mm]
 # Bounds
-column_diameter_bounds = (50.0, 100)   # Column Diameter Bounds [mm]
+column_diameter_bounds = (50.0, 300)   # Column Diameter Bounds [mm]
 column_thickness_bounds = (1.0, 7.0)   # Column Thickness Bounds [mm]
-brace_diameter_bounds = (10.0, 40.0)   # Brace Diameter Bounds [mm]
+brace_diameter_bounds = (10.0, 50.0)   # Brace Diameter Bounds [mm]
 brace_thickness_bounds = (1.0, 4.5)    # Brace Thickness Bounds [mm]
 
 # Defining variables with bounds and active status
 var = {
-    "rad": {"value": 291.54, "bounds": (150.0, 300.0), "active": True}, # Radius Structure [mm]
+    "rad": {"value": 194.3214, "bounds": (150.0, 300.0), "active": True}, # Radius Structure [mm]
 }
 if opti_settings["multi_size_columns"]:
     var.update({

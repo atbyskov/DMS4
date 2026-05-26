@@ -27,6 +27,16 @@ Optimizer settings:
 
 ================================================================================
 
+[ITERATION 0]
+Util_LB          Column:    0.024  Brace:    0.000
+Util_NF          Column:    0.568  Brace:    0.039
+Util_S           Column:    0.037  Brace:    0.012
+Util_T           Column:    0.018  Brace:    0.044
+Util_BR          Column:    0.600  Brace:    0.087
+Util_IN          Column:    0.685  Brace:    0.161
+Util_BS_sig      Column:    N/A    Brace:    0.049
+Util_BS_defl     Column:    N/A    Brace:    0.008
+
 [EVALUATION 1]
   Date/time : 2026-05-14 14:03:22
   x         : [266.99, 50.30, 3.20, 52.17, 4.80]

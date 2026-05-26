@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import re
 from matplotlib.ticker import MaxNLocator
+import math
 
 # Plotting ACS
 #   Plots ACS development over time
@@ -52,11 +53,27 @@ def plot_ACS():
 
 # Objective functions over iterations
 
+
+def set_integer_yticks(ax, n_ticks=8):
+    y_min, y_max = ax.get_ylim()
+
+    y_min = math.floor(y_min)
+    y_max = math.ceil(y_max)
+
+    raw_step = (y_max - y_min) / n_ticks
+
+    # round step to nice number (1, 2, 5, 10, ...)
+    step = max(1, int(round(raw_step / 5) * 5))
+
+    ax.set_ylim(y_min, y_max)
+    ax.set_yticks(np.arange(y_min, y_max + step, step))
+
+
+# =========================================================
+# ✅ OBJECT / DESIGN VARIABLE PLOT
+# =========================================================
 def plot_obj(inp):
     csv_files = [f for f in os.listdir("LHS_results") if f.endswith(".csv")]
-
-    # ✅ Mapping from user input → column in CSV + label
-    
 
     col_map = {
         "objective": ("objective", "Mass [kg]", "objective"),
@@ -64,54 +81,62 @@ def plot_obj(inp):
         "t0": ("x2", r"$t_0$", r"$t_0$"),
         "d1": ("x3", r"$d_1$", r"$d_1$"),
         "t1": ("x4", r"$t_1$", r"$t_1$"),
-        "rad": ("x0", "rad", "rad"),
+        "rad": ("x0", "rad [mm]", "rad"),
     }
 
-
-
     if inp not in col_map:
-        raise ValueError("Choose from: obj, d0, t0, d1, t1, rad")
+        raise ValueError("Choose from: objective, d0, t0, d1, t1, rad")
 
     y_col, ylabel, title_label = col_map[inp]
-    x_col = "iteration"
 
-    fig = plt.figure(figsize=(8,4))
+    fig, ax = plt.subplots(figsize=(8, 4))
 
     for file in csv_files:
-        path = os.path.join("LHS_results_SLP_Self_written", file)
-        df = pd.read_csv(path, skiprows=lambda x: x < 26)
+        path = os.path.join("LHS_results", file)
+        df = pd.read_csv(path, skiprows=lambda x: x < 22)
         df.columns = df.columns.str.strip()
 
-        # Ensure numeric
         df["iteration"] = df["iteration"].astype(int)
         df["eval_index"] = df["eval_index"].astype(int)
         df[y_col] = pd.to_numeric(df[y_col], errors="coerce")
 
-        # 🔥 Move last evaluation to next iteration
+        # Move last evaluation to next iteration
         last_idx = df.groupby("iteration")["eval_index"].idxmax()
         df.loc[last_idx, "iteration"] += 1
 
-        # Sort
         df = df.sort_values(by=["iteration", "eval_index"])
 
         # Plot
-        plt.plot(df[x_col], df[y_col], label=file)
+        ax.plot(df["iteration"], df[y_col], linewidth=1.5)
 
-        # Mark final point
-        x_last = df[x_col].iloc[-1]
-        y_last = df[y_col].iloc[-1]
+        # Final marker
+        ax.scatter(df["iteration"].iloc[-1],
+                   df[y_col].iloc[-1],
+                   marker="x", s=50)
 
+    # ✅ X-axis (IDENTICAL everywhere)
+    ax.set_xlim(0, 18)
+    ax.set_xticks(np.arange(0, 19, 2))
 
-        plt.scatter(x_last, y_last, s=50, marker="x")
+    # ✅ Y-axis behavior
+    if inp == "rad":
+        ax.set_ylim(150, 350)
+        ax.set_yticks(np.arange(150, 351, 25))
+    else:
+        set_integer_yticks(ax)
 
-    plt.grid(True)
-    plt.xlabel("Iterations")
-    plt.ylabel(f"{ylabel} [mm]")
-    #title_label = title_label.replace("_", r"\_")
-    plt.title(f"{title_label} for 32 sampling points")
-    # plt.legend()
-    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
+    # ✅ Styling (IDENTICAL)
+    ax.grid(True, linewidth=0.8)
+    ax.set_xlabel("Iterations")
+    ax.set_ylabel(ylabel)
+    ax.set_title(f"{title_label} for 32 sampling points")
+
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+
+    fig.subplots_adjust(left=0.1, right=0.95, top=0.9, bottom=0.15)
+
     plt.show()
+
 
 
 # Plot all simulation design variables and objective function over evaluations
@@ -229,11 +254,13 @@ def plot_D_O_start_end_simple():
     plt.tight_layout()
     plt.show()
 
+
+
 def plot_max_util(folder="LHS_results"):
 
     txt_files = [f for f in os.listdir(folder) if f.endswith(".txt")]
 
-    plt.figure(figsize=(8, 4))
+    fig, ax = plt.subplots(figsize=(8, 4))   # ✅ use ax explicitly
 
     for file in txt_files:
         path = os.path.join(folder, file)
@@ -245,12 +272,10 @@ def plot_max_util(folder="LHS_results"):
         max_utils = []
 
         current_iter = None
-        collecting = False
         util_values = []
 
         for line in lines:
 
-            # Detect iteration
             match = re.search(r"\[ITERATION (\d+)\]", line)
             if match:
                 if current_iter is not None and util_values:
@@ -258,44 +283,73 @@ def plot_max_util(folder="LHS_results"):
                     max_utils.append(max(util_values))
 
                 current_iter = int(match.group(1))
-                collecting = True
                 util_values = []
                 continue
 
-            # Extract utilizations
-            if collecting and "Util_" in line:
+            if "Util_" in line:
                 nums = re.findall(r"\d+\.\d+", line)
                 nums = [float(n) for n in nums]
                 util_values.extend(nums)
 
-        # Save last iteration
         if current_iter is not None and util_values:
             iterations.append(current_iter)
             max_utils.append(max(util_values))
 
-        # 🤖 Shift iteration index (final value belongs to next iteration)
-        # iterations = [i + 1 for i in iterations]
+        # ✅ Plot
+        ax.plot(iterations, max_utils, linewidth=1.5)
 
-        # Plot
-        plt.plot(iterations, max_utils, marker='o', label=file)
+        if iterations and max_utils:
+            ax.scatter(iterations[-1], max_utils[-1], marker="x", s=50)
 
-    plt.xlabel("Iteration")
-    plt.ylabel("Maximum Utilization")
-    plt.title("Maximum Utilization per Iteration")
-    plt.grid(True)
+    # ✅ ---- KEY FIXES ----
 
-    plt.tight_layout()
-    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
+    # Match x-axis exactly
+    ax.set_xlim(0, 18)
+    ax.set_xticks(np.arange(0, 19, 2))
+
+    # ✅ Force SAME NUMBER OF Y GRID LINES as rad plot
+    
+    # Get limits
+    y_min, y_max = ax.get_ylim()
+
+    # Round to nice integers
+    y_min = math.floor(y_min)
+    y_max = math.ceil(y_max)
+
+    # Create integer ticks with ~same density as rad (≈8–10 ticks)
+    step = max(1, round((y_max - y_min) / 8))
+
+    ax.set_ylim(y_min, y_max)
+    ax.set_yticks(np.arange(y_min, y_max + step, step))
+
+    # (same "visual density" as ~150→350 with step ≈25)
+
+    # ✅ Grid identical style
+    ax.grid(True, which='major', linewidth=0.8)
+
+    # Labels & title
+    ax.set_xlabel("Iterations")
+    ax.set_ylabel("Maximum Utilization")
+    ax.set_title("Maximum Utilization for 32 sampling points")
+
+    # Integer x ticks
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+
+    # ✅ Force identical layout behavior
+    fig.subplots_adjust(left=0.1, right=0.95, top=0.90, bottom=0.15)
+
     plt.show()
 
+
+
 # Select what plots to use
-#plot_obj("rad")                          # objective, d0, t0, d1, t1, rad
+plot_obj("objective")                          # objective, d0, t0, d1, t1, rad
 #plot_D_O_All(x_axis="iter")
 #plot_D_O_start_end_simple()
 plot_max_util()
 
 
-
+"""
 def objective_summary_table(folder="LHS_results_SLP_Self_written", start_mass=107.89):
 
     csv_files = [f for f in os.listdir(folder) if f.endswith(".csv")]
@@ -321,7 +375,7 @@ def objective_summary_table(folder="LHS_results_SLP_Self_written", start_mass=10
 
 
 
-def objective_summary_table(folder="LHS_results_SLP_Self_written",
+#def objective_summary_table(folder="LHS_results_SLP_Self_written",
                             start_mass=107.89,
                             output_file="objective_summary.txt"):
 
@@ -399,3 +453,5 @@ def objective_summary_table(folder="LHS_results_SLP_Self_written",
 
 
 objective_summary_table()
+
+"""

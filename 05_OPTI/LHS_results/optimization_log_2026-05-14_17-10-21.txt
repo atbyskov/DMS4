@@ -26,6 +26,15 @@ Optimizer settings:
   relaxation: 0
 
 ================================================================================
+[ITERATION 0]
+Util_LB          Column:    0.014  Brace:    0.000
+Util_NF          Column:    0.187  Brace:    0.042
+Util_S           Column:    0.012  Brace:    0.002
+Util_T           Column:    0.006  Brace:    0.012
+Util_BR          Column:    0.200  Brace:    0.058
+Util_IN          Column:    0.232  Brace:    0.080
+Util_BS_sig      Column:    N/A    Brace:    0.140
+Util_BS_defl     Column:    N/A    Brace:    0.042
 
 [EVALUATION 1]
   Date/time : 2026-05-14 17:10:25

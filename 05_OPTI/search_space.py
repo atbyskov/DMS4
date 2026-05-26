@@ -213,8 +213,8 @@ def plotting2D():
         ax.set_title(f"{methods[i]}\nCD = {scores[i]:.4f}")
 
         # Labels
-        ax.set_xlabel("d0 [mm]")
-        ax.set_ylabel("t0 [mm]")
+        ax.set_xlabel(r"$d_0$ [mm]")
+        ax.set_ylabel(r"$t_0$ [mm]")
 
         # Limits (important for comparison)
         ax.set_xlim(xmin-5, xmax+5)
@@ -280,6 +280,6 @@ def plotting3D():
     plt.show()
 """
 
-#plotting2D()
+plotting2D()
 
 # Aggregate Output
