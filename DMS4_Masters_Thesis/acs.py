@@ -1,4 +1,38 @@
-# ACS.py
+
+"""
+ACS.py
+------
+
+This module implements Adaptive Constraint Scaling (ACS), a technique used to
+improve numerical stability and convergence behavior in constrained optimization
+problems.
+
+Update Strategy:
+----------------
+- Iteration 0:
+    Initialize scaling directly from ratio (g_max / g)
+
+- Iteration 1:
+    Store previous scaling value for trend tracking
+
+- Iteration ≥ 2:
+    - Compute new scaling using weighted averaging
+    - Detect oscillatory behavior in scaling history
+    - Adjust alpha:
+        • Reduce alpha if oscillations detected (stabilization)
+        • Increase alpha if stable (faster adaptation)
+
+Inputs:
+-------
+- g     : Aggregated constraint value
+- gmax  : Maximum constraint value among all constraints
+
+Outputs:
+--------
+- c     : Updated constraint scaling factor
+
+"""
+
 
 class ACSclass:
     def __init__(self, alpha=1.0, c0=1.0, enabled = True):

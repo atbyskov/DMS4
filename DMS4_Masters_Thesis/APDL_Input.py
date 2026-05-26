@@ -1,10 +1,33 @@
-### ADPL_Input.py ###
-# -> INPUT:
-#       - [SW_coor]   -> Coordinates from Soldiworks
-#       - [var]       -> Radius variables
-#       - [Misc]      -> Miscellaneous Data (force, mesh etc.) 
-# -> OUTPUT:
-#       - .txt Input file for APDL Analysis (Eigenbuckling and Nonlinear)
+
+"""
+ADPL_Input.py
+--------------
+
+This module generates a complete ANSYS APDL input script for structural analysis
+based on a parametric mast geometry imported from an IGS file. The generated APDL
+commands define the finite element model, apply loads and boundary conditions,
+and execute both eigenvalue buckling and nonlinear analyses.
+
+Inputs:
+-------
+- var             : Dictionary of design variables (geometry, dimensions)
+- Misc            : Static parameters (loads, material properties, file names)
+- opti_settings   : Configuration flags controlling model structure
+
+Outputs:
+--------
+- APDL command list (list of strings) to be executed in MAPDL
+- Generated files from MAPDL run:
+    • MASS_assembly.txt
+    • MASS_segments.txt
+    • Eigenvalue1.txt
+    • APDL_Nonlin_Internal.txt
+
+Notes:
+------
+- The script has certain specific geometry related properties, that only work for the current IGS file (height etc.)
+- Switching to another IGS file might break code here
+"""
 
 # Import packages
 import os
