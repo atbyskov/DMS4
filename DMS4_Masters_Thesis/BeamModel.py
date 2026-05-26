@@ -1,7 +1,5 @@
 # Main_Test.py
 # Script for Standalone Analysis Without Optimization
-# Main_Test.py
-# Script for Standalone Analysis Without Optimization
 
 # Import packages
 import sys
