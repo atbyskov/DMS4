@@ -69,11 +69,11 @@ Misc = {
 Solver_Settings = {
     "acc": 1e-3,                 # Maximum objective function tolerance
     "maxiter": 120,              # Maximum iterations
-    "Aggregate": "P-norm",       # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
+    "Aggregate": None,           # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
     "p_value": 8,                # Value for "P-norm" and "P-norm-mean"
     "rho_value": 100,            # rho value used in KS
     "relaxation": 0,             # Relaxation parameter used in aggregation
-    "use_acs": True,             # Toggle ACS to on (True) or off (False)
+    "use_acs": False,             # Toggle ACS to on (True) or off (False)
 }
 
 
