@@ -17,9 +17,9 @@ opti_settings = {
     "n_mast_segments": 5,         # Number of mast segments
     "mast_segment_height": 810,   # Height of each mast segment [mm]
     "segment_mass_limit": 23,     # Limits for segment masses [kg]
-    "multi_size_columns": True,   # Whether mast segments columns uses different dimensions (True) or not (False)
-    "multi_size_braces": True,    # Whether mast segments braces uses different dimensions (True) or not (False)
-    "brace_split": True,          # Whether braces are split between horiontal and cross (True) or not (False)
+    "multi_size_columns": False,   # Whether mast segments columns uses different dimensions (True) or not (False)
+    "multi_size_braces": False,    # Whether mast segments braces uses different dimensions (True) or not (False)
+    "brace_split": False,          # Whether braces are split between horiontal and cross (True) or not (False)
 }
 
 # Initial Guess
@@ -93,7 +93,7 @@ Misc = {
 # MATLAB-equivalent option names are noted in the comments.
 Solver_Settings = {
     # ---- Aggregation (NOT a solver parameter; consumed by ConstraintAggregate)
-    "Aggregate": "P-norm",            # None | "P-norm" | "P-norm-mean" | "KS" | "KS_shift"
+    "Aggregate": None,            # None | "P-norm" | "P-norm-mean" | "KS" | "KS_shift"
     "p_value": 8,                 # P-norm exponent
     "rho_value": 100,             # KS sharpness
     "relaxation": 0,              # aggregation relaxation
@@ -102,7 +102,7 @@ Solver_Settings = {
 
     # ---- Algorithm
     "algorithm": "merit",         # 'merit' (quadratic) or 'al' (augmented Lagrangian)
-    "penalty_weight": 1000,     # InfeasibilityPenalization R (fixed, never grows)
+    "penalty_weight": 15,     # InfeasibilityPenalization R (fixed, never grows)
 
     # ---- Convergence (MATLAB names)
     "acc": 1e-3,                  # FunctionTolerance       -> |delta f_merit|
@@ -116,7 +116,7 @@ Solver_Settings = {
     "move_limit": 0.10,           # MoveLimit
     "move_limit_expand": 1.1,     # MoveLimitExpand
     "move_limit_shrink": 0.5,     # MoveLimitReduce
-    "use_acs": True,              # Toggle ACS to on (True) or off (False)
+    "use_acs": False,              # Toggle ACS to on (True) or off (False)
     # ---- Filter
     "max_infeasibility": float("inf"),  # MaxInfeasibility  (inf => filter starts unconstrained)
 }

@@ -3,7 +3,9 @@
     "allow": [
       "Bash(python -c \"import ast; ast.parse\\(open\\('05_OPTI/Self_Written_Optimization/line_search_methods.py'\\).read\\(\\)\\); ast.parse\\(open\\('05_OPTI/Self_Written_Optimization/optimization_methods.py'\\).read\\(\\)\\); ast.parse\\(open\\('05_OPTI/Self_Written_Optimization/optimization_self_written.py'\\).read\\(\\)\\); print\\('OK: all three files parse'\\)\")",
       "Bash(python -m 05_OPTI.Self_Written_Optimization.misc.slp_MVP_advanced)",
-      "WebSearch"
+      "WebSearch",
+      "PowerShell(pip show *)",
+      "PowerShell($base = \"C:\\\\Users\\\\boggy\\\\OneDrive\\\\Desktop\\\\DMS4\\\\05_OPTI\"; $outDir = \"$base\\\\Code_PDFs\"; $files = @\\(\"Main.py\", \"MyAPDLCall.py\", \"Post_Process.py\", \"optimization.py\", \"APDL_Input.py\", \"aggregate.py\", \"acs.py\"\\); foreach \\($f in $files\\) { $src = \"$base\\\\$f\"; $name = [System.IO.Path]::GetFileNameWithoutExtension\\($f\\); $dst = \"$outDir\\\\$name.pdf\"; Write-Host \"Converting $f ...\"; python -m code2pdf \"$src\" \"$dst\"; if \\($LASTEXITCODE -ne 0\\) { Write-Host \"FAILED: $f\" } else { Write-Host \"OK: $dst\" } })"
     ]
   }
 }
