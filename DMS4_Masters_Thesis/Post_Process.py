@@ -11,7 +11,6 @@ Inputs:
 - Misc              : Static parameters (material, files, etc.)
 - opti_settings     : Configuration flags for model structure
 
-
 Outputs:
 --------
 - Utilization ratios per check 
