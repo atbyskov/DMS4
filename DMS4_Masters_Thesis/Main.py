@@ -19,7 +19,6 @@ Output:
 - Log files and result summaries stored in the specified output folder
 """
 
-
 # Import packages
 import sys
 print(sys.version, flush=True)
@@ -29,28 +28,6 @@ from ansys.mapdl.core import launch_mapdl
 # Import Functions
 import optimization
 from MyAPDLCall import RunAPDL
-
-# Optimizer Settings
-opti_settings = {
-    "n_mast_segments": 5,         # Number of mast segments
-    "mast_segment_height": 810,   # Height of each mast segment [mm]
-    "segment_mass_limit": 23,     # Limits for segment masses [kg]
-    "multi_size_columns": True,   # Whether mast segments columns uses different dimensions (True) or not (False)
-    "multi_size_braces": True,    # Whether mast segments braces uses different dimensions (True) or not (False)
-    "brace_split": True,          # Whether braces are split between horiontal and cross (True) or not (False)
-}
-
-# Initial Guess
-column_diameter = 76.1 # Column Diameter [mm]
-column_thickness = 3   # Column Thickness [mm]
-brace_diameter = 26.9  # Brace Diameter [mm]
-brace_thickness = 2.3  # Brace Thickness [mm]
-         
-# Bounds
-column_diameter_bounds = (48.3, 114.3)   # Column Diameter Bounds [mm]
-column_thickness_bounds = (2.5, 5.0)     # Column Thickness Bounds [mm]
-brace_diameter_bounds = (10.0, 50.0)     # Brace Diameter Bounds [mm]
-brace_thickness_bounds = (1.0, 4.0)      # Brace Thickness Bounds [mm]
 
 # Static variables
 Misc = {
@@ -76,6 +53,27 @@ Solver_Settings = {
     "use_acs": False,             # Toggle ACS to on (True) or off (False)
 }
 
+# Optimizer Settings
+opti_settings = {
+    "n_mast_segments": 5,         # Number of mast segments
+    "mast_segment_height": 810,   # Height of each mast segment [mm]
+    "segment_mass_limit": 23,     # Limits for segment masses [kg]
+    "multi_size_columns": True,   # Whether mast segments columns uses different dimensions (True) or not (False)
+    "multi_size_braces": True,    # Whether mast segments braces uses different dimensions (True) or not (False)
+    "brace_split": True,          # Whether braces are split between horiontal and cross (True) or not (False)
+}
+
+# Initial Guess
+column_diameter = 76.1 # Column Diameter [mm]
+column_thickness = 3   # Column Thickness [mm]
+brace_diameter = 26.9  # Brace Diameter [mm]
+brace_thickness = 2.3  # Brace Thickness [mm]
+         
+# Bounds
+column_diameter_bounds = (48.3, 114.3)   # Column Diameter Bounds [mm]
+column_thickness_bounds = (2.5, 5.0)     # Column Thickness Bounds [mm]
+brace_diameter_bounds = (10.0, 50.0)     # Brace Diameter Bounds [mm]
+brace_thickness_bounds = (1.0, 4.0)      # Brace Thickness Bounds [mm]
 
 # Defining variables with bounds and active status
 var = {
