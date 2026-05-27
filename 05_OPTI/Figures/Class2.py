@@ -1,6 +1,29 @@
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+import os
+
+matplotlib.rcParams['figure.dpi'] = 300
+matplotlib.rcParams['savefig.dpi'] = 1200
+matplotlib.rcParams['text.antialiased'] = True
+matplotlib.rcParams['lines.antialiased'] = True
+matplotlib.rcParams['patch.antialiased'] = True
+matplotlib.rcParams['text.usetex'] = False
+matplotlib.rcParams['mathtext.fontset'] = 'cm'
+matplotlib.rcParams['font.family'] = 'serif'
+matplotlib.rcParams['font.serif'] = ['CMU Serif', 'Computer Modern Roman', 'Times New Roman', 'DejaVu Serif']
+matplotlib.rcParams['axes.linewidth'] = 1.2
+matplotlib.rcParams['xtick.major.width'] = 1.0
+matplotlib.rcParams['ytick.major.width'] = 1.0
+matplotlib.rcParams['xtick.minor.width'] = 0.6
+matplotlib.rcParams['ytick.minor.width'] = 0.6
+matplotlib.rcParams['xtick.direction'] = 'in'
+matplotlib.rcParams['ytick.direction'] = 'in'
+matplotlib.rcParams['xtick.minor.visible'] = True
+matplotlib.rcParams['ytick.minor.visible'] = True
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 
 # ---------------------------------------------------------
 # 1. Production Profile Datasets (D, t)
@@ -93,37 +116,32 @@ bound_brc_d = (10.0, 50.0)
 # 3. Plotting Execution Engine
 # ---------------------------------------------------------
 
-fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(19, 7.0))
+fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(22, 8.5))
 
 def plot_panel_hybrid(ax, data, limit, title, max_t, max_d, t_label, d_label, design_bounds=None, legend_loc='upper left', legend_fontsize=11.0):
-    # Setup mathematical limit space
-    t_space = np.linspace(0.01, max_t + 5, 1000)
+    t_space = np.linspace(0.01, max_t + 5, 5000)
     d_limit = limit * t_space
-    
-    # 1. Plot compliance regions
+
     ax.fill_between(t_space, 0, d_limit, color='#2ecc71', alpha=0.12, label='Class 1 & 2')
     ax.fill_between(t_space, d_limit, max_d + 150, color='#e74c3c', alpha=0.12, label='Class 3 & 4')
-    
-    # 2. Plot mathematical boundary line
-    ax.plot(t_space, d_limit, color='#d35400', linestyle='-', linewidth=2.5)
-    
-    # 3. Overlay specified design envelope box
+
+    ax.plot(t_space, d_limit, color='#d35400', linestyle='-', linewidth=2.8, antialiased=True)
+
     if design_bounds:
         bound_t, bound_d = design_bounds
         rect = patches.Rectangle(
-            (bound_t[0], bound_d[0]), 
-            bound_t[1] - bound_t[0], 
-            bound_d[1] - bound_d[0], 
-            linewidth=2.5, 
-            edgecolor='#2980b9', 
-            facecolor='none', 
-            linestyle='--', 
-            label='Specified Design Bounds', 
+            (bound_t[0], bound_d[0]),
+            bound_t[1] - bound_t[0],
+            bound_d[1] - bound_d[0],
+            linewidth=2.8,
+            edgecolor='#2980b9',
+            facecolor='none',
+            linestyle='--',
+            label='Specified Design Bounds',
             zorder=6
         )
         ax.add_patch(rect)
-    
-    # 4. Filter and plot production multi-points
+
     comp_t, comp_d = [], []
     slend_t, slend_d = [], []
     for d_val, t_val in data:
@@ -133,20 +151,24 @@ def plot_panel_hybrid(ax, data, limit, title, max_t, max_d, t_label, d_label, de
         else:
             slend_t.append(t_val)
             slend_d.append(d_val)
-            
+
     if comp_t:
-        ax.scatter(comp_t, comp_d, color='#1abc9c', edgecolors='#116b57', s=45, zorder=7, label='Compliant Production Profile')
+        ax.scatter(comp_t, comp_d, color='#1abc9c', edgecolors='#116b57',
+                   s=60, linewidths=1.2, zorder=7, label='Compliant Production Profile')
     if slend_t:
-        ax.scatter(slend_t, slend_d, color='#962d22', edgecolors='#4a110b', s=45, zorder=7, label='Non-Compliant Production Profile')
-    
-    # 5. Graph formatting and styling
+        ax.scatter(slend_t, slend_d, color='#962d22', edgecolors='#4a110b',
+                   s=60, linewidths=1.2, zorder=7, label='Non-Compliant Production Profile')
+
     ax.set_xlim(0, max_t)
     ax.set_ylim(0, max_d)
-    ax.set_xlabel(t_label, fontsize=12, fontweight='normal', labelpad=8)
-    ax.set_ylabel(d_label, fontsize=12, fontweight='normal', labelpad=8)
-    ax.set_title(title, fontsize=14, fontweight='normal', pad=15)
-    ax.grid(True, linestyle=':', alpha=0.6)
-    ax.legend(loc=legend_loc, fontsize=legend_fontsize, framealpha=0.9, fancybox=True)
+    ax.set_xlabel(t_label, fontsize=17, fontweight='normal', labelpad=10)
+    ax.set_ylabel(d_label, fontsize=17, fontweight='normal', labelpad=10)
+    ax.set_title(title, fontsize=19, fontweight='normal', pad=18)
+    ax.tick_params(axis='both', which='major', labelsize=14)
+    ax.tick_params(axis='both', which='minor', labelsize=11)
+    ax.grid(True, linestyle=':', alpha=0.5, linewidth=0.7)
+    ax.legend(loc=legend_loc, fontsize=legend_fontsize, framealpha=0.95, fancybox=True,
+              edgecolor='#555555', shadow=True)
 
 # Generate Plot 1: Columns S700
 plot_panel_hybrid(
@@ -154,7 +176,7 @@ plot_panel_hybrid(
     'Strenx 700 Columns\n(Production Profiles & Initial Bounds)', 
     11, 340, r'Wall Thickness, $t_0$ [mm]', r'Outer Diameter, $d_0$ [mm]', 
     design_bounds=(bound_col_t, bound_col_d),
-    legend_fontsize=8.35
+    legend_fontsize=10.5
 )
 
 # Generate Plot 2: Braces S355
@@ -176,13 +198,13 @@ plot_panel_hybrid(
 )
 
 # Additional figure: only S700 and S355
-fig2, (ax4, ax5) = plt.subplots(1, 2, figsize=(14, 7.0))
+fig2, (ax4, ax5) = plt.subplots(1, 2, figsize=(16, 8.5))
 plot_panel_hybrid(
     ax4, s700_data, limit_700,
     'Strenx 700 Columns\n(Production Profiles & Initial Bounds)', 
     11, 340, r'Wall Thickness, $t_0$ [mm]', r'Outer Diameter, $d_0$ [mm]', 
     design_bounds=(bound_col_t, bound_col_d),
-    legend_fontsize=9.0
+    legend_fontsize=11.0
 )
 plot_panel_hybrid(
     ax5, s355_data, limit_355, 
@@ -193,7 +215,7 @@ plot_panel_hybrid(
 )
 
 # Additional figure: only S355 and S235
-fig3, (ax6, ax7) = plt.subplots(1, 2, figsize=(14, 7.0))
+fig3, (ax6, ax7) = plt.subplots(1, 2, figsize=(16, 8.5))
 plot_panel_hybrid(
     ax6, s355_data, limit_355,
     'S355 Braces\n(Production Profiles & Initial Bounds)', 
@@ -209,8 +231,20 @@ plot_panel_hybrid(
     legend_loc='lower right'
 )
 
-# Render
 fig.tight_layout()
 fig2.tight_layout()
 fig3.tight_layout()
+
+save_dir = os.path.dirname(os.path.abspath(__file__))
+for name, f in [('Class2_all3', fig), ('Class2_S700_S355', fig2), ('Class2_S355_S235', fig3)]:
+    f.savefig(os.path.join(save_dir, f'{name}.png'),
+              dpi=1200, bbox_inches='tight', pad_inches=0.15,
+              facecolor='white', edgecolor='none')
+    f.savefig(os.path.join(save_dir, f'{name}.pdf'),
+              bbox_inches='tight', pad_inches=0.15,
+              facecolor='white', edgecolor='none')
+    f.savefig(os.path.join(save_dir, f'{name}.svg'),
+              bbox_inches='tight', pad_inches=0.15,
+              facecolor='white', edgecolor='none')
+
 plt.show()

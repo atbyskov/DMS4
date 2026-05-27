@@ -1,6 +1,29 @@
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+import os
+
+matplotlib.rcParams['figure.dpi'] = 300
+matplotlib.rcParams['savefig.dpi'] = 1200
+matplotlib.rcParams['text.antialiased'] = True
+matplotlib.rcParams['lines.antialiased'] = True
+matplotlib.rcParams['patch.antialiased'] = True
+matplotlib.rcParams['text.usetex'] = False
+matplotlib.rcParams['mathtext.fontset'] = 'cm'
+matplotlib.rcParams['font.family'] = 'serif'
+matplotlib.rcParams['font.serif'] = ['CMU Serif', 'Computer Modern Roman', 'Times New Roman', 'DejaVu Serif']
+matplotlib.rcParams['axes.linewidth'] = 1.2
+matplotlib.rcParams['xtick.major.width'] = 1.0
+matplotlib.rcParams['ytick.major.width'] = 1.0
+matplotlib.rcParams['xtick.minor.width'] = 0.6
+matplotlib.rcParams['ytick.minor.width'] = 0.6
+matplotlib.rcParams['xtick.direction'] = 'in'
+matplotlib.rcParams['ytick.direction'] = 'in'
+matplotlib.rcParams['xtick.minor.visible'] = True
+matplotlib.rcParams['ytick.minor.visible'] = True
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 
 # ---------------------------------------------------------
 # 1. Production Profile Dataset (D, t) — S700 Columns
@@ -95,9 +118,9 @@ boundary_colors = {
 max_t = 11
 max_d = 340
 
-fig, ax = plt.subplots(figsize=(9, 7))
+fig, ax = plt.subplots(figsize=(11, 8.5))
 
-t_space = np.linspace(0.01, max_t + 5, 1000)
+t_space = np.linspace(0.01, max_t + 5, 5000)
 d_class1 = limit_class1 * t_space
 d_class2 = limit_class2 * t_space
 d_class3 = limit_class3 * t_space
@@ -113,12 +136,12 @@ ax.fill_between(t_space, d_class3, max_d + 150,
                 color=region_colors[4], alpha=region_alphas[4], label='Class 4')
 
 # Boundary lines
-ax.plot(t_space, d_class1, color=boundary_colors[1], linestyle='-', linewidth=2.0,
-        label=rf'$d/t = 50\varepsilon^2 = {limit_class1:.1f}$')
-ax.plot(t_space, d_class2, color=boundary_colors[2], linestyle='--', linewidth=2.0,
-        label=rf'$d/t = 70\varepsilon^2 = {limit_class2:.1f}$')
-ax.plot(t_space, d_class3, color=boundary_colors[3], linestyle='-.', linewidth=2.0,
-        label=rf'$d/t = 90\varepsilon^2 = {limit_class3:.1f}$')
+ax.plot(t_space, d_class1, color=boundary_colors[1], linestyle='-', linewidth=2.5,
+        label=rf'$d/t = 50\varepsilon^2 = {limit_class1:.1f}$', antialiased=True)
+ax.plot(t_space, d_class2, color=boundary_colors[2], linestyle='--', linewidth=2.5,
+        label=rf'$d/t = 70\varepsilon^2 = {limit_class2:.1f}$', antialiased=True)
+ax.plot(t_space, d_class3, color=boundary_colors[3], linestyle='-.', linewidth=2.5,
+        label=rf'$d/t = 90\varepsilon^2 = {limit_class3:.1f}$', antialiased=True)
 
 # Design bounds box
 rect = patches.Rectangle(
@@ -136,21 +159,36 @@ for cls in [1, 2, 3, 4]:
     if t_pts:
         ax.scatter(t_pts, d_pts,
                    color=scatter_face[cls], edgecolors=scatter_edge[cls],
-                   s=50, zorder=7, label=f'Class {cls} Profile')
+                   s=65, linewidths=1.2, zorder=7, label=f'Class {cls} Profile')
 
 # Formatting
 ax.set_xlim(0, max_t)
 ax.set_ylim(0, max_d)
-ax.set_xlabel(r'Wall Thickness, $t_0$ [mm]', fontsize=12, labelpad=8)
-ax.set_ylabel(r'Outer Diameter, $d_0$ [mm]', fontsize=12, labelpad=8)
+ax.set_xlabel(r'Wall Thickness, $t_0$ [mm]', fontsize=17, labelpad=10)
+ax.set_ylabel(r'Outer Diameter, $d_0$ [mm]', fontsize=17, labelpad=10)
 ax.set_title(
     r'Strenx 700 Columns — Cross-Section Classification (EN 1993-1-1)'
     '\n'
     rf'$\varepsilon^2 = 235\,/\,f_y = {eps_sq:.4f}$',
-    fontsize=13, pad=15
+    fontsize=19, pad=18
 )
-ax.grid(True, linestyle=':', alpha=0.6)
-ax.legend(loc='upper left', fontsize=8.5, framealpha=0.92, fancybox=True)
+ax.tick_params(axis='both', which='major', labelsize=14)
+ax.tick_params(axis='both', which='minor', labelsize=11)
+ax.grid(True, linestyle=':', alpha=0.5, linewidth=0.7)
+ax.legend(loc='upper left', fontsize=13, framealpha=0.95, fancybox=True,
+          edgecolor='#555555', shadow=True)
 
 fig.tight_layout()
+
+save_dir = os.path.dirname(os.path.abspath(__file__))
+fig.savefig(os.path.join(save_dir, 'Class2_3_4.png'),
+            dpi=1200, bbox_inches='tight', pad_inches=0.15,
+            facecolor='white', edgecolor='none')
+fig.savefig(os.path.join(save_dir, 'Class2_3_4.pdf'),
+            bbox_inches='tight', pad_inches=0.15,
+            facecolor='white', edgecolor='none')
+fig.savefig(os.path.join(save_dir, 'Class2_3_4.svg'),
+            bbox_inches='tight', pad_inches=0.15,
+            facecolor='white', edgecolor='none')
+
 plt.show()
