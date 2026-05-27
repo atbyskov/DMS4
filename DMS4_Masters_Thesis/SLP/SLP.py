@@ -1,9 +1,8 @@
 """
-Faithful Python port of fminslp.m (Rene S. Nielsen).
+Python version of fminslp.m (Rene S. Nielsen).
 
-This module is a literal translation of the merit-function variant of the
-MATLAB ``fminslp`` solver. Every algorithmic ingredient and every default
-matches the MATLAB reference:
+This module is a translation of the merit-function variant of the
+MATLAB ``fminslp`` solver.MATLAB reference:
 
     * Slack variables ``y >= 0`` that relax the linearized inequality
       constraints so the LP subproblem is always feasible.
@@ -221,7 +220,7 @@ def _adaptive_move_limit(
 # Finite-difference gradient + constraint Jacobian
 #   Mirrors getFunDSA (lines 611-652) + getNonlconDSA (lines 654-745).
 #   MATLAB calls them separately; we batch them via obj_and_g for
-#   evaluator-cache efficiency.  Result is identical.
+#   evaluator-cache efficiency.
 # ----------------------------------------------------------------------
 def _fd_grad_and_jac(
     obj_and_g: Callable[[np.ndarray], Tuple[float, np.ndarray]],
@@ -371,7 +370,7 @@ def solve_slp_mvp(
     # callers do not break.
     **_unused_kwargs: Any,
 ) -> SLPResult:
-    """Sequential Linear Programming solver, faithful port of fminslp.m.
+    """Sequential Linear Programming solver, port of fminslp.m.
 
     Solves ``min f(x) s.t. c(x) >= 0, xl <= x <= xu``.
     """
@@ -408,16 +407,12 @@ def solve_slp_mvp(
     # Lines 239-256: initial constraint evaluation, slack-variable init.
     # We need one extra (fun, nonlcon) call here because MATLAB calls
     # nonlcon BEFORE fun (line 240), then fun (line 287).  We collapse
-    # both into a single obj_and_g call -- algorithmically identical,
-    # only saves one evaluation.
+    # both into a single obj_and_g call,
     f_cur, g_cur = obj_and_g(x)
     m = g_cur.size
 
     if m > 0:
-        # Line 244:  y = max([gnl(:); gneq(:); -gneq(:)], 0)
-        # We have no separate equalities -- y = max(g, 0).
         y = np.maximum(g_cur, 0.0)
-        # Line 247:  yub = max(max(g, 1)) * 1e6
         yub_seed = max(float(np.max(g_cur)), 1.0)
         ylb = np.zeros(m, dtype=float)
         yub = np.full(m, yub_seed * 1.0e6, dtype=float)
@@ -623,8 +618,8 @@ def solve_slp_mvp(
                     )
 
                 # --- Convergence checks (MATLAB lines 410-440) ---
-                # NOTE: these run REGARDLESS of accept/reject, matching MATLAB.
-                # The elif chain mirrors MATLAB's precedence exactly.
+                # NOTE: these run REGARDLESS of accept/reject.
+                # The elif chain mirrors MATLAB's precedence
                 if optimality_norm <= gtol:
                     optimize = False
                     backtrack = False
@@ -750,8 +745,6 @@ def solve_slp_mvp(
     # MATLAB sets fval = freal (the trial's real f at exit).  When the
     # trial was filter-accepted we also commit x to the trial point so
     # that result.x and result.fun are a consistent (x, f(x)) pair --
-    # this is a small, deliberate clarification of MATLAB's behaviour
-    # which leaves x stale while reporting freal.
     if last_trial_accepted and not last_lp_failed:
         x_out = x_new.copy()
         f_out = float(f_new)

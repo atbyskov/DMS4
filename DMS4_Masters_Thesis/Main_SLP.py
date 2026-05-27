@@ -126,9 +126,8 @@ Misc = {
 # MATLAB-equivalent option names are noted in the comments.
 Solver_Settings = {
     # ---- Aggregation (NOT a solver parameter; consumed by ConstraintAggregate)
-    "Aggregate": None,            # None | "P-norm" | "P-norm-mean" | "KS" | "KS_shift"
+    "Aggregate": None,            # None | "P-norm" | "P-norm-mean" |
     "p_value": 8,                 # P-norm exponent
-    "rho_value": 100,             # KS sharpness
     "relaxation": 0,              # aggregation relaxation
     # ---- Finite differences (MATLAB default: sqrt(eps); too small for FEA)
     "finite_diff_rel_step": 1e-3, # absolute step = rel_step * max(1, |x_i|)                                   #IMPORTANT TO TUNE FOR FEA
