@@ -135,6 +135,29 @@ else:
             "t1": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True},       # Brace Thickness  [mm]
         })
 
+# Static variables
+Misc = {
+    "esize": 3,                           # Element Size [mm]
+    "Hor_Force": 502.52,                  # Horizontal Force (P_Load_z) [N]
+    "Ver_Force": -25.13E+3,               # Vertical Force (P_Load_y)   [N]
+    "f_y": 700 ,                          # Column Yield Strength [MPa]
+    "f_y_brace": 235,                     # Brace Yield Strength [MPa]
+    "E_mod": 200*1E3,                     # Youngs Modulus [MPa]
+    "W_Force": -3.751E+3,                 # Vertical Force COG (P_COG_y) [N]
+    "SW_filename": "LWC_L1_LINES.IGS",    # Filename for IGS File
+    "save_folder": "Optimization_Logs"    # Save Folder
+}
+# 2E+5 vs 2E+9
+# Solver Settings
+Solver_Settings = {
+    "acc": 1e-3,                 # Maximum objective function tolerance
+    "maxiter": 120,              # Maximum iterations
+    "Aggregate": "P-norm",       # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
+    "p_value": 8,                # Value for "P-norm" and "P-norm-mean"
+    "rho_value": 100,            # rho value used in KS
+    "relaxation": 0,             # Relaxation parameter used in aggregation
+    "use_acs": True,             # Toggle ACS to on (True) or off (False)
+}
 # Time linence opening (non essential)
 tic_lic = time.time()
 

@@ -251,56 +251,7 @@ def plotting2D():
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     plt.show()
 
-# Plitting 3D
-"""
-def plotting3D():
 
-    fig = plt.figure(figsize=(14, 4))
-
-    # Data + labels
-    methods = ["Grid", "Random", "LHS", "Sobol"]
-    scores  = [grid_m, rand_m, LHS_m, Sobol_m]
-    datasets = [grid, rand_points, lhs_points, sobol_points]
-
-    # Bounds
-    xmin, xmax = var_bounds["d0"]
-    ymin, ymax = var_bounds["rad"]
-    zmin, zmax = var_bounds["d1"]
-
-    for i in range(4):
-        ax = fig.add_subplot(1, 4, i+1, projection="3d")
-
-        data = datasets[i]
-
-        # Scatter
-        ax.scatter(
-            data[:, 0],  # d0
-            data[:, 1],  # t0
-            data[:, 2],  # d1
-        )
-
-        # Titles
-        ax.set_title(f"{methods[i]}\nCD = {scores[i]:.4f}")
-
-        # Labels
-        ax.set_xlabel("d0 [mm]")
-        ax.set_ylabel("t0 [mm]")
-        ax.set_zlabel("d1 [mm]")
-
-        # Limits
-        ax.set_xlim(xmin, xmax)
-        ax.set_ylim(ymin, ymax)
-        ax.set_zlim(zmin, zmax)
-
-        # Optional: equal aspect (helps interpretation)
-        ax.set_box_aspect((xmax-xmin, ymax-ymin, zmax-zmin))
-
-    # Main title
-    fig.suptitle(f"Search Methods ({n_per_dim_equal} values per dimension)")
-
-    plt.tight_layout(rect=[0, 0, 1, 0.95])
-    plt.show()
-"""
 
 plotting2D()
 
