@@ -1,3 +1,38 @@
+"""
+Optimization_SLP.py
+-------------------
+
+This module implements the core optimization workflow for the structural mast
+model using the self-written Sequential Linear Programming (SLP) solver. It
+serves as the interface between the SLP engine, the finite element solver
+(ANSYS MAPDL), and the post-processing routines.
+
+Dependencies:
+-------------
+- SLP (self-written optimization engine, see SLP/SLP.py)
+- ansys.mapdl.core (external, used indirectly via RunAPDL)
+- Custom modules:
+    * MyAPDLCall   -> FE model execution
+    * Post_Process -> Structural response evaluation
+    * aggregate    -> Constraint aggregation methods
+    * acs          -> Adaptive constraint scaling
+    * opt_logger   -> Logging and data storage
+
+Inputs:
+-------
+- mapdl            : Active MAPDL session
+- opti_settings    : Optimization configuration settings
+- var              : Dictionary of design variables
+- Misc             : Static parameters (loads, material, etc.)
+- Solver_Settings  : Optimization and solver parameters
+
+Outputs:
+--------
+- result           : SLP optimization result object
+- txt_path         : Path to the detailed log file
+- csv_path         : Path to the evaluation history file
+"""
+
 import os
 import numpy as np
 
