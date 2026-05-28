@@ -22,6 +22,12 @@ python BeamModel.py     # single FE evaluation (no optimization)
 All three scripts launch MAPDL inside the `Ansout/` working folder and write
 logs to `Optimization_Logs/`.
 
+> **Note:** If you interrupt or close down an optimization run (e.g. `Main.py`
+> or `Main_SLP.py`) before it finishes, the MAPDL process is not always shut
+> down cleanly. You will need to manually close the leftover MAPDL window /
+> process in Task Manager before starting a new run, otherwise the
+> next launch may fail or hang on the `Ansout/` working directory.
+
 Edit the `var`, `Misc`, `opti_settings`, and `Solver_Settings` dictionaries at
 the top of the chosen script to change design variables, loads, material, or
 solver behavior.
