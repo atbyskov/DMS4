@@ -124,7 +124,7 @@ Misc = {
     "SW_filename": "LWC_L1_LINES.IGS",    # Filename for IGS File
     "save_folder": "Optimization_Logs"    # Save Folder
 }
-
+# 2E+5 vs 2E+9
 # Solver Settings
 Solver_Settings = {
     "acc": 1e-3,                 # Maximum objective function tolerance
