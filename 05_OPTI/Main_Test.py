@@ -22,7 +22,17 @@ from ansys.mapdl.core.errors import MapdlRuntimeError
 from Post_Process import PostProcessor
 from MyAPDLCall import RunAPDL
 
-
+# Create Misc as dict
+Misc = {
+    "esize": 3,                          # Element Size                      [mm]
+    "Hor_Force": 502.52,                 # Horizontal Force (P_Load_z)       [N]
+    "Ver_Force": -25.13E+3,              # Vertical Force (P_Load_y)         [N]
+    "f_y": 700 ,                         # Column Yield Strength             [MPa]
+    "f_y_brace": 235,                    # Brace Yield Strength              [MPa]
+    "E_mod": 200*1E3,                    # Youngs Modulus                    [MPa]
+    "W_Force": -3.751E+3,                # Vertical Force COG (P_COG_y)      [N]
+    "SW_filename": "LWC_L1_LINES.IGS"    # Filename for IGS File
+}
 
 # Collect opti settings
 opti_settings = {
@@ -32,12 +42,13 @@ opti_settings = {
     "multi_size_braces": False,    # Whether mast segments braces uses different dimensions (True) or not (False)
     "brace_split": False,          # Whether braces are split between horiontal and cross (True) or not (False)
 }
-# x0 = [194.3214, 101.0977,   3.5106,  54.8785,   2.8011]
+
 # Initial Guess
-column_diameter = 101.0977 # Column Diameter [mm]
-column_thickness = 3.5106 # Column Thickness [mm]
-brace_diameter = 54.8785 # Brace Diameter [mm]
-brace_thickness = 2.8011 # Brace Thickness [mm]
+column_diameter = 76.1 # Column Diameter [mm]
+column_thickness = 3 # Column Thickness [mm]
+brace_diameter = 26.9 # Brace Diameter [mm]
+brace_thickness = 2.3 # Brace Thickness [mm]
+
 # Bounds
 column_diameter_bounds = (50.0, 300)   # Column Diameter Bounds [mm]
 column_thickness_bounds = (1.0, 7.0)   # Column Thickness Bounds [mm]
@@ -46,7 +57,7 @@ brace_thickness_bounds = (1.0, 4.5)    # Brace Thickness Bounds [mm]
 
 # Defining variables with bounds and active status
 var = {
-    "rad": {"value": 194.3214, "bounds": (150.0, 300.0), "active": True}, # Radius Structure [mm]
+    "rad": {"value": 202.07, "bounds": (150.0, 300.0), "active": True}, # Radius Structure [mm]
 }
 if opti_settings["multi_size_columns"]:
     var.update({
@@ -85,18 +96,6 @@ else:
             "t1": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True},       # Brace Thickness  [mm]
         })
     
-# Create Misc as dict
-Misc = {
-    "esize": 3,                          # Element Size                      [mm]
-    "Hor_Force": 502.52,                 # Horizontal Force (P_Load_z)       [N]
-    "Ver_Force": -25.13E+3,              # Vertical Force (P_Load_y)         [N]
-    "f_y": 700 ,                         # Column Yield Strength             [MPa]
-    "f_y_brace": 235,                    # Brace Yield Strength              [MPa]
-    "E_mod": 200*1E3,                    # Youngs Modulus                    [MPa]
-    "W_Force": -3.751E+3,                # Vertical Force COG (P_COG_y)      [N]
-    "SW_filename": "LWC_L1_LINES.IGS"    # Filename for IGS File
-}
-
 #C:\Program Files\ANSYS Inc\v251\ansys\bin\winx64
 # Start License Server
 time_license = time.time()
