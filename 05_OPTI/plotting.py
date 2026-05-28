@@ -1,5 +1,5 @@
 # Plotting.py
-# This script is for plotting various items in the optimization scheme
+# This script is for plotting various items in the optimization scheme 
 # Make functions that can be called, this is easier to uncomment 
 
 import os
@@ -343,10 +343,12 @@ def plot_max_util(folder="LHS_results"):
 
 
 # Select what plots to use
-plot_obj("objective")                          # objective, d0, t0, d1, t1, rad
+#plot_obj("t0")                          # objective, d0, t0, d1, t1, rad
+plot_obj("d1")
+plot_obj("t1")
 #plot_D_O_All(x_axis="iter")
 #plot_D_O_start_end_simple()
-plot_max_util()
+#plot_max_util()
 
 
 """
