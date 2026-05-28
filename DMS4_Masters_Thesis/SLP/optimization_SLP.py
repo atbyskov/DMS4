@@ -72,8 +72,6 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
             "max_fun_evals": slp_options["max_fun_evals"],
             "Aggregate": Solver_Settings.get("Aggregate", "None"),
             "p_value": Solver_Settings.get("p_value", 1),
-            "rho_value": Solver_Settings.get("rho_value", 100),
-            "relaxation": Solver_Settings.get("relaxation", 0),
             "move_limit": slp_options["move_limit"],
             "move_limit_expand": slp_options["move_limit_expand"],
             "move_limit_shrink": slp_options["move_limit_shrink"],
@@ -136,8 +134,6 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings, method="s
         agg = ConstraintAggregate(
             method = Solver_Settings.get("Aggregate", "None"),
             p_value = Solver_Settings.get("p_value", 1),
-            rho_value = Solver_Settings.get("rho_value", 100),
-            relaxation = Solver_Settings.get("relaxation", 0)
         )
 
         if acs_active:

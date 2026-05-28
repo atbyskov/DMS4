@@ -308,7 +308,7 @@ class PostProcessor:
                 "Util_T": self.Util_T(),
                 "Util_BR": self.Util_BR(),
                 "Util_IN": self.Util_IN(),
-                "Util_BS_sig": self.Util_BS()[0], # stress
+                "Util_BS_sig": self.Util_BS()[0],  # stress
                 "Util_BS_defl": self.Util_BS()[1], # deflection
             }
 
@@ -643,12 +643,12 @@ class PostProcessor:
             # Von Mises
             sig_vm = np.sqrt(sig_b**2 + 3 * tau_max**2) # [N/mm^2]
 
-            util_values_sig.append(sig_vm / f_y_brace)      # [Na] Brace
+            util_values_sig.append(sig_vm / f_y_brace)  # [-] Brace
 
             # Deflection (u_max = (1/192) * ((P * L^3) / (E * I))) - Maskinståbi
-            u_max = (P * L**3) / (192 * E_mod * I)         # [mm]
+            u_max = (P * L**3) / (192 * E_mod * I)      # [mm]
 
-            util_values_defl.append(u_max / (L / 200))          # [Na] Brace Max deflection from standard
+            util_values_defl.append(u_max / (L / 200))  # [-] Brace Max deflection from standard
         # Return as Series to allow extract_max to work with multiple values
         return pd.Series(util_values_sig, name="Util_BS_sig"), pd.Series(util_values_defl, name="Util_BS_defl")
 
@@ -696,7 +696,6 @@ class PostProcessor:
 
 
     def Eigenvalue_1(self):
-
         # We implement a constraint, such that the first positive eigenvalue is greater than or equal to 4.0
         # And for the optimization scheme we need to implement the form:
         # c(x) >= 0 "Inequality Constraint"

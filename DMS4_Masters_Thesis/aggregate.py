@@ -27,7 +27,6 @@ Inputs:
 - g         : Array-like constraint vector (g_i ≥ 0 formulation)
 - method    : Aggregation method ("P-norm", "P-norm-mean", or None)
 - p_value   : Order of P-norm (controls smoothness vs. max approximation)
-- rho_value : (Reserved for KS-type methods, not currently implemented)
 - c_scale   : External scaling factor (typically from ACS)
 
 Outputs:
@@ -42,17 +41,16 @@ import numpy as np
 
 # Define the class
 class ConstraintAggregate:
-    def __init__(self, method=None, p_value = None, rho_value = None, relaxation = None):
+    def __init__(self, method=None, p_value = None):
         # Read Method
         self.method = method
-        self.rho = rho_value
 
         # Read P value
         self.p = p_value
 
     # Function for handling aggregation
     def agg_output(self,g, c_scale = 1.0):
-        # Relaxation parameter for P-norm methods (0<eps<1)
+        # Relaxation parameter for P-norm methods
         relaxation = 0
         g = np.asarray(g, dtype = float)                            # Read constraints
         g_k = np.maximum(-(g - relaxation), 0.0)                    # Only violated
@@ -84,4 +82,3 @@ class ConstraintAggregate:
         
         return -v_scaled, v, g_max
   
-

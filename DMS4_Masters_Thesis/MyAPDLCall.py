@@ -22,7 +22,6 @@ Outputs:
 
 # Import packages   
 import os
-import time
 import numpy as np
  
 # Import Functions

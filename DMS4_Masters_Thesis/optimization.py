@@ -88,12 +88,10 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         var_names=names,
         options={
             "acc": Solver_Settings["acc"],
-            "finite_diff_abs_step": fd_step, # fd_step
+            "finite_diff_abs_step": fd_step,
             "maxiter": Solver_Settings["maxiter"],
             "Aggregate": Solver_Settings["Aggregate"],
             "p_value": Solver_Settings["p_value"],
-            "rho_value": Solver_Settings["rho_value"],
-            "relaxation": Solver_Settings["relaxation"],
         },
         save_folder=Misc["save_folder"],
     )
@@ -136,15 +134,13 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         # Set up the constraints      
         c_util = np.concatenate([
                 *[v for pair in col_brace for v in pair],
-                1- arr(pp.Util_BS()[0]), # stress constraint here
-                1- arr(pp.Util_BS()[1])]) # deflection constraint here
+                1- arr(pp.Util_BS()[0]),  # stress constraint
+                1- arr(pp.Util_BS()[1])]) # deflection constraint
         
         # Handle aggregation of constraints
         agg = ConstraintAggregate(
             method = Solver_Settings["Aggregate"],
             p_value = Solver_Settings["p_value"],
-            rho_value = Solver_Settings["rho_value"],
-            relaxation = Solver_Settings["relaxation"],
         )
 
         # Get aggregated output
@@ -175,7 +171,7 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
                 "Util_T":  pp.Util_T(),
                 "Util_BR": pp.Util_BR(),
                 "Util_IN": pp.Util_IN(),
-                "Util_BS_sig": pp.Util_BS()[0], # stress
+                "Util_BS_sig": pp.Util_BS()[0],  # stress
                 "Util_BS_defl": pp.Util_BS()[1], # deflection
             }
 
@@ -226,7 +222,6 @@ def run_optimization(mapdl, opti_settings, var, Misc, Solver_Settings):
         maxiter=Solver_Settings["maxiter"], 
         acc=Solver_Settings["acc"],     # Objective Function Tolerance
         iprint=2,                       # print iteration info
-        #obj_scaler=0.8,                # Scale objective function for stability
         save_itr="all",                 # save major iterations
         save_vars=[
             "majiter",                  # major iteration

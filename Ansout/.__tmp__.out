@@ -93,10 +93,10 @@
   BATCH MODE REQUESTED (-b)    = LIST
   INPUT FILE COPY MODE (-c)    = COPY
   SHARED MEMORY PARALLEL REQUESTED
-    SINGLE PROCESS WITH   7 THREADS REQUESTED
-    TOTAL OF     7 CORES REQUESTED
-  INPUT FILE NAME              = C:\Users\boggy\OneDrive\Desktop\DMS4\Ansout\.__tmp__.inp
-  OUTPUT FILE NAME             = C:\Users\boggy\OneDrive\Desktop\DMS4\Ansout\.__tmp__.out
+    SINGLE PROCESS WITH   2 THREADS REQUESTED
+    TOTAL OF     2 CORES REQUESTED
+  INPUT FILE NAME              = C:\Users\guest\OneDrive\Uni\Kandidat\10. Semester\GitHub\New\DMS4\Ansout\.__tmp__.inp
+  OUTPUT FILE NAME             = C:\Users\guest\OneDrive\Uni\Kandidat\10. Semester\GitHub\New\DMS4\Ansout\.__tmp__.out
 
  PARAMETER STATUS-           (   1 PARAMETERS DEFINED)
 
@@ -104,7 +104,7 @@
  PORT                              50052.0000                    SCALAR
 
  RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
- CURRENT JOBNAME=file  15:36:16  MAY 26, 2026 CP=      0.109
+ CURRENT JOBNAME=file  11:43:13  MAY 28, 2026 CP=      0.219
 
      1  FINISH 
 
@@ -206,7 +206,7 @@
  |                                                                             |
  |-----------------------------------------------------------------------------|
  |                                                                             |
- |        CP Time      (sec) =          0.578       Time  =  15:36:17          |
- |        Elapsed Time (sec) =         10.000       Date  =  05/26/2026        |
+ |        CP Time      (sec) =          0.844       Time  =  11:43:19          |
+ |        Elapsed Time (sec) =         11.000       Date  =  05/28/2026        |
  |                                                                             |
  *-----------------------------------------------------------------------------*

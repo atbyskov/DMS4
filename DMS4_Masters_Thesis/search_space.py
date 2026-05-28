@@ -34,11 +34,8 @@ Notes:
 
 # Import Tools 
 import numpy as np
-import time
-from functools import wraps
 from scipy.stats import qmc
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D 
 
 # Write Bounds, must match exacly Main.py
 var_bounds = {
@@ -48,7 +45,6 @@ var_bounds = {
     "d1":  (25,    60),
     "t1":  (2,     6)
 }
-
 
 # Equal Spacing
 def equal_spacing(var_bounds,n_per_dim):
@@ -88,7 +84,7 @@ def random_spacing(var_bounds, n_points, seed=None):
     lowers = np.array([var_bounds[name][0] for name in names], dtype=float)
     uppers = np.array([var_bounds[name][1] for name in names], dtype=float)
 
-    u = rng.random((n_points, len(names)))   # in [0,1)
+    u = rng.random((n_points, len(names)))   # in [0,1]
     points = lowers + u * (uppers - lowers)  # scale to [lower, upper]
 
     return points, names
@@ -169,7 +165,6 @@ data = {"GRID": {"points": grid, "names": names, "discrepancy": grid_m},
         "RAND": {"points": rand_points, "names": names, "discrepancy": rand_m},
         "LHS" : {"points": lhs_points, "names": names, "discrepancy": LHS_m},
         "SOBOL":{"points": sobol_points, "names": names, "discrepancy": Sobol_m}
-
 }
 
 # Print results
@@ -210,7 +205,6 @@ read_to_file(var_bounds,data,method_to_print,n_per_dim_equal)
 
 # Plotting 2D
 def plotting2D():
-
     fig, axs = plt.subplots(1, 4, figsize=(14, 4))
 
     # Data + labels
@@ -251,57 +245,4 @@ def plotting2D():
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     plt.show()
 
-# Plitting 3D
-"""
-def plotting3D():
-
-    fig = plt.figure(figsize=(14, 4))
-
-    # Data + labels
-    methods = ["Grid", "Random", "LHS", "Sobol"]
-    scores  = [grid_m, rand_m, LHS_m, Sobol_m]
-    datasets = [grid, rand_points, lhs_points, sobol_points]
-
-    # Bounds
-    xmin, xmax = var_bounds["d0"]
-    ymin, ymax = var_bounds["rad"]
-    zmin, zmax = var_bounds["d1"]
-
-    for i in range(4):
-        ax = fig.add_subplot(1, 4, i+1, projection="3d")
-
-        data = datasets[i]
-
-        # Scatter
-        ax.scatter(
-            data[:, 0],  # d0
-            data[:, 1],  # t0
-            data[:, 2],  # d1
-        )
-
-        # Titles
-        ax.set_title(f"{methods[i]}\nCD = {scores[i]:.4f}")
-
-        # Labels
-        ax.set_xlabel("d0 [mm]")
-        ax.set_ylabel("t0 [mm]")
-        ax.set_zlabel("d1 [mm]")
-
-        # Limits
-        ax.set_xlim(xmin, xmax)
-        ax.set_ylim(ymin, ymax)
-        ax.set_zlim(zmin, zmax)
-
-        # Optional: equal aspect (helps interpretation)
-        ax.set_box_aspect((xmax-xmin, ymax-ymin, zmax-zmin))
-
-    # Main title
-    fig.suptitle(f"Search Methods ({n_per_dim_equal} values per dimension)")
-
-    plt.tight_layout(rect=[0, 0, 1, 0.95])
-    plt.show()
-"""
-
 plotting2D()
-
-# Aggregate Output

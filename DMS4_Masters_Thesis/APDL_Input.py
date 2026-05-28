@@ -425,21 +425,7 @@ def InputFun(var,Misc,opti_settings):
     ap.append("EN,79999,_npilot")
     ap.append("TSHAPE")
     # Display Cross section
-    ap.append("ALLSEL")
-        
-    #Create and save .png of the mesh
-    #ap.append("/SHOW,PNG,,0  ")
-    #ap.append("/RGB,INDEX,100,100,100,0  ")
-    #ap.append("/RGB,INDEX,80,80,80,13  ")
-    #ap.append("/RGB,INDEX,60,60,60,14  ")
-    #ap.append("/RGB,INDEX,0,0,0,15  ")
-    #ap.append("/TYPE,,4  ")
-    #ap.append("/VIEW,,0,0,1  ")
-    #ap.append("/ANGLE,,30,YM  ")
-    #ap.append("EPLOT  ")
-    #ap.append("/SHOW,close  ")
-    #ap.append("/SHOW,TERM  ")
-    
+    ap.append("ALLSEL")   
 
     # RUN STATIC ANALYSIS
     # We use sparse solver with pre-stress on
@@ -573,8 +559,6 @@ def InputFun(var,Misc,opti_settings):
     ap.append("imp_ang = 1/200 * alpha_h * alpha_m  ")
     ap.append(f"FORCE_IMP = {Misc['Ver_Force']}*imp_ang  ")
 
-    #ap.append("ALLSEL,ALL   FDELE,ALL,ALL   DDELE,ALL,ALL  ")
-
 ##################################################################
 ##################### Nonlinear Analysis #########################
 ##################################################################
@@ -598,7 +582,6 @@ def InputFun(var,Misc,opti_settings):
     ap.append("*GET, NodeYMax, NODE, 0, MXLOC, Y  ")
     ap.append("*GET, NodeYMin, NODE, 0, MNLOC, Y  ")
     ap.append("*GET, NodeXMax, NODE, 0, MXLOC, X  ")
-
 
     ap.append("NSEL,S,LOC,Y,NodeYMax")
     ap.append("NSEL,R,LOC,X,NodeXMax")
@@ -740,9 +723,4 @@ def InputFun(var,Misc,opti_settings):
     ap.append("*ENDDO  ")
     ap.append("*CFCLOS    ")
 
-
-        
     return ap
-
-
-

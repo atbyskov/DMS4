@@ -88,11 +88,10 @@ class OptimizationLogger:
         
 
     def log_line(self, text="", mode="a"): # Help Function to help write to the Optimization_Log folder files. It is instead of using print statements.
-        import sys
-        print(text, flush=True)  # Flush stdout immediately
+        print(text, flush=True)            # Flush stdout immediately
         with open(self.txt_path, mode, encoding="utf-8") as f:
             f.write(text + "\n")
-            f.flush()  # Ensure file is written to disk
+            f.flush()                      # Ensure file is written to disk
 
     def _write_header(self, x0, bounds, method): # Function to write the initial Header in the Optimization_Log folder files., using the log_line function.
         self.log_line("=" * 80, mode="w")
@@ -120,13 +119,13 @@ class OptimizationLogger:
         self.log_line("")
 
     def log_evaluation(self, x, fun, segment_masses, v_agg=None,g_max=None,p_value=None, c_value = None): # When called, it will log the evaluation of the objective function and design variables, and write it inside the Optimization_Log folder files.
-        x = np.asarray(x, dtype=float) # Shows the design variables as a numpy array.
-        fun = float(fun) # Shows the objective function as a float.
-        self.eval_counter += 1 # Increments the evaluation counter.
+        x = np.asarray(x, dtype=float)                     # Shows the design variables as a numpy array.
+        fun = float(fun)                                   # Shows the objective function as a float.
+        self.eval_counter += 1                             # Increments the evaluation counter.
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S") # Shows the current date and time in a human readable format.
 
         #NOTE: Relative time that it takes per evaluation is not implemented yet.
-        #Implement, such that it is relative time that it takes per evaluation ############################################
+        #Implement, such that it is relative time that it takes per evaluation
 
         # ---- Segment masses (expect 5 values) -------------------------
         if segment_masses is None:
@@ -142,7 +141,6 @@ class OptimizationLogger:
 
         
 # Convert x into CSV format
-
         c_str = f"{c_value:.4f}" if c_value is not None else "NA"
         x_csv = " ,".join(f"{v:.2f}" for v in x)
 
@@ -161,47 +159,44 @@ class OptimizationLogger:
                 f"{seg_mass_str}\n"
             )
 
-
-
-
         self.log_line(f"[EVALUATION {self.eval_counter}]") # Writes the evaluation number to the optimization log file.
-        self.log_line(f"  Date/time : {now}") # Writes the current date and time to the optimization log file.
-        x_str = ", ".join(f"{v:.2f}" for v in x) ######### Maybe doesnt work
+        self.log_line(f"  Date/time : {now}")              # Writes the current date and time to the optimization log file.
+        x_str = ", ".join(f"{v:.2f}" for v in x) 
         self.log_line(f"  x         : [{x_str}]")
         # Writes the design variables to the optimization log file.
-        self.log_line(f"  Objective : {fun:.3f}") # Writes the objective function to the optimization log file.
-        self.log_line("") # Writes an empty line to the optimization log file.
+        self.log_line(f"  Objective : {fun:.3f}")          # Writes the objective function to the optimization log file.
+        self.log_line("")                                  # Writes an empty line to the optimization log file.
 
-    def log_iteration(self, x): # When called, it will log the iteration of the design variables, and write it inside the Optimization_Log folder files.
-        self.iter_counter += 1 # Increments the iteration counter.
-        x = np.asarray(x, dtype=float) # Shows the design variables as a numpy array.
+    def log_iteration(self, x):                            # When called, it will log the iteration of the design variables, and write it inside the Optimization_Log folder files.
+        self.iter_counter += 1                             # Increments the iteration counter.
+        x = np.asarray(x, dtype=float)                     # Shows the design variables as a numpy array.
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S") # Shows the current date and time in a human readable format.
-        self.log_line(f"[ITERATION {self.iter_counter}]") # Writes the iteration number to the optimization log file.
-        self.log_line(f"  Date/time : {now}") # Writes the current date and time to the optimization log file.
+        self.log_line(f"[ITERATION {self.iter_counter}]")  # Writes the iteration number to the optimization log file.
+        self.log_line(f"  Date/time : {now}")              # Writes the current date and time to the optimization log file.
         self.log_line(f"  x         : {np.array2string(x, precision=6, separator=', ')}") # Writes the design variables to the optimization log file.
-        self.log_line("") # Writes an empty line to the optimization log file.
+        self.log_line("")                                  # Writes an empty line to the optimization log file.
 
-    def finalize(self, result): # When called, it will log the final result of the optimization, and write it inside the Optimization_Log folder files. This is only used, when convergence is met.
-        end = datetime.now() # Gets the current date and time.
-        dt_sec = (end - self.start_dt).total_seconds() # Calculates the total runtime of the optimization.
-        xopt = np.asarray(result.x, dtype=float) # Shows the optimal design variables as a numpy array.
+    def finalize(self, result):                            # When called, it will log the final result of the optimization, and write it inside the Optimization_Log folder files. This is only used, when convergence is met.
+        end = datetime.now()                               # Gets the current date and time.
+        dt_sec = (end - self.start_dt).total_seconds()     # Calculates the total runtime of the optimization.
+        xopt = np.asarray(result.x, dtype=float)           # Shows the optimal design variables as a numpy array.
 
-        self.log_line("=" * 80) # ======= lines
+        self.log_line("=" * 80)
         self.log_line("FINAL RESULT") 
         self.log_line("=" * 80)
         self.log_line(f"Run end date/time   : {end.strftime('%Y-%m-%d %H:%M:%S')}") # Writes the end date and time to the optimization log file.
-        self.log_line(f"Total runtime [s]   : {dt_sec:.3f}") # Writes the total runtime to the optimization log file.
-        self.log_line(f"Success             : {result.success}") # Writes the success status to the optimization log file.
-        self.log_line(f"Status              : {getattr(result, 'status', 'N/A')}") # SLPResult has no status field; fall back gracefully.
-        self.log_line(f"Message             : {result.message}") # Writes the message to the optimization log file.
-        self.log_line(f"Iterations          : {result.nit}") # Writes the number of iterations to the optimization log file.
-        self.log_line(f"Function evaluations: {result.nfev}") # Writes the number of function evaluations to the optimization log file.
+        self.log_line(f"Total runtime [s]   : {dt_sec:.3f}")                        # Writes the total runtime to the optimization log file.
+        self.log_line(f"Success             : {result.success}")                    # Writes the success status to the optimization log file.
+        self.log_line(f"Status              : {getattr(result, 'status', 'N/A')}")  # SLPResult has no status field; fall back gracefully.
+        self.log_line(f"Message             : {result.message}")                    # Writes the message to the optimization log file.
+        self.log_line(f"Iterations          : {result.nit}")                        # Writes the number of iterations to the optimization log file.
+        self.log_line(f"Function evaluations: {result.nfev}")                       # Writes the number of function evaluations to the optimization log file.
         self.log_line(f"Optimal x           : {np.array2string(xopt, precision=6, separator=', ')}") # Writes the optimal design variables to the optimization log file.
-        self.log_line(f"Optimal objective   : {float(result.fun):.6f}") # Writes the optimal objective function to the optimization log file.
-        self.log_line("") # Writes an empty line to the optimization log file.
-        self.log_line("=" * 80) # ======= lines
+        self.log_line(f"Optimal objective   : {float(result.fun):.6f}")             # Writes the optimal objective function to the optimization log file.
+        self.log_line("")                                                           # Writes an empty line to the optimization log file.
+        self.log_line("=" * 80)
         self.log_line("END OF LOG") 
-        self.log_line("=" * 80) # ======= lines
+        self.log_line("=" * 80)
 
     
     def _extract_max(self, val):

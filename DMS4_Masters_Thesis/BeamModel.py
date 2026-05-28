@@ -1,4 +1,3 @@
-
 """
 Main_Test.py
 ------------
@@ -28,14 +27,12 @@ print(sys.version, flush=True)
 import time 
 import numpy as np
 import pandas as pd
-from functools import wraps
 
 # Start timing
 tic_lic = time.time()
 
 # PyMAPDL Package
 from ansys.mapdl.core import launch_mapdl
-from ansys.mapdl.core.errors import MapdlRuntimeError
 
 # Import Functions
 from Post_Process import PostProcessor
@@ -47,7 +44,7 @@ Misc = {
     "Hor_Force": 502.52,                 # Horizontal Force (P_Load_z)       [N]
     "Ver_Force": -25.13E+3,              # Vertical Force (P_Load_y)         [N]
     "f_y": 700 ,                         # Column Yield Strength             [MPa]
-    "f_y_brace": 235,                    # Brace Yield Strength              [MPa]
+    "f_y_brace": 355,                    # Brace Yield Strength              [MPa]
     "E_mod": 200*1E3,                    # Youngs Modulus                    [MPa]
     "W_Force": -3.751E+3,                # Vertical Force COG (P_COG_y)      [N]
     "SW_filename": "LWC_L1_LINES.IGS"    # Filename for IGS File
@@ -64,20 +61,20 @@ opti_settings = {
 
 ######## DESIGN VARIABLES ########
 # Initial Guess
-column_diameter = 48.3 # Column Diameter [mm]
+column_diameter = 76.1 # Column Diameter  [mm]
 column_thickness = 3.0 # Column Thickness [mm]
-brace_diameter = 25.0 # Brace Diameter [mm]
-brace_thickness = 2 # Brace Thickness [mm]
-# Bounds
-column_diameter_bounds = (50.0, 300)   # Column Diameter Bounds [mm]
-column_thickness_bounds = (1.0, 7.0)   # Column Thickness Bounds [mm]
-brace_diameter_bounds = (10.0, 50.0)   # Brace Diameter Bounds [mm]
-brace_thickness_bounds = (1.0, 4.5)    # Brace Thickness Bounds [mm]
+brace_diameter = 26.9  # Brace Diameter   [mm]
+brace_thickness = 2.3  # Brace Thickness  [mm]
 
+# Bounds
+column_diameter_bounds = (48.3, 114.3) # Column Diameter Bounds  [mm]
+column_thickness_bounds = (2.5, 5.0)   # Column Thickness Bounds [mm]
+brace_diameter_bounds = (25, 60.0)     # Brace Diameter Bounds   [mm]
+brace_thickness_bounds = (2.0, 6.0)    # Brace Thickness Bounds  [mm]
 
 # Defining variables with bounds and active status
 var = {
-    "rad": {"value": 246.92, "bounds": (150.0, 300.0), "active": True}, # Radius Structure [mm]
+    "rad": {"value": 202.07, "bounds": (150.0, 350.0), "active": True}, # Radius Structure [mm]
 }
 if opti_settings["multi_size_columns"]:
     var.update({
@@ -94,8 +91,8 @@ if opti_settings["multi_size_braces"]:
         var.update({
             **{f"d1_h_{i}": {"value": brace_diameter, "bounds": brace_diameter_bounds, "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},           # Horizontal Brace Diameter   [mm]
             **{f"t1_h_{i}": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},       # Horizontal Brace Thickness  [mm]
-            **{f"d1_c_{i}": {"value": brace_diameter, "bounds": brace_diameter_bounds, "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},           # Cross Brace Diameter       [mm]
-            **{f"t1_c_{i}": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},       # Cross Brace Thickness      [mm]
+            **{f"d1_c_{i}": {"value": brace_diameter, "bounds": brace_diameter_bounds, "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},           # Cross Brace Diameter        [mm]
+            **{f"t1_c_{i}": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True} for i in range(1, opti_settings["n_mast_segments"]+1)},       # Cross Brace Thickness       [mm]
         })
     else:
         var.update({
@@ -107,8 +104,8 @@ else:
         var.update({
             "d1_h": {"value": brace_diameter, "bounds": brace_diameter_bounds, "active": True},           # Horizontal Brace Diameter   [mm]
             "t1_h": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True},       # Horizontal Brace Thickness  [mm]
-            "d1_c": {"value": brace_diameter, "bounds": brace_diameter_bounds, "active": True},           # Cross Brace Diameter       [mm]
-            "t1_c": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True},       # Cross Brace Thickness      [mm]
+            "d1_c": {"value": brace_diameter, "bounds": brace_diameter_bounds, "active": True},           # Cross Brace Diameter        [mm]
+            "t1_c": {"value": brace_thickness,  "bounds": brace_thickness_bounds,  "active": True},       # Cross Brace Thickness       [mm]
         })
     else:
         var.update({
@@ -122,30 +119,22 @@ else:
 # Start License Server
 time_license = time.time()
 mapdl = launch_mapdl(
-    run_location="Ansout", 
-    #log_apdl="apdl_logging_test",
-    override=True,
-    nproc=6,
-    additional_switches="-p ansys -smp"
+    run_location="Ansout",                # Folder
+    override=True,                        # Override existing files
+    nproc=2,                              # Number of cores
+    additional_switches="-p ansys -smp"   # -p ansys: Ansys Mechanical, -smp: Shared Memory Parallel
 )
 time_license2 = time.time()
 print(f"Total Time: {time_license2-time_license:.2f} s")
 
 
 # Run Environment
-f = None  # Initialize f to None
 try:
-    f, segment_masses = RunAPDL(mapdl, var, Misc, opti_settings) # Runs APDL and returns MASS
-except MapdlRuntimeError as e:
-    # Handle MAPDL runtime errors
-    print(f"MAPDL error occurred: {e}")
-except Exception as e:
-    # Handle other errors
-    print(f"Unexpected error: {e}")
+    f1, segment_masses = RunAPDL(mapdl, var, Misc, opti_settings) # Runs APDL and returns MASS
 finally:
     mapdl.exit()
 
-print(f" -> Mass of Assembly: {f:.2f} kg")
+print(f" -> Mass of Assembly: {f1:.2f} kg")
 
 # Pack specifically for compability
 
