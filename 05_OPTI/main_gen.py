@@ -14,10 +14,28 @@
 #   handling the one continuous variable we keep (the structure radius `rad`).
 #
 # Package:
-#   pymoo (https://pymoo.org) -- the de-facto standard evolutionary-optimisation
-#   library in Python.  We use its `MixedVariableGA` so the radius stays a real
-#   variable while every section is an Integer index into its production
-#   catalogue.  Constraints are handled by pymoo's feasibility-first selection.
+#   PyGAD (https://pygad.readthedocs.io) -- a widely used, lightweight GA
+#   library.  The genome is a flat vector: gene 0 is the continuous radius
+#   `rad`; every other gene is an *integer index* into a production catalogue
+#   (S700 for columns, S235 for braces).  Per-gene `gene_space` keeps every
+#   section choice on a real, buyable, Class-2 profile, and `gene_type` keeps
+#   `rad` a float while the index genes stay integers.
+#
+#   GA configuration (as requested):
+#       parent_selection_type = "sss"          (steady-state selection)
+#       crossover_type        = "single_point"
+#       mutation_type         = "random"
+#       mutation_percent_genes = 10
+#       stop_criteria         = ["reach_1", "saturate_10"]
+#       save_solutions        = True
+#
+#   Constraint handling: PyGAD maximises a single fitness, so constraints are
+#   folded in with an exterior penalty.  Fitness = -(mass + P * violation),
+#   where `violation` is the summed positive part of every g(x) <= 0 constraint.
+#   Among feasible designs (violation = 0) fitness reduces to -mass, so the GA
+#   drives mass down.  NOTE: because fitness is <= 0 for any real design, the
+#   "reach_1" stop criterion never fires here -- early stopping is governed by
+#   "saturate_10" (no improvement for 10 generations) and num_generations.
 #
 # It reuses the exact same FEA / post-processing pipeline as Main.py:
 #       RunAPDL  ->  PostProcessor  ->  utilisation / eigenvalue / mass checks
@@ -37,17 +55,13 @@ import numpy as np
 
 from ansys.mapdl.core import launch_mapdl
 
-# ---- pymoo ------------------------------------------------------------------
+# ---- PyGAD ------------------------------------------------------------------
 try:
-    from pymoo.core.problem import ElementwiseProblem
-    from pymoo.core.variable import Real, Integer
-    from pymoo.core.mixed import MixedVariableGA, MixedVariableSampling
-    from pymoo.core.callback import Callback
-    from pymoo.optimize import minimize
+    import pygad
 except ImportError as exc:  # pragma: no cover - guidance only
     raise SystemExit(
-        "pymoo is required for main_gen.py. Install it with:\n"
-        "    python -m pip install pymoo\n"
+        "PyGAD is required for main_gen.py. Install it with:\n"
+        "    python -m pip install pygad\n"
         f"(import error: {exc})"
     )
 
@@ -165,9 +179,9 @@ opti_settings = {
     "n_mast_segments": 5,         # Number of mast segments
     "mast_segment_height": 810,   # Height of each mast segment [mm]
     "segment_mass_limit": 23,     # Limits for segment masses [kg]
-    "multi_size_columns": True,   # Columns may differ per segment (True) or not (False)
-    "multi_size_braces": True,    # Braces may differ per segment (True) or not (False)
-    "brace_split": True,          # Horizontal/Cross braces sized separately (True) or not (False)
+    "multi_size_columns": False,  # Columns may differ per segment (True) or not (False)
+    "multi_size_braces": False,   # Braces may differ per segment (True) or not (False)
+    "brace_split": False,         # Horizontal/Cross braces sized separately (True) or not (False)
 }
 
 # Static variables (identical to Main.py: S700 columns, S235 braces)
@@ -197,11 +211,22 @@ init_brace_dt = (26.9, 2.3)
 
 # GA / solver settings
 GA_Settings = {
-    "pop_size": 24,      # Number of individuals per generation
-    "n_gen": 20,         # Number of generations  (FEA evals ~ pop_size * n_gen)
-    "seed": 1,           # RNG seed for reproducibility
-    "eigenvalue_min": 4.0,   # Required first positive buckling eigenvalue (a_cr >= 4)
-    "fail_penalty": 1e9,     # Objective assigned to FEA failures (kept infeasible)
+    "pop_size": 24,           # sol_per_pop  (individuals per generation)
+    "n_gen": 20,              # num_generations  (FEA evals <= pop_size * n_gen)
+    "seed": 1,                # RNG seed for reproducibility
+    "eigenvalue_min": 4.0,    # Required first positive buckling eigenvalue (a_cr >= 4)
+    "penalty": 1.0e4,         # Exterior penalty weight P on constraint violation
+    "fail_penalty": 1.0e12,   # Fitness penalty for FEA failures (very bad)
+    # ---- fixed GA operators (as requested) --------------------------------
+    "parent_selection_type": "sss",
+    "crossover_type": "single_point",
+    "mutation_type": "random",
+    "mutation_percent_genes": 10,
+    "stop_criteria": ["reach_1", "saturate_10"],
+    "save_solutions": True,
+    # Random mutation step applied to the continuous `rad` gene (index genes
+    # mutate by re-sampling their catalogue gene_space instead).
+    "rad_mutation_step": 25.0,
 }
 
 
@@ -227,14 +252,14 @@ def _nearest_index(catalogue, target_dt):
     return int(np.argmin(dists))
 
 
-# Build the list of genome "genes" (pymoo variable names) for the active layout.
-# Columns -------------------------------------------------------------------
+# Build the list of genome "genes" for the active layout. ----------------------
+# Columns
 if opti_settings["multi_size_columns"]:
     COL_GENES = [f"col_{i}" for i in range(1, N_SEG + 1)]
 else:
     COL_GENES = ["col"]
 
-# Braces --------------------------------------------------------------------
+# Braces
 if opti_settings["multi_size_braces"]:
     if opti_settings["brace_split"]:
         BRACE_GENES = [f"bh_{i}" for i in range(1, N_SEG + 1)] + \
@@ -247,19 +272,36 @@ else:
     else:
         BRACE_GENES = ["b"]
 
+# Genome order:  rad (float)  +  column index genes (int)  +  brace index genes (int)
 GENE_NAMES = ["rad"] + COL_GENES + BRACE_GENES
+COL_GENE_SET = set(COL_GENES)
+BRACE_GENE_SET = set(BRACE_GENES)
 
-# pymoo mixed-variable definition: rad is Real, every section is an Integer
-# index into its production catalogue.
-PYMOO_VARS = {"rad": Real(bounds=rad_bounds)}
-for g in COL_GENES:
-    PYMOO_VARS[g] = Integer(bounds=(0, len(COL_CATALOGUE) - 1))
-for g in BRACE_GENES:
-    PYMOO_VARS[g] = Integer(bounds=(0, len(BRACE_CATALOGUE) - 1))
+
+def build_gene_space_and_types():
+    """PyGAD per-gene search space + dtype, in GENE_NAMES order.
+
+    rad        -> continuous range {'low', 'high'},  float
+    col_*      -> discrete catalogue indices [0..Ncol-1],  int
+    b*/bh*/bc* -> discrete catalogue indices [0..Nbrace-1], int
+    """
+    gene_space = []
+    gene_type = []
+    for name in GENE_NAMES:
+        if name == "rad":
+            gene_space.append({"low": rad_bounds[0], "high": rad_bounds[1]})
+            gene_type.append(float)
+        elif name in COL_GENE_SET:
+            gene_space.append(list(range(len(COL_CATALOGUE))))
+            gene_type.append(int)
+        else:  # brace gene
+            gene_space.append(list(range(len(BRACE_CATALOGUE))))
+            gene_type.append(int)
+    return gene_space, gene_type
 
 
 def decode_to_var_dict(genome):
-    """Map a pymoo genome dict -> nested var dict consumed by RunAPDL/PostProcessor.
+    """Map a genome (dict gene_name -> value) -> nested var dict for the pipeline.
 
     Produces exactly the keys APDL_Input.InputFun / PostProcessor expect for the
     current (multi_size_*, brace_split) layout, e.g. d0_1, t0_1, d1_h_1, ...
@@ -314,6 +356,11 @@ def decode_to_var_dict(genome):
     return var
 
 
+def solution_to_genome_dict(solution):
+    """Zip a flat PyGAD solution vector into a {gene_name: value} dict."""
+    return dict(zip(GENE_NAMES, solution))
+
+
 # Ordered list of *engineering* variable names (for logging x in a stable order)
 def engineering_var_names():
     names = ["rad"]
@@ -348,7 +395,8 @@ def var_dict_to_xarray(var):
 
 
 def initial_genome():
-    """Seed genome from Main.py's initial guess (snapped to nearest catalogue)."""
+    """Seed genome (as a {gene: value} dict) from Main.py's initial guess,
+    snapped to the nearest valid catalogue entry."""
     g = {"rad": float(init_rad)}
     col_idx = _nearest_index(COL_CATALOGUE, init_col_dt)
     brc_idx = _nearest_index(BRACE_CATALOGUE, init_brace_dt)
@@ -359,19 +407,38 @@ def initial_genome():
     return g
 
 
-# =============================================================================
-# 4. THE pymoo PROBLEM  (wraps the FEA pipeline)
-# =============================================================================
-class MastGAProblem(ElementwiseProblem):
-    """Single-objective (mass) constrained GA problem.
+def build_initial_population(pop_size, rng):
+    """Build a (pop_size x n_genes) float array. Row 0 is the Main.py seed;
+    the rest are random samples from each gene's space."""
+    seed = initial_genome()
+    pop = [[float(seed[name]) for name in GENE_NAMES]]
+    for _ in range(pop_size - 1):
+        row = []
+        for name in GENE_NAMES:
+            if name == "rad":
+                row.append(float(rng.uniform(*rad_bounds)))
+            elif name in COL_GENE_SET:
+                row.append(float(rng.integers(0, len(COL_CATALOGUE))))
+            else:
+                row.append(float(rng.integers(0, len(BRACE_CATALOGUE))))
+        pop.append(row)
+    return np.array(pop, dtype=float)
 
-    Objective : total assembly mass [kg]  (minimise)
-    Constraints (pymoo form g(x) <= 0 feasible):
+
+# =============================================================================
+# 4. GA PROBLEM  (wraps the FEA pipeline for PyGAD)
+# =============================================================================
+class MastGAProblem:
+    """Holds run state and provides PyGAD's `fitness_func` and `on_generation`.
+
+    Objective : total assembly mass [kg]  (minimise -> maximise -mass)
+    Constraints (g(x) <= 0 feasible):
         g_util_struct : max EC3 member utilisation - 1            (LB/NF/S/T/BR/IN)
         g_util_brace  : max brace-step utilisation - 1            (stress + defl)
         g_eig         : eigenvalue_min - a_cr                     (a_cr >= 4)
         g_mass_i      : seg_mass_i - segment_mass_limit           (one per segment)
-    Class-2 is guaranteed by the catalogue filter, so it is not re-imposed here.
+    Class-2 is guaranteed by the catalogue filter, so it is not re-imposed.
+    Fitness = -(mass + P * sum(max(g_i, 0))).
     """
 
     def __init__(self, mapdl, logger):
@@ -379,20 +446,25 @@ class MastGAProblem(ElementwiseProblem):
         self.logger = logger
         self.eig_min = float(GA_Settings["eigenvalue_min"])
         self.mass_limit = float(opti_settings["segment_mass_limit"])
+        self.penalty = float(GA_Settings["penalty"])
+        self.fail_penalty = float(GA_Settings["fail_penalty"])
         self.n_g = 3 + N_SEG  # 2 utilisation + 1 eigenvalue + per-segment mass
 
-        # Best feasible individual seen so far (for logging / final report)
-        self.best = None  # dict: f, var, segment_masses, util_report, max_util
-
-        super().__init__(vars=PYMOO_VARS, n_obj=1, n_ieq_constr=self.n_g)
+        self.cache = {}   # genome-key -> fitness  (avoids repeated FEA)
+        self.n_eval = 0   # actual FEA evaluations performed
+        self.best = None  # best feasible design seen so far
 
     # ---- helpers ----------------------------------------------------------
     @staticmethod
     def _arr(v):
         return np.asarray(v, dtype=float).ravel()
 
+    @staticmethod
+    def _key(solution):
+        # rad rounded to a fine grid; index genes are exact integers
+        return (round(float(solution[0]), 4),) + tuple(int(round(v)) for v in solution[1:])
+
     def _max_util(self, utils_pairs):
-        """Max over a list of (column_series, brace_series) utilisation pairs."""
         vals = []
         for pair in utils_pairs:
             for part in pair:
@@ -401,52 +473,61 @@ class MastGAProblem(ElementwiseProblem):
                     vals.append(np.nanmax(a))
         return float(max(vals)) if vals else 0.0
 
-    # ---- main evaluation --------------------------------------------------
-    def _evaluate(self, X, out, *args, **kwargs):
-        var = decode_to_var_dict(X)
+    # ---- full evaluation of one design ------------------------------------
+    def _evaluate(self, solution):
+        gd = solution_to_genome_dict(solution)
+        var = decode_to_var_dict(gd)
         x_eng = var_dict_to_xarray(var)
 
+        # 1) FEA: total mass + per-segment masses
+        f, segment_masses = RunAPDL(self.mapdl, var, Misc, opti_settings)
+
+        # 2) Post-processing: utilisation ratios (feasible when u <= 1)
+        pp = PostProcessor(var, Misc, opti_settings)
+        member_utils = [
+            pp.Util_LB(), pp.Util_NF(), pp.Util_S(),
+            pp.Util_T(), pp.Util_BR(), pp.Util_IN(),
+        ]
+        g_util_struct = self._max_util(member_utils) - 1.0
+
+        bs_sig, bs_defl = pp.Util_BS()
+        g_util_brace = max(
+            float(np.nanmax(self._arr(bs_sig))) if self._arr(bs_sig).size else 0.0,
+            float(np.nanmax(self._arr(bs_defl))) if self._arr(bs_defl).size else 0.0,
+        ) - 1.0
+
+        # 3) Buckling eigenvalue:  a_cr >= eig_min  (Eigenvalue_1 returns a_cr - 4)
+        a_cr = float(self._arr(pp.Eigenvalue_1())[0]) + 4.0
+        g_eig = self.eig_min - a_cr
+
+        # 4) Per-segment mass limit
+        seg = self._arr(segment_masses)
+        seg = (list(seg) + [0.0] * N_SEG)[:N_SEG]
+        g_mass = [float(m) - self.mass_limit for m in seg]
+
+        G = [g_util_struct, g_util_brace, g_eig] + g_mass
+        max_util = max(g_util_struct, g_util_brace) + 1.0
+        return f, G, seg, max_util, a_cr, x_eng, var, pp, bs_sig, bs_defl
+
+    # ---- PyGAD fitness function -------------------------------------------
+    def fitness_func(self, ga_instance, solution, solution_idx):
+        key = self._key(solution)
+        if key in self.cache:
+            return self.cache[key]
+
         try:
-            # 1) FEA: total mass + per-segment masses
-            f, segment_masses = RunAPDL(self.mapdl, var, Misc, opti_settings)
+            (f, G, seg, max_util, a_cr, x_eng, var,
+             pp, bs_sig, bs_defl) = self._evaluate(solution)
 
-            # 2) Post-processing: utilisation ratios (feasible when u <= 1)
-            pp = PostProcessor(var, Misc, opti_settings)
+            violation = sum(max(g, 0.0) for g in G)
+            fitness = -(float(f) + self.penalty * violation)
 
-            member_utils = [
-                pp.Util_LB(), pp.Util_NF(), pp.Util_S(),
-                pp.Util_T(), pp.Util_BR(), pp.Util_IN(),
-            ]
-            g_util_struct = self._max_util(member_utils) - 1.0
-
-            bs_sig, bs_defl = pp.Util_BS()
-            g_util_brace = max(
-                float(np.nanmax(self._arr(bs_sig))) if self._arr(bs_sig).size else 0.0,
-                float(np.nanmax(self._arr(bs_defl))) if self._arr(bs_defl).size else 0.0,
-            ) - 1.0
-
-            # 3) Buckling eigenvalue:  a_cr >= eig_min
-            a_cr = float(self._arr(pp.Eigenvalue_1())[0]) + self.eig_min  # Eigenvalue_1 returns a_cr - 4
-            g_eig = self.eig_min - a_cr
-
-            # 4) Per-segment mass limit
-            seg = self._arr(segment_masses)
-            seg = (list(seg) + [0.0] * N_SEG)[:N_SEG]
-            g_mass = [float(m) - self.mass_limit for m in seg]
-
-            G = [g_util_struct, g_util_brace, g_eig] + g_mass
-
-            out["F"] = float(f)
-            out["G"] = G
-
-            # ---- bookkeeping / logging ------------------------------------
-            max_util = max(g_util_struct, g_util_brace) + 1.0
+            self.n_eval += 1
             self.logger.log_evaluation(
-                x_eng, f, segment_masses,
-                v_agg=max_util, g_max=max(G), c_value=None,
+                x_eng, f, seg, v_agg=max_util, g_max=max(G), c_value=None,
             )
 
-            feasible = all(g <= 1e-6 for g in G)
+            feasible = violation <= 1e-6
             if feasible and (self.best is None or f < self.best["f"]):
                 self.best = {
                     "f": float(f),
@@ -467,44 +548,35 @@ class MastGAProblem(ElementwiseProblem):
                     },
                 }
 
-        except Exception as exc:  # FEA / geometry failure -> infeasible, discarded
+        except Exception as exc:  # FEA / geometry failure -> very bad fitness
             print(f"[GA] Evaluation failed, penalising individual: {exc}", flush=True)
-            out["F"] = float(GA_Settings["fail_penalty"])
-            out["G"] = [float(GA_Settings["fail_penalty"])] * self.n_g
+            fitness = -self.fail_penalty
 
+        self.cache[key] = fitness
+        return fitness
 
-# =============================================================================
-# 5. PER-GENERATION CALLBACK  (iteration logging)
-# =============================================================================
-class GACallback(Callback):
-    def __init__(self, problem):
-        super().__init__()
-        self.problem = problem
+    # ---- PyGAD per-generation callback ------------------------------------
+    def on_generation(self, ga_instance):
+        gen = ga_instance.generations_completed
+        try:
+            _, fit, _ = ga_instance.best_solution(ga_instance.last_generation_fitness)
+        except Exception:
+            fit = float("nan")
 
-    def notify(self, algorithm):
-        logger = self.problem.logger
-        gen = algorithm.n_gen
-        n_eval = algorithm.evaluator.n_eval
-
-        # opt holds the current best-so-far (feasible if one exists)
-        opt = algorithm.opt[0] if algorithm.opt is not None else None
-        f_best = float(opt.F[0]) if opt is not None else float("nan")
-        cv_best = float(opt.CV[0]) if (opt is not None and opt.CV is not None) else float("nan")
-
-        logger.log_line("-" * 80)
-        logger.log_line(f"[GENERATION {gen}]  evals={n_eval}")
-        logger.log_line(f"  pop-best objective : {f_best:.3f} kg   (CV={cv_best:.4g})")
-        if self.problem.best is not None:
-            b = self.problem.best
-            logger.log_line(
+        self.logger.log_line("-" * 80)
+        self.logger.log_line(f"[GENERATION {gen}]  FEA evals so far: {self.n_eval}")
+        self.logger.log_line(f"  pop-best fitness   : {fit:.4g}")
+        if self.best is not None:
+            b = self.best
+            self.logger.log_line(
                 f"  best feasible      : {b['f']:.3f} kg   "
                 f"max_util={b['max_util']:.3f}  a_cr={b['a_cr']:.3f}"
             )
-        logger.log_line("")
+        self.logger.log_line("")
 
 
 # =============================================================================
-# 6. RUN
+# 5. RUN
 # =============================================================================
 def main():
     start = time.time()
@@ -528,13 +600,19 @@ def main():
     logger = OptimizationLogger(
         x0=x0_eng,
         bounds=bounds_for_log,
-        method="GA (pymoo MixedVariableGA)",
+        method="GA (PyGAD)",
         var_names=ENG_NAMES,
         options={
             "pop_size": GA_Settings["pop_size"],
             "n_gen": GA_Settings["n_gen"],
             "seed": GA_Settings["seed"],
+            "parent_selection_type": GA_Settings["parent_selection_type"],
+            "crossover_type": GA_Settings["crossover_type"],
+            "mutation_type": GA_Settings["mutation_type"],
+            "mutation_percent_genes": GA_Settings["mutation_percent_genes"],
+            "stop_criteria": GA_Settings["stop_criteria"],
             "eigenvalue_min": GA_Settings["eigenvalue_min"],
+            "penalty": GA_Settings["penalty"],
             "column_catalogue_size": len(COL_CATALOGUE),
             "brace_catalogue_size": len(BRACE_CATALOGUE),
             "multi_size_columns": opti_settings["multi_size_columns"],
@@ -555,33 +633,43 @@ def main():
     )
     print(f"License opened in: {time.time() - tic_lic:.2f} s", flush=True)
 
+    ga_instance = None
     try:
         problem = MastGAProblem(mapdl, logger)
 
-        # Seed the initial population: random mixed-variable individuals with the
-        # known Main.py guess injected as member 0 (a sensible, feasible-ish start).
-        sampling = MixedVariableSampling()
-        init_pop = sampling(problem, GA_Settings["pop_size"])
-        init_pop[0].set("X", initial_genome())
+        rng = np.random.default_rng(GA_Settings["seed"])
+        initial_population = build_initial_population(GA_Settings["pop_size"], rng)
+        gene_space, gene_type = build_gene_space_and_types()
 
-        algorithm = MixedVariableGA(pop_size=GA_Settings["pop_size"], sampling=init_pop)
-
-        result = minimize(
-            problem,
-            algorithm,
-            termination=("n_gen", GA_Settings["n_gen"]),
-            seed=GA_Settings["seed"],
-            callback=GACallback(problem),
-            verbose=True,
-            save_history=False,
+        ga_instance = pygad.GA(
+            num_generations=GA_Settings["n_gen"],
+            num_parents_mating=max(2, GA_Settings["pop_size"] // 2),
+            fitness_func=problem.fitness_func,
+            on_generation=problem.on_generation,
+            initial_population=initial_population,
+            gene_space=gene_space,
+            gene_type=gene_type,
+            parent_selection_type=GA_Settings["parent_selection_type"],
+            crossover_type=GA_Settings["crossover_type"],
+            mutation_type=GA_Settings["mutation_type"],
+            mutation_percent_genes=GA_Settings["mutation_percent_genes"],
+            stop_criteria=GA_Settings["stop_criteria"],
+            save_solutions=GA_Settings["save_solutions"],
+            random_seed=GA_Settings["seed"],
+            # Continuous-gene mutation step (index genes re-sample gene_space)
+            random_mutation_min_val=-GA_Settings["rad_mutation_step"],
+            random_mutation_max_val=GA_Settings["rad_mutation_step"],
+            suppress_warnings=True,
         )
+
+        ga_instance.run()
     finally:
         mapdl.exit()
 
     # ---- Final reporting ---------------------------------------------------
     best = problem.best
     logger.log_line("=" * 80)
-    logger.log_line("GENETIC ALGORITHM - FINAL RESULT")
+    logger.log_line("GENETIC ALGORITHM (PyGAD) - FINAL RESULT")
     logger.log_line("=" * 80)
 
     if best is None:
@@ -598,7 +686,7 @@ def main():
         logger.log_line(f"Best mass            : {best_f:.4f} kg")
         logger.log_line(f"Max utilisation      : {best['max_util']:.4f}")
         logger.log_line(f"First eigenvalue a_cr: {best['a_cr']:.4f}  (limit {GA_Settings['eigenvalue_min']})")
-        logger.log_line(f"Segment masses [kg]  : " +
+        logger.log_line("Segment masses [kg]  : " +
                         ", ".join(f"{m:.3f}" for m in best["segment_masses"]))
         logger.log_line("")
         logger.log_line("Optimal sections (real production profiles):")
@@ -608,12 +696,15 @@ def main():
         logger.log_line("Per-mode utilisation (max column / max brace):")
         logger.log_utilization(best["util_report"])
 
+    n_gen_done = int(getattr(ga_instance, "generations_completed", GA_Settings["n_gen"])) \
+        if ga_instance is not None else 0
+
     # Build a result-like object so OptimizationLogger.finalize works unchanged
     result_like = types.SimpleNamespace(
         x=best_x,
         fun=best_f,
-        nit=int(getattr(result.algorithm, "n_gen", GA_Settings["n_gen"])),
-        nfev=int(result.algorithm.evaluator.n_eval),
+        nit=n_gen_done,
+        nfev=int(problem.n_eval),
         success=success,
         message=message,
         status=0 if success else -1,
