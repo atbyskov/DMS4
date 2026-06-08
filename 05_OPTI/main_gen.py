@@ -211,7 +211,7 @@ init_brace_dt = (26.9, 2.3)
 
 # GA / solver settings
 GA_Settings = {
-    "pop_size": 24,           # sol_per_pop  (individuals per generation)
+    "pop_size": 36,           # sol_per_pop  (individuals per generation)
     "n_gen": 20,              # num_generations  (FEA evals <= pop_size * n_gen)
     "seed": 1,                # RNG seed for reproducibility
     "eigenvalue_min": 4.0,    # Required first positive buckling eigenvalue (a_cr >= 4)
@@ -450,7 +450,11 @@ class MastGAProblem:
         self.fail_penalty = float(GA_Settings["fail_penalty"])
         self.n_g = 3 + N_SEG  # 2 utilisation + 1 eigenvalue + per-segment mass
 
-        self.cache = {}   # genome-key -> fitness  (avoids repeated FEA)
+        # Human-readable name for every constraint row (same order as G)
+        self.constraint_names = ["util_struct", "util_brace", "eig"] + \
+            [f"seg_mass_{i}" for i in range(1, N_SEG + 1)]
+
+        self.cache = {}   # genome-key -> record dict (avoids repeated FEA)
         self.n_eval = 0   # actual FEA evaluations performed
         self.best = None  # best feasible design seen so far
 
@@ -512,8 +516,9 @@ class MastGAProblem:
     # ---- PyGAD fitness function -------------------------------------------
     def fitness_func(self, ga_instance, solution, solution_idx):
         key = self._key(solution)
-        if key in self.cache:
-            return self.cache[key]
+        cached = self.cache.get(key)
+        if cached is not None:
+            return cached["fitness"]
 
         try:
             (f, G, seg, max_util, a_cr, x_eng, var,
@@ -521,13 +526,25 @@ class MastGAProblem:
 
             violation = sum(max(g, 0.0) for g in G)
             fitness = -(float(f) + self.penalty * violation)
+            feasible = violation <= 1e-6
 
             self.n_eval += 1
             self.logger.log_evaluation(
                 x_eng, f, seg, v_agg=max_util, g_max=max(G), c_value=None,
             )
 
-            feasible = violation <= 1e-6
+            # Per-solution record (used by on_generation to print g(x) and x)
+            record = {
+                "fitness": fitness,
+                "f": float(f),
+                "G": [float(g) for g in G],
+                "violation": float(violation),
+                "x_eng": x_eng,
+                "max_util": float(max_util),
+                "a_cr": float(a_cr),
+                "feasible": bool(feasible),
+            }
+
             if feasible and (self.best is None or f < self.best["f"]):
                 self.best = {
                     "f": float(f),
@@ -550,26 +567,70 @@ class MastGAProblem:
 
         except Exception as exc:  # FEA / geometry failure -> very bad fitness
             print(f"[GA] Evaluation failed, penalising individual: {exc}", flush=True)
-            fitness = -self.fail_penalty
+            gd = solution_to_genome_dict(solution)
+            try:
+                x_eng = var_dict_to_xarray(decode_to_var_dict(gd))
+            except Exception:
+                x_eng = None
+            record = {
+                "fitness": -self.fail_penalty,
+                "f": float("nan"),
+                "G": None,
+                "violation": float("inf"),
+                "x_eng": x_eng,
+                "max_util": float("nan"),
+                "a_cr": float("nan"),
+                "feasible": False,
+            }
 
-        self.cache[key] = fitness
-        return fitness
+        self.cache[key] = record
+        return record["fitness"]
 
     # ---- PyGAD per-generation callback ------------------------------------
     def on_generation(self, ga_instance):
         gen = ga_instance.generations_completed
         try:
-            _, fit, _ = ga_instance.best_solution(ga_instance.last_generation_fitness)
+            best_sol, fit, _ = ga_instance.best_solution(ga_instance.last_generation_fitness)
         except Exception:
-            fit = float("nan")
+            best_sol, fit = None, float("nan")
 
         self.logger.log_line("-" * 80)
         self.logger.log_line(f"[GENERATION {gen}]  FEA evals so far: {self.n_eval}")
         self.logger.log_line(f"  pop-best fitness   : {fit:.4g}")
+
+        # Details (design variables + constraints) of this generation's best
+        rec = self.cache.get(self._key(best_sol)) if best_sol is not None else None
+        if rec is not None:
+            self.logger.log_line(
+                f"  objective (mass)   : {rec['f']:.3f} kg   "
+                f"max_util={rec['max_util']:.3f}  a_cr={rec['a_cr']:.3f}"
+            )
+
+            self.logger.log_line("  design variables:")
+            if rec["x_eng"] is not None:
+                self.logger.log_line(
+                    "    " + ",  ".join(
+                        f"{name}={val:.3f}"
+                        for name, val in zip(ENG_NAMES, rec["x_eng"])
+                    )
+                )
+
+            self.logger.log_line("  constraints  g(x) <= 0 feasible:")
+            if rec["G"] is not None:
+                for name, g in zip(self.constraint_names, rec["G"]):
+                    flag = "OK" if g <= 1e-6 else "VIOLATED"
+                    self.logger.log_line(f"    {name:12s} = {g:+.4f}   [{flag}]")
+                self.logger.log_line(
+                    f"    total violation = {rec['violation']:.4g}   "
+                    f"({'FEASIBLE' if rec['feasible'] else 'INFEASIBLE'})"
+                )
+            else:
+                self.logger.log_line("    (FEA failed for this individual)")
+
         if self.best is not None:
             b = self.best
             self.logger.log_line(
-                f"  best feasible      : {b['f']:.3f} kg   "
+                f"  best feasible so far: {b['f']:.3f} kg   "
                 f"max_util={b['max_util']:.3f}  a_cr={b['a_cr']:.3f}"
             )
         self.logger.log_line("")
