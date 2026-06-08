@@ -211,8 +211,8 @@ init_brace_dt = (26.9, 2.3)
 
 # GA / solver settings
 GA_Settings = {
-    "pop_size": 36,           # sol_per_pop  (individuals per generation)
-    "n_gen": 20,              # num_generations  (FEA evals <= pop_size * n_gen)
+    "pop_size": 48,           # sol_per_pop  (individuals per generation)
+    "n_gen": 80,              # num_generations  (FEA evals <= pop_size * n_gen)
     "seed": 1,                # RNG seed for reproducibility
     "eigenvalue_min": 4.0,    # Required first positive buckling eigenvalue (a_cr >= 4)
     "penalty": 1.0e4,         # Exterior penalty weight P on constraint violation
@@ -221,8 +221,8 @@ GA_Settings = {
     "parent_selection_type": "sss",
     "crossover_type": "single_point",
     "mutation_type": "random",
-    "mutation_percent_genes": 10,
-    "stop_criteria": ["reach_1", "saturate_10"],
+    "mutation_percent_genes": 20,
+    "stop_criteria": ["reach_1", "saturate_25"],
     "save_solutions": True,
     # Random mutation step applied to the continuous `rad` gene (index genes
     # mutate by re-sampling their catalogue gene_space instead).
