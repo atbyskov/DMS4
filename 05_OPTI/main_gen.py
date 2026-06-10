@@ -211,8 +211,8 @@ init_brace_dt = (26.9, 2.3)
 
 # GA / solver settings
 GA_Settings = {
-    "pop_size": 48,           # sol_per_pop  (individuals per generation)
-    "n_gen": 80,              # num_generations  (FEA evals <= pop_size * n_gen)
+    "pop_size": 60,           # sol_per_pop  (individuals per generation) -- more diversity
+    "n_gen": 120,             # num_generations  (FEA evals <= pop_size * n_gen)
     "seed": 1,                # RNG seed for reproducibility
     "eigenvalue_min": 4.0,    # Required first positive buckling eigenvalue (a_cr >= 4)
     "penalty": 1.0e4,         # Exterior penalty weight P on constraint violation
@@ -222,11 +222,19 @@ GA_Settings = {
     "crossover_type": "single_point",
     "mutation_type": "random",
     "mutation_percent_genes": 20,
-    "stop_criteria": ["reach_1", "saturate_25"],
+    # KEY for coupled moves: force >=2 genes to mutate per offspring so one child
+    # can change `rad` AND a section index together. Without this, only 1 of the
+    # 3 genes mutates (int(0.20*3)=0 -> clamped to 1), and the optimum at
+    # rad=264 / col=(48.3,2.5) is unreachable because each single-gene step is
+    # either infeasible or fitness-neutral. Takes precedence over
+    # mutation_percent_genes when not None.
+    "mutation_num_genes": 2,
+    "stop_criteria": ["reach_1", "saturate_40"],   # probe 40 stagnant gens before quitting
     "save_solutions": True,
     # Random mutation step applied to the continuous `rad` gene (index genes
-    # mutate by re-sampling their catalogue gene_space instead).
-    "rad_mutation_step": 25.0,
+    # mutate by re-sampling their catalogue gene_space instead). Wider = bigger
+    # radius jumps to cross the 228 -> 264 mm basin.
+    "rad_mutation_step": 40.0,
 }
 
 
@@ -525,7 +533,7 @@ class MastGAProblem:
              pp, bs_sig, bs_defl) = self._evaluate(solution)
 
             violation = sum(max(g, 0.0) for g in G)
-            fitness = -(float(f) + self.penalty * violation)
+            fitness = -(float(f) + self.penalty * violation)  # penalty is the exterior penalty weight P on constraint violation https://pdf.sciencedirectassets.com/271868/1-s2.0-S0045782500X01028/1-s2.0-S0045782599003898/main.pdf?X-Amz-Security-Token=IQoJb3JpZ2luX2VjEAMaCXVzLWVhc3QtMSJHMEUCIDfzwf3l2saCVtOui7FJ7zxSGdGQ31ud2XVtSNkhnV9NAiEAt%2Ffix1WgzzkSOwa9y7KvnEojabmqilZjZqW2hPpfJI0qvAUIzP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAFGgwwNTkwMDM1NDY4NjUiDNaLZN5kno%2B3zTwRjCqQBYpdf5rK4E12MdZCktXbRRtzdXt4ODEDLvIouMPVhaC78H2zY6qsX2XZAOjLCKxWGzFtqWw4IEumad8w0c5pHySYrpdFSkzWUT%2BR1torxev%2Fj6cJ9fZuQEY%2BRtJw8cNjJf%2FUlSy%2Bt6%2B0P2sP1kGUAHv9IvB8ZiB0Km%2B5wBXaahVj5dk42%2B83XxYZf2n9qFCsH3pcwhCyjISomAc4rEENsaItsEnfJ%2BkcPl5795764voHZpD8j77SCUGegFbBmGefRmZdL%2BgfAt4%2BJyDBE7%2B6szeeD4M2lOuOG9uOTDfmcgsSsYX0i2mTglBFFQY0Co7xMU%2Fd5U4qlEMYQ8kJQPW4hKBo8DJlmtb5G1q4zLZ9gXMET9VYu%2BBEcKpph%2Fww%2FDnJNEUgkqeSoJROjAtsTx8nGOh320t6G4skWG1cGpIC5UFeSGGo43GOV9G%2F2XNAldj0YeKioFlTSnTRYaDJQaPfZv31zZ2sD%2BPH3WS9xHDXoqwbFUusYC3zWq2WPbtiwKStIuUmRRgTBT9EOJEeH3nvw6xNZQ2lLqHyHRoyOQDBb3ABrJnZsz0q261yn%2BIXOCIhETl63d8XFpb0skoMXJbOzRRfcsok5e0yLEuRtEqiRBEwj2pOmrYcRV41rCLUoAwbZQHUi78mkShc8DGoNoSt%2FnQqFQgXUoipLUXKvBZTVFpL0z55iCHh%2Fbo49hfqejGbvMYbEuE%2B4DVKfhpnBKTc8nGoPbB4v%2BLbdg1WMXZJ%2BAJ8kAnQSRQdTZwsf1S5OaAlyguUk8XHgUyXb5Pujcq7R8aa5x2aqfCAjYCwpifx8Z3nnuOYjWLy24vSNTC5TMQlse3uQwyi6CkvnEqYDdMUhFUluvCGP7FK2K3IejXQBKMhMK3Un9EGOrEBacBhQqMEi7RBJW1tvubCe4xMj19%2Fo4B3pABQpDrazEiiZldYlc48qZuP9tJGgNue%2BuT4ZMJct6M%2Ff6IaFhJkvFHuy3PfApDw%2BUk%2Fr8YIV%2FeLYdWzFCj0UfqCDpYVAC6fP7s8xnTec6zzxy5XvU5%2BchNlLidPY6p16ncQbiUU8jUGMjGDxNhirbvlTmo4vU%2BSmJ2TkSi%2FNBovaxoPgzzF8QqSZpuIBxn5iLccBcJ6c2GL&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20260609T111903Z&X-Amz-SignedHeaders=host&X-Amz-Expires=300&X-Amz-Credential=ASIAQ3PHCVTY4PE3Y34E%2F20260609%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=e6812d8d940d50a93347a9f6acb5dc07e6e2e6a4180c47c9e2c61c9ae01b1692&hash=012ab8b9e8ed2023c4fbcca33c3fadd983f94945bfe14f21b6363535cb8bfd5a&host=68042c943591013ac2b2430a89b270f6af2c76d8dfd086a07176afe7c76c2c61&pii=S0045782599003898&tid=spdf-b64b4c0e-9839-4b7c-a335-5f0bfe46536f&sid=b2f722af6bd6b64a182a39e81d63b69e799dgxrqb&type=client&tsoh=d3d3LnNjaWVuY2VkaXJlY3QuY29t&rh=d3d3LnNjaWVuY2VkaXJlY3QuY29t&ua=020c05525b000204515a&rr=a08fbd3508cf8a28&cc=dk
             feasible = violation <= 1e-6
 
             self.n_eval += 1
@@ -671,6 +679,8 @@ def main():
             "crossover_type": GA_Settings["crossover_type"],
             "mutation_type": GA_Settings["mutation_type"],
             "mutation_percent_genes": GA_Settings["mutation_percent_genes"],
+            "mutation_num_genes": GA_Settings.get("mutation_num_genes"),
+            "rad_mutation_step": GA_Settings["rad_mutation_step"],
             "stop_criteria": GA_Settings["stop_criteria"],
             "eigenvalue_min": GA_Settings["eigenvalue_min"],
             "penalty": GA_Settings["penalty"],
@@ -702,6 +712,13 @@ def main():
         initial_population = build_initial_population(GA_Settings["pop_size"], rng)
         gene_space, gene_type = build_gene_space_and_types()
 
+        # Mutation count: prefer an explicit gene count (needed for coupled moves
+        # on this tiny genome); fall back to the percentage otherwise.
+        if GA_Settings.get("mutation_num_genes") is not None:
+            mutation_kwargs = {"mutation_num_genes": GA_Settings["mutation_num_genes"]}
+        else:
+            mutation_kwargs = {"mutation_percent_genes": GA_Settings["mutation_percent_genes"]}
+
         ga_instance = pygad.GA(
             num_generations=GA_Settings["n_gen"],
             num_parents_mating=max(2, GA_Settings["pop_size"] // 2),
@@ -713,8 +730,8 @@ def main():
             parent_selection_type=GA_Settings["parent_selection_type"],
             crossover_type=GA_Settings["crossover_type"],
             mutation_type=GA_Settings["mutation_type"],
-            mutation_percent_genes=GA_Settings["mutation_percent_genes"],
             stop_criteria=GA_Settings["stop_criteria"],
+            **mutation_kwargs,
             save_solutions=GA_Settings["save_solutions"],
             random_seed=GA_Settings["seed"],
             # Continuous-gene mutation step (index genes re-sample gene_space)

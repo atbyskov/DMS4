@@ -1,0 +1,28 @@
+Optimization Data
+ 
+Start time: 2026-06-09 15:18:17 
+ 
+Solver Options:
+Method: GA (PyGAD stock) 
+# pop_size: 50 
+# n_gen: 50 
+# seed: 1 
+# parent_selection_type: sss 
+# keep_parents: 1 
+# crossover_type: single_point 
+# mutation_type: random 
+# mutation_percent_genes: 10 
+# eigenvalue_min: 4.0 
+# penalty: 100 
+# column_catalogue_size: 11 
+# brace_catalogue_size: 128 
+Design Variables and Bounds 
+# x0 = [202.07, 76.10, 4.00, 28.00, 2.50]
+ x[0] (rad) bounds = [150.0, 350.0] 
+ x[1] (d0) bounds = [48.3, 114.3] 
+ x[2] (t0) bounds = [2.5, 5.0] 
+ x[3] (d1) bounds = [10.0, 50.0] 
+ x[4] (t1) bounds = [1.0, 4.0] 
+
+
+iteration,eval_index,objective,x0,x1,x2,x3,x4,g_max,v_agg,c_val,seg_mass1,seg_mass2,seg_mass3,seg_mass4,seg_mass5
