@@ -25,22 +25,22 @@ opti_settings = {
 }
 
 # Initial Guess (not really used now, but kept)
-column_diameter = 87.56
-column_thickness = 3.39
-brace_diameter = 27.90
-brace_thickness = 4.69
+column_diameter = 76.1
+column_thickness = 3
+brace_diameter = 26.9
+brace_thickness = 2.3
 
 # Bounds
-column_diameter_bounds = (48.3, 108)
-column_thickness_bounds = (2.5, 5.0)
-brace_diameter_bounds = (25, 60.0)
-brace_thickness_bounds = (2, 6.0)
+column_diameter_bounds = (48.3, 114.3)   # Column Diameter Bounds [mm]
+column_thickness_bounds = (2.5, 5.0)     # Column Thickness Bounds [mm]
+brace_diameter_bounds = (10.0, 50.0)     # Brace Diameter Bounds [mm]
+brace_thickness_bounds = (1.0, 4.0)      # Brace Thickness Bounds [mm]
 
 # -----------------------------
 # VARIABLE DEFINITION
 # -----------------------------
 var = {
-    "rad": {"value": 321.35, "bounds": (150.0, 350.0), "active": True},
+    "rad": {"value": 202.07, "bounds": (150.0, 350.0), "active": True}, # Radius Structure [mm]
 }
 
 # Columns
@@ -99,7 +99,7 @@ Misc = {
     "Hor_Force": 502.52,
     "Ver_Force": -25.13E+3,
     "f_y": 700,
-    "f_y_brace": 355,
+    "f_y_brace": 235,
     "E_mod": 200*1E3,
     "W_Force": -3.751E+3,
     "SW_filename": "LWC_L1_LINES.IGS",
@@ -108,12 +108,12 @@ Misc = {
 # Solver Settings
 Solver_Settings = {
     "acc": 1e-3,                 # Maximum objective function tolerance
-    "maxiter": 80,               # Maximum iterations
-    "Aggregate": "P-norm",       # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
+    "maxiter": 120,               # Maximum iterations
+    "Aggregate": None,       # None, "P-norm", "P-norm-mean", "KS", "KS_shift"  (Write exacly)
     "p_value": 8,               # Value for "P-norm" and "P-norm-mean"
     "rho_value": 100,            # rho value used in KS
     "relaxation": 0,             # Relaxation parameter used in aggregation
-    "use_acs": True,              # Toggle ACS to on (True) or off (False)
+    "use_acs": False,              # Toggle ACS to on (True) or off (False)
 }
 
 
